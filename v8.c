@@ -1,10 +1,34 @@
 #include "ruby.h"
+#include <stdio.h>
+
+static VALUE nasty_hack;
+
+VALUE evalJS_v8(VALUE self);
 
 void Init_v8() {
-  VALUE rb_mVB = rb_define_module("V8");  
-  rb_define_class_under(rb_mV8, "Context", rb_cObject);
-  // rb_define_alloc_func(rb_cContext, rv8_Context__alloc);
+  VALUE rb_mV8  = rb_define_module("V8");  
+  nasty_hack = rb_mV8;
+  VALUE rb_cV8_Context = rb_define_class_under(rb_mV8, "Context", rb_cObject);
+
+  rb_define_method(rb_cV8_Context, "eval_js", evalJS_v8, 0);
+		   //VALUE (*func)(), int argc)
+  
+  //rb_define_alloc_func(rb_cContext, rv8_Context__alloc);
 }
+
+
+
+VALUE evalJS_v8(VALUE self) {
+
+  if (TYPE(self)== T_OBJECT) printf("OBJECT\n");
+
+  ID classGetter = rb_intern("class");
+    VALUE myClass = rb_funcall(self, classGetter, 0);
+
+  printf("same?  %d\n", nasty_hack == self);
+
+  return self;
+} 
 
 // v8.c: In function ‘Init_v8’:
 // v8.c:5: error: ‘rb_mV8’ undeclared (first use in this function)
