@@ -1,23 +1,17 @@
 #include "ruby.h"
+#include "v8.h"
 #include <stdio.h>
-#include <string.h>
-
-class foo {
-private:
-  int messageNumber=0;
-public:
-  void print(const char* msg) {
-    printf("%d %s\n",  ++messageNumber, msg);
-  }
-} 
 
 typedef struct v8_context {
-  int a;
+  v8::Handle<v8::Context> context;
+public:
+  v8_context() : context(v8::Context::New()) {}
 } v8_context;
 
 extern "C" {
   void Init_v8();
 }
+
 VALUE v8_allocate(VALUE clazz);
 void v8_mark(v8_context *s);
 void v8_free(v8_context *s);
@@ -39,7 +33,6 @@ extern "C" {
 VALUE v8_allocate(VALUE clazz) {
   printf("v8_allocate()\n");
   v8_context *s = new v8_context;
-  memset(s, 0, sizeof(v8_context));
   return Data_Wrap_Struct(clazz, v8_mark, v8_free, s);
 }
 
@@ -55,6 +48,7 @@ VALUE print(VALUE object, VALUE arg)
 {
   v8_context* s=0;
   Data_Get_Struct(object, struct v8_context, s);
+  // s->wrapped.print(RSTRING(arg)->ptr);
   return Qnil;
 }
 
