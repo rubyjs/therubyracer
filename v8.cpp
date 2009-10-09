@@ -4,8 +4,11 @@
 
 typedef struct v8_context {  
   v8_context() : context(v8::Context::New()) {}
-  //declare this as Local<v8::Context> ???
-  v8::Handle<v8::Context> context;
+  ~v8_context() {
+    context.Dispose();
+    printf("disposing of context\n");
+  }
+  v8::Persistent<v8::Context> context;
 } v8_context;
 
 extern "C" {
