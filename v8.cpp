@@ -2,6 +2,15 @@
 #include <stdio.h>
 #include <string.h>
 
+class foo {
+private:
+  int messageNumber=0;
+public:
+  void print(const char* msg) {
+    printf("%d %s\n",  ++messageNumber, msg);
+  }
+} 
+
 typedef struct v8_context {
   int a;
 } v8_context;
@@ -20,7 +29,6 @@ VALUE rb_cV8;
 
 extern "C" {
   void Init_v8() {
-    printf("Init_v8()\n");
     rb_mModule = rb_define_module("V8");
     rb_cV8 = rb_define_class_under(rb_mModule, "Context", rb_cObject);
     rb_define_alloc_func(rb_cV8, v8_allocate);
@@ -47,7 +55,6 @@ VALUE print(VALUE object, VALUE arg)
 {
   v8_context* s=0;
   Data_Get_Struct(object, struct v8_context, s);
-  printf("%d %s\n",  (s?s->a++:-1), RSTRING(arg)->ptr);
   return Qnil;
 }
 
