@@ -2,10 +2,10 @@
 #include "v8.h"
 #include <stdio.h>
 
-typedef struct v8_context {
-  v8::Handle<v8::Context> context;
-public:
+typedef struct v8_context {  
   v8_context() : context(v8::Context::New()) {}
+  //declare this as Local<v8::Context> ???
+  v8::Handle<v8::Context> context;
 } v8_context;
 
 extern "C" {
@@ -16,7 +16,7 @@ VALUE v8_allocate(VALUE clazz);
 void v8_mark(v8_context *s);
 void v8_free(v8_context *s);
 
-VALUE print(VALUE object, VALUE arg);
+VALUE eval(VALUE self, VALUE javascript);
 
 VALUE rb_mModule;
 VALUE rb_cV8;
@@ -26,7 +26,7 @@ extern "C" {
     rb_mModule = rb_define_module("V8");
     rb_cV8 = rb_define_class_under(rb_mModule, "Context", rb_cObject);
     rb_define_alloc_func(rb_cV8, v8_allocate);
-    rb_define_method(rb_cV8, "print", (VALUE(*)(...)) print, 1);
+    rb_define_method(rb_cV8, "eval", (VALUE(*)(...)) eval, 1);
   }
 }
 
@@ -44,11 +44,17 @@ void v8_free(v8_context *s) {
   delete s;
 }
 
-VALUE print(VALUE object, VALUE arg)
-{
-  v8_context* s=0;
-  Data_Get_Struct(object, struct v8_context, s);
-  // s->wrapped.print(RSTRING(arg)->ptr);
+VALUE eval(VALUE self, VALUE javascript) {
+  v8_context* s = 0;
+  Data_Get_Struct(self, struct v8_context, s);
+  const char* text = RSTRING(javascript)->ptr;
+  
+  v8::Context::Scope context_scope(s->context);
+  v8::HandleScope handle_scope;
+  v8::Handle<v8::String> source = v8::String::New(text);
+  v8::Handle<v8::Script> script = v8::Script::Compile(source);
+  v8::Handle<v8::Value> local_result = script->Run();
+  printf("number value: %g\n", local_result->NumberValue());
   return Qnil;
 }
 
