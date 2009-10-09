@@ -1,34 +1,58 @@
 #include "ruby.h"
 #include <stdio.h>
+#include <string.h>
 
-static VALUE nasty_hack;
+typedef struct some_struct {
+  int a;
+} some_struct;
 
-VALUE evalJS_v8(VALUE self);
+extern "C" {
+  void Init_v8();
+}
+VALUE v8_allocate(VALUE clazz);
+void v8_mark(some_struct *s);
+void v8_free(some_struct *s);
 
-void Init_v8() {
-  VALUE rb_mV8  = rb_define_module("V8");  
-  nasty_hack = rb_mV8;
-  VALUE rb_cV8_Context = rb_define_class_under(rb_mV8, "Context", rb_cObject);
+VALUE print(VALUE object, VALUE arg);
 
-  rb_define_method(rb_cV8_Context, "eval_js", evalJS_v8, 0);
-		   //VALUE (*func)(), int argc)
-  
-  //rb_define_alloc_func(rb_cContext, rv8_Context__alloc);
+VALUE rb_mModule;
+VALUE rb_cV8;
+
+extern "C" {
+  void Init_v8() {
+    printf("Init_v8()\n");
+    rb_mModule = rb_define_module("V8");
+    rb_cV8 = rb_define_class_under(rb_mModule, "Class", rb_cObject);
+    rb_define_alloc_func(rb_cV8, v8_allocate);
+    rb_define_method(rb_cV8, "print", (VALUE(*)(...)) print, 1);
+  }
 }
 
+VALUE v8_allocate(VALUE clazz) {
+  printf("v8_allocate()\n");
+  some_struct *s = (some_struct *)malloc(sizeof(some_struct));
+  memset(s, 0, sizeof(some_struct));
+  return Data_Wrap_Struct(clazz, v8_mark, v8_free, s);
+}
 
+void v8_mark(some_struct *s) {
+  printf("v8_mark\n");
+  // marked for gc?
+}
 
-VALUE evalJS_v8(VALUE self) {
+void v8_free(some_struct *s) {
+  printf("v8_free\n");
+  free(s);
+}
 
-  if (TYPE(self)== T_OBJECT) printf("OBJECT\n");
+VALUE print(VALUE object, VALUE arg)
+{
+  some_struct* s=0;
+  Data_Get_Struct(object, struct some_struct, s);
+  printf("%d %s\n",  (s?s->a++:-1), RSTRING(arg)->ptr);
+  return Qnil;
+}
 
-  ID classGetter = rb_intern("class");
-    VALUE myClass = rb_funcall(self, classGetter, 0);
-
-  printf("same?  %d\n", nasty_hack == self);
-
-  return self;
-} 
 
 // v8.c: In function ‘Init_v8’:
 // v8.c:5: error: ‘rb_mV8’ undeclared (first use in this function)
