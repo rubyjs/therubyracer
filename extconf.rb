@@ -1,8 +1,6 @@
 require 'mkmf'
 
-CONFIG['LDSHARED'] = "g++ -shared"
-
 dir_config('v8')
-have_library('v8')
+have_library('v8') or raise "unable to find libv8"
 
 create_makefile('v8')
