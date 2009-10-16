@@ -12,9 +12,12 @@ describe "The Ruby Racer" do
       eval("'Hello World'").should == "Hello World"
     end
     
-    it "can pass numbers back to ruby" do
-      eval("1").should == 1
+    it "can pass doubles back to ruby" do
       eval("2.5").should == 2.5
+    end
+    
+    it "can pass fixed numbers back to ruby" do
+      eval("1").should == 1
     end
     
     it "can pass boolean values back to ruby" do

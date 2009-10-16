@@ -4,3 +4,12 @@ dir_config('v8')
 have_library('v8') or raise "unable to find libv8"
 
 create_makefile('v8')
+
+# now add a few extra targets
+File.open("Makefile", "a") do |makefile|
+makefile.print <<EOF
+
+test: all
+	@echo add test build/run here.
+EOF
+end

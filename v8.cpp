@@ -1,5 +1,6 @@
-#include "ruby.h"
-#include "v8.h"
+#include "ruby_data.h"
+#include "v8_data.h"
+#include "generic_data.h"
 #include <stdio.h>
 
 typedef struct v8_context {  
@@ -50,15 +51,19 @@ void v8_free(v8_context *s) {
 VALUE eval(VALUE self, VALUE javascript) {
   v8_context* s = 0;
   Data_Get_Struct(self, struct v8_context, s);
-  const char* text = RSTRING(javascript)->ptr;
-  
   v8::Context::Scope context_scope(s->context);
   v8::HandleScope handle_scope;
-  v8::Handle<v8::String> source = v8::String::New(text);
+
+  RubyDataSource<StringDest, std::string> tostring;
+  const std::string text(tostring.push(javascript));
+  printf("v8_allocate(\"%s\")\n", text.c_str());
+  v8::Handle<v8::String> source = v8::String::New(text.c_str());
   v8::Handle<v8::Script> script = v8::Script::Compile(source);
+
   v8::Handle<v8::Value> local_result = script->Run();
-  printf("number value: %g\n", local_result->NumberValue());
-  return Qnil;
+  V8HandleSource<RubyDest, VALUE> toValue;
+  return toValue.push(local_result);
+
 }
 
 

@@ -2,3 +2,4 @@ Makefile
 v8.bundle
 *.o
 *.log
+*~
