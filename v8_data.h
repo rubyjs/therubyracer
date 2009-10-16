@@ -34,10 +34,10 @@ template<class T, class R> class V8HandleSource {
       v8::Local<v8::String> str = value->ToString();
       char buffer[1024];
       int strlen = str->Length();
-      std::string output;
+      std::string output(strlen, 0);
       for (int total = 0; total < strlen;) {
-        int written = str->WriteAscii(buffer, 0, 1024);
-        output.append(buffer, written);
+        int written = str->WriteAscii(buffer, total, 1024);
+        output.replace(total, written, buffer);
         total += written;
       }
       return dest.pushString(output, name);
