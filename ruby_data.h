@@ -2,6 +2,8 @@
 #define __ruby_data_h__
 
 #include <ruby.h>
+#include <stdio.h>
+#include <string>
 
 template<class T, class R> class RubyDataSource {
 
@@ -36,8 +38,8 @@ class RubyDest {
   RubyDest();
   ~RubyDest();
 
-  VALUE pushString(const char* value, const char* name=0) {
-    return Qnil;
+  VALUE pushString(std::string value, const char* name=0) {
+    return rb_str_new2(value.c_str());
   }
 
   VALUE pushInt(int64_t value, const char* name=0) {

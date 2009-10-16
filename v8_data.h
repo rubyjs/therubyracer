@@ -4,6 +4,7 @@
 #include "v8.h"
 #include "stdint.h"
 #include <stdio.h>
+#include <string>
 
 
 template<class T, class R> class V8HandleSource {
@@ -30,8 +31,16 @@ template<class T, class R> class V8HandleSource {
     }
 
     if(value->IsString()) {
-      //v8::Local<v8:String::AsciiValue> strValue(value->ToString());
-      return dest.pushString("", name);
+      v8::Local<v8::String> str = value->ToString();
+      char buffer[1024];
+      int strlen = str->Length();
+      std::string output;
+      for (int total = 0; total < strlen;) {
+        int written = str->WriteAscii(buffer, 0, 1024);
+        output.append(buffer, written);
+        total += written;
+      }
+      return dest.pushString(output, name);
     }
 
     if(value->IsInt32()) {
