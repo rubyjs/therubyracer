@@ -17,42 +17,30 @@ template<class T, class R> class V8HandleSource {
 
   R push(v8::Handle<v8::Value>& value, const char* name = 0) {
 
-    printf("*******   enter push()\n");
-
     if(value->IsNull()) {
       return dest.pushNull(name);
     }
-    printf("*******   isNull() == false\n");
 
     if(value->IsTrue()) {
       return dest.pushBool(true, name);
     }
-    printf("*******   isTrue() == false\n");
 
     if(value->IsFalse()) {
       return dest.pushBool(false, name);
     }
-    printf("*******   isFalse() == false\n");
-
 
     if(value->IsString()) {
       //v8::Local<v8:String::AsciiValue> strValue(value->ToString());
       return dest.pushString("", name);
     }
-    printf("*******   isString() == false\n");
 
     if(value->IsInt32()) {
       return dest.pushInt(value->Int32Value(), name);
     }
-    printf("*******   isInt32() == false\n");
-
 
     if(value->IsNumber()) {
       return dest.pushDouble(value->NumberValue(), name);
     }
-    printf("*******   isNumber() == false\n");
-
-
   }
 
 };

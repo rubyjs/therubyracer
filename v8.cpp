@@ -7,7 +7,6 @@ typedef struct v8_context {
   v8_context() : context(v8::Context::New()) {}
   ~v8_context() {
     context.Dispose();
-    printf("disposing of context\n");
   }
   v8::Persistent<v8::Context> context;
 } v8_context;
@@ -35,7 +34,6 @@ extern "C" {
 }
 
 VALUE v8_allocate(VALUE clazz) {
-  printf("v8_allocate()\n");
   v8_context *s = new v8_context;
   return Data_Wrap_Struct(clazz, v8_mark, v8_free, s);
 }
@@ -56,7 +54,6 @@ VALUE eval(VALUE self, VALUE javascript) {
 
   RubyDataSource<StringDest, std::string> tostring;
   const std::string text(tostring.push(javascript));
-  printf("v8_allocate(\"%s\")\n", text.c_str());
   v8::Handle<v8::String> source = v8::String::New(text.c_str());
   v8::Handle<v8::Script> script = v8::Script::Compile(source);
 

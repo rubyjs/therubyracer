@@ -10,6 +10,7 @@ File.open("Makefile", "a") do |makefile|
 makefile.print <<EOF
 
 test: all
-	@echo add test build/run here.
+	@echo running spec...
+	spec spec/therubyracer_spec.rb
 EOF
 end

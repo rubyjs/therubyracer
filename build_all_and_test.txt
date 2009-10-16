@@ -1,0 +1,29 @@
+g++ -I. -I. -I/opt/local/lib/ruby/1.8/i686-darwin10 -I. -I/Users/bill/dev/rubyracer/google-v8//include -I/opt/local/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE  -I/opt/local/include -fno-common -O2 -arch x86_64  -fno-common -pipe -fno-common  -arch x86_64  -c generic_data.cpp
+g++ -I. -I. -I/opt/local/lib/ruby/1.8/i686-darwin10 -I. -I/Users/bill/dev/rubyracer/google-v8//include -I/opt/local/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE  -I/opt/local/include -fno-common -O2 -arch x86_64  -fno-common -pipe -fno-common  -arch x86_64  -c ruby_data.cpp
+g++ -I. -I. -I/opt/local/lib/ruby/1.8/i686-darwin10 -I. -I/Users/bill/dev/rubyracer/google-v8//include -I/opt/local/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE  -I/opt/local/include -fno-common -O2 -arch x86_64  -fno-common -pipe -fno-common  -arch x86_64  -c v8.cpp
+g++ -I. -I. -I/opt/local/lib/ruby/1.8/i686-darwin10 -I. -I/Users/bill/dev/rubyracer/google-v8//include -I/opt/local/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE  -I/opt/local/include -fno-common -O2 -arch x86_64  -fno-common -pipe -fno-common  -arch x86_64  -c v8_data.cpp
+/usr/bin/gcc-4.2 -dynamic -bundle -undefined suppress -flat_namespace -o v8.bundle generic_data.o ruby_data.o v8.o v8_data.o -L. -L/opt/local/lib -L/Users/bill/dev/rubyracer/google-v8/ -L. -L/opt/local/lib  -arch x86_64  -lruby -lv8  -lpthread -ldl -lobjc  
+running spec...
+spec spec/therubyracer_spec.rb
+FF.F
+
+1)
+'The Ruby Racer Type Conversion from Ruby to Javascript can pass strings back to ruby' FAILED
+expected: "Hello World",
+     got: nil (using ==)
+./spec/therubyracer_spec.rb:12:
+
+2)
+'The Ruby Racer Type Conversion from Ruby to Javascript can pass doubles back to ruby' FAILED
+expected: 2.5,
+     got: nil (using ==)
+./spec/therubyracer_spec.rb:16:
+
+3)
+'The Ruby Racer Type Conversion from Ruby to Javascript can pass boolean values back to ruby' FAILED
+expected true, got nil
+./spec/therubyracer_spec.rb:24:
+
+Finished in 0.023274 seconds
+
+4 examples, 3 failures
