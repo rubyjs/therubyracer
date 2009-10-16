@@ -13,7 +13,6 @@ describe "The Ruby Racer" do
     end
     
     it "passes back undefined value as nil" do
-      pending "This currently causes a segmentation fault..."
       eval("this.undefined").should be_nil
     end
     

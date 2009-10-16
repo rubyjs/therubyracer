@@ -18,10 +18,14 @@ template<class T, class R> class V8HandleSource {
 
   R push(v8::Handle<v8::Value>& value, const char* name = 0) {
 
-    if(value->IsNull()) {
+    if (value->IsUndefined()) {
       return dest.pushNull(name);
     }
 
+    if(value->IsNull()) {
+      return dest.pushNull(name);
+    }
+    
     if(value->IsTrue()) {
       return dest.pushBool(true, name);
     }
