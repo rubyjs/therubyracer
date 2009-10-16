@@ -8,6 +8,15 @@ describe "The Ruby Racer" do
   
   describe  "Type Conversion from Ruby to Javascript" do
     
+    it "can pass nil back to ruby" do
+      eval("null").should be_nil      
+    end
+    
+    it "passes back undefined value as nil" do
+      pending "This currently causes a segmentation fault..."
+      eval("this.undefined").should be_nil
+    end
+    
     it "can pass strings back to ruby" do
       eval("'Hello World'").should == "Hello World"
     end

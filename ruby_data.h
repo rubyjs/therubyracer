@@ -45,11 +45,11 @@ class RubyDest {
   }
 
   VALUE pushDouble(double value, const char* name=0) {
-    return Qnil;
+    return rb_float_new(value);
   }
 
   VALUE pushBool(bool value, const char* name=0) {
-    return Qnil;
+    return value ? Qtrue : Qfalse;
   }
 
   VALUE pushNull(const char* name=0) {
