@@ -11,6 +11,6 @@ makefile.print <<EOF
 
 test: all
 	@echo running spec...
-	spec spec/therubyracer_spec.rb
+	spec -O spec/spec.opts spec/therubyracer_spec.rb
 EOF
 end
