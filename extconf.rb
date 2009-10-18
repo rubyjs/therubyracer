@@ -12,5 +12,13 @@ makefile.print <<EOF
 test: all
 	@echo running spec...
 	spec -O spec/spec.opts spec/therubyracer_spec.rb
+
+docs/cpp:
+	mkdir -p docs/cpp
+
+docs: all docs/cpp
+	@echo Generate C++ docs to docs/cpp/html
+	doxygen Doxyfile
+
 EOF
 end

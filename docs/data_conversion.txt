@@ -1,0 +1,18 @@
+Short list of types that a receiver should handle:
+
+type           		expected method
+-------------------------------
+<null>         		pushNull
+boolean        		pushBool
+int64          		pushInt (overloaded on 64-bit int)
+double         		pushDouble
+const std::string&	pushString
+???					pushUndefined
+
+int32          		pushInt (overloaded on 32-bit int)
+
+for lack of any better ideas have these functions return true on
+success and false on error
+
+--
+should add more later.

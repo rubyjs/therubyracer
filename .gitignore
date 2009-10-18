@@ -3,3 +3,4 @@ v8.bundle
 *.o
 *.log
 *~
+docs/cpp/html/*
