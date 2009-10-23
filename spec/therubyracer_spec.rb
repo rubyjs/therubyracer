@@ -41,6 +41,14 @@ describe "The Ruby Racer" do
       eval("true").should be(true)
       eval("false").should be(false)
     end
+    
+    it "can pass objects back to ruby" do
+      eval("({foo: 'bar', baz: 'bang'})").tap do |object|
+        object.should_not be_nil
+        object['foo'].should == 'bar'
+        object['baz'].should == 'bang'
+      end
+    end
         
   end
   

@@ -2,6 +2,7 @@
 #define __ruby_data_h__
 
 #include <ruby.h>
+#include <v8.h>
 #include <stdio.h>
 #include <string>
 
@@ -86,6 +87,10 @@ class RubyDest {
 
     VALUE pushUndefined(const char* name=0) {
         return Qnil;
+    }
+    
+    VALUE pushObject(v8::Handle<v8::Value>& value, const char* name = 0) {
+      return Qnil;
     }
 };
 

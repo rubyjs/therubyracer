@@ -54,6 +54,12 @@ template<class T, class R> class V8HandleSource {
     if(value->IsNumber()) {
       return dest.pushDouble(value->NumberValue(), name);
     }
+    
+    if (value->IsObject()) {
+      return dest.pushObject(value, name);
+    }
+    
+    return dest.pushNull(name);
   }
 
 };
