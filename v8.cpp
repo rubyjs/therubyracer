@@ -38,6 +38,10 @@ extern "C" {
         rb_cV8 = rb_define_class_under(rb_mModule, "Context", rb_cObject);
         rb_define_alloc_func(rb_cV8, v8_allocate);
         rb_define_method(rb_cV8, "eval", (VALUE(*)(...)) eval, 1);
+        
+        rb_cV8_JSObject = rb_define_class_under(rb_mModule, "JSObject", rb_cObject);
+        rb_define_alloc_func(rb_cV8_JSObject, v8_object_allocate);
+        rb_define_method(rb_cV8_JSObject, "[]", (VALUE(*)(...)) v8_object_hash_access, 1);
     }
 }
 

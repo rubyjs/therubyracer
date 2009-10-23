@@ -56,7 +56,8 @@ template<class T, class R> class V8HandleSource {
     }
     
     if (value->IsObject()) {
-      return dest.pushObject(value, name);
+      v8::Local<v8::Object> object(v8::Object::Cast(*value));
+      return dest.pushObject(object, name);
     }
     
     return dest.pushNull(name);

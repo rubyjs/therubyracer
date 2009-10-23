@@ -48,10 +48,10 @@ describe "The Ruby Racer" do
         object['foo'].should == 'bar'
         object['baz'].should == 'bang'
       end
-    end
-        
+    end        
+                
   end
-  
+    
   def eval(str)
     @cxt.eval(str)
   end

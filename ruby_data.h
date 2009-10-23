@@ -3,6 +3,7 @@
 
 #include <ruby.h>
 #include <v8.h>
+#include <v8_object.h>
 #include <stdio.h>
 #include <string>
 
@@ -89,8 +90,8 @@ class RubyDest {
         return Qnil;
     }
     
-    VALUE pushObject(v8::Handle<v8::Value>& value, const char* name = 0) {
-      return Qnil;
+    VALUE pushObject(v8::Handle<v8::Object>& value, const char* name = 0) {
+      return Data_Wrap_Struct(rb_cV8_JSObject, v8_object_mark, v8_object_free, new v8_object(value));
     }
 };
 
