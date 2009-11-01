@@ -3,21 +3,25 @@
 #include <v8_data.h>
 #include <generic_data.h>
 
+#include <stdio.h>
+
 VALUE rb_cV8_JSObject;
 
 using namespace v8;
 
-v8_object::v8_object() : handle(Persistent<Object>(*Object::New())) {
-  dispose = false;
+v8_object::v8_object() {
+  Persistent<Context> context = Context::InContext() ? *Context::GetCurrent() : Context::New();
+  Context::Scope cscope(context);
+  HandleScope hscope;
+  handle = (*Object::New());
+  context.Dispose();
 }
+
 v8_object::v8_object(Handle<Object>& object) : handle(Persistent<Object>(*object)) {
-  dispose = true;
-}
-v8_object::~v8_object() {
-  if (dispose) {
-    handle.Dispose();
-  }
   
+}
+v8_object::~v8_object() {  
+  handle.Dispose();  
 }
 
 VALUE v8_object_hash_access(VALUE self, VALUE key) {

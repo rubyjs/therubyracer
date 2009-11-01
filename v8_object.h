@@ -12,7 +12,6 @@ typedef struct v8_object {
   ~v8_object();
   
   v8::Persistent<v8::Object> handle;
-  bool dispose;
 } v8_object;
 
 
