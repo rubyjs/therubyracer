@@ -58,50 +58,47 @@ describe "The Ruby Racer" do
     
     it "can embed a ruby closure and call it from javascript" do
       pending
-      V8::JSObject.new.tap do |scope|
-        scope['times'] = lambda {|lhs, rhs| lhs * rhs}
-        eval('times(5,2)', scope).should == 10
-      end
+      eval('times(5,2)', :times => lambda {|lhs, rhs| lhs * rhs}).should == 10
     end
     
     it "can call a bound ruby method" do
-      pending
-      mult = Class.new.class_eval do
-        self.tap do
+      pending      
+      five = singleton(5) do
         def initialize(lhs)
-          @lhs
+          @lhs = lhs
         end
-        
         def times(rhs)
           @lhs * rhs
         end
-      end
-      end
-      V8::JSObject.new.tap do |scope|
-        scope['timesfive'] = mult.new(5).method(:times)
-        eval('timesfive(3)', scope).should == 15
-      end
+      end      
+      eval('timesfive(3)', :timesfive => mult.method(:times)).should == 15
     end
     
     it "can embed a ruby object and call its methods" do
       pending
-      V8::JSObject.new.tap do |scope|
-        scope['object'] = Class.new.instance_eval {
-          self.tap do
-            def times(lhs, rhs)
-              lhs * rhs
-            end
-          end
-        }.new
-        eval('object.times(8,8)', scope)
+      eval('object.times(8,8)', :object => singelton {
+        def times(lhs, rhs)
+          lhs * rhs
+        end
+      })
+    end
+    
+    it "unwraps ruby objects returned by embedded ruby code to maintain referential integrity" do
+      pending
+      mock(:object).tap do |o|
+        eval('get()', :get => lambda {o}).should be(o)
       end
-    end        
+    end
   end
   
-  describe "Passing Ruby Values Back from Javascript"  
+  # describe "Passing Ruby Values Back from Javascript"  
     
   def eval(str, scope = nil)
     @cxt.eval(str)
+  end
+  
+  def singleton(*args, &body)
+    Class.new.class_eval(&body).new(*args)
   end
   
 end
