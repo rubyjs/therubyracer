@@ -91,7 +91,8 @@ class RubyDest {
     }
     
     VALUE pushObject(v8::Handle<v8::Object>& value, const char* name = 0) {
-      return Data_Wrap_Struct(rb_cV8_JSObject, v8_object_mark, v8_object_free, new v8_object(value));
+      v8_object* wrapper = new v8_object(value);
+      return wrapper->ruby_value;
     }
 };
 

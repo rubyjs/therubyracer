@@ -65,36 +65,4 @@ template<class T, class R> class V8HandleSource {
 
 };
 
-/*
-class V8ScopeDest {
-
-  v8::Context::Scope& scope;
-
- public:
-  V8ScopeDest(v8::Context::Scope& scope);
-  ~V8ScopeDest();
-
-  bool pushString(const char* value, const char* name=0) {
-    // convert and insert
-    return false;
-  }
-
-  bool pushInt(int64_t value, const char* name=0) {
-    return pushDouble(value, name);
-  }
-
-  bool pushDouble(double value, const char* name=0) {
-    // convert and insert
-    return false;
-  }
-
-  bool pushBool(bool value, const char* name=0) {
-    // convert and insert
-    return false;
-  }
-
-};
-*/
-
-
 #endif
