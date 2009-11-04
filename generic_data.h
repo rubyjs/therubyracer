@@ -49,6 +49,7 @@ public:
     }
 
     std::string pushNull(const char* name=0) {
+      printf("I bet we aren't even getting here<br/>");
         return ""; // this kind of sucks
     }
     

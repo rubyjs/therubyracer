@@ -56,8 +56,25 @@ describe "The Ruby Racer" do
     
   describe "Calling Ruby Code from JavaScript" do
     
+    it "knows your name" do
+      class Foo
+        def call
+        end
+      end
+      
+      foo = Foo.new
+      #V8.what_is_this? Class.new
+      # V8.what_is_this? Module.new
+      # V8.what_is_this? Object.new
+      # V8.what_is_this? :foo
+      # V8.what_is_this? V8::JSObject.new
+      # V8.what_is_this?(proc {|foo| "string form is: #{foo}"})
+      # V8.what_is_this?(foo.method(:bar))
+      V8.what_is_this?(foo)
+    end
+    
     it "can embed a ruby closure and call it from javascript" do
-      pending
+      # pending
       eval('times(5,2)', :times => lambda {|lhs, rhs| lhs * rhs}).should == 10
     end
     

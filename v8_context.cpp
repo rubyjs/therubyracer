@@ -37,9 +37,11 @@ VALUE v8_context_eval(VALUE self, VALUE javascript) {
   const std::string source(tostring.push(javascript));
   
   Local<Script> script = Script::Compile(String::New(source.c_str()));
+  // printf("Before Script->Run()<br/>");
   Local<Value> result = script->Run();
-    
+  // printf("After Script->Run()<br/>");    
   V8HandleSource<RubyDest, VALUE> toValue;
+  // printf("Result: %s", *String::AsciiValue(result->ToString()));
   return toValue.push(result);
   
   
