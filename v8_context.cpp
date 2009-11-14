@@ -1,8 +1,9 @@
+#include "ruby_data.h"
+#include "v8_data.h"
+#include "generic_data.h"
+#include "v8_context.h"
 
-#include <ruby_data.h>
-#include <v8_data.h>
-#include <generic_data.h>
-#include <v8_context.h>
+#include<stdio.h>
 
 using namespace v8;
 
@@ -37,12 +38,32 @@ VALUE v8_context_eval(VALUE self, VALUE javascript) {
   const std::string source(tostring.push(javascript));
   
   Local<Script> script = Script::Compile(String::New(source.c_str()));
-  // printf("Before Script->Run()<br/>");
   Local<Value> result = script->Run();
-  // printf("After Script->Run()<br/>");    
   V8HandleSource<RubyDest, VALUE> toValue;
-  // printf("Result: %s", *String::AsciiValue(result->ToString()));
   return toValue.push(result);
-  
-  
 }
+
+VALUE v8_context_inject(VALUE self, VALUE key, VALUE value) {
+    
+    v8_context* context = 0;
+    Data_Get_Struct(self, struct v8_context, context);
+    
+    Context::Scope enter(context->handle);
+    HandleScope handles;
+    
+    RubyValueSource<StringDest, std::string> tostring;
+    RubyValueSource<V8HandleDest, Persistent<Value> > toHandle;
+
+    const std::string key_string(tostring.push(key));
+    const std::string value_string(tostring.push(value));
+        
+    // does this need to be a persistent handle ?
+    Persistent<Value> key_handle(String::New(key_string.c_str()));
+    Persistent<Value> value_handle(toHandle.push(value));
+
+    Local<Object> global = context->handle->Global();
+    global->Set(key_handle, value_handle);
+
+    return Qnil;
+}
+
