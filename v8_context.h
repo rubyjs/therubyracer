@@ -41,6 +41,6 @@ void v8_context_free(v8_context *context);
 
 //methods
 VALUE v8_context_eval(VALUE self, VALUE javascript);
-VALUE v8_context_inject(VALUE self, VALUE key, VALUE injectee);
+VALUE v8_context_inject(VALUE self, VALUE key, VALUE value);
 
 #endif

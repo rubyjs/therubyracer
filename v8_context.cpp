@@ -55,7 +55,6 @@ VALUE v8_context_inject(VALUE self, VALUE key, VALUE value) {
     RubyValueSource<V8HandleDest, Persistent<Value> > toHandle;
 
     const std::string key_string(tostring.push(key));
-    const std::string value_string(tostring.push(value));
         
     // does this need to be a persistent handle ?
     Persistent<Value> key_handle(String::New(key_string.c_str()));
@@ -64,6 +63,6 @@ VALUE v8_context_inject(VALUE self, VALUE key, VALUE value) {
     Local<Object> global = context->handle->Global();
     global->Set(key_handle, value_handle);
 
-    return Qnil;
+    return value;
 }
 
