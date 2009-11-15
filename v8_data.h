@@ -76,30 +76,33 @@ public:
     V8HandleDest();
     ~V8HandleDest();
 
-    v8::Persistent<v8::Value> pushString(const std::string& value, const char* name=0) {
-        return v8::Persistent<v8::Value>::New(v8::String::New(value.c_str()));
+    v8::Local<v8::Value> pushString(const std::string& value, const char* name=0) {
+        return v8::Local<v8::Value>::New(v8::String::New(value.c_str()));
     }
 
-    v8::Persistent<v8::Value> pushInt(int64_t value, const char* name=0) {
-        return v8::Persistent<v8::Value>::New(v8::Integer::New(value));
+    v8::Local<v8::Value> pushInt(int64_t value, const char* name=0) {
+        return v8::Local<v8::Value>::New(v8::Integer::New(value));
     }
 
-    v8::Persistent<v8::Value> pushDouble(double value, const char* name=0) {
-        return v8::Persistent<v8::Value>::New(v8::Number::New(value));
+    v8::Local<v8::Value> pushDouble(double value, const char* name=0) {
+        return v8::Local<v8::Value>::New(v8::Number::New(value));
     }
 
-    v8::Persistent<v8::Value> pushBool(bool value, const char* name=0) {
-        return v8::Persistent<v8::Value>::New(v8::Boolean::New(value));
+    v8::Local<v8::Value> pushBool(bool value, const char* name=0) {
+        return v8::Local<v8::Value>::New(v8::Boolean::New(value));
     }
 
-    v8::Persistent<v8::Value> pushNull(const char* name=0) {
-        return v8::Persistent<v8::Value>::New(v8::Integer::New(0)); // so WRONG!! not sure how to make a null from API
+    v8::Local<v8::Value> pushNull(const char* name=0) {
+        return v8::Local<v8::Value>::New(v8::Integer::New(0)); // so WRONG!! not sure how to make a null from API
     }
     
-    v8::Persistent<v8::Value> pushUndefined(const char* name=0) {
-        return v8::Persistent<v8::Value>::New(v8::Integer::New(0)); // so WRONG!! not sure how to make a null from API
+    v8::Local<v8::Value> pushUndefined(const char* name=0) {
+        return v8::Local<v8::Value>::New(v8::Integer::New(0)); // so WRONG!! not sure how to make a null from API
     }
-
+    
+    // v8:Local<v8:Value> pushFunction(Function) {
+    //   
+    // }
 };
 
 

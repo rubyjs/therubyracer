@@ -51,6 +51,10 @@ VALUE v8_object_hash_access(VALUE self, VALUE key) {
 VALUE v8_object_hash_assignment(VALUE self, VALUE key, VALUE value) {
   
 }
+
+VALUE v8_object_call_something(VALUE self, VALUE code) {
+  return rb_funcall(code, rb_intern("call"), 0);
+}
   
 VALUE v8_object_allocate(VALUE clazz) {
   v8_object *wrapper = new v8_object(clazz);

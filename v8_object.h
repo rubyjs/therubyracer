@@ -20,6 +20,7 @@ typedef struct v8_object {
 
 VALUE v8_object_hash_access(VALUE self, VALUE key);
 VALUE v8_object_hash_assignment(VALUE self, VALUE key, VALUE value);
+VALUE v8_object_call_something(VALUE self, VALUE code);
 
 //memory management
 VALUE v8_object_allocate(VALUE clazz);

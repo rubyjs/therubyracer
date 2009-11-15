@@ -3,8 +3,17 @@
 VALUE ruby_call_symbol;
 VALUE ruby_respond_to_ID;
 
+VALUE ruby_proc_class;
+VALUE ruby_method_class;
+
+
 bool is_callable(VALUE& object) {
   return Qtrue == rb_funcall(object, ruby_respond_to_ID, 1, ruby_call_symbol);  
+}
+
+bool is_function(VALUE& object) {
+  VALUE klass = RDATA(object)->basic.klass;
+  return  klass == ruby_proc_class || klass == ruby_method_class;
 }
 
 /**
@@ -37,8 +46,11 @@ VALUE v8_what_is_this(VALUE self, VALUE object) {
     case T_FILE:	printf("IO\n"); break;
     case T_TRUE:	printf("true\n"); break;
     case T_FALSE:	printf("false\n"); break;
-    case T_DATA:		
+    case T_DATA:	
       printf("data... inspecting\n");
+      if (is_function(object)) {
+        printf("It's a function!!!<br/>");
+      }
       if (is_callable(object)) {
         printf("Responds to call!<br/>");
       } else {

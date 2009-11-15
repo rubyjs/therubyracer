@@ -68,14 +68,31 @@ describe "The Ruby Racer" do
       # V8.what_is_this? Object.new
       # V8.what_is_this? :foo
       # V8.what_is_this? V8::JSObject.new
-      # V8.what_is_this?(proc {|foo| "string form is: #{foo}"})
-      # V8.what_is_this?(foo.method(:bar))
-      V8.what_is_this?(foo)
+      V8.what_is_this?(proc {|foo| "string form is: #{foo}"})
+      V8.what_is_this?(foo.method(:bar))
+      # V8.what_is_this?(foo)
+    end
+    
+    it "can embed ruby values into javascript" do
+      @cxt["bar"] = 9
+      @cxt['foo'] = "bar"
+      @cxt['num'] = 3.14
+      @cxt['trU'] = true
+      @cxt['falls'] = false
+      @cxt.eval("bar + 10").should be(19)
+      @cxt.eval('foo').should == "bar"
+      @cxt.eval('num').should == 3.14
+      @cxt.eval('trU').should be(true)
+      @cxt.eval('falls').should be(false)
     end
     
     it "can embed a ruby closure and call it from javascript" do
+      V8::JSObject.new.tap do |o|
+        o.call_something(lambda{ puts "bar"})
+      end
       # pending
-      eval('times(5,2)', :times => lambda {|lhs, rhs| lhs * rhs}).should == 10
+      # @cxt['times'] = lambda {|lhs, rhs| lhs * rhs}
+      # @cxt.eval('times(5,2)').should == 10
     end
     
     it "can call a bound ruby method" do

@@ -33,17 +33,21 @@ template<class DEST, class RET> class RubyValueSource {
     RET push(VALUE& value, const char* name=0) {
         switch (TYPE(value)) {
         case T_FIXNUM:
-            return dest.pushInt(FIX2INT(value), name);
+          return dest.pushInt(FIX2INT(value), name);
         case T_FLOAT:
-            return dest.pushDouble(NUM2DBL(value), name);
+          return dest.pushDouble(NUM2DBL(value), name);
         case T_STRING:
-            return convertString(value, name);
+          return convertString(value, name);
         case T_NIL:
-            return dest.pushNull(name);
+          return dest.pushNull(name);
         case T_TRUE:
-            return dest.pushBool(true, name);
+          return dest.pushBool(true, name);
         case T_FALSE:
-            return dest.pushBool(false, name);
+          return dest.pushBool(false, name);
+        case T_DATA:
+          if (rb_is_function(value)) {
+            return dest.pushCode(new Code<RubyCaller>)
+          }
         }
         return dest.pushUndefined(name);
     }

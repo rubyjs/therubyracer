@@ -13,6 +13,10 @@ extern VALUE ruby_call_symbol;
  */
 extern VALUE ruby_respond_to_ID;
 
+extern VALUE ruby_proc_class;
+extern VALUE ruby_method_class;
+
+
 /**
  * Determine whether or not a value can respond to "call".
  * i.e. is this Proc/Method object?

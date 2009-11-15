@@ -52,13 +52,13 @@ VALUE v8_context_inject(VALUE self, VALUE key, VALUE value) {
     HandleScope handles;
     
     RubyValueSource<StringDest, std::string> tostring;
-    RubyValueSource<V8HandleDest, Persistent<Value> > toHandle;
+    RubyValueSource<V8HandleDest, Local<Value> > toHandle;
 
     const std::string key_string(tostring.push(key));
         
     // does this need to be a persistent handle ?
-    Persistent<Value> key_handle(String::New(key_string.c_str()));
-    Persistent<Value> value_handle(toHandle.push(value));
+    Local<Value> key_handle(String::New(key_string.c_str()));
+    Local<Value> value_handle(toHandle.push(value));
 
     Local<Object> global = context->handle->Global();
     global->Set(key_handle, value_handle);
