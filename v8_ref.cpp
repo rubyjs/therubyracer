@@ -3,22 +3,22 @@
 using namespace v8;
 
 
-template <class T> v8_ref<T>::v8_ref(Handle<T> object) : handle(*object) {
-  
+v8_ref::v8_ref(Handle<void> object) : handle(Persistent<void>::New(object)) {
+  printf("Allocating v8 reference\n");
 }
 
-template <class T> v8_ref<T>::~v8_ref() {  
+v8_ref::~v8_ref() {  
   printf("Disposing of v8 reference\n");
   if (!handle.IsEmpty()) {
     handle.Dispose();
   }
 }
 
-void v8_ref_mark(v8_ref_data* ref) {
+void v8_ref_mark(v8_ref* ref) {
   
 }
 
-void v8_ref_free(v8_ref_data* ref) {
+void v8_ref_free(v8_ref* ref) {
   delete ref;
 }
 

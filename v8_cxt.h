@@ -5,11 +5,9 @@
 #include "v8.h"
 #include "v8_ref.h"
 
-class v8_cxt : v8_ref<v8::Context> {
-public:
-  v8_cxt();
-  ~v8_cxt();
-};
+//Context::Global();
+VALUE v8_cxt_Global(VALUE self);
+VALUE v8_cxt_open(VALUE self);
 
 //memory management
 VALUE v8_cxt_allocate(VALUE clazz);
