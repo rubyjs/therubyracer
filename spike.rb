@@ -1,4 +1,4 @@
-`make clean all`
+`make all`
 require 'v8';
 
 #manually run a script
