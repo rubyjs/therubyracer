@@ -44,10 +44,10 @@ template<class DEST, class RET> class RubyValueSource {
           return dest.pushBool(true, name);
         case T_FALSE:
           return dest.pushBool(false, name);
-        case T_DATA:
-          if (rb_is_function(value)) {
-            return dest.pushCode(new Code<RubyCaller>)
-          }
+      //  case T_DATA:
+          // if (rb_is_function(value)) {
+          //             return dest.pushCode(new Code<RubyCaller>)
+          //           }
         }
         return dest.pushUndefined(name);
     }

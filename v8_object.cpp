@@ -8,7 +8,6 @@
 
 VALUE rb_cV8_JSObject;
 
-
 using namespace v8;
 
 v8_object::v8_object(VALUE clazz) {

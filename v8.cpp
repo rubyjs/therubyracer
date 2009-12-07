@@ -2,6 +2,7 @@
 #include "generic_data.h"
 #include "v8_data.h"
 #include "v8_context.h"
+#include "v8_cxt.h"
 #include "v8_standalone.h"
 
 #include <stdio.h>
@@ -31,6 +32,11 @@ extern "C" {
         rb_define_alloc_func(rb_cV8, v8_context_allocate);
         rb_define_method(rb_cV8, "eval", (VALUE(*)(...)) v8_context_eval, 1);
         rb_define_method(rb_cV8, "[]=", (VALUE(*)(...)) v8_context_inject, 2);
+        
+        //native module setup
+        VALUE rb_mNative = rb_define_module_under(rb_mModule, "N");
+        VALUE V8_N_Context = rb_define_class_under(rb_mNative, "Context", rb_cObject);
+        rb_define_alloc_func(V8_N_Context, v8_cxt_allocate);
         
         // js object setup
         rb_cV8_JSObject = rb_define_class_under(rb_mModule, "JSObject", rb_cObject);
