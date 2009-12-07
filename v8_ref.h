@@ -16,7 +16,7 @@ class v8_ref_data {
 template <class T> class v8_ref : v8_ref_data {
 public:
   //takes a handle object and adds a new persistent handle for 
-  //the referenced object.
+  //the referenced object
   v8_ref(v8::Handle<T> object);
   ~v8_ref();
 private:

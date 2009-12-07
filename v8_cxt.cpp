@@ -12,7 +12,7 @@ v8_cxt::v8_cxt() : v8_ref<Context>(Context::New()) {
 VALUE v8_cxt_allocate(VALUE clazz) {
   printf("This is the big leagues chew!\n");
   v8_cxt* cxt = new v8_cxt();
-  return Data_Wrap_Struct(clazz, 0, 0, cxt);
+  return Data_Wrap_Struct(clazz, v8_ref_mark , v8_ref_free, cxt);
 }
 
 
