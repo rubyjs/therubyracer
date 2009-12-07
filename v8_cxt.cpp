@@ -5,12 +5,8 @@
 
 using namespace v8;
 
-v8_cxt::v8_cxt()  {
-  // v8_cxt::v8_cxt() {    
-    handle = Context::New();
-    printf("Allocate Native V8 Context\n");  
-  }
-
+v8_cxt::v8_cxt() : v8_ref<Context>(Context::New()) {
+  printf("Allocate Native V8 Context\n");
 }
 
 VALUE v8_cxt_allocate(VALUE clazz) {
