@@ -8,6 +8,7 @@ v8_ref::v8_ref(Handle<void> object) : handle(Persistent<void>::New(object)) {
 }
 
 v8_ref::~v8_ref() {  
+  printf("Disposing v8 reference\n");
   handle.Dispose();
 }
 
