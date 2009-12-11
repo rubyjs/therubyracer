@@ -5,10 +5,8 @@
 #include "v8.h"
 #include "v8_ref.h"
 
-//Context::Global();
+VALUE v8_Context_New(int argc, VALUE *argv, VALUE self);
 VALUE v8_cxt_Global(VALUE self);
 VALUE v8_cxt_open(VALUE self);
 
-//memory management
-VALUE v8_cxt_allocate(VALUE clazz);
 #endif

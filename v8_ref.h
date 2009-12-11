@@ -2,16 +2,17 @@
 #define _RUBY_V8_REF_
 
 #include <v8.h>
-
+#include "ruby.h"
 
 //the v8_ref wraps a v8 handle so that ruby can hold a reference to it.
 
 struct v8_ref  {
   //takes a handle object and adds a new persistent handle for 
   //the referenced object
-  v8_ref(v8::Handle<void> object);
+  v8_ref(v8::Handle<void> object, VALUE ref = 0);
   virtual ~v8_ref();
   v8::Persistent<void> handle;
+  VALUE references;
 };
 
 
@@ -30,6 +31,7 @@ void v8_ref_free(v8_ref* ref);
 // VALUE instance = V8_Ref_Create(clazz, String::New("This is my instance"));
 
 #define V8_Ref_Create(clazz,handle) Data_Wrap_Struct(clazz,v8_ref_mark, v8_ref_free, new v8_ref(handle))
+#define V8_Ref_Create2(clazz,handle, references) Data_Wrap_Struct(clazz,v8_ref_mark, v8_ref_free, new v8_ref(handle, references))
 
 //Dereferences a ruby reference to a V8 object and place it in a Local<T> handle.
 // *type* V8 type of the reference. e.g. Context, Object, FunctionTemplate

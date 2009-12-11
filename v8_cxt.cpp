@@ -4,8 +4,16 @@
 
 using namespace v8;
 
-VALUE v8_cxt_allocate(VALUE clazz) {
-  return V8_Ref_Create(clazz, Context::New());
+VALUE v8_Context_New(int argc, VALUE *argv, VALUE self) {
+  HandleScope handles;
+  VALUE scope;
+  rb_scan_args(argc,argv, "01", &scope);
+  if (NIL_P(scope)) {
+    return V8_Ref_Create(self, Context::New());
+  } else {
+    V8_Ref_Get(ObjectTemplate, t, scope);
+    return V8_Ref_Create(self, Context::New(0, t));
+  }
 }
 
 VALUE v8_cxt_Global(VALUE self) {

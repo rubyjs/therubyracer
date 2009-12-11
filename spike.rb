@@ -22,9 +22,19 @@ class V8::C::Context
   end
 end
 
-cxt = V8::C::Context.new
-my_result = cxt.eval('7 * 6')
-puts "my result: #{my_result}"
+f = V8::C::FunctionTemplate.new do
+  puts "Hello!! This is ruby code!!!!"
+end
+
+f2 = V8::C::FunctionTemplate.new
+
+o = V8::C::ObjectTemplate.new
+o.Set("hello", f)
+o.Set("nello", f2)
+V8::C::Context.new(o).open do |cxt|
+  puts "r1: " + cxt.eval('nello()')
+  puts "r2: " + cxt.eval('hello()')
+end;
 
 
 

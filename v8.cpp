@@ -5,6 +5,7 @@
 #include "v8_cxt.h"
 #include "v8_str.h"
 #include "v8_script.h"
+#include "v8_template.h"
 #include "v8_standalone.h"
 
 #include <stdio.h>
@@ -40,7 +41,7 @@ extern "C" {
         
         //native context
         VALUE V8__C__Context = rb_define_class_under(rb_mNative, "Context", rb_cObject);
-        rb_define_alloc_func(V8__C__Context, v8_cxt_allocate);
+        rb_define_singleton_method(V8__C__Context, "new", (VALUE(*)(...)) v8_Context_New, -1);
         rb_define_method(V8__C__Context, "Global", (VALUE(*)(...)) v8_cxt_Global, 0);
         rb_define_method(V8__C__Context, "open", (VALUE(*)(...)) v8_cxt_open, 0);
         
@@ -52,6 +53,16 @@ extern "C" {
         VALUE V8__C__Script = rb_define_class_under(rb_mNative, "Script", rb_cObject);
         rb_define_singleton_method(V8__C__Script, "new", (VALUE(*)(...)) v8_script_new, 1);
         rb_define_method(V8__C__Script, "Run", (VALUE(*)(...)) v8_script_Run, 0);
+        
+        VALUE V8__C__Template = rb_define_class_under(rb_mNative, "Template", rb_cObject);
+        rb_define_method(V8__C__Template, "Set", (VALUE(*)(...))v8_Template_Set, 2);
+        
+        VALUE V8__C__ObjectTemplate = rb_define_class_under(rb_mNative, "ObjectTemplate", V8__C__Template);
+        rb_define_singleton_method(V8__C__ObjectTemplate, "new", (VALUE(*)(...))v8_ObjectTemplate_New, 0);
+        
+        VALUE V8__C__FunctionTemplate = rb_define_class_under(rb_mNative, "FunctionTemplate", V8__C__Template);
+        rb_define_singleton_method(V8__C__FunctionTemplate, "new", (VALUE(*)(...))v8_FunctionTemplate_New, -1);
+        
         
         // js object setup
         rb_cV8_JSObject = rb_define_class_under(rb_mModule, "JSObject", rb_cObject);
