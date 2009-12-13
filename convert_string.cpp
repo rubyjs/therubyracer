@@ -1,4 +1,4 @@
-#include "generic_data.h"
+#include "convert_string.h"
 
 StringDest::StringDest() {
 }

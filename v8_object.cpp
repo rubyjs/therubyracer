@@ -1,9 +1,6 @@
-#include <v8_object.h>
-#include <v8_context.h>
-#include <ruby_data.h>
-#include <v8_data.h>
-#include <generic_data.h>
-
+#include "v8_object.h"
+#include "v8_context.h"
+#include "converters.h"
 #include <stdio.h>
 
 VALUE rb_cV8_JSObject;
@@ -39,12 +36,12 @@ VALUE v8_object_hash_access(VALUE self, VALUE key) {
   v8_object* object = 0;
   Data_Get_Struct(self, struct v8_object, object);
   
-  RubyValueSource<StringDest, std::string> tostring;
-  const std::string cppkey(tostring.push(key));
+  convert_rb_to_string_t tostring;
+  const std::string cppkey(tostring(key));
   HandleScope handles;
   Handle<Value> result = object->handle->Get(String::New(cppkey.c_str()));
-  V8HandleSource<RubyDest, VALUE> toValue;
-  return toValue.push(result);
+  convert_v8_to_rb_t toValue;
+  return toValue(result);
 }
 
 VALUE v8_object_hash_assignment(VALUE self, VALUE key, VALUE value) {

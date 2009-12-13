@@ -1,8 +1,8 @@
-#ifndef __v8_data_h__
-#define __v8_data_h__
+#ifndef __convert_v8_h__
+#define __convert_v8_h__
 
-#include "v8.h"
-#include "stdint.h"
+#include <v8.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string>
 
@@ -15,7 +15,7 @@ template<class T, class R> class V8HandleSource {
   V8HandleSource() {}
   ~V8HandleSource() {}
 
-  R push(v8::Handle<v8::Value>& value) {
+  R operator() (v8::Handle<v8::Value>& value) {
 
     if (value->IsUndefined()) {
       return dest.pushNull();
@@ -70,11 +70,11 @@ template<class T, class R> class V8HandleSource {
  * in data_conversion.txt so it can be used as a template argument
  * for a conversion source class.
  */
-class V8HandleDest {
+class V8LocalDest {
 
 public:
-    V8HandleDest();
-    ~V8HandleDest();
+    V8LocalDest();
+    ~V8LocalDest();
 
     v8::Local<v8::Value> pushString(const std::string& value) {
         return v8::Local<v8::Value>::New(v8::String::New(value.c_str()));

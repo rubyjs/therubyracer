@@ -1,5 +1,5 @@
-#ifndef __generic_data_h__
-#define __generic_data_h__
+#ifndef __convert_string_h__
+#define __convert_string_h__
 
 #include "v8.h"
 #include <string>

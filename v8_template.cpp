@@ -1,9 +1,8 @@
-#include "ruby.h"
-#include "v8.h"
+#include <ruby.h>
+#include <v8.h>
 #include "v8_ref.h"
 #include "v8_template.h"
-#include "ruby_data.h"
-#include "v8_data.h"
+#include "converters.h"
 
 using namespace v8;
 
@@ -12,19 +11,19 @@ Handle<Value> RubyInvocationCallback(const Arguments& args) {
   if (NIL_P(code)) {
     return Null();
   } else {  
-    V8HandleSource<RubyDest, VALUE> argConverter;
-    RubyValueSource<V8HandleDest, Local<Value> > retvalConverter;
+    convert_v8_to_rb_t arg_cvt;
+    convert_rb_to_v8_t ret_cvt;
     
     VALUE* arguments = new VALUE[args.Length()];
     for(int c=0;c<args.Length(); ++c) {
       Handle<Value> val = args[c];
-      arguments[c] = argConverter.push(val);
+      arguments[c] = arg_cvt(val);
     }
       
     VALUE result = rb_funcall2(code, rb_intern("call"), args.Length(), arguments);
     delete [] arguments;
     
-    Handle<Value> convertedResult = retvalConverter.push(result);
+    Handle<Value> convertedResult = ret_cvt(result);
     return convertedResult  ;
   }
 }

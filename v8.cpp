@@ -1,6 +1,4 @@
-#include "ruby_data.h"
-#include "generic_data.h"
-#include "v8_data.h"
+#include "v8_object.h"
 #include "v8_context.h"
 #include "v8_cxt.h"
 #include "v8_str.h"

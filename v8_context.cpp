@@ -1,6 +1,4 @@
-#include "ruby_data.h"
-#include "v8_data.h"
-#include "generic_data.h"
+#include "converters.h"
 #include "v8_context.h"
 
 #include<stdio.h>
@@ -35,12 +33,12 @@ VALUE v8_context_eval(VALUE self, VALUE javascript) {
   HandleScope handles;
   
   RubyValueSource<StringDest, std::string> tostring;
-  const std::string source(tostring.push(javascript));
+  const std::string source(tostring(javascript));
   
   Local<Script> script = Script::Compile(String::New(source.c_str()));
   Local<Value> result = script->Run();
-  V8HandleSource<RubyDest, VALUE> toValue;
-  return toValue.push(result);
+  convert_v8_to_rb_t toValue;
+  return toValue(result);
 }
 
 VALUE v8_context_inject(VALUE self, VALUE key, VALUE value) {
@@ -50,15 +48,15 @@ VALUE v8_context_inject(VALUE self, VALUE key, VALUE value) {
     
     Context::Scope enter(context->handle);
     HandleScope handles;
-    
-    RubyValueSource<StringDest, std::string> tostring;
-    RubyValueSource<V8HandleDest, Local<Value> > toHandle;
+  
+    convert_rb_to_string_t tostring;  
+    convert_rb_to_v8_t toHandle;
 
-    const std::string key_string(tostring.push(key));
+    const std::string key_string(tostring(key));
         
     // does this need to be a persistent handle ?
     Local<Value> key_handle(String::New(key_string.c_str()));
-    Local<Value> value_handle(toHandle.push(value));
+    Local<Value> value_handle(toHandle(value));
 
     Local<Object> global = context->handle->Global();
     global->Set(key_handle, value_handle);

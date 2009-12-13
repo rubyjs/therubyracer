@@ -1,11 +1,11 @@
-#ifndef __ruby_data_h__
-#define __ruby_data_h__
+#ifndef __convert_ruby_h__
+#define __convert_ruby_h__
 
 #include <ruby.h>
 #include <v8.h>
-#include <v8_object.h>
 #include <stdio.h>
 #include <string>
+#include "v8_object.h"
 
 /**
  * A RubyValueSource takes a Destination class and a return
@@ -30,7 +30,7 @@ template<class DEST, class RET> class RubyValueSource {
     ~RubyValueSource() {}
 
 
-    RET push(VALUE& value) {
+    RET operator() (VALUE& value) {
         switch (TYPE(value)) {
         case T_FIXNUM:
           return dest.pushInt(FIX2INT(value));
@@ -60,15 +60,15 @@ private:
 };
 
 /**
- * A RubyDest class receives on of the types defined in
+ * A RubyValueDest class receives on of the types defined in
  * data_conversion.txt, and converts it to the appropriate
  * Ruby VALUE.
  */
-class RubyDest {
+class RubyValueDest {
 
     public:
-    RubyDest();
-    ~RubyDest();
+    RubyValueDest();
+    ~RubyValueDest();
 
     VALUE pushString(const std::string& value) {
         return rb_str_new2(value.c_str());
