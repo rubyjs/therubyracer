@@ -30,32 +30,32 @@ template<class DEST, class RET> class RubyValueSource {
     ~RubyValueSource() {}
 
 
-    RET push(VALUE& value, const char* name=0) {
+    RET push(VALUE& value) {
         switch (TYPE(value)) {
         case T_FIXNUM:
-          return dest.pushInt(FIX2INT(value), name);
+          return dest.pushInt(FIX2INT(value));
         case T_FLOAT:
-          return dest.pushDouble(NUM2DBL(value), name);
+          return dest.pushDouble(NUM2DBL(value));
         case T_STRING:
-          return convertString(value, name);
+          return convertString(value);
         case T_NIL:
-          return dest.pushNull(name);
+          return dest.pushNull();
         case T_TRUE:
-          return dest.pushBool(true, name);
+          return dest.pushBool(true);
         case T_FALSE:
-          return dest.pushBool(false, name);
+          return dest.pushBool(false);
       //  case T_DATA:
           // if (rb_is_function(value)) {
           //             return dest.pushCode(new Code<RubyCaller>)
           //           }
         }
-        return dest.pushUndefined(name);
+        return dest.pushUndefined();
     }
     
 private:
-    RET convertString(VALUE& value, const char* name=0) {
+    RET convertString(VALUE& value) {
         std::string stringValue(RSTRING(value)->ptr);
-        return dest.pushString(stringValue, name);
+        return dest.pushString(stringValue);
     }
 };
 
@@ -70,31 +70,31 @@ class RubyDest {
     RubyDest();
     ~RubyDest();
 
-    VALUE pushString(const std::string& value, const char* name=0) {
+    VALUE pushString(const std::string& value) {
         return rb_str_new2(value.c_str());
     }
 
-    VALUE pushInt(int64_t value, const char* name=0) {
+    VALUE pushInt(int64_t value) {
         return INT2FIX(value);
     }
 
-    VALUE pushDouble(double value, const char* name=0) {
+    VALUE pushDouble(double value) {
         return rb_float_new(value);
     }
 
-    VALUE pushBool(bool value, const char* name=0) {
+    VALUE pushBool(bool value) {
         return value ? Qtrue : Qfalse;
     }
 
-    VALUE pushNull(const char* name=0) {
+    VALUE pushNull() {
         return Qnil;
     }
 
-    VALUE pushUndefined(const char* name=0) {
+    VALUE pushUndefined() {
         return Qnil;
     }
     
-    VALUE pushObject(v8::Handle<v8::Object>& value, const char* name = 0) {
+    VALUE pushObject(v8::Handle<v8::Object>& value) {
       v8_object* wrapper = new v8_object(value);
       return wrapper->ruby_value;
     }

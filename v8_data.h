@@ -15,22 +15,22 @@ template<class T, class R> class V8HandleSource {
   V8HandleSource() {}
   ~V8HandleSource() {}
 
-  R push(v8::Handle<v8::Value>& value, const char* name = 0) {
+  R push(v8::Handle<v8::Value>& value) {
 
     if (value->IsUndefined()) {
-      return dest.pushNull(name);
+      return dest.pushNull();
     }
 
     if(value->IsNull()) {
-      return dest.pushNull(name);
+      return dest.pushNull();
     }
     
     if(value->IsTrue()) {
-      return dest.pushBool(true, name);
+      return dest.pushBool(true);
     }
 
     if(value->IsFalse()) {
-      return dest.pushBool(false, name);
+      return dest.pushBool(false);
     }
 
     if(value->IsString()) {
@@ -43,23 +43,23 @@ template<class T, class R> class V8HandleSource {
         output.replace(total, written, buffer);
         total += written;
       }
-      return dest.pushString(output, name);
+      return dest.pushString(output);
     }
 
     if(value->IsInt32()) {
-      return dest.pushInt(value->Int32Value(), name);
+      return dest.pushInt(value->Int32Value());
     }
 
     if(value->IsNumber()) {
-      return dest.pushDouble(value->NumberValue(), name);
+      return dest.pushDouble(value->NumberValue());
     }
     
     if (value->IsObject()) {
       v8::Local<v8::Object> object(v8::Object::Cast(*value));
-      return dest.pushObject(object, name);
+      return dest.pushObject(object);
     }
     
-    return dest.pushNull(name);
+    return dest.pushNull();
   }
 
 };
@@ -76,28 +76,28 @@ public:
     V8HandleDest();
     ~V8HandleDest();
 
-    v8::Local<v8::Value> pushString(const std::string& value, const char* name=0) {
+    v8::Local<v8::Value> pushString(const std::string& value) {
         return v8::Local<v8::Value>::New(v8::String::New(value.c_str()));
     }
 
-    v8::Local<v8::Value> pushInt(int64_t value, const char* name=0) {
+    v8::Local<v8::Value> pushInt(int64_t value) {
         return v8::Local<v8::Value>::New(v8::Integer::New(value));
     }
 
-    v8::Local<v8::Value> pushDouble(double value, const char* name=0) {
+    v8::Local<v8::Value> pushDouble(double value) {
         return v8::Local<v8::Value>::New(v8::Number::New(value));
     }
 
-    v8::Local<v8::Value> pushBool(bool value, const char* name=0) {
+    v8::Local<v8::Value> pushBool(bool value) {
         return v8::Local<v8::Value>::New(v8::Boolean::New(value));
     }
 
-    v8::Local<v8::Value> pushNull(const char* name=0) {
-        return v8::Local<v8::Value>::New(v8::Integer::New(0)); // so WRONG!! not sure how to make a null from API
+    v8::Local<v8::Value> pushNull() {
+      return v8::Local<v8::Value>::New(v8::Null());
     }
     
-    v8::Local<v8::Value> pushUndefined(const char* name=0) {
-        return v8::Local<v8::Value>::New(v8::Integer::New(0)); // so WRONG!! not sure how to make a null from API
+    v8::Local<v8::Value> pushUndefined() {
+      return v8::Local<v8::Value>::New(v8::Undefined());
     }
     
     // v8:Local<v8:Value> pushFunction(Function) {

@@ -2,6 +2,8 @@
 #include "v8.h"
 #include "v8_ref.h"
 #include "v8_template.h"
+#include "ruby_data.h"
+#include "v8_data.h"
 
 using namespace v8;
 
@@ -9,9 +11,21 @@ Handle<Value> RubyInvocationCallback(const Arguments& args) {
   VALUE code = (VALUE)External::Unwrap(args.Data());
   if (NIL_P(code)) {
     return Null();
-  } else {    
-    VALUE result = rb_funcall(code, rb_intern("call"), 0);
-    return String::New("Function Was Called");
+  } else {  
+    V8HandleSource<RubyDest, VALUE> argConverter;
+    RubyValueSource<V8HandleDest, Local<Value> > retvalConverter;
+    
+    VALUE* arguments = new VALUE[args.Length()];
+    for(int c=0;c<args.Length(); ++c) {
+      Handle<Value> val = args[c];
+      arguments[c] = argConverter.push(val);
+    }
+      
+    VALUE result = rb_funcall2(code, rb_intern("call"), args.Length(), arguments);
+    delete [] arguments;
+    
+    Handle<Value> convertedResult = retvalConverter.push(result);
+    return convertedResult  ;
   }
 }
  

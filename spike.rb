@@ -22,18 +22,20 @@ class V8::C::Context
   end
 end
 
-f = V8::C::FunctionTemplate.new do
-  puts "Hello!! This is ruby code!!!!"
+f = V8::C::FunctionTemplate.new do | foo, bar |
+   "Hello!! This is ruby code #{foo} #{bar}!!!!"
 end
 
-f2 = V8::C::FunctionTemplate.new
+plus = V8::C::FunctionTemplate.new do |a, b|
+  a + b
+end
 
 o = V8::C::ObjectTemplate.new
 o.Set("hello", f)
-o.Set("nello", f2)
+o.Set("plus_of_awesomeness", plus)
 V8::C::Context.new(o).open do |cxt|
-  puts "r1: " + cxt.eval('nello()').to_s
-  puts "r2: " + cxt.eval('hello()')
+  puts "r1: " + cxt.eval('plus_of_awesomeness(8, 3.4)').to_s
+  puts "r2: " + cxt.eval('hello("Fred", "Wilma")')
 end
 
 
