@@ -11,20 +11,20 @@ VALUE v8_Context_New(int argc, VALUE *argv, VALUE self) {
   if (NIL_P(scope)) {
     return V8_Ref_Create(self, Context::New());
   } else {
-    V8_Ref_Get(ObjectTemplate, t, scope);
+    Local<ObjectTemplate> t = V8_Ref_Get<ObjectTemplate>(scope);    
     return V8_Ref_Create(self, Context::New(0, t));
   }
 }
 
 VALUE v8_cxt_Global(VALUE self) {
-  V8_Ref_Get(Context, cxt, self);
+  Local<Context> cxt = V8_Ref_Get<Context>(self);
   cxt->Global();
   return Qnil;  
 }
 
 VALUE v8_cxt_open(VALUE self) {
   HandleScope handles;
-  V8_Ref_Get(Context, cxt, self);
+  Local<Context> cxt = V8_Ref_Get<Context>(self);
   Context::Scope enter(cxt);
   if (rb_block_given_p()) {
     return rb_yield(self);

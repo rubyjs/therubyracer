@@ -32,9 +32,9 @@ o = V8::C::ObjectTemplate.new
 o.Set("hello", f)
 o.Set("nello", f2)
 V8::C::Context.new(o).open do |cxt|
-  puts "r1: " + cxt.eval('nello()')
+  puts "r1: " + cxt.eval('nello()').to_s
   puts "r2: " + cxt.eval('hello()')
-end;
+end
 
 
 

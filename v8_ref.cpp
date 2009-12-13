@@ -22,3 +22,6 @@ void v8_ref_free(v8_ref* ref) {
   delete ref;
 }
 
+VALUE V8_Ref_Create(VALUE ruby_class, v8::Handle<void> handle, VALUE ref) {
+  return Data_Wrap_Struct(ruby_class, v8_ref_mark, v8_ref_free, new v8_ref(handle, ref));
+}

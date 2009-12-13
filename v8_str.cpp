@@ -12,6 +12,6 @@ VALUE v8_str_new(VALUE clazz, VALUE str) {
 
 VALUE v8_str_to_s(VALUE self){
   HandleScope handles;
-  V8_Ref_Get(String, str, self);
+  Local<String> str = V8_Ref_Get<String>(self);
   return rb_str_new2(*String::AsciiValue(str));
 }
