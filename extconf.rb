@@ -1,3 +1,4 @@
+#!/opt/local/bin/ruby
 require 'mkmf'
 
 dir_config('v8')

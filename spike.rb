@@ -1,3 +1,4 @@
+#!/opt/local/bin/ruby
 `make all`
 require 'v8';
 
