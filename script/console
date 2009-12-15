@@ -6,5 +6,5 @@ libs =  " -r irb/completion"
 # Perhaps use a console_lib to store any extra methods I may want available in the cosole
 # libs << " -r #{File.dirname(__FILE__) + '/../lib/console_lib/console_logger.rb'}"
 libs <<  " -I #{File.dirname(__FILE__) + '/../lib'} -r v8"
-puts "Loading therubyracer gem"
+puts "Revving Up The Ruby Racer!"
 exec "#{irb} #{libs} --simple-prompt"
