@@ -4,11 +4,11 @@ using namespace v8;
 
 
 v8_ref::v8_ref(Handle<void> object, VALUE ref) : handle(Persistent<void>::New(object)), references(ref) {
-  printf("Allocating v8 reference\n");
+  //printf("Allocating v8 reference\n");
 }
 
 v8_ref::~v8_ref() {  
-  printf("Disposing v8 reference\n");
+  //printf("Disposing v8 reference\n");
   handle.Dispose();
 }
 

@@ -14,7 +14,7 @@ module V8
     
     def eval(javascript)
       self.open do
-        source = V8::C::String.new(javascript)
+        source = V8::C::String.new(javascript.to_s)
         script = V8::C::Script.new(source)
         script.Run()
       end
