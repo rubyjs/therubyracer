@@ -3,7 +3,6 @@ History.txt
 Manifest.txt
 README.rdoc
 Rakefile
-config.sh
 docs/data_conversion.txt
 ext/v8/convert_ruby.cpp
 ext/v8/convert_ruby.h
@@ -31,10 +30,13 @@ ext/v8/v8_str.h
 ext/v8/v8_template.cpp
 ext/v8/v8_template.h
 lib/v8.rb
-lib/v8/v8.bundle
+lib/v8/context.rb
 script/console
 script/destroy
 script/generate
+spec/jsapi/README.txt
+spec/jsapi/spec.rb
+spec/jsapi_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
 spec/therubyracer_spec.rb

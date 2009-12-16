@@ -2,7 +2,11 @@ require 'rubygems'
 gem 'hoe', '>= 2.1.0'
 require 'hoe'
 require 'fileutils'
-require './lib/v8'
+begin
+  require './lib/v8' 
+rescue LoadError
+  #it will fail to load if we don't have the extensions compiled yet
+end
 
 gem 'rake-compiler', '>= 0.4.1'
 require "rake/extensiontask"

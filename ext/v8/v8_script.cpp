@@ -1,7 +1,6 @@
 #include "v8.h"
 #include "v8_ref.h"
 #include "v8_script.h"
-#include "v8_context.h"
 #include "converters.h"
 
 using namespace v8;

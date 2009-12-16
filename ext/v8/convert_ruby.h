@@ -5,7 +5,6 @@
 #include <v8.h>
 #include <stdio.h>
 #include <string>
-#include "v8_object.h"
 
 /**
  * A RubyValueSource takes a Destination class and a return
@@ -95,8 +94,7 @@ class RubyValueDest {
     }
     
     VALUE pushObject(v8::Handle<v8::Object>& value) {
-      v8_object* wrapper = new v8_object(value);
-      return wrapper->ruby_value;
+      return Qnil;
     }
 };
 

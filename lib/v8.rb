@@ -4,4 +4,5 @@ $:.unshift(File.dirname(__FILE__)) unless
 module V8
   VERSION = '0.4.0'
   require 'v8/v8' #native glue
+  require 'v8/context'
 end
