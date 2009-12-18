@@ -1,6 +1,6 @@
-
 #include "v8_cxt.h"
-#include "ruby.h"
+#include "v8_msg.h"
+#include "converters.h"
 
 using namespace v8;
 
@@ -17,18 +17,31 @@ VALUE v8_Context_New(int argc, VALUE *argv, VALUE self) {
 }
 
 VALUE v8_cxt_Global(VALUE self) {
+  HandleScope handles;
+  convert_v8_to_rb_t v82rb;
   Local<Context> cxt = V8_Ref_Get<Context>(self);
-  cxt->Global();
-  return Qnil;  
+  Local<Value> global = *cxt->Global();
+  return v82rb(global);
 }
 
 VALUE v8_cxt_open(VALUE self) {
   HandleScope handles;
+  TryCatch exceptions;
   Local<Context> cxt = V8_Ref_Get<Context>(self);
   Context::Scope enter(cxt);
   if (rb_block_given_p()) {
-    return rb_yield(self);
+    printf("<div>About to execute Ruby Block</div>");
+    VALUE result = rb_yield(self);
+    printf("<div>Ruby Block was executed</div>\n");
+    if (exceptions.HasCaught()) {
+      return V8_Wrap_Message(exceptions.Message());
+    } else {
+      printf("<div>No exception</div>");
+      return result;
+    }
+    return result;
   } else {
+    printf("<div>No block given!</div>");
     return Qnil;
   }
 }

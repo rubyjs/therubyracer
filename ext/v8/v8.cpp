@@ -1,5 +1,8 @@
 #include "v8_cxt.h"
 #include "v8_str.h"
+#include "v8_obj.h"
+#include "v8_msg.h"
+#include "v8_func.h"
 #include "v8_script.h"
 #include "v8_template.h"
 #include "v8_standalone.h"
@@ -51,6 +54,15 @@ extern "C" {
         rb_define_singleton_method(V8__C__ObjectTemplate, "new", (VALUE(*)(...))v8_ObjectTemplate_New, 0);
         
         VALUE V8__C__FunctionTemplate = rb_define_class_under(rb_mNative, "FunctionTemplate", V8__C__Template);
-        rb_define_singleton_method(V8__C__FunctionTemplate, "new", (VALUE(*)(...))v8_FunctionTemplate_New, -1);                
+        rb_define_singleton_method(V8__C__FunctionTemplate, "new", (VALUE(*)(...))v8_FunctionTemplate_New, -1);
+        rb_define_method(V8__C__FunctionTemplate, "GetFunction", (VALUE(*)(...))v8_FunctionTemplate_GetFunction, 0);
+        
+        V8_C_Object = rb_define_class_under(rb_mNative, "Object", rb_cObject);
+        rb_define_singleton_method(V8_C_Object, "new", (VALUE(*)(...))v8_Object_New, 0);
+        rb_define_method(V8_C_Object, "Get", (VALUE(*)(...))v8_Object_Get, 1);
+        rb_define_method(V8_C_Object, "Set", (VALUE(*)(...))v8_Object_Set, 2);
+        
+        V8_C_Message = rb_define_class_under(rb_mNative, "Message", rb_cObject);
+        V8_C_Function = rb_define_class_under(rb_mNative, "Function", V8_C_Object);
     }
 }

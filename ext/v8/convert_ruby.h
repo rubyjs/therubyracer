@@ -3,7 +3,8 @@
 
 #include <ruby.h>
 #include <v8.h>
-#include <stdio.h>
+#include "v8_ref.h"
+#include "v8_obj.h"
 #include <string>
 
 /**
@@ -94,7 +95,7 @@ class RubyValueDest {
     }
     
     VALUE pushObject(v8::Handle<v8::Object>& value) {
-      return Qnil;
+      return V8_Ref_Create(V8_C_Object, value);
     }
 };
 

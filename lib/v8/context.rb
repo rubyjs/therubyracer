@@ -8,24 +8,39 @@ module V8
     
     def open(&block)
       @native.open do
-        block.call(self) if block
+        block.call(self).tap do |result|
+          # puts ERB::Util.h(result)
+          raise JavascriptError.new(result) if result.kind_of?(C::Message)
+        end
       end if block_given?
     end
     
     def eval(javascript)
-      self.open do
-        source = V8::C::String.new(javascript.to_s)
-        script = V8::C::Script.new(source)
-        script.Run()
-      end
+      source = V8::C::String.new(javascript.to_s)
+      script = V8::C::Script.new(source)
+      To.ruby(script.Run())
     end
         
     def evaluate(*args)
       self.eval(*args)
     end
     
+    def []=(key, value)
+      value.tap do 
+        @native.Global().tap do |scope|
+          scope.Set(key.to_s, To.v8(value))
+        end
+      end
+    end
+    
     def self.open(&block)
       new.open(&block)
-    end
+    end    
+  end
+  
+  class ContextError < StandardError
+  end
+  class JavascriptError < StandardError
+    
   end
 end

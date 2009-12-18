@@ -1,6 +1,7 @@
 #include <ruby.h>
 #include <v8.h>
 #include "v8_ref.h"
+#include "v8_func.h"
 #include "v8_template.h"
 #include "converters.h"
 
@@ -47,5 +48,11 @@ VALUE v8_FunctionTemplate_New(int argc, VALUE *argv, VALUE self) {
   HandleScope handles;
   Local<FunctionTemplate> t = FunctionTemplate::New(RubyInvocationCallback, External::Wrap((void *)code));
   return V8_Ref_Create(self,t,code);
+}
+
+VALUE v8_FunctionTemplate_GetFunction(VALUE self) {
+  HandleScope handles;
+  Local<FunctionTemplate> t = V8_Ref_Get<FunctionTemplate>(self);
+  return V8_Wrap_Function(t->GetFunction());
 }
 

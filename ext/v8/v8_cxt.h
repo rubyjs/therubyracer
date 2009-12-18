@@ -5,6 +5,9 @@
 #include "v8.h"
 #include "v8_ref.h"
 
+extern VALUE rb_cV8;
+extern VALUE V8_C_Object;
+
 VALUE v8_Context_New(int argc, VALUE *argv, VALUE self);
 VALUE v8_cxt_Global(VALUE self);
 VALUE v8_cxt_open(VALUE self);

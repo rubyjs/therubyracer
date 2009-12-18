@@ -16,6 +16,10 @@ template<class T, class R> class V8HandleSource {
   ~V8HandleSource() {}
 
   R operator() (v8::Handle<v8::Value>& value) {
+    
+    if (value.IsEmpty()) {
+      return dest.pushNull();
+    }
 
     if (value->IsUndefined()) {
       return dest.pushNull();
