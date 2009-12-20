@@ -5,6 +5,7 @@ module V8
       def ruby(value)
         case value
         when V8::C::Object then V8::Object.new(value)
+        when V8::C::String then "Wonkers!"          
         else
           value
         end
@@ -14,6 +15,7 @@ module V8
         case value
         when String then  C::String.new(value)
         when Proc   then  C::FunctionTemplate.new(&value).GetFunction()
+        when Method then  C::FunctionTemplate.new(&value.to_proc).GetFunction()
         else
           value
         end

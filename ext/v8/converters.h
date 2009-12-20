@@ -11,4 +11,7 @@ typedef V8HandleSource<RubyValueDest, VALUE> convert_v8_to_rb_t;
 typedef RubyValueSource<StringDest, std::string> convert_rb_to_string_t;
 typedef V8HandleSource<StringDest, std::string> convert_v8_to_string_t;
 
+extern convert_v8_to_rb_t V82RB;
+extern convert_rb_to_v8_t RB2V8;
+
 #endif

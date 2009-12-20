@@ -6,7 +6,7 @@ module V8
     end
     
     def [](key)
-      To.ruby(@native.Get(To.v8(key)))
+      To.ruby(@native.Get(key))
     end
   end
 end

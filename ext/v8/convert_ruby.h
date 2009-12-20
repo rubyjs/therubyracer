@@ -44,10 +44,13 @@ template<class DEST, class RET> class RubyValueSource {
           return dest.pushBool(true);
         case T_FALSE:
           return dest.pushBool(false);
-      //  case T_DATA:
-          // if (rb_is_function(value)) {
-          //             return dest.pushCode(new Code<RubyCaller>)
-          //           }
+        case T_DATA:
+          VALUE clsProc = rb_eval("::Proc");
+          VALUE clsMethod = rb_eval("::Method");
+          VALUE smartMatch = rb_intern("===");
+          if (RTEST(rb_funcall(clsProc, smartMatch, value)) || RTEST(rbfuncall(clsMethod, smartMatch, value))) {
+            
+          }
         }
         return dest.pushUndefined();
     }

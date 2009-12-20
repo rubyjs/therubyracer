@@ -13,12 +13,10 @@ VALUE v8_Object_New(VALUE clazz) {
 
 VALUE v8_Object_Get(VALUE self, VALUE key) {
   HandleScope handles;  
-  convert_rb_to_v8_t rb2v8;
-  convert_v8_to_rb_t v82rb;
   Local<Object> obj = V8_Ref_Get<Object>(self);
   VALUE keystr = rb_funcall(key,rb_intern("to_s"), 0);
-  Local<Value> value = obj->Get(rb2v8(keystr));
-  return v82rb(value);
+  Local<Value> value = obj->Get(RB2V8(keystr));
+  return V82RB(value);
 }
 
 VALUE v8_Object_Set(VALUE self, VALUE key, VALUE value) {

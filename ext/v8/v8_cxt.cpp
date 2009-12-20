@@ -30,20 +30,26 @@ VALUE v8_cxt_open(VALUE self) {
   Local<Context> cxt = V8_Ref_Get<Context>(self);
   Context::Scope enter(cxt);
   if (rb_block_given_p()) {
-    printf("<div>About to execute Ruby Block</div>");
     VALUE result = rb_yield(self);
-    printf("<div>Ruby Block was executed</div>\n");
     if (exceptions.HasCaught()) {
       return V8_Wrap_Message(exceptions.Message());
     } else {
-      printf("<div>No exception</div>");
       return result;
     }
     return result;
   } else {
-    printf("<div>No block given!</div>");
     return Qnil;
   }
+}
+
+VALUE v8_cxt_eval(VALUE self, VALUE source) {
+  HandleScope handles;
+  Local<Context> cxt = V8_Ref_Get<Context>(self);
+  Context::Scope enter(cxt);
+  Local<Value> source_str = RB2V8(source);
+  Local<Script> script = Script::Compile(source_str->ToString());
+  Local<Value> result = script->Run();
+  return V82RB(result);
 }
 
 

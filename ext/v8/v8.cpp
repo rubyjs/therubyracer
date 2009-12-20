@@ -28,6 +28,7 @@ extern "C" {
         ruby_method_class = rb_eval_string("::Method");
       
         rb_mModule = rb_define_module("V8");
+        rb_define_singleton_method(rb_mModule, "what_is_this?", (VALUE(*)(...)) v8_what_is_this, 1);
                 
         //native module setup
         VALUE rb_mNative = rb_define_module_under(rb_mModule, "C");
@@ -37,6 +38,7 @@ extern "C" {
         rb_define_singleton_method(V8__C__Context, "new", (VALUE(*)(...)) v8_Context_New, -1);
         rb_define_method(V8__C__Context, "Global", (VALUE(*)(...)) v8_cxt_Global, 0);
         rb_define_method(V8__C__Context, "open", (VALUE(*)(...)) v8_cxt_open, 0);
+        rb_define_method(V8__C__Context, "eval", (VALUE(*)(...)) v8_cxt_eval, 1);
         
         //native String
         VALUE V8__C__String = rb_define_class_under(rb_mNative, "String", rb_cObject);

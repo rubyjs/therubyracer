@@ -11,20 +11,17 @@ Handle<Value> RubyInvocationCallback(const Arguments& args) {
   VALUE code = (VALUE)External::Unwrap(args.Data());
   if (NIL_P(code)) {
     return Null();
-  } else {  
-    convert_v8_to_rb_t arg_cvt;
-    convert_rb_to_v8_t ret_cvt;
-    
+  } else {      
     VALUE* arguments = new VALUE[args.Length()];
     for(int c=0;c<args.Length(); ++c) {
       Handle<Value> val = args[c];
-      arguments[c] = arg_cvt(val);
+      arguments[c] = V82RB(val);
     }
       
     VALUE result = rb_funcall2(code, rb_intern("call"), args.Length(), arguments);
     delete [] arguments;
     
-    Handle<Value> convertedResult = ret_cvt(result);
+    Handle<Value> convertedResult = RB2V8(result);
     return convertedResult  ;
   }
 }
