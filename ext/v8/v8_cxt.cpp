@@ -18,10 +18,9 @@ VALUE v8_Context_New(int argc, VALUE *argv, VALUE self) {
 
 VALUE v8_cxt_Global(VALUE self) {
   HandleScope handles;
-  convert_v8_to_rb_t v82rb;
   Local<Context> cxt = V8_Ref_Get<Context>(self);
   Local<Value> global = *cxt->Global();
-  return v82rb(global);
+  return V82RB(global);
 }
 
 VALUE v8_cxt_open(VALUE self) {

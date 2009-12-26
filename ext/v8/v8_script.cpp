@@ -15,7 +15,6 @@ VALUE v8_script_new(VALUE self, VALUE source) {
 VALUE v8_script_Run(VALUE self) {
   HandleScope handles;
   Local<Script> script = V8_Ref_Get<Script>(self);
-  convert_v8_to_rb_t toValue;
   Local<Value> result = script->Run();
-  return toValue(result);  
+  return RB2V8(result);  
 }
