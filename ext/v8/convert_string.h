@@ -57,6 +57,10 @@ public:
         return "undefined"; // this too
     }
 
+    std::string pushObject(v8::Local<v8::Object>& foo) {
+      return "";
+    }
+
 private:
 
     /**
