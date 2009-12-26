@@ -15,56 +15,68 @@ template<class T, class R> class V8HandleSource {
   V8HandleSource() {}
   ~V8HandleSource() {}
 
-  R operator() (v8::Handle<v8::Value>& value) {
+  bool operator() (v8::Handle<v8::Value>& value, R& result) {
+
+    // a bit klunky, but alternative is to evaluate what type the
+    // object is twice, which is unappealing
     
     if (value.IsEmpty()) {
-      return dest.pushNull();
+      result = dest.pushNull();
+      return true;
     }
 
     if (value->IsUndefined()) {
-      return dest.pushNull();
+      result = dest.pushNull();
+      return true;
     }
 
     if(value->IsNull()) {
-      return dest.pushNull();
+      result = dest.pushNull();
+      return true;
     }
     
     if(value->IsTrue()) {
-      return dest.pushBool(true);
+      result = dest.pushBool(true);
+      return true;
     }
 
     if(value->IsFalse()) {
-      return dest.pushBool(false);
+      result = dest.pushBool(false);
+      return true;
     }
 
     if(value->IsString()) {
       v8::Local<v8::String> str = value->ToString();
-      char buffer[1024];
-      int strlen = str->Length();
-      std::string output(strlen, 0);
-      for (int total = 0; total < strlen;) {
-        int written = str->WriteAscii(buffer, total, 1024);
-        output.replace(total, written, buffer);
-        total += written;
-      }
-      return dest.pushString(output);
+      result = convertString(str);
+      return true;
     }
 
     if(value->IsInt32()) {
-      return dest.pushInt(value->Int32Value());
+      result = dest.pushInt(value->Int32Value());
+      return true;
     }
 
     if(value->IsNumber()) {
-      return dest.pushDouble(value->NumberValue());
+      result = dest.pushDouble(value->NumberValue());
+      return true;
     }
     
-    if (value->IsObject()) {
-      v8::Local<v8::Object> object(v8::Object::Cast(*value));
-      return dest.pushObject(object);
-    }
-    
-    return dest.pushNull();
+    result = dest.pushNull();
+    return false;
   }
+
+  R convertString(v8::Local<v8::String>& str) {
+    char buffer[1024];
+    int strlen = str->Length();
+    std::string output(strlen, 0);
+    for (int total = 0; total < strlen;) {
+      int written = str->WriteAscii(buffer, total, 1024);
+      output.replace(total, written, buffer);
+      total += written;
+    }
+    return dest.pushString(output);    
+  }
+
 
 };
 
@@ -103,10 +115,6 @@ public:
     v8::Local<v8::Value> pushUndefined() {
       return v8::Local<v8::Value>::New(v8::Undefined());
     }
-    
-    // v8:Local<v8:Value> pushFunction(Function) {
-    //   
-    // }
 };
 
 
