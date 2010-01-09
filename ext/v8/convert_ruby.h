@@ -2,9 +2,6 @@
 #define __convert_ruby_h__
 
 #include <ruby.h>
-#include <v8.h>
-#include "v8_ref.h"
-#include "v8_obj.h"
 #include <string>
 
 /**
@@ -44,16 +41,6 @@ template<class DEST, class RET> class RubyValueSource {
           return dest.pushBool(true);
         case T_FALSE:
           return dest.pushBool(false);
-        case T_DATA:
-/*
-            VALUE clsProc = rb_eval_string("::Proc");
-            VALUE clsMethod = rb_eval_string("::Method");
-            VALUE smartMatch = rb_intern("===");
-            if (RTEST(rb_funcall(clsProc, smartMatch, value)) || RTEST(rb_funcall(clsMethod, smartMatch, value))) {
-          
-            }
-*/
-            break;
         }
         return dest.pushUndefined();
     }
@@ -98,10 +85,6 @@ class RubyValueDest {
 
     VALUE pushUndefined() {
         return Qnil;
-    }
-    
-    VALUE pushObject(v8::Handle<v8::Object>& value) {
-      return V8_Ref_Create(V8_C_Object, value);
     }
 };
 

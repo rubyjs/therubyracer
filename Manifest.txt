@@ -10,6 +10,7 @@ ext/v8/convert_string.cpp
 ext/v8/convert_string.h
 ext/v8/convert_v8.cpp
 ext/v8/convert_v8.h
+ext/v8/converters.cpp
 ext/v8/converters.h
 ext/v8/extconf.rb
 ext/v8/v8.cpp
