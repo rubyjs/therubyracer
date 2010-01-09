@@ -15,6 +15,7 @@
  * \tparam DEST destination type for the converted data
  * \tparam RET is the return type of T's methods
  */
+
 template<class DEST, class RET> class RubyValueSource {
 
     /**
@@ -27,22 +28,28 @@ template<class DEST, class RET> class RubyValueSource {
     ~RubyValueSource() {}
 
 
-    RET operator() (VALUE& value) {
+    bool operator() (VALUE& value, RET& result) {
         switch (TYPE(value)) {
         case T_FIXNUM:
-          return dest.pushInt(FIX2INT(value));
+          result = dest.pushInt(FIX2INT(value));
+          return true;
         case T_FLOAT:
-          return dest.pushDouble(NUM2DBL(value));
+          result = dest.pushDouble(NUM2DBL(value));
+          return true;
         case T_STRING:
-          return convertString(value);
+          result = convertString(value);
+          return true;
         case T_NIL:
-          return dest.pushNull();
+          result = dest.pushNull();
+          return true;
         case T_TRUE:
-          return dest.pushBool(true);
+          result = dest.pushBool(true);
+          return true;
         case T_FALSE:
-          return dest.pushBool(false);
+          result = dest.pushBool(false);
+          return true;
         }
-        return dest.pushUndefined();
+        return false;
     }
     
 private:
