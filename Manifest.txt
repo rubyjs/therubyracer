@@ -4,6 +4,8 @@ Manifest.txt
 README.rdoc
 Rakefile
 docs/data_conversion.txt
+ext/v8/callbacks.cpp
+ext/v8/callbacks.h
 ext/v8/convert_ruby.cpp
 ext/v8/convert_ruby.h
 ext/v8/convert_string.cpp
