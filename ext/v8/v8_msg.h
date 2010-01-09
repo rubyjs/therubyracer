@@ -6,4 +6,5 @@
 
 extern VALUE V8_C_Message;
 VALUE V8_Wrap_Message(v8::Handle<v8::Message> msg);
+VALUE v8_Message_Get(VALUE self);
 #endif

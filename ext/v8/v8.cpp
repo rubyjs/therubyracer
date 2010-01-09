@@ -65,6 +65,8 @@ extern "C" {
         rb_define_method(V8_C_Object, "Set", (VALUE(*)(...))v8_Object_Set, 2);
         
         V8_C_Message = rb_define_class_under(rb_mNative, "Message", rb_cObject);
+        rb_define_method(V8_C_Message, "Get", (VALUE(*)(...))v8_Message_Get, 0);
+        
         V8_C_Function = rb_define_class_under(rb_mNative, "Function", V8_C_Object);
     }
 }

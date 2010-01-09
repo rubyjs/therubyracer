@@ -6,14 +6,15 @@ module V8
     
     def open(&block)
       @native.open do
-        block.call(self).tap do |result|
-          raise JavascriptError.new(result) if result.kind_of?(C::Message)
-        end
+        block.call(self)
       end if block_given?
     end
     
     def eval(javascript)
-      To.ruby @native.eval(javascript)
+      @native.eval(javascript).tap do |result|
+        raise JavascriptError.new(result) if result.kind_of?(C::Message)
+        return To.ruby(result)
+      end
     end
         
     def evaluate(*args)
@@ -36,6 +37,8 @@ module V8
   class ContextError < StandardError
   end
   class JavascriptError < StandardError
-    
+    def initialize(v8_message)
+      super(v8_message.Get())
+    end
   end
 end

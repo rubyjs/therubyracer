@@ -25,17 +25,10 @@ VALUE v8_cxt_Global(VALUE self) {
 
 VALUE v8_cxt_open(VALUE self) {
   HandleScope handles;
-  TryCatch exceptions;
   Local<Context> cxt = V8_Ref_Get<Context>(self);
   Context::Scope enter(cxt);
   if (rb_block_given_p()) {
-    VALUE result = rb_yield(self);
-    if (exceptions.HasCaught()) {
-      return V8_Wrap_Message(exceptions.Message());
-    } else {
-      return result;
-    }
-    return result;
+    return rb_yield(self);
   } else {
     return Qnil;
   }
@@ -43,12 +36,17 @@ VALUE v8_cxt_open(VALUE self) {
 
 VALUE v8_cxt_eval(VALUE self, VALUE source) {
   HandleScope handles;
+  TryCatch exceptions;
   Local<Context> cxt = V8_Ref_Get<Context>(self);
   Context::Scope enter(cxt);
   Local<Value> source_str = RB2V8(source);
   Local<Script> script = Script::Compile(source_str->ToString());
   Local<Value> result = script->Run();
-  return V82RB(result);
+  if (exceptions.HasCaught()) {
+    return V8_Ref_Create(V8_C_Message, exceptions.Message());
+  } else {
+    return V82RB(result);
+  }
 }
 
 
