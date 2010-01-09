@@ -26,14 +26,6 @@ VALUE v8_Object_Set(VALUE self, VALUE key, VALUE value) {
   Local<Object> obj = V8_Ref_Get<Object>(self);
   VALUE keystr = rb_funcall(key, rb_intern("to_s"), 0);
   
-  VALUE valueClass = rb_class_of(value);
-  if(valueClass == rb_cProc) {
-    //printf("** This is a proc! We should do something different.\n");
-  }
-  else if(valueClass == rb_cMethod) {
-    //printf("** This is a method! We should do something different.\n");
-  }
-  
   obj->Set(RB2V8(keystr), RB2V8(value));
   return Qnil;
 }

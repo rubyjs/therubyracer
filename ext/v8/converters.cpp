@@ -1,13 +1,15 @@
 #include "converters.h"
-
+#include "callbacks.h"
 #include "v8_ref.h"
 #include "v8_obj.h"
+
+using namespace v8;
 
 namespace {
   std::string UNDEFINED_STR("undefined");
 }
 
-VALUE V82RB(v8::Handle<v8::Value>& value) {
+VALUE V82RB(Handle<Value>& value) {
   convert_v8_to_rb_t convert;
   VALUE result;
   if(convert(value, result)) {
@@ -15,14 +17,28 @@ VALUE V82RB(v8::Handle<v8::Value>& value) {
   }
   
   if (value->IsObject()) {
-    v8::Local<v8::Object> object(v8::Object::Cast(*value));
+    Local<Object> object(Object::Cast(*value));
     return V8_Ref_Create(V8_C_Object, value);
   }
   
   return Qnil;
 }
 
-v8::Local<v8::Value> RB2V8(VALUE value) {
+Local<Value> RB2V8(VALUE value) {
+  
+  VALUE valueClass = rb_class_of(value);
+  
+  if(valueClass == rb_cProc) {
+    Local<FunctionTemplate> t = FunctionTemplate::New(RacerRubyInvocationCallback, External::Wrap((void *)value));
+    return t->GetFunction();
+    
+    printf("** This is a proc! We should do something different.\n");
+  }
+  else if(valueClass == rb_cMethod) {
+    printf("** This is a method! We should do something different.\n");
+  }
+  
+  
   convert_rb_to_v8_t convert;
   return convert(value);
 }
@@ -32,7 +48,7 @@ std::string RB2String(VALUE value) {
   return convert(value);
 }
 
-std::string V82String(v8::Handle<v8::Value>& value) {
+std::string V82String(Handle<Value>& value) {
   convert_v8_to_string_t convert;
   std::string result;
   if(convert(value, result)) {
@@ -40,8 +56,8 @@ std::string V82String(v8::Handle<v8::Value>& value) {
   }
   
   if (value->IsObject()) {
-    v8::Local<v8::Object> object(v8::Object::Cast(*value));
-    v8::Local<v8::String> str = object->ToString();
+    Local<Object> object(Object::Cast(*value));
+    Local<String> str = object->ToString();
     if(convert(value, result)) {
       return result;
     }
