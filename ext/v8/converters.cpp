@@ -28,17 +28,11 @@ Local<Value> RB2V8(VALUE value) {
   
   VALUE valueClass = rb_class_of(value);
   
-  if(valueClass == rb_cProc) {
+  if(valueClass == rb_cProc || valueClass == rb_cMethod) {
     Local<FunctionTemplate> t = FunctionTemplate::New(RacerRubyInvocationCallback, External::Wrap((void *)value));
-    return t->GetFunction();
-    
-    printf("** This is a proc! We should do something different.\n");
+    return t->GetFunction();  
   }
-  else if(valueClass == rb_cMethod) {
-    printf("** This is a method! We should do something different.\n");
-  }
-  
-  
+
   convert_rb_to_v8_t convert;
   return convert(value);
 }
