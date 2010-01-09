@@ -26,6 +26,7 @@ end
 
 Rake::ExtensionTask.new("v8", $hoe.spec) do |ext|
   ext.lib_dir = "lib/v8"
+  ext.source_pattern = "*.{cpp,h}"
 end
 
 require 'newgem/tasks'
