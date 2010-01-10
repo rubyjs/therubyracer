@@ -8,26 +8,127 @@ Embed the V8 Javascript interpreter into Ruby.
 
 == FEATURES/PROBLEMS:
 
-* Inspires fun.
-* Not close to production ready.
+* Evaluate Javascript from with in Ruby
+* Embed your Ruby objects into the Javascript world
+* Manipulate JavaScript objects and call JavaScript functions from Ruby
+* API compatible with the The Ruby Rhino (for JRuby: http://github.com/cowboyd/therubyrhino)
+* Currently ALPHA software. 
 
 == SYNOPSIS:
 
-  Check back in February 2009 for an alpha release.
+  require 'v8'
+  
+# evaluate some simple javascript
 
+  V8::Context.open do |cxt|
+    cxt['foo'] = "bar"
+    cxt.eval('foo') # => "bar"
+  end
+
+# evaluate a ruby function from javascript
+  
+  V8::Context.open do |context|
+    context["say"] = lambda {|word, times| word * times}
+    context.eval("say("Hello", 3)") #=> HelloHelloHello
+  end
+  
+# embed a ruby object into your javascript environment
+
+  class MyMath
+    def plus(lhs, rhs)
+      lhs + rhs
+    end
+  end
+
+  V8::Context.open do |context|
+    context["math"] = MyMath.new
+    context.eval("math.plus(20,22)") #=> 42
+  end
+
+#COMING SOON!
+# make a ruby object *be* your javascript environment
+  math = MyMath.new
+  V8::Context.open(:with => math) do |context|
+    context.eval("plus(20,22)") #=> 42
+  end
+  
+  #or the equivalent
+  
+  math.eval_js("plus(20,22)")
+
+# Configure your embedding setup
+
+  #COMING SOON!
+  # Make your standard objects (Object, String, etc...) immutable
+  V8::Context.open(:sealed => true) do |context|
+    context.eval("Object.prototype.toString = function() {}") # this is an error!
+  end
+  
+  #COMING SOON!
+  #limit the number of instructions that can be executed in order to prevent
+  #rogue scripts
+  V8::Context.open do |context|
+    context.instruction_limit = 100000
+    context.eval("while (true);") # => Error!
+  end
+
+==== Different ways of loading javascript source
+
+In addition to just evaluating strings, you can also use streams such as files.
+
+# evaluate bytes read from any File/IO object:
+  File.open("mysource.js") do |file|
+    eval_js file, "mysource.js"
+  end
+
+# or load it by filename
+  V8::Context.open do |context|
+    context.load("mysource.js")
+  end
+
+=== Safe by default
+
+The Ruby Racer is designed to let you evaluate javascript as safely as possible unless you tell it to do something more
+dangerous. The default context is a hermetically sealed javascript environment with only the standard javascript objects
+and functions. Nothing from the ruby world is accessible at all.
+
+For ruby objects that you explicitly embed into javascript, only the +public+ methods *defined in their classes* are
+exposed by default. E.g.
+
+  class A
+    def a
+      "a"
+    end
+  end
+
+  class B < A
+    def b
+      "b"
+    end
+  end
+
+
+  V8::Context.open do |cxt|
+    cxt['a'] = A.new
+    cxt['b'] = B.new
+    cxt.eval("a.a()") # => 'a'
+    cxt.eval("b.b()") # => 'b'
+    cxt.eval("b.a()") # => 'TypeError: undefined property 'a' is not a function'
+  end
+  
 == REQUIREMENTS:
 
 * libv8 >= 0.4.0
 
 == INSTALL:
-
+* download, build and install V8: http://code.google.com/apis/v8/build.html
 * sudo gem install therubyracer
 
 == LICENSE:
 
 (The MIT License)
 
-Copyright (c) 2009 FIXME full name
+Copyright (c) 2009 Charles Lowell
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
