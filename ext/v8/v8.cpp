@@ -66,6 +66,7 @@ extern "C" {
         rb_define_singleton_method(V8_C_Object, "new", (VALUE(*)(...))v8_Object_New, 0);
         rb_define_method(V8_C_Object, "Get", (VALUE(*)(...))v8_Object_Get, 1);
         rb_define_method(V8_C_Object, "Set", (VALUE(*)(...))v8_Object_Set, 2);
+        rb_define_method(V8_C_Object, "GetPropertyNames", (VALUE(*)(...)) v8_Object_GetPropertyNames, 0);
         
         V8_C_Message = rb_define_class_under(rb_mNative, "Message", rb_cObject);
         rb_define_method(V8_C_Message, "Get", (VALUE(*)(...))v8_Message_Get, 0);

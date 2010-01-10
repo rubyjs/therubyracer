@@ -18,6 +18,16 @@ VALUE V82RB(Handle<Value>& value) {
     return result;
   }
   
+  if (value->IsArray()) {  
+    Local<Array> array(Array::Cast(*value));
+    VALUE rb_array = rb_ary_new2(array->Length());
+    for (unsigned int i = 0; i < array->Length(); i++) {
+      Local<Value> value = array->Get(Integer::New(i));
+      rb_ary_push(rb_array, V82RB(value));
+    }
+    return rb_array;
+  }
+  
   if (value->IsObject()) {
     Local<Object> object(Object::Cast(*value));
     return V8_Ref_Create(V8_C_Object, value);
@@ -41,9 +51,9 @@ Local<Value> RB2V8(VALUE value) {
   
   Local<ObjectTemplate> tmpl = ObjectTemplate::New();
   VALUE methods = rb_funcall(value, rb_intern("public_methods"), 1, Qfalse);
-  int len = RARRAY(methods)->len;
+  int len = RARRAY_LEN(methods);
   for (int i = 0; i < len; i++) {
-    VALUE method_name = RARRAY(methods)->ptr[i];
+    VALUE method_name = RARRAY_PTR(methods)[i];
     VALUE camel_method_name = rb_funcall(V8_To, rb_intern("camelcase"), 1, method_name);
     VALUE method = rb_funcall(value, rb_intern("method"), 1, method_name);
     Local<String> keystr = (String *)*RB2V8(method_name);
