@@ -41,4 +41,6 @@ module V8
       super(v8_message.Get())
     end
   end
+  class RunawayScriptError < ContextError
+  end
 end
