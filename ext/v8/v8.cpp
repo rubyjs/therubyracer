@@ -6,6 +6,7 @@
 #include "v8_script.h"
 #include "v8_template.h"
 #include "v8_standalone.h"
+#include "converters.h"
 
 #include <stdio.h>
 
@@ -29,6 +30,8 @@ extern "C" {
       
         rb_mModule = rb_define_module("V8");
         rb_define_singleton_method(rb_mModule, "what_is_this?", (VALUE(*)(...)) v8_what_is_this, 1);
+        
+        V8_To = rb_define_module_under(rb_mModule, "To");
                 
         //native module setup
         VALUE rb_mNative = rb_define_module_under(rb_mModule, "C");

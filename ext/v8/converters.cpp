@@ -9,6 +9,8 @@ namespace {
   std::string UNDEFINED_STR("undefined");
 }
 
+VALUE V8_To;
+
 VALUE V82RB(Handle<Value>& value) {
   convert_v8_to_rb_t convert;
   VALUE result;
@@ -42,9 +44,13 @@ Local<Value> RB2V8(VALUE value) {
   int len = RARRAY(methods)->len;
   for (int i = 0; i < len; i++) {
     VALUE method_name = RARRAY(methods)->ptr[i];
+    VALUE camel_method_name = rb_funcall(V8_To, rb_intern("camelcase"), 1, method_name);
     VALUE method = rb_funcall(value, rb_intern("method"), 1, method_name);
     Local<String> keystr = (String *)*RB2V8(method_name);
-    tmpl->Set(keystr, RB2V8(method));
+    Local<String> camelstr = (String *)*RB2V8(camel_method_name);
+    Local<Value> fun = RB2V8(method);
+    tmpl->Set(keystr, fun);
+    tmpl->Set(camelstr, fun);
   }
   return tmpl->NewInstance();
 }

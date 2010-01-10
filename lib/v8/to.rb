@@ -20,6 +20,10 @@ module V8
           value
         end
       end
+      
+      def camelcase(str)
+        str.to_s.gsub(/_(\w)/) {$1.upcase}
+      end      
     end
   end
 end
