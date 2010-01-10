@@ -10,7 +10,10 @@ module V8
       end if block_given?
     end
     
-    def eval(javascript)
+    def eval(javascript, sourcename = '<eval>', line = 1)
+      if IO === javascript || StringIO === javascript
+        javascript = javascript.read()
+      end
       @native.eval(javascript).tap do |result|
         raise JavascriptError.new(result) if result.kind_of?(C::Message)
         return To.ruby(result)
@@ -19,6 +22,16 @@ module V8
         
     def evaluate(*args)
       self.eval(*args)
+    end
+    
+    def load(filename)
+      File.open(filename) do |file|
+        evaluate file, filename, 1
+      end      
+    end
+    
+    def [](key)
+      To.ruby(@native.Global().Get(key.to_s))
     end
     
     def []=(key, value)
