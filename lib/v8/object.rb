@@ -6,7 +6,13 @@ module V8
     end
     
     def [](key)
-      To.ruby(@native.Get(key))
+      To.ruby(@native.Get(key.to_s))
+    end
+    
+    def []=(key, value)
+      value.tap do
+        @native.Set(key.to_s, value)
+      end
     end
   end
 end
