@@ -20,7 +20,6 @@ bool is_function(VALUE& object) {
  * Debugging aid
  */
 VALUE v8_what_is_this(VALUE self, VALUE object) {
-  VALUE boolean;
   switch (TYPE(object)) {
     case T_NIL:		
     printf("nil\n");
