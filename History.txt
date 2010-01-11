@@ -1,5 +1,8 @@
-=== 0.4.3 2010-10-11
+=== 0.X.X 2010-XX-XX
 * N major enhancements:
+
+=== 0.4.3 2010-10-11
+* 3 major enhancements:
   * access properties on Ruby objects with their camel case equivalents
   * reflect JavaScript objects into Ruby and access their properties
   * load JavaScript source from an IO object or by filename
