@@ -1,4 +1,20 @@
-=== 0.0.1 2009-12-14
+=== 0.4.3 2010-10-11
+* N major enhancements:
+  * access properties on Ruby objects with their camel case equivalents
+  * reflect JavaScript objects into Ruby and access their properties
+  * load JavaScript source from an IO object or by filename
 
+=== 0.4.2 2010-10-10
 * 1 major enhancement:
-  * Initial release
+  * embed Ruby Objects into Javascript and call their methods
+
+=== 0.4.1 2010-01-09
+
+* 3 major enhancements:
+  * embed bare Proc and Method objects into JavaScript and call them
+  * catch JavaScript exceptions from Ruby
+
+=== 0.4.0 2009-12-21
+
+* 1 major enhancements:
+  * evaluate JavaScript code from inside Ruby.
