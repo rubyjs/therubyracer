@@ -1,7 +1,7 @@
 module V8
   class Context    
-    def initialize
-      @native = C::Context.new
+    def initialize(opts = {})      
+      @native = C::Context.new(opts[:with])
     end
     
     def open(&block)
@@ -42,8 +42,8 @@ module V8
       end
     end
     
-    def self.open(&block)
-      new.open(&block)
+    def self.open(opts = {}, &block)
+      new(opts).open(&block)
     end    
   end
   
