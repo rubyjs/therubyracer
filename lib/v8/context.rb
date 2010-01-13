@@ -31,10 +31,12 @@ module V8
     end
     
     def [](key)
+      ContextError.check_open('V8::Context#[]')
       To.ruby(@native.Global().Get(key.to_s))
     end
     
     def []=(key, value)
+      ContextError.check_open('V8::Context#[]=')
       value.tap do 
         @native.Global().tap do |scope|
           scope.Set(key.to_s, value)
@@ -48,6 +50,12 @@ module V8
   end
   
   class ContextError < StandardError
+    def initialize(caller_name)
+      super("tried to call method '#{caller_name} without an open context")
+    end
+    def self.check_open(caller_name)
+      raise new(caller_name) unless C::Context::InContext()
+    end
   end
   class JavascriptError < StandardError
     def initialize(v8_message)

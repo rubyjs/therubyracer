@@ -20,4 +20,6 @@ v8::Local<v8::Value> RB2V8(VALUE value);
 std::string RB2String(VALUE value);
 std::string V82String(v8::Handle<v8::Value>& value);
 
+v8::Local<v8::ObjectTemplate> RB_VALUE_2_V8_ObjectTemplate(VALUE value);
+
 #endif

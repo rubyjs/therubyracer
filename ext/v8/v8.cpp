@@ -39,6 +39,7 @@ extern "C" {
         //native context
         VALUE V8__C__Context = rb_define_class_under(rb_mNative, "Context", rb_cObject);
         rb_define_singleton_method(V8__C__Context, "new", (VALUE(*)(...)) v8_Context_New, -1);
+        rb_define_singleton_method(V8__C__Context, "InContext", (VALUE(*)(...)) v8_Context_InContext, 0);
         rb_define_method(V8__C__Context, "Global", (VALUE(*)(...)) v8_cxt_Global, 0);
         rb_define_method(V8__C__Context, "open", (VALUE(*)(...)) v8_cxt_open, 0);
         rb_define_method(V8__C__Context, "eval", (VALUE(*)(...)) v8_cxt_eval, 1);

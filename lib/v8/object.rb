@@ -24,3 +24,11 @@ module V8
     end
   end
 end
+
+class Object  
+  def eval_js(javascript)
+    V8::Context.open(:with => self) do |cxt|
+      cxt.eval(javascript)
+    end
+  end
+end

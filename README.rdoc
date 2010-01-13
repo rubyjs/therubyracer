@@ -45,7 +45,6 @@ Embed the V8 Javascript interpreter into Ruby.
     context.eval("math.plus(20,22)") #=> 42
   end
 
-#COMING SOON!
 # make a ruby object *be* your javascript environment
   math = MyMath.new
   V8::Context.open(:with => math) do |context|

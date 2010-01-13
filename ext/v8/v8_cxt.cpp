@@ -4,6 +4,9 @@
 
 using namespace v8;
 
+//TODO: rename everything to Context_
+//TODO: do the object init from within here
+
 VALUE v8_Context_New(int argc, VALUE *argv, VALUE self) {
   HandleScope handles;
   VALUE scope;
@@ -11,9 +14,17 @@ VALUE v8_Context_New(int argc, VALUE *argv, VALUE self) {
   if (NIL_P(scope)) {
     return V8_Ref_Create(self, Context::New());
   } else {
-    Local<ObjectTemplate> t = V8_Ref_Get<ObjectTemplate>(scope);    
-    return V8_Ref_Create(self, Context::New(0, t));
+    Persistent<Context> context = Context::New(0, RB_VALUE_2_V8_ObjectTemplate(scope));
+    Context::Scope enter(context);
+    context->Global()->SetHiddenValue(String::New("TheRubyRacer::RubyObject"), External::Wrap((void *)scope));
+    VALUE ref = V8_Ref_Create(self, context, scope);
+    context.Dispose();
+    return ref;
   }
+}
+
+VALUE v8_Context_InContext(VALUE self) {
+  return Context::InContext() ? Qtrue : Qnil;  
 }
 
 VALUE v8_cxt_Global(VALUE self) {
