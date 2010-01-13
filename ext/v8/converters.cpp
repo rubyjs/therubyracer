@@ -2,6 +2,7 @@
 #include "callbacks.h"
 #include "v8_ref.h"
 #include "v8_obj.h"
+#include "v8_cxt.h"
 
 using namespace v8;
 
@@ -32,7 +33,9 @@ VALUE V82RB(Handle<Value>& value) {
     Local<Object> object(Object::Cast(*value));
     Local<Value> peer = object->GetHiddenValue(String::New("TheRubyRacer::RubyObject"));
     if (peer.IsEmpty()) {
-      return V8_Ref_Create(V8_C_Object, value);
+      VALUE context_ref = V8_Ref_Create(V8_C_Context, Context::GetCurrent());
+      object->SetHiddenValue(String::New("TheRubyRacer::Context"), External::Wrap((void *)context_ref));
+      return V8_Ref_Create(V8_C_Object, value, context_ref);
     } else {      
       return (VALUE)External::Unwrap(peer);
     }

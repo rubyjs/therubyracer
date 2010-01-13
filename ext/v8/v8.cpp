@@ -37,12 +37,15 @@ extern "C" {
         VALUE rb_mNative = rb_define_module_under(rb_mModule, "C");
         
         //native context
-        VALUE V8__C__Context = rb_define_class_under(rb_mNative, "Context", rb_cObject);
-        rb_define_singleton_method(V8__C__Context, "new", (VALUE(*)(...)) v8_Context_New, -1);
-        rb_define_singleton_method(V8__C__Context, "InContext", (VALUE(*)(...)) v8_Context_InContext, 0);
-        rb_define_method(V8__C__Context, "Global", (VALUE(*)(...)) v8_cxt_Global, 0);
-        rb_define_method(V8__C__Context, "open", (VALUE(*)(...)) v8_cxt_open, 0);
-        rb_define_method(V8__C__Context, "eval", (VALUE(*)(...)) v8_cxt_eval, 1);
+        V8_C_Context = rb_define_class_under(rb_mNative, "Context", rb_cObject);
+        rb_define_singleton_method(V8_C_Context, "new", (VALUE(*)(...)) v8_Context_New, -1);
+        rb_define_singleton_method(V8_C_Context, "InContext", (VALUE(*)(...)) v8_Context_InContext, 0);
+        rb_define_singleton_method(V8_C_Context, "GetCurrent", (VALUE(*)(...)) v8_Context_GetCurrent, 0);
+        rb_define_method(V8_C_Context, "Global", (VALUE(*)(...)) v8_cxt_Global, 0);
+        rb_define_method(V8_C_Context, "open", (VALUE(*)(...)) v8_cxt_open, 0);
+        rb_define_method(V8_C_Context, "eval", (VALUE(*)(...)) v8_cxt_eval, 1);
+        rb_define_method(V8_C_Context, "eql?", (VALUE(*)(...)) v8_cxt_eql, 1);
+        rb_define_method(V8_C_Context, "==", (VALUE(*)(...)) v8_cxt_eql, 1);
         
         //native String
         VALUE V8__C__String = rb_define_class_under(rb_mNative, "String", rb_cObject);
@@ -68,6 +71,7 @@ extern "C" {
         rb_define_method(V8_C_Object, "Get", (VALUE(*)(...))v8_Object_Get, 1);
         rb_define_method(V8_C_Object, "Set", (VALUE(*)(...))v8_Object_Set, 2);
         rb_define_method(V8_C_Object, "GetPropertyNames", (VALUE(*)(...)) v8_Object_GetPropertyNames, 0);
+        rb_define_method(V8_C_Object, "context", (VALUE(*)(...)) v8_Object_context, 0);
         
         V8_C_Message = rb_define_class_under(rb_mNative, "Message", rb_cObject);
         rb_define_method(V8_C_Message, "Get", (VALUE(*)(...))v8_Message_Get, 0);

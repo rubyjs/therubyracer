@@ -7,9 +7,15 @@ module V8
     end
     
     def open(&block)
-      @native.open do
-        block.call(self)
-      end if block_given?
+      if block_given?
+        unless @native == C::Context::GetCurrent()
+          @native.open do
+            block.call(self)
+          end
+        else
+          block.call(self)
+        end
+      end
     end
     
     def eval(javascript, sourcename = '<eval>', line = 1)
@@ -33,15 +39,17 @@ module V8
     end
     
     def [](key)
-      ContextError.check_open('V8::Context#[]')
-      To.ruby(@native.Global().Get(key.to_s))
+      open do
+        To.ruby(@native.Global().Get(key.to_s))
+      end
     end
     
     def []=(key, value)
-      ContextError.check_open('V8::Context#[]=')
       value.tap do 
-        @native.Global().tap do |scope|
-          scope.Set(key.to_s, value)
+        open do
+          @native.Global().tap do |scope|
+            scope.Set(key.to_s, value)
+          end
         end
       end
     end

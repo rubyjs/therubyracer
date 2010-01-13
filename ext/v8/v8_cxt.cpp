@@ -4,6 +4,8 @@
 
 using namespace v8;
 
+VALUE V8_C_Context;
+
 //TODO: rename everything to Context_
 //TODO: do the object init from within here
 
@@ -24,7 +26,17 @@ VALUE v8_Context_New(int argc, VALUE *argv, VALUE self) {
 }
 
 VALUE v8_Context_InContext(VALUE self) {
-  return Context::InContext() ? Qtrue : Qnil;  
+  return Context::InContext() ? Qtrue : Qfalse;  
+}
+
+VALUE v8_Context_GetCurrent(VALUE self) {
+  HandleScope handles;
+  if (Context::InContext()) {
+    Local<Context> current = Context::GetCurrent();
+    return V8_Ref_Create(self, current);    
+  } else {
+    return Qnil;
+  }
 }
 
 VALUE v8_cxt_Global(VALUE self) {
@@ -58,6 +70,18 @@ VALUE v8_cxt_eval(VALUE self, VALUE source) {
   } else {
     return V82RB(result);
   }
+}
+
+VALUE v8_cxt_eql(VALUE self, VALUE other) {
+  HandleScope handles;
+  if (RTEST(CLASS_OF(other) != V8_C_Context)) {
+    return Qnil;
+  } else {
+    Local<Context> cxt = V8_Ref_Get<Context>(self);
+    Local<Context> that = V8_Ref_Get<Context>(other);
+    return cxt == that ? Qtrue : Qfalse;
+  }
+  return Qnil;
 }
 
 

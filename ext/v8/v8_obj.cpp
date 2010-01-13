@@ -42,3 +42,10 @@ VALUE v8_Object_GetPropertyNames(VALUE self) {
   Local<Value> names = object->GetPropertyNames();
   return V82RB(names);
 }
+
+VALUE v8_Object_context(VALUE self) {
+  HandleScope handles;
+  Local<Object> object = unwrap(self);
+  Local<Value> cxt = object->GetHiddenValue(String::New("TheRubyRacer::Context"));
+  return cxt.IsEmpty() ? Qnil : (VALUE)External::Unwrap(cxt);
+}
