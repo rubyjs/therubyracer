@@ -1,10 +1,12 @@
-=== 0.X.X 2010-XX-XX
-* N major enhancements:
+=== 0.4.4 2010-01-14
+* 2 major enhancements:
   * Ruby objects embedded into javascript are passed back to ruby as themselves and not a wrapped V8 object wrapping a ruby object.
   * Use any ruby object as the scope of eval().
-* N minor enhancements:
+* 5 minor enhancements:
   * quick and dirty V8.eval() method added
-  * only allow certain operations if the context is open
+  * native objects have a reference to the context that created them.
+  * context now has equality check.
+  * expose InContext() and GetCurrent() methods.
   * fix a couple of segmentation faults
 
 === 0.4.3 2010-10-11

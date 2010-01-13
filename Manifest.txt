@@ -41,6 +41,8 @@ lib/v8/to.rb
 script/console
 script/destroy
 script/generate
+spec/ext/cxt_spec.rb
+spec/ext/obj_spec.rb
 spec/redjs/README.txt
 spec/redjs/jsapi_spec.rb
 spec/redjs_helper.rb
