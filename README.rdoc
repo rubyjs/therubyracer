@@ -20,6 +20,10 @@ Embed the V8 Javascript interpreter into Ruby.
   
 # evaluate some simple javascript
 
+  V8.eval("7 * 6") #=> 42
+
+# embed values into the scope of your context
+
   V8::Context.open do |cxt|
     cxt['foo'] = "bar"
     cxt.eval('foo') # => "bar"

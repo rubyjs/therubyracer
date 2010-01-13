@@ -1,4 +1,6 @@
-module V8
+require 'stringio'
+
+module V8  
   class Context    
     def initialize(opts = {})      
       @native = C::Context.new(opts[:with])
@@ -46,7 +48,15 @@ module V8
     
     def self.open(opts = {}, &block)
       new(opts).open(&block)
-    end    
+    end
+    
+    def self.eval(source)
+      new.eval(source)
+    end
+    
+    def V8.eval(*args)
+      V8::Context.eval(*args)
+    end
   end
   
   class ContextError < StandardError
