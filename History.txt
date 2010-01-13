@@ -3,6 +3,7 @@
   * Ruby objects embedded into javascript are passed back to ruby as themselves and not a wrapped V8 object wrapping a ruby object.
   * Use any ruby object as the scope of eval().
 * N minor enhancements:
+  * quick and dirty V8.eval() method added
   * only allow certain operations if the context is open
   * fix a couple of segmentation faults
 
