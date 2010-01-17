@@ -1,5 +1,6 @@
 #include "v8_cxt.h"
 #include "v8_msg.h"
+#include "v8_template.h"
 #include "converters.h"
 
 using namespace v8;
@@ -16,9 +17,10 @@ VALUE v8_Context_New(int argc, VALUE *argv, VALUE self) {
   if (NIL_P(scope)) {
     return V8_Ref_Create(self, Context::New());
   } else {
-    Persistent<Context> context = Context::New(0, RB_VALUE_2_V8_ObjectTemplate(scope));
+    Persistent<Context> context = Context::New(0, Racer_Create_V8_ObjectTemplate(scope));
     Context::Scope enter(context);
     context->Global()->SetHiddenValue(String::New("TheRubyRacer::RubyObject"), External::Wrap((void *)scope));
+    // context->Global()->SetPointerInInternalField(0, (void*)scope);
     VALUE ref = V8_Ref_Create(self, context, scope);
     context.Dispose();
     return ref;

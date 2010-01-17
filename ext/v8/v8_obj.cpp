@@ -47,5 +47,6 @@ VALUE v8_Object_context(VALUE self) {
   HandleScope handles;
   Local<Object> object = unwrap(self);
   Local<Value> cxt = object->GetHiddenValue(String::New("TheRubyRacer::Context"));
+  // Local<Value> cxt = object->GetInternalField(1);
   return cxt.IsEmpty() ? Qnil : (VALUE)External::Unwrap(cxt);
 }

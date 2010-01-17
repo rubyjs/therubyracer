@@ -22,7 +22,7 @@ module V8
       if IO === javascript || StringIO === javascript
         javascript = javascript.read()
       end
-      @native.open do
+      @native.open do        
         @native.eval(javascript).tap do |result|
           raise JavascriptError.new(result) if result.kind_of?(C::Message)
           return To.ruby(result)

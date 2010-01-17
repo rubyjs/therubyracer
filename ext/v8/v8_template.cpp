@@ -7,6 +7,22 @@
 #include "callbacks.h"
 
 using namespace v8;
+
+Local<ObjectTemplate> Racer_Create_V8_ObjectTemplate(VALUE value) {
+  Local<ObjectTemplate> tmpl = ObjectTemplate::New();
+  // tmpl->SetInternalFieldCount(2);
+  tmpl->SetNamedPropertyHandler(
+    RacerRubyNamedPropertyGetter,
+    RacerRubyNamedPropertySetter,
+    0, // RacerRubyNamedPropertyQuery,
+    0, // RacerRubyNamedPropertyDeleter,
+    0, // RacerRubyNamedPropertyEnumerator,
+    External::Wrap((void *)value)
+  );
+  return tmpl;
+}
+
+
  
 VALUE v8_Template_Set(VALUE self, VALUE name, VALUE value) {
   HandleScope handles;
