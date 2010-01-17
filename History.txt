@@ -1,3 +1,7 @@
+=== 0.X.X 2010-01-XX
+* N major enhancements
+* N minor enhancements
+
 === 0.4.4 2010-01-14
 * 2 major enhancements:
   * Ruby objects embedded into javascript are passed back to ruby as themselves and not a wrapped V8 object wrapping a ruby object.
