@@ -1,6 +1,10 @@
-=== 0.X.X 2010-01-XX
-* N major enhancements
-* N minor enhancements
+=== 0.4.5 2010-01-18
+* 3 major enhancements
+  * case munging so that ruby methods(perl_case) are accessed through javascript in camelCase.
+  * access 0-arity ruby methods as javascript properties
+  * invoke ruby setters from javascript as properties
+* 1 minor enhancements
+  * contexts detect whether they are open or not and open when needed
 
 === 0.4.4 2010-01-14
 * 2 major enhancements:

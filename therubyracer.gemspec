@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{therubyracer}
-  s.version = "0.4.4"
+  s.version = "0.4.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Charles Lowell", "Bill Robertson"]
-  s.date = %q{2010-01-14}
+  s.date = %q{2010-01-18}
   s.description = %q{Embed the V8 Javascript interpreter into Ruby.}
   s.email = ["cowboyd@thefrontside.net", "billrobertson42@gmail.com"]
   s.extensions = ["ext/v8/extconf.rb"]

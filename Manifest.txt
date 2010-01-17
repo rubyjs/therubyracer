@@ -48,5 +48,6 @@ spec/redjs/jsapi_spec.rb
 spec/redjs_helper.rb
 spec/spec.opts
 spec/spec_helper.rb
+spec/v8/to_spec.rb
 tasks/rspec.rake
 therubyracer.gemspec
