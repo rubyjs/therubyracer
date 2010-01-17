@@ -148,5 +148,13 @@ Handle<Boolean> RacerRubyNamedPropertyDeleter(Local<String> property, const Acce
  * property getter intercepts.
  */
 Handle<Array> RacerRubyNamedPropertyEnumerator(const AccessorInfo& info) {
-  return Local<Array>();
+  VALUE object = unwrap(info);
+  VALUE methods = rb_funcall(object, rb_intern("public_methods"), 1, Qfalse);
+  int length = RARRAY_LEN(methods);
+  Local<Array> properties = Array::New(length);
+  for (int i = 0; i < length; i++) {
+    VALUE camel_name = rb_funcall(V8_To, rb_intern("camel_case"), 1, rb_ary_entry(methods, i));
+    properties->Set(Integer::New(i), RB2V8(camel_name));
+  }
+  return properties;
 }

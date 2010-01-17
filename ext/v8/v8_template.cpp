@@ -16,7 +16,7 @@ Local<ObjectTemplate> Racer_Create_V8_ObjectTemplate(VALUE value) {
     RacerRubyNamedPropertySetter,
     0, // RacerRubyNamedPropertyQuery,
     0, // RacerRubyNamedPropertyDeleter,
-    0, // RacerRubyNamedPropertyEnumerator,
+    RacerRubyNamedPropertyEnumerator,
     External::Wrap((void *)value)
   );
   return tmpl;
