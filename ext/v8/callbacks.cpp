@@ -28,8 +28,8 @@ namespace {
     return converted;
   }
   
-  Local<Value> Racer_Access_Ruby_Property(VALUE object, VALUE name) {
-    VALUE method = rb_obj_method(object, name);
+  Local<Value> Racer_Access_Ruby_Property(VALUE object, VALUE name) { 
+    VALUE method = rb_funcall(object, rb_intern("method"), 1, name);
     if (FIX2INT(rb_funcall(method, rb_intern("arity"), 0)) == 0) {
       return Racer_Call_Ruby_Method(object, name, Array::New(0));      
     } else {
