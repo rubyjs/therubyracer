@@ -124,8 +124,12 @@ exposed by default. E.g.
 * libv8 >= 0.4.0
 
 == INSTALL:
-* download, build and install V8: http://code.google.com/apis/v8/build.html
+* download and build V8: http://code.google.com/apis/v8/build.html
+* Be sure to build it as a static library and with the same architecture as your ruby executable. e.g. 
+    scons library=static arch=x64
 * sudo gem install therubyracer
+* If you did not install V8 to the standard lib and include path you will need to set the V8_HOME environment variable when installing. e.g.
+    V8_HOME=/path/to/my/built/v8/source gem install therubyracer
 
 == LICENSE:
 
