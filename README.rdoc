@@ -121,21 +121,15 @@ exposed by default. E.g.
   
 == REQUIREMENTS:
 
-* libv8 >= 2.0.6
+* python >= 2.5 (required to compile v8)
 
 == INSTALL:
-* download and build V8: http://code.google.com/apis/v8/build.html
-* Be sure to build it as a static library and with the same architecture as your ruby executable. e.g. 
-* scons library=static arch=x64
-* sudo gem install therubyracer -- --with-v8-include=/path/to/v8/source/include --with-v8-lib=/path/to/v8/source 
+* gem install therubyracer
 
 == DEVELOP
-* download and build V8: http://code.google.com/apis/v8/build.html
-* Be sure to build it as a static library and with the same architecture as your ruby executable. e.g.  
-* scons library=static arch=x64
 * git clone git://github.com/cowboyd/therubyracer.git
 * cd therubyracer
-* V8_HOME=/path/to/v8/source rake compile
+* rake compile
 
 == LICENSE:
 

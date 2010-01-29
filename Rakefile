@@ -24,11 +24,21 @@ $hoe = Hoe.spec 'therubyracer' do
   self.clean_globs << "lib/v8/*.{o,so,bundle,a,log,dll}"
 end
 
+UPSTREAM_SRC  = File.dirname(__FILE__) + "/ext/v8/upstream"
+SCONS_SRC     = "#{UPSTREAM_SRC}/scons"
+V8_SRC      = "#{UPSTREAM_SRC}/2.0.6"
+
+task "clean-v8" => "clean" do
+  sh "rm -f #{V8_SRC}/libv8.a"
+  sh "rm -rf #{SCONS_SRC}/build"
+  sh "rm -rf #{SCONS_SRC}/install"
+  sh "rm -rf #{V8_SRC}/obj"
+end
+
+
 Rake::ExtensionTask.new("v8", $hoe.spec) do |ext|
   ext.lib_dir = "lib/v8"
   ext.source_pattern = "*.{cpp,h}"
-  ext.config_options << "--with-v8-include=#{ENV['V8_HOME']}/include"
-  ext.config_options << "--with-v8-lib=#{ENV['V8_HOME']}"
 end
 
 require 'newgem/tasks'
