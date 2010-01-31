@@ -66,6 +66,9 @@ VALUE v8_cxt_eval(VALUE self, VALUE source) {
   Context::Scope enter(cxt);
   Local<Value> source_str = RB2V8(source);
   Local<Script> script = Script::Compile(source_str->ToString());
+	if (exceptions.HasCaught()) {
+		return V8_Ref_Create(V8_C_Message, exceptions.Message());
+	}
   Local<Value> result = script->Run();
   if (exceptions.HasCaught()) {
     return V8_Ref_Create(V8_C_Message, exceptions.Message());
