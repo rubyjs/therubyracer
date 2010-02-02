@@ -121,7 +121,7 @@ exposed by default. E.g.
   
 == REQUIREMENTS:
 
-* libv8 >= 0.4.0
+* libv8 >= 2.0.6
 
 == INSTALL:
 * download and build V8: http://code.google.com/apis/v8/build.html
