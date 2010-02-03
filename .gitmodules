@@ -1,3 +1,3 @@
 [submodule "spec/redjs"]
 	path = spec/redjs
-	url = git@github.com:cowboyd/redjs.git
+	url = git://github.com/cowboyd/redjs.git
