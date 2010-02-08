@@ -23,7 +23,7 @@ module V8
         javascript = javascript.read()
       end
       @native.open do        
-        @native.eval(javascript).tap do |result|
+        @native.eval(javascript, sourcename).tap do |result|
           raise JavascriptError.new(result) if result.kind_of?(C::Message)
           return To.ruby(result)
         end
@@ -80,7 +80,21 @@ module V8
   class JavascriptError < StandardError
     def initialize(v8_message)
       super(v8_message.Get())
+      @native = v8_message
     end
+
+    def source_name
+      @native.GetScriptResourceName()      
+    end
+    
+    def source_line
+      @native.GetSourceLine()
+    end
+    
+    def line_number
+      @native.GetLineNumber()
+    end
+    
   end
   class RunawayScriptError < ContextError
   end

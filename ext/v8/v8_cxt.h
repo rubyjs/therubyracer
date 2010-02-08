@@ -14,7 +14,7 @@ VALUE v8_Context_InContext(VALUE self);
 VALUE v8_Context_GetCurrent(VALUE self);
 VALUE v8_cxt_Global(VALUE self);
 VALUE v8_cxt_open(VALUE self);
-VALUE v8_cxt_eval(VALUE self, VALUE source);
+VALUE v8_cxt_eval(VALUE self, VALUE source, VALUE filename);
 VALUE v8_cxt_eql(VALUE self, VALUE other);
 
 #endif

@@ -20,7 +20,6 @@ VALUE v8_Context_New(int argc, VALUE *argv, VALUE self) {
     Persistent<Context> context = Context::New(0, Racer_Create_V8_ObjectTemplate(scope));
     Context::Scope enter(context);
     context->Global()->SetHiddenValue(String::New("TheRubyRacer::RubyObject"), External::Wrap((void *)scope));
-    // context->Global()->SetPointerInInternalField(0, (void*)scope);
     VALUE ref = V8_Ref_Create(self, context, scope);
     context.Dispose();
     return ref;
@@ -59,13 +58,14 @@ VALUE v8_cxt_open(VALUE self) {
   }
 }
 
-VALUE v8_cxt_eval(VALUE self, VALUE source) {
+VALUE v8_cxt_eval(VALUE self, VALUE source, VALUE filename) {
   HandleScope handles;
   TryCatch exceptions;
   Local<Context> cxt = V8_Ref_Get<Context>(self);
   Context::Scope enter(cxt);
   Local<Value> source_str = RB2V8(source);
-  Local<Script> script = Script::Compile(source_str->ToString());
+  Local<Value> source_name = RTEST(filename) ? RB2V8(filename) : *String::New("<eval>");
+  Local<Script> script = Script::Compile(source_str->ToString(), source_name);
 	if (exceptions.HasCaught()) {
 		return V8_Ref_Create(V8_C_Message, exceptions.Message());
 	}
