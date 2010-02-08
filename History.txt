@@ -1,3 +1,7 @@
+=== 0.4.8 2010-02-08
+* 1 major enhancements
+  * expose line number and source name on JavascriptErrors.
+
 === 0.4.5 2010-01-18
 * 3 major enhancements
   * case munging so that ruby methods(perl_case) are accessed through javascript in camelCase.

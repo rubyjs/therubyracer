@@ -41,6 +41,11 @@ Rake::ExtensionTask.new("v8", $hoe.spec) do |ext|
   ext.source_pattern = "*.{cpp,h}"
 end
 
+
+task :clean do
+  sh "rm -f ext/v8/Makefile"
+end
+
 require 'newgem/tasks'
 Dir['tasks/**/*.rake'].each { |t| load t }
 
