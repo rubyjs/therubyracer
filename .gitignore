@@ -7,3 +7,4 @@ docs/cpp/html/*
 
 ext/v8/upstream/scons/build
 ext/v8/upstream/scons/install
+pkg/
