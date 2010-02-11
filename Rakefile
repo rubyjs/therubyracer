@@ -1,32 +1,45 @@
 require 'rubygems'
-gem 'hoe', '>= 2.1.0'
-require 'hoe'
-require 'fileutils'
+
+UPSTREAM  = "ext/v8/upstream"
+SCONS     = "#{UPSTREAM}/scons"
+V8_SRC      = "#{UPSTREAM}/2.0.6"
+
+
 begin
-  require './lib/v8' 
+  require 'jeweler'
+  Jeweler::Tasks.new do |gemspec|
+    gemspec.name = gemspec.rubyforge_project = "therubyracer"
+    gemspec.version = "0.4.9"
+    gemspec.summary = "Embed the V8 Javascript interpreter into Ruby"
+    gemspec.description = "Call javascript code and manipulate javascript objects from ruby. Call ruby code and manipulate ruby objects from javascript."
+    gemspec.email = "cowboyd@thefrontside.net"
+    gemspec.homepage = "http://github.com/cowboyd/therubyracer"
+    gemspec.authors = ["Charles Lowell", "Bill Robertson"]
+    gemspec.extra_rdoc_files = ["README.rdoc"]
+    gemspec.files.exclude "ext/**/test/*", "ext/**/samples/*", "ext/**/benchmarks/*", "ext/**/*.o", "ext/**/*.o", "#{SCONS}/build", "#{SCONS}/install"      
+  end
 rescue LoadError
-  #it will fail to load if we don't have the extensions compiled yet
+  puts "Jeweler not available. Install it with: gem install jeweler"
 end
 
-gem 'rake-compiler', '>= 0.4.1'
-require "rake/extensiontask"
+begin
+  gem 'rake-compiler', '>= 0.4.1'
+  require "rake/extensiontask"
 
-
-Hoe.plugin :newgem
-
-# Generate all the Rake tasks
-# Run 'rake -T' to see list of generated tasks (from gem root directory)
-$hoe = Hoe.spec 'therubyracer' do
-  developer 'Charles Lowell', 'cowboyd@thefrontside.net'
-  developer 'Bill Robertson', 'billrobertson42@gmail.com'
-  self.rubyforge_name = self.name
-  self.spec_extras = { :extensions => ["ext/v8/extconf.rb"] }
-  self.clean_globs << "lib/v8/*.{o,so,bundle,a,log,dll}"
+  Rake::ExtensionTask.new("v8", eval("#{Rake.application.jeweler.gemspec.to_ruby}")) do |ext|    
+    ext.lib_dir = "lib/v8"
+    ext.source_pattern = "*.{cpp,h}"
+  end  
+rescue LoadError
+  puts "Rake Compiler not available. Install it with: gem install rake-compiler"
 end
 
-UPSTREAM_SRC  = File.dirname(__FILE__) + "/ext/v8/upstream"
-SCONS_SRC     = "#{UPSTREAM_SRC}/scons"
-V8_SRC      = "#{UPSTREAM_SRC}/2.0.6"
+desc "Build gem"
+task :gem => :build
+
+desc "Do not call this, call gem instead."
+task :build
+
 
 task "clean-v8" => "clean" do
   sh "rm -f #{V8_SRC}/libv8.a"
@@ -35,20 +48,7 @@ task "clean-v8" => "clean" do
   sh "rm -rf #{V8_SRC}/obj"
 end
 
-
-Rake::ExtensionTask.new("v8", $hoe.spec) do |ext|
-  ext.lib_dir = "lib/v8"
-  ext.source_pattern = "*.{cpp,h}"
-end
-
-
 task :clean do
   sh "rm -f ext/v8/Makefile"
+  sh "rm -rf pkg"
 end
-
-require 'newgem/tasks'
-Dir['tasks/**/*.rake'].each { |t| load t }
-
-# TODO - want other tests/tasks run by default? Add them to the list
-# remove_task :default
-# task :default => [:spec, :features]
