@@ -28,7 +28,7 @@ VALUE v8_Template_Set(VALUE self, VALUE name, VALUE value) {
   HandleScope handles;
   Local<Template> tmpl = V8_Ref_Get<Template>(self);
   Local<Data> data = V8_Ref_Get<Data>(value);
-  tmpl->Set(RSTRING(name)->ptr, data);
+  tmpl->Set(RSTRING_PTR(name), data);
   return Qnil;
 }
 

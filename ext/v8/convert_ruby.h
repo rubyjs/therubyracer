@@ -54,7 +54,7 @@ template<class DEST, class RET> class RubyValueSource {
     
 private:
     RET convertString(VALUE& value) {
-        std::string stringValue(RSTRING(value)->ptr);
+        std::string stringValue(RSTRING_PTR(value));
         return dest.pushString(stringValue);
     }
 };

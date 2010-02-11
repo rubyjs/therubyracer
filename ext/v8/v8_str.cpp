@@ -7,7 +7,7 @@ using namespace v8;
 
 VALUE v8_str_new(VALUE clazz, VALUE str) {
   HandleScope handles;
-  return V8_Ref_Create(clazz, String::New(RSTRING(str)->ptr));
+  return V8_Ref_Create(clazz, String::New(RSTRING_PTR(str)));
 }
 
 VALUE v8_str_to_s(VALUE self){
