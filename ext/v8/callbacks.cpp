@@ -118,7 +118,7 @@ Handle<Value> RacerRubyNamedPropertySetter(Local<String> property, Local<Value> 
  * The result is true if the property exists and false otherwise.
  */
 Handle<Boolean> RacerRubyNamedPropertyQuery(Local<String> property, const AccessorInfo& info) {
-  printf("Query: '%s'<br/>", *String::AsciiValue(property));
+  // printf("Query: '%s'<br/>", *String::AsciiValue(property));
   if (property->Length() == 0) {
     return False();
   }
