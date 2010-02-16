@@ -23,6 +23,8 @@ have_library('v8')
 
 $CPPFLAGS += " -Wall" unless $CPPFLAGS.split.include? "-Wall"
 
+CONFIG['LDSHARED'] = '$(CXX) -shared'
+
 create_makefile('v8')
 
 # now add a few extra targets
