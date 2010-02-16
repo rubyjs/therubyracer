@@ -13,7 +13,7 @@ have_library('v8') or raise "Unable to find libv8 in #{BUILD}, was there an erro
 
 $CPPFLAGS += " -Wall" unless $CPPFLAGS.split.include? "-Wall"
 
-CONFIG['LDSHARED'] = '$(CXX) -shared'
+CONFIG['LDSHARED'] = '$(CXX) -shared' unless RUBY_PLATFORM =~ /darwin/
 
 create_makefile('v8')
 
