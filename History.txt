@@ -1,5 +1,9 @@
+=== 0.4.9 2010-02-16
+* 1 major enhancement
+  * support for Linux 32/64 bit
+  
 === 0.4.8 2010-02-08
-* 1 major enhancements
+* 1 major enhancement
   * expose line number and source name on JavascriptErrors.
 
 === 0.4.5 2010-01-18

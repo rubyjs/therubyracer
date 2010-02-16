@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Charles Lowell", "Bill Robertson"]
-  s.date = %q{2010-02-11}
+  s.date = %q{2010-02-16}
   s.description = %q{Call javascript code and manipulate javascript objects from ruby. Call ruby code and manipulate ruby objects from javascript.}
   s.email = %q{cowboyd@thefrontside.net}
   s.extensions = ["ext/v8/extconf.rb"]
@@ -411,6 +411,8 @@ Gem::Specification.new do |s|
      "ext/v8/upstream/2.0.6/tools/visual_studio/x64.vsprops",
      "ext/v8/upstream/2.0.6/tools/windows-tick-processor.bat",
      "ext/v8/upstream/2.0.6/tools/windows-tick-processor.py",
+     "ext/v8/upstream/Makefile",
+     "ext/v8/upstream/no-strict-aliasing.patch",
      "ext/v8/upstream/scons/CHANGES.txt",
      "ext/v8/upstream/scons/LICENSE.txt",
      "ext/v8/upstream/scons/MANIFEST",
