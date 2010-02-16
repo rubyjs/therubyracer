@@ -23,7 +23,7 @@ public:
 #ifdef FIGURED_OUT_INT_ISSUES
     const char* pushInt(int32_t value) {
         char buffer[64];
-        std::sprintf(buffer, "%d", value);
+        sprintf(buffer, "%d", value);
         convertedValue = buffer;
         return convertedValue.c_str();
     }
@@ -31,14 +31,14 @@ public:
 
     std::string pushInt(int64_t value) {
         char buffer[64];
-        std::sprintf(buffer, "%lld", value);
+				sprintf(buffer, "%lld", value);
         std::string convertedValue(buffer);   
         return convertedValue;
     }
 
     std::string pushDouble(double value) {
         char buffer[64];
-        std::sprintf(buffer, "%g", value);
+        sprintf(buffer, "%g", value);
         std::string convertedValue(buffer);   
         return convertedValue;
     }
