@@ -16,7 +16,7 @@ begin
     gemspec.homepage = "http://github.com/cowboyd/therubyracer"
     gemspec.authors = ["Charles Lowell", "Bill Robertson"]
     gemspec.extra_rdoc_files = ["README.rdoc"]
-    gemspec.files.exclude "ext/**/test/*", "ext/**/samples/*", "ext/**/benchmarks/*", "ext/**/*.o", "ext/**/*.o", "#{SCONS}/build", "#{SCONS}/install"      
+    gemspec.files.exclude "ext/**/test/*", "ext/**/samples/*", "ext/**/benchmarks/*", "#{UPSTREAM}/build"
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: gem install jeweler"
@@ -42,10 +42,7 @@ task :build
 
 
 task "clean-v8" => "clean" do
-  sh "rm -f #{V8_SRC}/libv8.a"
-  sh "rm -rf #{SCONS}/build"
-  sh "rm -rf #{SCONS}/install"
-  sh "rm -rf #{V8_SRC}/obj"
+  sh "cd #{UPSTREAM} && make clean"
 end
 
 task :clean do
