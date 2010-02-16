@@ -43,8 +43,8 @@ task :build
 
 task "clean-v8" => "clean" do
   sh "rm -f #{V8_SRC}/libv8.a"
-  sh "rm -rf #{SCONS_SRC}/build"
-  sh "rm -rf #{SCONS_SRC}/install"
+  sh "rm -rf #{SCONS}/build"
+  sh "rm -rf #{SCONS}/install"
   sh "rm -rf #{V8_SRC}/obj"
 end
 
