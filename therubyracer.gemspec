@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{therubyracer}
-  s.version = "0.4.9"
+  s.version = "0.5.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Charles Lowell", "Bill Robertson"]
@@ -412,6 +412,7 @@ Gem::Specification.new do |s|
      "ext/v8/upstream/2.0.6/tools/windows-tick-processor.bat",
      "ext/v8/upstream/2.0.6/tools/windows-tick-processor.py",
      "ext/v8/upstream/Makefile",
+     "ext/v8/upstream/fpic-on-linux-amd64.patch",
      "ext/v8/upstream/no-strict-aliasing.patch",
      "ext/v8/upstream/scons/CHANGES.txt",
      "ext/v8/upstream/scons/LICENSE.txt",
