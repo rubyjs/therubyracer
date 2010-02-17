@@ -1,0 +1,13 @@
+--- SConstruct
++++ SConstruct
+@@ -139,6 +139,10 @@ LIBRARY_FLAGS = {
+       'library:shared': {
+         'CPPDEFINES': ['V8_SHARED'],
+         'LIBS': ['pthread']
++      },
++      'arch:x64': {
++        'CCFLAGS':      ['-fPIC'],
++        'CXXFLAGS':     ['-fPIC']
+       }
+     },
+     'os:macos': {

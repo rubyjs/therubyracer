@@ -18,6 +18,7 @@ $(SCONS): $(SCONSSRC)
 $(V8SRC): build
 	cp -r 2.0.6 build/v8
 	patch -td build/v8 -i ../../no-strict-aliasing.patch
+	patch -td build/v8 -i ../../fpic-on-linux-amd64.patch
 
 $(SCONSSRC): build
 	cp -r scons build
