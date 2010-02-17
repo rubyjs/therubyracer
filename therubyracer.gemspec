@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{therubyracer}
-  s.version = "0.5.0"
+  s.version = "0.5.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Charles Lowell", "Bill Robertson"]
-  s.date = %q{2010-02-16}
+  s.date = %q{2010-02-17}
   s.description = %q{Call javascript code and manipulate javascript objects from ruby. Call ruby code and manipulate ruby objects from javascript.}
   s.email = %q{cowboyd@thefrontside.net}
   s.extensions = ["ext/v8/extconf.rb"]
@@ -639,6 +639,7 @@ Gem::Specification.new do |s|
      "lib/v8.rb",
      "lib/v8/context.rb",
      "lib/v8/object.rb",
+     "lib/v8/tap.rb",
      "lib/v8/to.rb",
      "script/console",
      "script/destroy",
@@ -662,7 +663,6 @@ Gem::Specification.new do |s|
     "spec/ext/cxt_spec.rb",
      "spec/ext/obj_spec.rb",
      "spec/redjs/jsapi_spec.rb",
-     "spec/redjs/tap.rb",
      "spec/redjs_helper.rb",
      "spec/spec_helper.rb",
      "spec/v8/to_spec.rb"
