@@ -7,4 +7,5 @@ module V8
   require 'v8/to'
   require 'v8/context'
   require 'v8/object'
+  require 'v8/tap'
 end
