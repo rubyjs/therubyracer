@@ -34,6 +34,12 @@ rescue LoadError
   puts "Rake Compiler not available. Install it with: gem install rake-compiler"
 end
 
+require 'spec/rake/spectask'
+Spec::Rake::SpecTask.new(:spec) do |spec|
+  spec.libs << 'lib' << 'spec'
+  spec.spec_files = FileList['spec/**/*_spec.rb']
+end
+
 desc "Build gem"
 task :gem => :build
 
