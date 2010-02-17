@@ -122,6 +122,7 @@ exposed by default. E.g.
 == REQUIREMENTS:
 
 * python >= 2.5 (required to compile v8)
+* C++ compiler
 
 == INSTALL:
 * gem install therubyracer
