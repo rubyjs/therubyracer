@@ -33,10 +33,8 @@ VALUE V82RB(Handle<Value>& value) {
   if (value->IsObject()) {
     Local<Object> object(Object::Cast(*value));
     Local<Value> peer = object->GetHiddenValue(String::New("TheRubyRacer::RubyObject"));
-    // Local<Value> peer = object->GetInternalField(0);
     if (peer.IsEmpty()) {
       VALUE context_ref = V8_Ref_Create(V8_C_Context, Context::GetCurrent());
-      // object->SetPointerInInternalField(1, (void *)context_ref);
       object->SetHiddenValue(String::New("TheRubyRacer::Context"), External::Wrap((void *)context_ref));
       return V8_Ref_Create(V8_C_Object, value, context_ref);
     } else {      
@@ -60,7 +58,6 @@ Local<Value> RB2V8(VALUE value) {
   }
   Local<Object> o = Racer_Create_V8_ObjectTemplate(value)->NewInstance();
   o->SetHiddenValue(String::New("TheRubyRacer::RubyObject"), External::Wrap((void *) value));
-  // o->SetPointerInInternalField(0, (void*)value);
   return o;
 }
 
