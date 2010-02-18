@@ -1,0 +1,60 @@
+#!/usr/bin/env ruby
+lib = File.expand_path(File.dirname(__FILE__) + '/../lib')
+$:.unshift(lib) if File.exists?(lib) unless $:.member?(lib)
+
+require 'readline'
+begin
+  require 'v8'
+rescue LoadError
+  require 'rubygems'
+  require 'v8'
+end
+
+trap("SIGINT") do
+  puts "^C"
+end
+
+class V8::Shell
+  def exit(status = 0)
+    Kernel.exit(status)
+  end
+  
+  def help(*args)
+    <<-HELP
+exit(status = 0)
+  exit the shell
+  also: quit()
+      
+ruby(source)
+  evaluate some ruby source
+HELP
+    
+  end
+  
+  def to_s
+    "[object TheRubyRacer]"
+  end
+  
+  def ruby(src)
+    eval(src)
+  end
+  
+  alias_method :quit, :exit
+end
+
+puts "help() for help"
+puts "The Ruby Racer #{V8::VERSION}"
+puts "Vroom Vroom!"  
+
+V8::Context.open(:with => V8::Shell.new) do |cxt|  
+  loop do
+      line = Readline.readline('therubyracer> ', true)
+      begin
+        result = cxt.eval(line)
+        puts(result) unless result.nil?
+        
+      rescue StandardError => e
+        puts e
+      end
+  end
+end

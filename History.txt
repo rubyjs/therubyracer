@@ -1,6 +1,8 @@
 === X.X.X 2010-XX-XX
+* n major enhancements(s)
+  * added javascript shell (bin/therubyracer)
 * n minor enhancement(s)
-  *added to_s method for embedded ruby objects
+  * added to_s method for embedded ruby objects
 
 === 0.5.1 2010-02-17
 * 1 minor enhancement
