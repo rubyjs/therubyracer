@@ -21,6 +21,12 @@ module V8
       end
     end
     
+    def to_s
+      @native.context.open do
+        @native.ToString()
+      end
+    end
+    
     def each
       for prop in @native.GetPropertyNames()
         yield prop, self[prop]

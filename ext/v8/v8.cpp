@@ -71,6 +71,7 @@ extern "C" {
         rb_define_method(V8_C_Object, "Get", (VALUE(*)(...))v8_Object_Get, 1);
         rb_define_method(V8_C_Object, "Set", (VALUE(*)(...))v8_Object_Set, 2);
         rb_define_method(V8_C_Object, "GetPropertyNames", (VALUE(*)(...)) v8_Object_GetPropertyNames, 0);
+        rb_define_method(V8_C_Object, "ToString", (VALUE(*)(...)) v8_Object_ToString, 0);
         rb_define_method(V8_C_Object, "context", (VALUE(*)(...)) v8_Object_context, 0);
         
         V8_C_Message = rb_define_class_under(rb_mNative, "Message", rb_cObject);
