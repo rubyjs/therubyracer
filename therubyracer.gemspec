@@ -9,9 +9,11 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Charles Lowell", "Bill Robertson"]
-  s.date = %q{2010-02-17}
+  s.date = %q{2010-02-19}
+  s.default_executable = %q{therubyracer}
   s.description = %q{Call javascript code and manipulate javascript objects from ruby. Call ruby code and manipulate ruby objects from javascript.}
   s.email = %q{cowboyd@thefrontside.net}
+  s.executables = ["therubyracer"]
   s.extensions = ["ext/v8/extconf.rb"]
   s.extra_rdoc_files = [
     "README.rdoc"
@@ -23,6 +25,7 @@ Gem::Specification.new do |s|
      "History.txt",
      "README.rdoc",
      "Rakefile",
+     "bin/therubyracer",
      "docs/data_conversion.txt",
      "ext/v8/callbacks.cpp",
      "ext/v8/callbacks.h",
