@@ -35,6 +35,10 @@ HELP
     "[object TheRubyRacer]"
   end
   
+  def print(string)
+    puts string
+  end
+  
   def ruby(src)
     eval(src)
   end
