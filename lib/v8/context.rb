@@ -79,7 +79,7 @@ module V8
   end
   class JavascriptError < StandardError
     def initialize(v8_message)
-      super("#{v8_message.Get()}: #{v8_message.GetSourceLine()}")
+      super("#{v8_message.Get()}: #{v8_message.GetScriptResourceName()}:#{v8_message.GetLineNumber()}")
       @native = v8_message
     end
 
