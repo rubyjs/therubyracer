@@ -9,7 +9,7 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gemspec|
     gemspec.name = gemspec.rubyforge_project = "therubyracer"
-    gemspec.version = "0.5.1"
+    gemspec.version = "0.5.2"
     gemspec.summary = "Embed the V8 Javascript interpreter into Ruby"
     gemspec.description = "Call javascript code and manipulate javascript objects from ruby. Call ruby code and manipulate ruby objects from javascript."
     gemspec.email = "cowboyd@thefrontside.net"
