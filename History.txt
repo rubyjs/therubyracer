@@ -1,4 +1,4 @@
-=== X.X.X 2010-02-XX
+=== 0.5.3 2010-03-01
 * 1 major enhancement
   * added full back trace to javascript code
   

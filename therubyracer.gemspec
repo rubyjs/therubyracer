@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{therubyracer}
-  s.version = "0.5.2"
+  s.version = "0.5.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Charles Lowell", "Bill Robertson"]
-  s.date = %q{2010-02-26}
+  s.date = %q{2010-03-01}
   s.default_executable = %q{therubyracer}
   s.description = %q{Call javascript code and manipulate javascript objects from ruby. Call ruby code and manipulate ruby objects from javascript.}
   s.email = %q{cowboyd@thefrontside.net}
