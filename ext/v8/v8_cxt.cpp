@@ -58,6 +58,15 @@ VALUE v8_cxt_open(VALUE self) {
   }
 }
 
+VALUE Racer_Error_Message(TryCatch& exception) {
+  VALUE msg = V8_Ref_Create(V8_C_Message, exception.Message());
+  Local<Value> stack = exception.StackTrace();
+  if (!stack.IsEmpty()) {
+    rb_iv_set(msg,"@stack",V82RB(stack));    
+  }
+  return msg;  
+}
+
 VALUE v8_cxt_eval(VALUE self, VALUE source, VALUE filename) {
   HandleScope handles;
   TryCatch exceptions;
@@ -66,12 +75,12 @@ VALUE v8_cxt_eval(VALUE self, VALUE source, VALUE filename) {
   Local<Value> source_str = RB2V8(source);
   Local<Value> source_name = RTEST(filename) ? RB2V8(filename) : *String::New("<eval>");
   Local<Script> script = Script::Compile(source_str->ToString(), source_name);
-	if (exceptions.HasCaught()) {
-		return V8_Ref_Create(V8_C_Message, exceptions.Message());
-	}
+	if (exceptions.HasCaught()) {	  
+    return Racer_Error_Message(exceptions);
+	} 
   Local<Value> result = script->Run();
   if (exceptions.HasCaught()) {
-    return V8_Ref_Create(V8_C_Message, exceptions.Message());
+    return Racer_Error_Message(exceptions);
   } else {
     return V82RB(result);
   }

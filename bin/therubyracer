@@ -57,6 +57,8 @@ V8::Context.open(:with => V8::Shell.new) do |cxt|
         result = cxt.eval(line)
         puts(result) unless result.nil?
         
+      rescue V8::JavascriptError => e
+        puts e.javascript_stacktrace
       rescue StandardError => e
         puts e
       end

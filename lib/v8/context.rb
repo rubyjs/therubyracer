@@ -95,7 +95,17 @@ module V8
       @native.GetLineNumber()
     end
     
+    def javascript_stacktrace
+      @native.stack
+    end
+    
   end
   class RunawayScriptError < ContextError
+  end
+  
+  module C
+    class Message
+      attr_reader :stack
+    end
   end
 end
