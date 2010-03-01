@@ -1,3 +1,7 @@
+=== X.X.X 2010-02-XX
+* 1 major enhancement
+  * added full back trace to javascript code
+  
 === 0.5.2 2010-02-26
 * 1 major enhancement
   * added javascript shell (bin/therubyracer)
