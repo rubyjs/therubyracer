@@ -6,6 +6,7 @@
 
 Embed the V8 Javascript interpreter into Ruby.
 
+
 == FEATURES/PROBLEMS:
 
 * Evaluate Javascript from with in Ruby
@@ -15,6 +16,9 @@ Embed the V8 Javascript interpreter into Ruby.
 * Currently ALPHA software. 
 
 == SYNOPSIS:
+  gem install therubyracer
+
+# then in your ruby code
 
   require 'v8'
   
