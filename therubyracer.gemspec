@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{therubyracer}
-  s.version = "0.5.3"
+  s.version = "0.5.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Charles Lowell", "Bill Robertson"]
-  s.date = %q{2010-03-01}
+  s.date = %q{2010-03-09}
   s.default_executable = %q{therubyracer}
   s.description = %q{Call javascript code and manipulate javascript objects from ruby. Call ruby code and manipulate ruby objects from javascript.}
   s.email = %q{cowboyd@thefrontside.net}
@@ -658,7 +658,7 @@ Gem::Specification.new do |s|
   ]
   s.homepage = %q{http://github.com/cowboyd/therubyracer}
   s.rdoc_options = ["--charset=UTF-8"]
-  s.require_paths = ["lib"]
+  s.require_paths = ["lib", "ext", "ext"]
   s.rubyforge_project = %q{therubyracer}
   s.rubygems_version = %q{1.3.5}
   s.summary = %q{Embed the V8 Javascript interpreter into Ruby}
