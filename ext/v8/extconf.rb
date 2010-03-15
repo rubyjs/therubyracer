@@ -10,6 +10,7 @@ system("cd #{UPSTREAM} && make") or raise "Error compiling V8"
 
 dir_config('v8', "#{BUILD}/include", "#{BUILD}")
 have_library('v8') or raise "Unable to find libv8 in #{BUILD}, was there an error compiling it?"
+have_library('pthread')
 
 $CPPFLAGS += " -Wall" unless $CPPFLAGS.split.include? "-Wall"
 
