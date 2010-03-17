@@ -32,7 +32,11 @@ module V8
         elsif options.execute
           cxt.eval(options.execute, '<execute>')
         else
-          cxt.eval($stdin, '<stdin>')
+          begin
+            cxt.eval($stdin, '<stdin>')
+          rescue Interrupt => e
+            puts; exit
+          end
         end
       end
     end
