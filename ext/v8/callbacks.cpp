@@ -10,11 +10,29 @@ namespace {
     return (VALUE)External::Unwrap(info.Data());
   }
   
+  //returns all the ruby methods that can be called from
+  //this object.
+  //1.8: public_methods() return strings
+  //1.9: publi_methods() return symbols
+  //convert them all into string
+
+  VALUE CALLABLE_METHODS(VALUE object) {
+    VALUE methods = rb_funcall(object, rb_intern("public_methods"), 1, Qfalse);
+    int length = RARRAY_LEN(methods);
+    VALUE str_methods = rb_ary_new2(length);
+    for (int i = 0; i < length; i++) {
+      VALUE method = rb_ary_entry(methods, i);
+      rb_ary_store(str_methods,i, rb_obj_as_string(method));
+    }
+    return str_methods;
+  }
+
   Local<Array> TO_ARRAY(Arguments& args) {
     Local<Array> array = Array::New(args.Length());
     for (int i = 0; i < args.Length(); i++) {
       array->Set(Integer::New(i), args[i]);
     }
+    return array;
   }
   
   Local<Value> Racer_Call_Ruby_Method(VALUE object, VALUE method, Local<Array> args) {
@@ -73,7 +91,7 @@ Handle<Value> RacerRubyNamedPropertyGetter(Local<String> property, const Accesso
   VALUE object = unwrap(info);
   VALUE camel_name = V82RB((Local<Value>&)property);
   VALUE perl_name = rb_funcall(V8_To, rb_intern("perl_case"), 1, camel_name);
-  VALUE methods = rb_funcall(object, rb_intern("public_methods"), 1, Qfalse);
+  VALUE methods = CALLABLE_METHODS(object);
   
   if (RTEST(rb_ary_includes(methods, perl_name))) {
     return Racer_Access_Ruby_Property(object, perl_name);
@@ -99,7 +117,7 @@ Handle<Value> RacerRubyNamedPropertySetter(Local<String> property, Local<Value> 
   VALUE object = unwrap(info);
   VALUE camel_name = V82RB((Local<Value>&)setter_name);
   VALUE perl_name = rb_funcall(V8_To, rb_intern("perl_case"), 1, camel_name);
-  VALUE methods = rb_funcall(object, rb_intern("public_methods"), 1, Qfalse);
+  VALUE methods = CALLABLE_METHODS(object);
   Local<Array> args = Array::New(1);
   args->Set(Integer::New(0), value);
   if (RTEST(rb_ary_includes(methods, perl_name))) {    
@@ -123,7 +141,7 @@ Handle<Boolean> RacerRubyNamedPropertyQuery(Local<String> property, const Access
     return False();
   }
   VALUE object = unwrap(info);
-  VALUE methods = rb_funcall(object, rb_intern("public_methods"), 1, Qfalse);
+  VALUE methods = CALLABLE_METHODS(object);
   VALUE attr_name = V82RB((Local<Value>&)property);
   VALUE perl_name = rb_funcall(V8_To, rb_intern("perl_case"), 1, attr_name);
   
@@ -149,7 +167,7 @@ Handle<Boolean> RacerRubyNamedPropertyDeleter(Local<String> property, const Acce
  */
 Handle<Array> RacerRubyNamedPropertyEnumerator(const AccessorInfo& info) {
   VALUE object = unwrap(info);
-  VALUE methods = rb_funcall(object, rb_intern("public_methods"), 1, Qfalse);
+  VALUE methods = CALLABLE_METHODS(object);
   int length = RARRAY_LEN(methods);
   Local<Array> properties = Array::New(length);
   for (int i = 0; i < length; i++) {
