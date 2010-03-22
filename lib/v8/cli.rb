@@ -12,6 +12,7 @@ module V8
       parser.on("-r", "--require FILE", "load and execute FILE as JavaScript source") {|r| options.libs << r}
       parser.on("-i", "--interactive", "interactive mode") {options.interactive = true}
       parser.on("-e", "--execute JAVASCRIPT", String, "evaluate JAVASCRIPT and exit") {|src| options.execute = src}
+      parser.on("--selftest", "check that therubyracer is functioning properly") {options.selftest = true}
       parser.on_tail("-v", "--version", "Show version and exit") {options.version_info = true}
       parser.on_tail("-h", "--help", "Show this message") do
         puts parser
@@ -22,6 +23,8 @@ module V8
         puts "The Ruby Racer #{V8::VERSION}"
         puts "V8 Version 2.0.6"
         exit
+      elsif options.selftest
+        self.test        
       end
       Context.open(:with => Shell.new) do |cxt|
         for libfile in options.libs do
@@ -49,6 +52,21 @@ module V8
       rescue StandardError => e
         puts e
       end      
+    end
+    
+    def self.test
+      begin
+        require 'rubygems'
+        require 'spec'
+        parser = ::Spec::Runner::OptionParser.new($stderr, $stdout)
+        parser.order!([File.dirname(__FILE__) + '/../../spec/'])
+        ::Spec::Runner.use(parser.options)  
+        exit parser.options.run_examples
+      rescue LoadError => e
+        puts "selftest requires rspec to be installed (gem install rspec)"
+        exit(1)
+      end
+      
     end
 
     def self.repl(cxt, exename)
