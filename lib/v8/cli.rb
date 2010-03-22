@@ -18,7 +18,12 @@ module V8
         puts parser
         exit
       end
-      parser.parse!(args.dup)
+      begin
+        parser.parse!(args.dup)
+      rescue OptionParser::InvalidOption => e
+        puts "#{exename}: #{e.message}"
+        exit(1)
+      end
       if options.version_info
         puts "The Ruby Racer #{V8::VERSION}"
         puts "V8 Version 2.0.6"
