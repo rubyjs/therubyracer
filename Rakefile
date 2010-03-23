@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'spec/rake/spectask'
 
 UPSTREAM  = "ext/v8/upstream"
 SCONS     = "#{UPSTREAM}/scons"
@@ -22,19 +23,8 @@ Gem::Specification.new do |gemspec|
   gemspec.files = manifest.to_a
 end
 
-begin
-  gem 'rake-compiler', '>= 0.4.1'
-  require "rake/extensiontask"
 
-  Rake::ExtensionTask.new("v8", $gemspec) do |ext|    
-    ext.lib_dir = "lib/v8"
-    ext.source_pattern = "*.{cpp,h}"
-  end  
-rescue LoadError
-  puts "Rake Compiler not available. Install it with: gem install rake-compiler"
-end
 
-require 'spec/rake/spectask'
 Spec::Rake::SpecTask.new(:spec) do |spec|
   spec.libs << 'lib' << 'spec'
   spec.spec_files = FileList['spec/**/*_spec.rb']
@@ -63,6 +53,10 @@ namespace :clean do
   task "v8" => "clean" do
     sh "cd #{UPSTREAM} && make clean"
   end  
+end
+
+for file in Dir['tasks/*.rake']
+  load file
 end
 
 
