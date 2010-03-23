@@ -39,6 +39,7 @@ end
 task :clean do
   sh "rm -f ext/v8/Makefile"
   sh "rm -rf pkg"
+  sh "rm -rf *.gem"
 end
 
 namespace :clean do
