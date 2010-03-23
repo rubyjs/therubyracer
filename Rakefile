@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'spec/rake/spectask'
 
 UPSTREAM  = "ext/v8/upstream"
 SCONS     = "#{UPSTREAM}/scons"
@@ -24,12 +23,6 @@ Gem::Specification.new do |gemspec|
 end
 
 
-
-Spec::Rake::SpecTask.new(:spec) do |spec|
-  spec.libs << 'lib' << 'spec'
-  spec.spec_files = FileList['spec/**/*_spec.rb']
-end
-task :spec => :compile
 
 desc "Build gem"
 task :gem do
