@@ -1,8 +1,9 @@
 === Edge
-* 3 major enhancements
+* 4 major enhancements
   * ruby 1.9 compatible
   * full featured command line bin/v8 and bin/therubyracer
   * self validating install (v8 --selftest)
+  * Only dependency to build gem from source is rubygems.
 
 === 0.5.5 2010-03-15
 * 2 minor enhancements
