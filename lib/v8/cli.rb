@@ -75,6 +75,7 @@ module V8
     end
 
     def self.repl(cxt, exename)
+      require 'readline'
       puts "help() for help. quit() to quit."
       puts "The Ruby Racer #{V8::VERSION}"
       puts "Vroom Vroom!"      

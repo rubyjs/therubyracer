@@ -2,7 +2,6 @@
 lib = File.expand_path(File.dirname(__FILE__) + '/../lib')
 $:.unshift(lib) if File.exists?(lib) unless $:.member?(lib)
 
-require 'readline'
 begin
   require 'v8'
 rescue LoadError
