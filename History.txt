@@ -1,4 +1,4 @@
-=== Edge
+=== 0.6.0 2010-03-31
 * 4 major enhancements
   * ruby 1.9 compatible
   * full featured command line bin/v8 and bin/therubyracer
