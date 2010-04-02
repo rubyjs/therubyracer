@@ -1,13 +1,8 @@
 #!/usr/bin/env ruby
 lib = File.expand_path(File.dirname(__FILE__) + '/../lib')
-$:.unshift(lib) if File.exists?(lib) unless $:.member?(lib)
+$:.unshift(lib) if File.exists?(lib)
 
-begin
-  require 'v8'
-rescue LoadError
-  require 'rubygems'
-  require 'v8'
-end
+require 'v8'
 require 'v8/cli'
 
 V8::CLI.run(File.basename(__FILE__), ARGV)
