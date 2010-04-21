@@ -86,5 +86,6 @@ extern "C" {
         
         
         V8_C_Function = rb_define_class_under(rb_mNative, "Function", V8_C_Object);
+        rb_define_method(V8_C_Function, "Call", (VALUE(*)(...))v8_C_Function_Call, -1);
     }
 }

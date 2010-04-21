@@ -3,6 +3,7 @@
 #include "v8_ref.h"
 #include "v8_obj.h"
 #include "v8_cxt.h"
+#include "v8_func.h"
 #include "v8_template.h"
 
 using namespace v8;
@@ -16,6 +17,7 @@ VALUE V8_To;
 VALUE V82RB(Handle<Value>& value) {
   convert_v8_to_rb_t convert;
   VALUE result;
+  VALUE type = V8_C_Object;
   if(convert(value, result)) {
     return result;
   }
@@ -30,18 +32,21 @@ VALUE V82RB(Handle<Value>& value) {
     return rb_array;
   }
   
+  if (value->IsFunction()) {
+    type = V8_C_Function;
+  }
+
   if (value->IsObject()) {
     Local<Object> object(Object::Cast(*value));
     Local<Value> peer = object->GetHiddenValue(String::New("TheRubyRacer::RubyObject"));
     if (peer.IsEmpty()) {
       VALUE context_ref = V8_Ref_Create(V8_C_Context, Context::GetCurrent());
       object->SetHiddenValue(String::New("TheRubyRacer::Context"), External::Wrap((void *)context_ref));
-      return V8_Ref_Create(V8_C_Object, value, context_ref);
+      return V8_Ref_Create(type, value, context_ref);
     } else {      
       return (VALUE)External::Unwrap(peer);
     }
   }
-  
   return Qnil;
 }
 

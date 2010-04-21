@@ -8,4 +8,6 @@
 extern VALUE V8_C_Function;
 
 VALUE V8_Wrap_Function(v8::Handle<v8::Function> f);
+
+VALUE v8_C_Function_Call(int argc, VALUE *argv, VALUE self);
 #endif

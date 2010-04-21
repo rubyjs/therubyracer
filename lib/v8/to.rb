@@ -4,8 +4,9 @@ module V8
     class << self
       def ruby(value)
         case value
-        when V8::C::Object then V8::Object.new(value)
-        when V8::C::String then "Wonkers!"          
+        when V8::C::Function  then V8::Function.new(value)
+        when V8::C::Object    then V8::Object.new(value)
+        when V8::C::String    then "Wonkers!"
         else
           value
         end
