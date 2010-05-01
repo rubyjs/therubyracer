@@ -67,11 +67,11 @@ template<class T, class R> class V8HandleSource {
 
   R convertString(v8::Local<v8::String>& str) {
     char buffer[1024];
-    int total = 0;
-    int remaining = str->Length();
+    size_t total = 0;
+    size_t remaining = str->Length();
     std::string output;
     while (remaining > 0) {
-      int toCopy = remaining > sizeof(buffer) ? sizeof(buffer) : remaining;
+      size_t toCopy = remaining > sizeof(buffer) ? sizeof(buffer) : remaining;
       str->WriteAscii(buffer, total, toCopy);
       output.append(buffer, toCopy);
       total += toCopy;
