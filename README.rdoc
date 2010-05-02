@@ -1,6 +1,7 @@
 = therubyracer
 
 * http://github.com/cowboyd/therubyracer
+* http://groups.google.com/group/therubyracer
 
 == DESCRIPTION:
 
