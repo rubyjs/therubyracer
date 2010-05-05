@@ -1,6 +1,7 @@
-=== Edge
+=== 0.6.1 2010-05-03
 * 1 major enhancement
   * call JavaScript functions from Ruby
+  
 === 0.6.0 2010-03-31
 * 4 major enhancements
   * ruby 1.9 compatible
