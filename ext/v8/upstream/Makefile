@@ -16,9 +16,7 @@ $(SCONS): $(SCONSSRC)
 	python build/scons/setup.py install --prefix=install
 
 $(V8SRC): build
-	cp -r 2.0.6 build/v8
-	patch -td build/v8 -i ../../no-strict-aliasing.patch
-	patch -td build/v8 -i ../../fpic-on-linux-amd64.patch
+	cp -r 2.1.10 build/v8
 
 $(SCONSSRC): build
 	cp -r scons build
