@@ -22,12 +22,7 @@ VALUE rb_cV8;
 
 extern "C" {
     void Init_v8() {
-      
-        ruby_call_symbol = ID2SYM(rb_intern("call"));
-        ruby_respond_to_ID = rb_intern("respond_to?");
-        ruby_proc_class = rb_eval_string("::Proc");
-        ruby_method_class = rb_eval_string("::Method");
-      
+        
         rb_mModule = rb_define_module("V8");
         rb_define_singleton_method(rb_mModule, "what_is_this?", (VALUE(*)(...)) v8_what_is_this, 1);
         
@@ -36,17 +31,7 @@ extern "C" {
         //native module setup
         VALUE rb_mNative = rb_define_module_under(rb_mModule, "C");
         
-        //native context
-        V8_C_Context = rb_define_class_under(rb_mNative, "Context", rb_cObject);
-        rb_define_singleton_method(V8_C_Context, "new", (VALUE(*)(...)) v8_Context_New, -1);
-        rb_define_singleton_method(V8_C_Context, "InContext", (VALUE(*)(...)) v8_Context_InContext, 0);
-        rb_define_singleton_method(V8_C_Context, "GetCurrent", (VALUE(*)(...)) v8_Context_GetCurrent, 0);
-        rb_define_method(V8_C_Context, "Global", (VALUE(*)(...)) v8_cxt_Global, 0);
-        rb_define_method(V8_C_Context, "open", (VALUE(*)(...)) v8_cxt_open, 0);
-        rb_define_method(V8_C_Context, "eval", (VALUE(*)(...)) v8_cxt_eval, 2);
-        rb_define_method(V8_C_Context, "eql?", (VALUE(*)(...)) v8_cxt_eql, 1);
-        rb_define_method(V8_C_Context, "==", (VALUE(*)(...)) v8_cxt_eql, 1);
-        
+        rr_init_cxt();
         //native String
         VALUE V8__C__String = rb_define_class_under(rb_mNative, "String", rb_cObject);
         rb_define_singleton_method(V8__C__String, "new", (VALUE(*)(...)) v8_str_new, 1);

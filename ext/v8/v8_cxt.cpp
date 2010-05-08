@@ -1,3 +1,4 @@
+#include "rr.h"
 #include "v8_cxt.h"
 #include "v8_msg.h"
 #include "v8_template.h"
@@ -9,6 +10,18 @@ VALUE V8_C_Context;
 
 //TODO: rename everything to Context_
 //TODO: do the object init from within here
+
+void rr_init_cxt() {
+  VALUE Context = V8_C_Context = rr_define_class("Context");
+  rb_define_singleton_method(Context, "new", (VALUE(*)(...)) v8_Context_New, -1);
+  rb_define_singleton_method(Context, "InContext", (VALUE(*)(...)) v8_Context_InContext, 0);
+  rb_define_singleton_method(Context, "GetCurrent", (VALUE(*)(...)) v8_Context_GetCurrent, 0);
+  rb_define_method(Context, "Global", (VALUE(*)(...)) v8_cxt_Global, 0);
+  rb_define_method(Context, "open", (VALUE(*)(...)) v8_cxt_open, 0);
+  rb_define_method(Context, "eval", (VALUE(*)(...)) v8_cxt_eval, 2);
+  rb_define_method(Context, "eql?", (VALUE(*)(...)) v8_cxt_eql, 1);
+  rb_define_method(Context, "==", (VALUE(*)(...)) v8_cxt_eql, 1);  
+}
 
 VALUE v8_Context_New(int argc, VALUE *argv, VALUE self) {
   HandleScope handles;
