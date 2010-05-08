@@ -23,12 +23,12 @@ Gem::Specification.new do |gemspec|
 end
 
 desc "Build gem"
-task :gem do
+task :gem => :gemspec do
   Gem::Builder.new($gemspec).build
 end
 
 desc "build the gemspec"
-task :gemspec do
+task :gemspec => :clean do
   File.open("#{$gemspec.name}.gemspec", "w") do |f|
     f.write($gemspec.to_ruby)
   end
@@ -38,6 +38,7 @@ task :clean do
   sh "rm -f ext/v8/Makefile"
   sh "rm -rf pkg"
   sh "rm -rf *.gem"
+  sh "rm -rf lib/v8/*.bundle lib/v8/*.so"
 end
 
 namespace :clean do
