@@ -5,7 +5,6 @@
 #include "v8.h"
 #include "v8_ref.h"
 
-extern VALUE rb_cV8;
 extern VALUE V8_C_Object;
 extern VALUE V8_C_Context;
 

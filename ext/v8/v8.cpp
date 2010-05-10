@@ -18,19 +18,14 @@ extern "C" {
 }
 
 VALUE rb_mModule;
-VALUE rb_cV8;
 
 extern "C" {
     void Init_v8() {
         
         rb_mModule = rb_define_module("V8");
-        rb_define_singleton_method(rb_mModule, "what_is_this?", (VALUE(*)(...)) v8_what_is_this, 1);
         
         V8_To = rb_define_module_under(rb_mModule, "To");
-                
-        //native module setup
-        VALUE rb_mNative = rb_define_module_under(rb_mModule, "C");
-        
+                        
         rr_init_cxt();
         rr_init_str();
         rr_init_script();
