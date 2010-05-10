@@ -10,12 +10,12 @@ VALUE V8_C_Object;
 
 void rr_init_obj() {
   V8_C_Object = rr_define_class("Object");
-  rb_define_singleton_method(V8_C_Object, "new", (VALUE(*)(...))v8_Object_New, 0);
-  rb_define_method(V8_C_Object, "Get", (VALUE(*)(...))v8_Object_Get, 1);
-  rb_define_method(V8_C_Object, "Set", (VALUE(*)(...))v8_Object_Set, 2);
-  rb_define_method(V8_C_Object, "GetPropertyNames", (VALUE(*)(...)) v8_Object_GetPropertyNames, 0);
-  rb_define_method(V8_C_Object, "ToString", (VALUE(*)(...)) v8_Object_ToString, 0);
-  rb_define_method(V8_C_Object, "context", (VALUE(*)(...)) v8_Object_context, 0);  
+  rr_define_singleton_method(V8_C_Object, "new", v8_Object_New, 0);
+  rr_define_method(V8_C_Object, "Get", v8_Object_Get, 1);
+  rr_define_method(V8_C_Object, "Set", v8_Object_Set, 2);
+  rr_define_method(V8_C_Object, "GetPropertyNames", v8_Object_GetPropertyNames, 0);
+  rr_define_method(V8_C_Object, "ToString", v8_Object_ToString, 0);
+  rr_define_method(V8_C_Object, "context", v8_Object_context, 0);  
 }
 
 namespace {
