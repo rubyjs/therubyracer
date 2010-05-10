@@ -4,7 +4,6 @@
 #include "v8.h"
 #include "rr.h"
 
-extern VALUE V8_C_Message;
 void rr_init_msg();
 
 VALUE V8_Wrap_Message(v8::Handle<v8::Message> msg);

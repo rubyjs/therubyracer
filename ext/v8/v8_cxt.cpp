@@ -72,7 +72,7 @@ VALUE v8_cxt_open(VALUE self) {
 }
 
 VALUE Racer_Error_Message(TryCatch& exception) {
-  VALUE msg = V8_Ref_Create(V8_C_Message, exception.Message());
+  VALUE msg = V8_Wrap_Message(exception.Message());
   Local<Value> stack = exception.StackTrace();
   if (!stack.IsEmpty()) {
     rb_iv_set(msg,"@stack",V82RB(stack));    
