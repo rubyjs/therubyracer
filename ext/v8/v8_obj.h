@@ -1,9 +1,11 @@
 #ifndef _RUBY_V8_OBJECT_
 #define _RUBY_V8_OBJECT_ 
 
-#include "ruby.h"
+#include "rr.h"
 
 extern VALUE V8_C_Object;
+
+void rr_init_obj();
 
 VALUE v8_Object_New(VALUE clazz);
 VALUE v8_Object_Get(VALUE self, VALUE key);

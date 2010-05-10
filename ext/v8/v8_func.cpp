@@ -1,10 +1,16 @@
 
 #include "converters.h"
 #include "v8_func.h"
+#include "v8_obj.h"
 
 using namespace v8;
 
 VALUE V8_C_Function;
+
+void rr_init_func() {
+  V8_C_Function = rr_define_class("Function", V8_C_Object);
+  rb_define_method(V8_C_Function, "Call", (VALUE(*)(...))v8_C_Function_Call, -1);  
+}
 
 VALUE V8_Wrap_Function(Handle<Function> f) {
   return V8_Ref_Create(V8_C_Function, f);

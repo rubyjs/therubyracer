@@ -5,6 +5,11 @@
 
 using namespace v8;
 
+void rr_init_script() {
+  VALUE Script = rr_define_class("Script");
+  RR_DEFINE_SINGLETON_METHOD(Script, "new", v8_script_new, 1);
+  RR_DEFINE_METHOD(Script, "Run", v8_script_Run, 0);  
+}
 
 VALUE v8_script_new(VALUE self, VALUE source) {
   HandleScope handles;

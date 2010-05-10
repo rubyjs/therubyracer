@@ -8,6 +8,20 @@
 
 using namespace v8;
 
+
+void rr_init_template() {
+  VALUE Template = rr_define_class("Template");
+  rb_define_method(Template, "Set", (VALUE(*)(...))v8_Template_Set, 2);
+  
+  VALUE ObjectTemplate = rr_define_class("ObjectTemplate", Template);
+  rb_define_singleton_method(ObjectTemplate, "new", (VALUE(*)(...))v8_ObjectTemplate_New, 0);
+  
+  VALUE FunctionTemplate = rr_define_class("FunctionTemplate", Template);
+  rb_define_singleton_method(FunctionTemplate, "new", (VALUE(*)(...))v8_FunctionTemplate_New, -1);
+  rb_define_method(FunctionTemplate, "GetFunction", (VALUE(*)(...))v8_FunctionTemplate_GetFunction, 0);
+  
+}
+
 Local<ObjectTemplate> Racer_Create_V8_ObjectTemplate(VALUE value) {
   Local<ObjectTemplate> tmpl = ObjectTemplate::New();
   // tmpl->SetInternalFieldCount(2);

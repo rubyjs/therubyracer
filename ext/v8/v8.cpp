@@ -32,32 +32,12 @@ extern "C" {
         VALUE rb_mNative = rb_define_module_under(rb_mModule, "C");
         
         rr_init_cxt();
-        //native String
-        VALUE V8__C__String = rb_define_class_under(rb_mNative, "String", rb_cObject);
-        rb_define_singleton_method(V8__C__String, "new", (VALUE(*)(...)) v8_str_new, 1);
-        rb_define_method(V8__C__String, "to_s", (VALUE(*)(...)) v8_str_to_s, 0);
+        rr_init_str();
+        rr_init_script();
+        rr_init_template();
+        rr_init_obj();
+        rr_init_func();
         
-        VALUE V8__C__Script = rb_define_class_under(rb_mNative, "Script", rb_cObject);
-        rb_define_singleton_method(V8__C__Script, "new", (VALUE(*)(...)) v8_script_new, 1);
-        rb_define_method(V8__C__Script, "Run", (VALUE(*)(...)) v8_script_Run, 0);
-        
-        VALUE V8__C__Template = rb_define_class_under(rb_mNative, "Template", rb_cObject);
-        rb_define_method(V8__C__Template, "Set", (VALUE(*)(...))v8_Template_Set, 2);
-        
-        VALUE V8__C__ObjectTemplate = rb_define_class_under(rb_mNative, "ObjectTemplate", V8__C__Template);
-        rb_define_singleton_method(V8__C__ObjectTemplate, "new", (VALUE(*)(...))v8_ObjectTemplate_New, 0);
-        
-        VALUE V8__C__FunctionTemplate = rb_define_class_under(rb_mNative, "FunctionTemplate", V8__C__Template);
-        rb_define_singleton_method(V8__C__FunctionTemplate, "new", (VALUE(*)(...))v8_FunctionTemplate_New, -1);
-        rb_define_method(V8__C__FunctionTemplate, "GetFunction", (VALUE(*)(...))v8_FunctionTemplate_GetFunction, 0);
-        
-        V8_C_Object = rb_define_class_under(rb_mNative, "Object", rb_cObject);
-        rb_define_singleton_method(V8_C_Object, "new", (VALUE(*)(...))v8_Object_New, 0);
-        rb_define_method(V8_C_Object, "Get", (VALUE(*)(...))v8_Object_Get, 1);
-        rb_define_method(V8_C_Object, "Set", (VALUE(*)(...))v8_Object_Set, 2);
-        rb_define_method(V8_C_Object, "GetPropertyNames", (VALUE(*)(...)) v8_Object_GetPropertyNames, 0);
-        rb_define_method(V8_C_Object, "ToString", (VALUE(*)(...)) v8_Object_ToString, 0);
-        rb_define_method(V8_C_Object, "context", (VALUE(*)(...)) v8_Object_context, 0);
         
         V8_C_Message = rb_define_class_under(rb_mNative, "Message", rb_cObject);
         rb_define_method(V8_C_Message, "Get", (VALUE(*)(...))v8_Message_Get, 0);
@@ -68,9 +48,6 @@ extern "C" {
         rb_define_method(V8_C_Message, "GetEndPosition", (VALUE(*)(...)) v8_Message_GetEndPosition, 0);
         rb_define_method(V8_C_Message, "GetStartColumn", (VALUE(*)(...)) v8_Message_GetStartColumn, 0);
         rb_define_method(V8_C_Message, "GetEndColumn", (VALUE(*)(...)) v8_Message_GetEndColumn, 0);
-        
-        
-        V8_C_Function = rb_define_class_under(rb_mNative, "Function", V8_C_Object);
-        rb_define_method(V8_C_Function, "Call", (VALUE(*)(...))v8_C_Function_Call, -1);
+                
     }
 }
