@@ -37,17 +37,6 @@ extern "C" {
         rr_init_template();
         rr_init_obj();
         rr_init_func();
-        
-        
-        V8_C_Message = rb_define_class_under(rb_mNative, "Message", rb_cObject);
-        rb_define_method(V8_C_Message, "Get", (VALUE(*)(...))v8_Message_Get, 0);
-        rb_define_method(V8_C_Message, "GetSourceLine", (VALUE(*)(...))v8_Message_GetSourceLine, 0);
-        rb_define_method(V8_C_Message, "GetScriptResourceName", (VALUE(*)(...))v8_Message_GetScriptResourceName, 0);
-        rb_define_method(V8_C_Message, "GetLineNumber", (VALUE(*)(...))v8_Message_GetLineNumber, 0);
-        rb_define_method(V8_C_Message, "GetStartPosition", (VALUE(*)(...))v8_Message_GetStartPosition, 0);
-        rb_define_method(V8_C_Message, "GetEndPosition", (VALUE(*)(...)) v8_Message_GetEndPosition, 0);
-        rb_define_method(V8_C_Message, "GetStartColumn", (VALUE(*)(...)) v8_Message_GetStartColumn, 0);
-        rb_define_method(V8_C_Message, "GetEndColumn", (VALUE(*)(...)) v8_Message_GetEndColumn, 0);
-                
+        rr_init_msg();                                
     }
 }
