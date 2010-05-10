@@ -13,11 +13,8 @@ extern "C" {
     void Init_v8();
 }
 
-VALUE rb_mModule;
-
 extern "C" {
-    void Init_v8() {        
-        V8_To = rb_define_module_under(rb_define_module("V8"), "To");
+    void Init_v8() {
         rr_init_cxt();
         rr_init_str();
         rr_init_script();

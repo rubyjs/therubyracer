@@ -12,8 +12,6 @@ namespace {
   std::string UNDEFINED_STR("undefined");
 }
 
-VALUE V8_To;
-
 VALUE V82RB(Handle<Value>& value) {
   convert_v8_to_rb_t convert;
   VALUE result;

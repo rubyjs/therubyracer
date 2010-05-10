@@ -1,4 +1,4 @@
-#include <ruby.h>
+#include "rr.h"
 
 #include "callbacks.h"
 #include "converters.h"
@@ -90,7 +90,8 @@ Handle<Value> RacerRubyNamedPropertyGetter(Local<String> property, const Accesso
   }
   VALUE object = unwrap(info);
   VALUE camel_name = V82RB((Local<Value>&)property);
-  VALUE perl_name = rb_funcall(V8_To, rb_intern("perl_case"), 1, camel_name);
+  VALUE perl_name = rr_str_to_perl_case(camel_name);
+  // VALUE perl_name = rb_funcall(V8_To, rb_intern("perl_case"), 1, camel_name);
   VALUE methods = CALLABLE_METHODS(object);
   
   if (RTEST(rb_ary_includes(methods, perl_name))) {
@@ -116,7 +117,8 @@ Handle<Value> RacerRubyNamedPropertySetter(Local<String> property, Local<Value> 
   Local<String> setter_name = String::New(setter.c_str());
   VALUE object = unwrap(info);
   VALUE camel_name = V82RB((Local<Value>&)setter_name);
-  VALUE perl_name = rb_funcall(V8_To, rb_intern("perl_case"), 1, camel_name);
+  VALUE perl_name = rr_str_to_perl_case(camel_name);
+  // VALUE perl_name = rb_funcall(V8_To, rb_intern("perl_case"), 1, camel_name);
   VALUE methods = CALLABLE_METHODS(object);
   Local<Array> args = Array::New(1);
   args->Set(Integer::New(0), value);
@@ -143,7 +145,8 @@ Handle<Boolean> RacerRubyNamedPropertyQuery(Local<String> property, const Access
   VALUE object = unwrap(info);
   VALUE methods = CALLABLE_METHODS(object);
   VALUE attr_name = V82RB((Local<Value>&)property);
-  VALUE perl_name = rb_funcall(V8_To, rb_intern("perl_case"), 1, attr_name);
+  // VALUE perl_name = rb_funcall(V8_To, rb_intern("perl_case"), 1, attr_name);
+  VALUE perl_name = rr_str_to_perl_case(attr_name);
   
   if (RTEST(rb_ary_includes(methods, attr_name)) || RTEST(rb_ary_includes(methods, perl_name))) {
     return True();
@@ -171,7 +174,8 @@ Handle<Array> RacerRubyNamedPropertyEnumerator(const AccessorInfo& info) {
   int length = RARRAY_LEN(methods);
   Local<Array> properties = Array::New(length);
   for (int i = 0; i < length; i++) {
-    VALUE camel_name = rb_funcall(V8_To, rb_intern("camel_case"), 1, rb_ary_entry(methods, i));
+    // VALUE camel_name = rb_funcall(V8_To, rb_intern("camel_case"), 1, rb_ary_entry(methods, i));
+    VALUE camel_name = rr_str_to_camel_case(rb_ary_entry(methods, i));
     properties->Set(Integer::New(i), RB2V8(camel_name));
   }
   return properties;
