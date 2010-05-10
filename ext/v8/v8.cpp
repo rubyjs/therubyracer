@@ -11,21 +11,14 @@
 #include <stdio.h>
 
 extern "C" {
-    /**
-     * ruby init method for the extension
-     */
     void Init_v8();
 }
 
 VALUE rb_mModule;
 
 extern "C" {
-    void Init_v8() {
-        
-        rb_mModule = rb_define_module("V8");
-        
-        V8_To = rb_define_module_under(rb_mModule, "To");
-                        
+    void Init_v8() {        
+        V8_To = rb_define_module_under(rb_define_module("V8"), "To");
         rr_init_cxt();
         rr_init_str();
         rr_init_script();
