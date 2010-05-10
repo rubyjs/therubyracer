@@ -5,7 +5,6 @@
 #include "v8_func.h"
 #include "v8_script.h"
 #include "v8_template.h"
-#include "v8_standalone.h"
 #include "converters.h"
 
 #include <stdio.h>
