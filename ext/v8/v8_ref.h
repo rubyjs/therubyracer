@@ -18,6 +18,7 @@ struct v8_ref  {
 
 void rr_v8_ref_setref(VALUE handle, const char *name, VALUE ref);
 VALUE V8_Ref_Create(VALUE ruby_class, v8::Handle<void> handle, VALUE ref = 0);
+VALUE rr_wrap(VALUE ruby_class, void *value);
 
 template <class T> v8::Local<T> V8_Ref_Get(VALUE object) {
   v8_ref* ref = 0;
