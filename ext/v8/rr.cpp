@@ -1,5 +1,6 @@
 #include "rr.h"
 #include "v8_value.h"
+#include "v8_str.h"
 
 using namespace v8;
 
@@ -21,43 +22,78 @@ VALUE rr_str_to_camel_case(VALUE str) {
   return rb_funcall(to, rb_intern("camel_case"), 1, str);
 }
 
-//not exported
-VALUE rr_thunk(VALUE value) {
-  VALUE V8 = rb_define_module("V8");
-  VALUE To = rb_define_module_under(V8, "To");  
-  return rb_funcall(To, rb_intern("rb"), 1, value);
-}
+VALUE rr_reflect_v8_array(Handle<Value> value);
+VALUE rr_reflect_v8_object(Handle<Value> value);
+VALUE rr_reflect_v8_function(Handle<Value> value);
 
-VALUE rr_to_ruby(Handle<Value> value) {
-  return rr_thunk(rr_wrap_v8_value(value));
+VALUE rr_v82rb(Handle<Value> value) {
+  if (value->IsUndefined() || value->IsNull()) {
+    return Qnil;
+  }
+  if (value->IsUint32()) {
+    return UINT2NUM(value->Uint32Value());
+  }
+  if (value->IsInt32()) {
+    return INT2FIX(value->Int32Value());
+  }
+  if (value->IsBoolean()) {
+    return value->BooleanValue() ? true : false;
+  }
+  if (value->IsNumber()) {
+    return rb_float_new(value->NumberValue());
+  }  
+  if (value->IsString()) {
+    return rr_reflect_v8_string(value);
+  }
+  if (value->IsFunction()) {
+    return rr_reflect_v8_function(value);
+  }
+  if (value->IsArray()) {
+    return rr_reflect_v8_array(value);
+  }
+  if (value->IsObject()) {
+    return rr_reflect_v8_object(value);
+  }
+  return rr_wrap_v8_value(value);  
 }
-VALUE rr_to_ruby(Handle<Boolean> value) {
-  return rr_to_ruby((Handle<Value>)value);
+VALUE rr_v82rb(Handle<Boolean> value) {
+  return rr_v82rb((Handle<Value>)value);
 }
-VALUE rr_to_ruby(Handle<Number> value) {
-  return rr_to_ruby((Handle<Value>)value);
+VALUE rr_v82rb(Handle<Number> value) {
+  return rr_v82rb((Handle<Value>)value);
 }
-VALUE rr_to_ruby(Handle<String> value) {
-  return rr_to_ruby((Handle<Value>)value);
+VALUE rr_v82rb(Handle<String> value) {
+  return rr_v82rb((Handle<Value>)value);
 }
-VALUE rr_to_ruby(Handle<Object> value) {
-  return rr_to_ruby((Handle<Value>)value);
+VALUE rr_v82rb(Handle<Object> value) {
+  return rr_v82rb((Handle<Value>)value);
 }
-VALUE rr_to_ruby(Handle<Integer> value) {
-  return rr_to_ruby((Handle<Value>)value);
+VALUE rr_v82rb(Handle<Integer> value) {
+  return rr_v82rb((Handle<Value>)value);
 }
-VALUE rr_to_ruby(Handle<Uint32> value) {
-  return rr_to_ruby((Handle<Value>)value);
+VALUE rr_v82rb(Handle<Uint32> value) {
+  return rr_v82rb((Handle<Value>)value);
 }
-VALUE rr_to_ruby(Handle<Int32> value) {
-  return rr_to_ruby((Handle<Value>)value);
+VALUE rr_v82rb(Handle<Int32> value) {
+  return rr_v82rb((Handle<Value>)value);
 }
-
-VALUE rr_to_ruby(bool value) {
+VALUE rr_v82rb(bool value) {
   return value ? Qtrue : Qfalse;
 }
+VALUE rr_v82rb(double value) {
+  return rb_float_new(value);
+}
+VALUE rr_v82rb(int64_t value) {
+  return INT2FIX(value);
+}
+VALUE rr_v82rb(uint32_t value) {
+  return UINT2NUM(value);
+}
+VALUE rr_v82rb(int32_t value) {
+  return INT2FIX(value);
+}
 
-// VALUE rr_to_ruby(v8::ScriptData *data) {
+// VALUE rr_v82rb(v8::ScriptData *data) {
 //   return rr_thunk(rr_wrap_script_data(data));
 // }
 

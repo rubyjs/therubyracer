@@ -3,7 +3,7 @@
 
 #include "rr.h"
 
-extern VALUE V8_C_Object;
+extern VALUE rr_cV8_C_Object;
 
 void rr_init_obj();
 

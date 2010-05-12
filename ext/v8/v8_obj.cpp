@@ -6,10 +6,10 @@ using namespace v8;
 
 #include <cstdio>
 
-VALUE V8_C_Object;
+VALUE rr_cV8_C_Object;
 
 void rr_init_obj() {
-  V8_C_Object = rr_define_class("Object");
+  rr_cV8_C_Object = rr_define_class("Object", rr_cV8_C_Value);
   rr_define_singleton_method(V8_C_Object, "new", v8_Object_New, 0);
   rr_define_method(V8_C_Object, "Get", v8_Object_Get, 1);
   rr_define_method(V8_C_Object, "Set", v8_Object_Set, 2);

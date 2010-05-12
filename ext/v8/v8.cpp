@@ -1,4 +1,5 @@
 #include "v8_cxt.h"
+#include "v8_value.h"
 #include "v8_str.h"
 #include "v8_obj.h"
 #include "v8_msg.h"
@@ -16,6 +17,7 @@ extern "C" {
 extern "C" {
     void Init_v8() {
         rr_init_cxt();
+        rr_init_value();
         rr_init_str();
         rr_init_script();
         rr_init_template();

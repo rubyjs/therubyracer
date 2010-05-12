@@ -20,7 +20,9 @@ VALUE rr_to_ruby(v8::Handle<v8::Integer> value);
 VALUE rr_to_ruby(v8::Handle<v8::Uint32> value);
 VALUE rr_to_ruby(v8::Handle<v8::Int32> value);
 VALUE rr_to_ruby(bool value);
-// VALUE rr_to_ruby(v8::ScriptData *data);
-
+VALUE rr_to_ruby(double value);
+VALUE rr_to_ruby(int64_t value);
+VALUE rr_to_ruby(uint32_t value);
+VALUE rr_to_ruby(int32_t value);
 
 #endif

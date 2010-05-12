@@ -3,6 +3,7 @@
 
 #include "rr.h"
 
+extern VALUE rr_cV8_C_Value;
 void rr_init_value();
 VALUE rr_wrap_v8_value(v8::Handle<v8::Value>& value);
 #endif

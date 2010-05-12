@@ -5,30 +5,36 @@
 
 using namespace v8;
 
-VALUE V8_C_Function;
+namespace {
+  VALUE FunctionClass;
+  
+  VALUE Call(int, argc, VALUE *argv, VALUE self) {
+    HandleScope handles;
+    VALUE recv; VALUE f_argv;
+    rb_scan_args(argc, argv, "1*", &recv, &f_argv);
+    
+    Local<Function> function = V8_Ref_Get<Function>(self);
+    Local<Object> thisObject = V8_Ref_Get<Object>(recv);
+    int f_argc = argc - 1;
+    Local<Value> arguments[f_argc];
+    for (int i = 0; i < f_argc; i++) {
+      arguments[i] = rr_rb2v8(rb_ary_entry(f_argv, i));
+    }
+    Local<Value> result = function->Call(thisObject, f_argc, arguments);
+    return rr_v82rb(result);
+  }  
+  VALUE GetName(VALUE self) {
+    return rr_v82rb(unwrap(self)->GetName());
+  }
+  VALUE SetName(VALUE self, VALUE name) {
+    Local<String> str = V8_Ref_Get<String>(name);
+    unwrap(self)->SetName(str);
+    return Qnil;
+  }
+  
+}
 
 void rr_init_func() {
-  V8_C_Function = rr_define_class("Function", V8_C_Object);
-  rb_define_method(V8_C_Function, "Call", (VALUE(*)(...))v8_C_Function_Call, -1);  
-}
-
-VALUE V8_Wrap_Function(Handle<Function> f) {
-  return V8_Ref_Create(V8_C_Function, f);
-}
-
-
-VALUE v8_C_Function_Call(int argc, VALUE *argv, VALUE self) {
-  HandleScope handles;
-  VALUE recv; VALUE f_argv;
-  rb_scan_args(argc, argv, "1*", &recv, &f_argv);
-
-  Local<Function> function = V8_Ref_Get<Function>(self);
-  Local<Object> thisObject(Object::Cast(*RB2V8(recv)));
-  int f_argc = argc - 1;
-  Local<Value> arguments[f_argc];
-  for (int i = 0; i < f_argc; i++) {
-    arguments[i] = RB2V8(rb_ary_entry(f_argv,i));
-  }
-  Local<Value> result = function->Call(thisObject, f_argc, arguments);
-  return V82RB(result);
+  FunctionClass = rr_define_class("Function", V8_C_Object);
+  rr_define_method(FunctionClass, "Call", Call, -1);  
 }

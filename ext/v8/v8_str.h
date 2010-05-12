@@ -7,5 +7,5 @@ void rr_init_str();
 
 VALUE v8_str_new(VALUE clazz, VALUE str);
 VALUE v8_str_to_s(VALUE self);
-
+VALUE rr_reflect_v8_string(v8::Handle<v8::Value> value);
 #endif

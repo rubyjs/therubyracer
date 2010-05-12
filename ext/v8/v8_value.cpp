@@ -1,94 +1,104 @@
 #include "v8_value.h"
 #include "v8_ref.h"
+#include "converters.h"
 
 using namespace v8;
+namespace {
+  Local<Value> unwrap(VALUE value) {
+    return V8_Ref_Get<Value>(value);
+  }
+  VALUE IsUndefined(VALUE self) {
+    return rr_v82rb(unwrap(self)->IsUndefined());
+  }
+  VALUE IsNull(VALUE self) {
+    return rr_v82rb(unwrap(self)->IsNull());
+  }
+  VALUE IsTrue(VALUE self) {
+    return rr_v82rb(unwrap(self)->IsTrue());
+  }
+  VALUE IsFalse(VALUE self) {
+    return rr_v82rb(unwrap(self)->IsFalse());
+  }
+  VALUE IsString(VALUE self) {
+    return rr_v82rb(unwrap(self)->IsString());
+  }
+  VALUE IsFunction(VALUE self) {
+    return rr_v82rb(unwrap(self)->IsFunction());
+  }
+  VALUE IsArray(VALUE self) {
+    return rr_v82rb(unwrap(self)->IsArray());
+  }
+  VALUE IsObject(VALUE self) {
+    return rr_v82rb(unwrap(self)->IsObject());
+  }
+  VALUE IsBoolean(VALUE self) {
+    return rr_v82rb(unwrap(self)->IsBoolean());
+  }
+  VALUE IsNumber(VALUE self) {
+    return rr_v82rb(unwrap(self)->IsNumber());
+  }
+  VALUE IsExternal(VALUE self) {
+    return rr_v82rb(unwrap(self)->IsExternal());
+  }
+  VALUE IsInt32(VALUE self) {
+    return rr_v82rb(unwrap(self)->IsInt32());
+  }
+  VALUE IsUint32(VALUE self) {
+    return rr_v82rb(unwrap(self)->IsUint32());
+  }
+  VALUE IsDate(VALUE self) {
+    return rr_v82rb(unwrap(self)->IsDate());
+  }
 
-Local<Value> unwrap(VALUE value) {
-  return V8_Ref_Get<Value>(value);
-}
+  VALUE ToBoolean(VALUE self) {
+    return rr_v82rb(unwrap(self)->ToBoolean());
+  }
+  VALUE ToNumber(VALUE self) {
+    return rr_v82rb(unwrap(self)->ToNumber());
+  }
+  VALUE ToString(VALUE self) {
+    return rr_v82rb(unwrap(self)->ToString());
+  }
+  VALUE ToDetailString(VALUE self) {
+    return rr_v82rb(unwrap(self)->ToDetailString());
+  }
+  VALUE ToObject(VALUE self) {
+    return rr_v82rb(unwrap(self)->ToObject());
+  }
+  VALUE ToInteger(VALUE self) {
+    return rr_v82rb(unwrap(self)->ToInteger());
+  }
+  VALUE ToUint32(VALUE self) {
+    return rr_v82rb(unwrap(self)->ToUint32());
+  }
+  VALUE ToInt32(VALUE self) {
+    return rr_v82rb(unwrap(self)->ToInt32());
+  }
+  VALUE ToArrayIndex(VALUE self) {
+    return rr_v82rb(unwrap(self)->ToArrayIndex());
+  }
 
-VALUE IsUndefined(VALUE self) {
-  return rr_to_ruby(unwrap(self)->IsUndefined());
-}
-VALUE IsNull(VALUE self) {
-  return rr_to_ruby(unwrap(self)->IsNull());
-}
-VALUE IsTrue(VALUE self) {
-  return rr_to_ruby(unwrap(self)->IsTrue());
-}
-VALUE IsFalse(VALUE self) {
-  return rr_to_ruby(unwrap(self)->IsFalse());
-}
-VALUE IsString(VALUE self) {
-  return rr_to_ruby(unwrap(self)->IsString());
-}
-VALUE IsFunction(VALUE self) {
-  return rr_to_ruby(unwrap(self)->IsFunction());
-}
-VALUE IsArray(VALUE self) {
-  return rr_to_ruby(unwrap(self)->IsArray());
-}
-VALUE IsObject(VALUE self) {
-  return rr_to_ruby(unwrap(self)->IsObject());
-}
-VALUE IsBoolean(VALUE self) {
-  return rr_to_ruby(unwrap(self)->IsBoolean());
-}
-VALUE IsNumber(VALUE self) {
-  return rr_to_ruby(unwrap(self)->IsNumber());
-}
-VALUE IsExternal(VALUE self) {
-  return rr_to_ruby(unwrap(self)->IsExternal());
-}
-VALUE IsInt32(VALUE self) {
-  return rr_to_ruby(unwrap(self)->IsInt32());
-}
-VALUE IsUint32(VALUE self) {
-  return rr_to_ruby(unwrap(self)->IsUint32());
-}
-VALUE IsDate(VALUE self) {
-  return rr_to_ruby(unwrap(self)->IsDate());
-}
+  VALUE Equals(VALUE self, VALUE that) {
+    return rr_v82rb(unwrap(self)->Equals(unwrap(that)));
+  }
+  VALUE StrictEquals(VALUE self, VALUE that) {
+    return rr_v82rb(unwrap(self)->StrictEquals(unwrap(that)));
+  }
 
-VALUE ToBoolean(VALUE self) {
-  return rr_to_ruby(unwrap(self)->ToBoolean());
-}
-VALUE ToNumber(VALUE self) {
-  return rr_to_ruby(unwrap(self)->ToNumber());
-}
-VALUE ToString(VALUE self) {
-  return rr_to_ruby(unwrap(self)->ToString());
-}
-VALUE ToDetailString(VALUE self) {
-  return rr_to_ruby(unwrap(self)->ToDetailString());
-}
-VALUE ToObject(VALUE self) {
-  return rr_to_ruby(unwrap(self)->ToObject());
-}
-VALUE ToInteger(VALUE self) {
-  return rr_to_ruby(unwrap(self)->ToInteger());
-}
-VALUE ToUint32(VALUE self) {
-  return rr_to_ruby(unwrap(self)->ToUint32());
-}
-VALUE ToInt32(VALUE self) {
-  return rr_to_ruby(unwrap(self)->ToInt32());
-}
-VALUE ToArrayIndex(VALUE self) {
-  return rr_to_ruby(unwrap(self)->ToArrayIndex());
-}
+  VALUE BooleanValue(VALUE self) {
+    return rr_v82rb(unwrap(self)->BooleanValue());
+  }
 
-VALUE Equals(VALUE self, VALUE that) {
-  return rr_to_ruby(unwrap(self)->Equals(unwrap(that)));
-}
-VALUE StrictEquals(VALUE self, VALUE that) {
-  return rr_to_ruby(unwrap(self)->StrictEquals(unwrap(that)));
+  VALUE NumberValue(VALUE self) {
+    return rr_v82rb(unwrap(self)->NumberValue());
+  }  
 }
 
 VALUE rr_cV8_C_Value;
 
-void rr_init_v8_value() {
+void rr_init_value() {
   rr_cV8_C_Value = rr_define_class("Value");
+  
   rr_define_method(rr_cV8_C_Value, "IsUndefined", IsUndefined, 0);
   rr_define_method(rr_cV8_C_Value, "IsNull", IsNull, 0);
   rr_define_method(rr_cV8_C_Value, "IsTrue", IsTrue, 0);
@@ -115,6 +125,9 @@ void rr_init_v8_value() {
   
   rr_define_method(rr_cV8_C_Value, "Equals", Equals, 1);
   rr_define_method(rr_cV8_C_Value, "StrictEquals", StrictEquals, 1);
+  
+  rr_define_method(rr_cV8_C_Value, "BooleanValue", BooleanValue, 0);
+  rr_define_method(rr_cV8_C_Value, "NumberValue", NumberValue, 0);
 }
 
 VALUE rr_wrap_v8_value(Handle<Value>& value) {
