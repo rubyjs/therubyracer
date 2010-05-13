@@ -6,6 +6,7 @@
 extern VALUE rr_cV8_C_Object;
 
 void rr_init_obj();
+VALUE rr_reflect_v8_object(v8::Handle<v8::Value> value);
 
 VALUE v8_Object_New(VALUE clazz);
 VALUE v8_Object_Get(VALUE self, VALUE key);

@@ -1,5 +1,6 @@
 #include "rr.h"
 #include "v8_value.h"
+#include "v8_obj.h"
 #include "v8_func.h"
 #include "v8_str.h"
 
@@ -24,7 +25,6 @@ VALUE rr_str_to_camel_case(VALUE str) {
 }
 
 VALUE rr_reflect_v8_array(Handle<Value> value);
-VALUE rr_reflect_v8_object(Handle<Value> value);
 
 VALUE rr_v82rb(Handle<Value> value) {
   if (value->IsUndefined() || value->IsNull()) {

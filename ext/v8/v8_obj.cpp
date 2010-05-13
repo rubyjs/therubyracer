@@ -19,6 +19,11 @@ void rr_init_obj() {
   rr_define_method(rr_cV8_C_Object, "context", v8_Object_context, 0);  
 }
 
+VALUE rr_reflect_v8_object(Handle<Value> value) {
+  Local<Object> o = Object::Cast(*value);
+  return V8_Ref_Create(rr_cV8_C_Object, o);
+}
+
 namespace {
   Local<Object> unwrap(VALUE robj) {
     return V8_Ref_Get<Object>(robj);

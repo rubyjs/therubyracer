@@ -81,7 +81,6 @@ VALUE Racer_Error_Message(TryCatch& exception) {
 }
 
 VALUE v8_cxt_eval(VALUE self, VALUE source, VALUE filename) {
-  printf("In cxt eval()\n");
   HandleScope handles;
   TryCatch exceptions;
   Local<Context> cxt = V8_Ref_Get<Context>(self);
@@ -96,9 +95,7 @@ VALUE v8_cxt_eval(VALUE self, VALUE source, VALUE filename) {
   if (exceptions.HasCaught()) {
     return Racer_Error_Message(exceptions);
   } else {
-    printf("about to convert result\n");
     return rr_v82rb(result);
-    // return V82RB(result);
   }
 }
 
