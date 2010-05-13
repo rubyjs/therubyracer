@@ -97,7 +97,7 @@ VALUE v8_cxt_eval(VALUE self, VALUE source, VALUE filename) {
     return Racer_Error_Message(exceptions);
   } else {
     printf("about to convert result\n");
-    return rr_to_ruby(result);
+    return rr_v82rb(result);
     // return V82RB(result);
   }
 }

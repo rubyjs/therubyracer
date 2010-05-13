@@ -68,6 +68,9 @@ VALUE rr_v82rb(Handle<String> value) {
 VALUE rr_v82rb(Handle<Object> value) {
   return rr_v82rb((Handle<Value>)value);
 }
+VALUE rr_v82rb(v8::Handle<v8::Function> value) {
+  return rr_v82rb((Handle<Value>)value);
+}
 VALUE rr_v82rb(Handle<Integer> value) {
   return rr_v82rb((Handle<Value>)value);
 }
@@ -93,6 +96,24 @@ VALUE rr_v82rb(int32_t value) {
   return INT2FIX(value);
 }
 
+
+Handle<Value> rr_rb2v8(VALUE value) {
+  switch (TYPE(value)) {
+  case T_FIXNUM:
+    return Integer::New(FIX2INT(value));
+  case T_FLOAT:
+    return Number::New(NUM2DBL(value));    
+  case T_STRING:
+    return String::New(RSTRING_PTR(value), RSTRING_LEN(value));
+  case T_NIL:
+    return Null();
+  case T_TRUE:
+    return True();
+  case T_FALSE:
+    return False();
+  }
+  return Undefined();
+}
 // VALUE rr_v82rb(v8::ScriptData *data) {
 //   return rr_thunk(rr_wrap_script_data(data));
 // }

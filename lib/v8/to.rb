@@ -21,19 +21,6 @@ module V8
           value
         end
       end
-
-      def rb(value)
-        puts "hello from To.rb"
-        if value.IsFunction()
-          V8::Function.new(value)
-        elsif value.IsObject()
-          V8::Object.new(value)
-        elsif value.IsNumber()
-          value.NumberValue()
-        elsif value.IsBoolean()
-          value.BooleanValue()
-        end
-      end
       
       def camel_case(str)
         str.to_s.gsub(/_(\w)/) {$1.upcase}

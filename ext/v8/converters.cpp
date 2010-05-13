@@ -15,7 +15,7 @@ namespace {
 VALUE V82RB(Handle<Value>& value) {
   convert_v8_to_rb_t convert;
   VALUE result;
-  VALUE type = V8_C_Object;
+  VALUE type = rr_cV8_C_Object;
   if(convert(value, result)) {
     return result;
   }
@@ -31,7 +31,7 @@ VALUE V82RB(Handle<Value>& value) {
   }
   
   if (value->IsFunction()) {
-    type = V8_C_Function;
+    type = rr_cV8_C_Function;
   }
 
   if (value->IsObject()) {

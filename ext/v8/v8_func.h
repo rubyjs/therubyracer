@@ -5,11 +5,10 @@
 #include "v8.h"
 #include "v8_ref.h"
 
-extern VALUE V8_C_Function;
+extern VALUE rr_cV8_C_Function;
 
 void rr_init_func();
 
-VALUE V8_Wrap_Function(v8::Handle<v8::Function> f);
+VALUE rr_reflect_v8_function(v8::Handle<v8::Value> value);
 
-VALUE v8_C_Function_Call(int argc, VALUE *argv, VALUE self);
 #endif

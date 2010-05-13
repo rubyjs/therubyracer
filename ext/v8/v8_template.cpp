@@ -62,6 +62,6 @@ VALUE v8_FunctionTemplate_New(int argc, VALUE *argv, VALUE self) {
 VALUE v8_FunctionTemplate_GetFunction(VALUE self) {
   HandleScope handles;
   Local<FunctionTemplate> t = V8_Ref_Get<FunctionTemplate>(self);
-  return V8_Wrap_Function(t->GetFunction());
+  return rr_v82rb(t->GetFunction());
 }
 
