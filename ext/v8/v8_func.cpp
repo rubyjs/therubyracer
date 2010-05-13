@@ -61,6 +61,7 @@ void rr_init_func() {
   // rr_define_method(FunctionClass, "GetScriptOrigin", GetScriptOrigin, 0);
 }
 
-void rr_reflec_v8_function(Handle<Value> value) {
-  
+VALUE rr_reflect_v8_function(Handle<Value> value) {
+  Local<Function> f = Function::Cast(*value);
+  return V8_Ref_Create(FunctionClass, f);
 }
