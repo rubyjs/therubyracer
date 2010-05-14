@@ -20,8 +20,8 @@ void rr_init_obj() {
 }
 
 VALUE rr_reflect_v8_object(Handle<Value> value) {
-  Local<Object> o = Object::Cast(*value);
-  return V8_Ref_Create(rr_cV8_C_Object, o);
+  Local<Object> object(Object::Cast(*value));
+  return V8_Ref_Create(rr_cV8_C_Object, object);
 }
 
 namespace {

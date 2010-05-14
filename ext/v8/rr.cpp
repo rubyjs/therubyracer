@@ -24,8 +24,6 @@ VALUE rr_str_to_camel_case(VALUE str) {
   return rb_funcall(to, rb_intern("camel_case"), 1, str);
 }
 
-VALUE rr_reflect_v8_array(Handle<Value> value);
-
 VALUE rr_v82rb(Handle<Value> value) {
   if (value->IsUndefined() || value->IsNull()) {
     return Qnil;

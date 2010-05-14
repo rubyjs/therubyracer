@@ -2,6 +2,7 @@
 #include "v8_value.h"
 #include "v8_str.h"
 #include "v8_obj.h"
+#include "v8_array.h"
 #include "v8_msg.h"
 #include "v8_func.h"
 #include "v8_script.h"
@@ -23,6 +24,7 @@ extern "C" {
         rr_init_template();
         rr_init_obj();
         rr_init_func();
+        rr_init_v8_array();
         rr_init_msg();                                
     }
 }
