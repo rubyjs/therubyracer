@@ -11,17 +11,19 @@ VALUE rr_cV8_C_Object;
 
 void rr_init_obj() {
   rr_cV8_C_Object = rr_define_class("Object", rr_cV8_C_Value);
+  rb_define_attr(rr_cV8_C_Object, "context", 1, 0);
   rr_define_singleton_method(rr_cV8_C_Object, "new", v8_Object_New, 0);
   rr_define_method(rr_cV8_C_Object, "Get", v8_Object_Get, 1);
   rr_define_method(rr_cV8_C_Object, "Set", v8_Object_Set, 2);
   rr_define_method(rr_cV8_C_Object, "GetPropertyNames", v8_Object_GetPropertyNames, 0);
   rr_define_method(rr_cV8_C_Object, "ToString", v8_Object_ToString, 0);
-  rr_define_method(rr_cV8_C_Object, "context", v8_Object_context, 0);  
 }
 
 VALUE rr_reflect_v8_object(Handle<Value> value) {
   Local<Object> object(Object::Cast(*value));
-  return V8_Ref_Create(rr_cV8_C_Object, object);
+  VALUE obj = V8_Ref_Create(rr_cV8_C_Object, object);
+  rb_iv_set(obj, "@context", rr_v82rb(Context::GetEntered()));
+  return obj;
 }
 
 namespace {
@@ -57,13 +59,6 @@ VALUE v8_Object_GetPropertyNames(VALUE self) {
   Local<Object> object = unwrap(self);  
   Local<Value> names = object->GetPropertyNames();
   return V82RB(names);
-}
-
-VALUE v8_Object_context(VALUE self) {
-  HandleScope handles;
-  Local<Object> object = unwrap(self);
-  Local<Value> cxt = object->GetHiddenValue(String::New("TheRubyRacer::Context"));
-  return cxt.IsEmpty() ? Qnil : (VALUE)External::Unwrap(cxt);
 }
 
 VALUE v8_Object_ToString(VALUE self) {

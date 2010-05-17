@@ -1,4 +1,5 @@
 #include "rr.h"
+#include "v8_cxt.h"
 #include "v8_value.h"
 #include "v8_obj.h"
 #include "v8_func.h"
@@ -54,6 +55,10 @@ VALUE rr_v82rb(Handle<Value> value) {
     return rr_reflect_v8_object(value);
   }
   return rr_wrap_v8_value(value);  
+}
+
+VALUE rr_v82rb(Handle<Context> value) {
+  return rr_reflect_v8_context(value);
 }
 VALUE rr_v82rb(Handle<Boolean> value) {
   return rr_v82rb((Handle<Value>)value);

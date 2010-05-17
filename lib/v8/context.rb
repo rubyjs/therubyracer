@@ -8,7 +8,7 @@ module V8
     
     def open(&block)
       if block_given?
-        unless @native == C::Context::GetCurrent()
+        unless @native == C::Context::GetEntered()
           @native.open do
             block.call(self)
           end

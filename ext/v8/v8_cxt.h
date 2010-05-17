@@ -9,13 +9,6 @@ extern VALUE V8_C_Object;
 extern VALUE V8_C_Context;
 
 void rr_init_cxt();
-
-VALUE v8_Context_New(int argc, VALUE *argv, VALUE self);
-VALUE v8_Context_InContext(VALUE self);
-VALUE v8_Context_GetCurrent(VALUE self);
-VALUE v8_cxt_Global(VALUE self);
-VALUE v8_cxt_open(VALUE self);
-VALUE v8_cxt_eval(VALUE self, VALUE source, VALUE filename);
-VALUE v8_cxt_eql(VALUE self, VALUE other);
+VALUE rr_reflect_v8_context(v8::Handle<v8::Context> value);
 
 #endif

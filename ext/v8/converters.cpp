@@ -38,7 +38,7 @@ VALUE V82RB(Handle<Value>& value) {
     Local<Object> object(Object::Cast(*value));
     Local<Value> peer = object->GetHiddenValue(String::New("TheRubyRacer::RubyObject"));
     if (peer.IsEmpty()) {
-      VALUE context_ref = V8_Ref_Create(V8_C_Context, Context::GetCurrent());
+      VALUE context_ref = V8_Ref_Create(V8_C_Context, Context::GetEntered());
       object->SetHiddenValue(String::New("TheRubyRacer::Context"), External::Wrap((void *)context_ref));
       return V8_Ref_Create(type, value, context_ref);
     } else {      

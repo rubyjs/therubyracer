@@ -18,8 +18,8 @@ describe C::Context do
   
   it "returns the currently open context" do
     C::Context.new.open do |cxt|
-      cxt.should be_eql(C::Context::GetCurrent())
-      cxt.should == C::Context::GetCurrent()
+      cxt.should be_eql(C::Context::GetEntered())
+      cxt.should == C::Context::GetEntered()
     end
   end
 end
