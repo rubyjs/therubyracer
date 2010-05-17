@@ -13,6 +13,7 @@ $:.unshift(File.dirname(__FILE__) + '/../lib')
 $:.unshift(File.dirname(__FILE__) + '/..')
 require 'v8'
 
+require 'erb'
 def rputs(msg)
-  puts ERB::Util.h(msg)
+  puts "<div>#{ERB::Util.h(msg)}</div>"
 end
