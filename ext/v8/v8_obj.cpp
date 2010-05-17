@@ -41,8 +41,8 @@ VALUE v8_Object_Get(VALUE self, VALUE key) {
   HandleScope handles;  
   Local<Object> obj = unwrap(self);
   VALUE keystr = rb_str_to_str(key);
-  Local<Value> value = obj->Get(RB2V8(keystr));
-  return V82RB(value);
+  Local<Value> value = obj->Get(rr_rb2v8(keystr));
+  return rr_v82rb(value);
 }
 
 VALUE v8_Object_Set(VALUE self, VALUE key, VALUE value) {
