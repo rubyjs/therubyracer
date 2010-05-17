@@ -10,11 +10,28 @@ using namespace v8;
 
 VALUE rr_cV8_C_Object;
 
+namespace {
+  
+  Local<Object> unwrap(VALUE robj) {
+    return V8_Ref_Get<Object>(robj);
+  }
+  
+  VALUE Get(VALUE self, VALUE key) {
+    HandleScope handles;
+    Local<Object> obj(unwrap(self));
+    if (rb_obj_is_kind_of(key, rb_cNumeric)) {
+      return rr_v82rb(obj->Get(NUM2UINT(key)));
+    } else {
+      return rr_v82rb(obj->Get(rr_rb2v8(rb_str_to_str(key))));
+    }
+  }
+}
+
 void rr_init_obj() {
   rr_cV8_C_Object = rr_define_class("Object", rr_cV8_C_Value);
   rb_define_attr(rr_cV8_C_Object, "context", 1, 0);
   rr_define_singleton_method(rr_cV8_C_Object, "new", v8_Object_New, 0);
-  rr_define_method(rr_cV8_C_Object, "Get", v8_Object_Get, 1);
+  rr_define_method(rr_cV8_C_Object, "Get", Get, 1);
   rr_define_method(rr_cV8_C_Object, "Set", v8_Object_Set, 2);
   rr_define_method(rr_cV8_C_Object, "GetPropertyNames", v8_Object_GetPropertyNames, 0);
   rr_define_method(rr_cV8_C_Object, "ToString", v8_Object_ToString, 0);
@@ -32,6 +49,7 @@ VALUE rr_reflect_v8_object(Handle<Value> value) {
   }
 }
 
+
 v8::Handle<v8::Value> rr_reflect_rb_object(VALUE value) {
   Local<Object> o = Racer_Create_V8_ObjectTemplate(value)->NewInstance();
   o->SetHiddenValue(String::New("TheRubyRacer::RubyObject"), External::Wrap((void *) value));
@@ -39,22 +57,11 @@ v8::Handle<v8::Value> rr_reflect_rb_object(VALUE value) {
 }
 
 namespace {
-  Local<Object> unwrap(VALUE robj) {
-    return V8_Ref_Get<Object>(robj);
-  }
 }
 
 VALUE v8_Object_New(VALUE clazz) {
   HandleScope handles;
   return V8_Ref_Create(clazz, Object::New());
-}
-
-VALUE v8_Object_Get(VALUE self, VALUE key) {
-  HandleScope handles;  
-  Local<Object> obj = unwrap(self);
-  VALUE keystr = rb_str_to_str(key);
-  Local<Value> value = obj->Get(rr_rb2v8(keystr));
-  return rr_v82rb(value);
 }
 
 VALUE v8_Object_Set(VALUE self, VALUE key, VALUE value) {

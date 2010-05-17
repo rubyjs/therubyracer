@@ -5,6 +5,7 @@ module V8
       def ruby(value)
         case value
         when V8::C::Function  then V8::Function.new(value)
+        when V8::C::Array     then V8::Array.new(value)          
         when V8::C::Object    then V8::Object.new(value)
         when V8::C::String    then value.Utf8Value()
         else
