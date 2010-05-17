@@ -30,7 +30,7 @@ namespace {
         cxt.Dispose();
       }
     } else {
-      thisObject = V8_Ref_Get<Object>(recv);
+      thisObject = rr_rb2v8(recv)->ToObject();
     }
     int f_argc = argc - 1;
     Local<Value> arguments[f_argc];

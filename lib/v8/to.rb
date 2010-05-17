@@ -18,6 +18,7 @@ module V8
         when String then  C::String.new(value)
         when Proc   then  C::FunctionTemplate.new(&value).GetFunction()
         when Method then  C::FunctionTemplate.new(&value.to_proc).GetFunction()
+        when V8::Object then value.instance_variable_get(:@native)
         else
           value
         end
