@@ -37,7 +37,7 @@ VALUE rr_v82rb(Handle<Value> value) {
     return INT2FIX(value->Int32Value());
   }
   if (value->IsBoolean()) {
-    return value->BooleanValue() ? true : false;
+    return value->BooleanValue() ? Qtrue : Qfalse;
   }
   if (value->IsNumber()) {
     return rb_float_new(value->NumberValue());
