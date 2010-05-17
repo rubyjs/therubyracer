@@ -19,7 +19,19 @@ namespace {
     rb_scan_args(argc, argv, "1*", &recv, &f_argv);
     
     Local<Function> function = V8_Ref_Get<Function>(self);
-    Local<Object> thisObject = V8_Ref_Get<Object>(recv);
+    Local<Object> thisObject;
+    if (NIL_P(recv)) {
+      if (Context::InContext()) {
+        thisObject = Context::GetEntered()->Global();
+      } else {
+        Persistent<Context> cxt = Context::New();
+        Context::Scope scope(cxt);
+        thisObject = cxt->Global();
+        cxt.Dispose();
+      }
+    } else {
+      thisObject = V8_Ref_Get<Object>(recv);
+    }
     int f_argc = argc - 1;
     Local<Value> arguments[f_argc];
     for (int i = 0; i < f_argc; i++) {

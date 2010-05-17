@@ -6,7 +6,7 @@ describe C::Function do
   it "is callable" do
     C::Context.new.open do |cxt|
       f = cxt.eval('(function() {return "Hello World"})', '<eval>');      
-      f.Call(cxt.Global).should == "Hello World"      
+      f.Call(cxt.Global).AsciiValue().should == "Hello World"      
     end
   end
   
@@ -37,6 +37,6 @@ describe C::Function do
     C::Context.new.open do |cxt|
       @f = cxt.eval('(function() {return "Call Me"})', 'eval')
     end
-    @f.Call(nil).should == "Call Me"
+    @f.Call(nil).Utf8Value().should == "Call Me"
   end
 end

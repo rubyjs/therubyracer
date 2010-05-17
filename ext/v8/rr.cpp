@@ -2,6 +2,7 @@
 #include "v8_value.h"
 #include "v8_obj.h"
 #include "v8_func.h"
+#include "v8_array.h"
 #include "v8_str.h"
 
 using namespace v8;
