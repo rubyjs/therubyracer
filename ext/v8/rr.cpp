@@ -115,7 +115,29 @@ Handle<Value> rr_rb2v8(VALUE value) {
     return True();
   case T_FALSE:
     return False();
+  case T_OBJECT:
+    return rr_reflect_rb_object(value);
+  case T_DATA:
+  case T_CLASS:
+  case T_ICLASS:
+  case T_MODULE:
+  case T_REGEXP:
+  case T_MATCH:
+  case T_ARRAY:
+  case T_HASH:
+  case T_STRUCT:
+  case T_BIGNUM:
+  case T_FILE:
+  case T_SYMBOL:
+  case T_BLKTAG:
+  case T_UNDEF:
+  case T_VARMAP:
+  case T_SCOPE:
+  case T_NODE:  
+  default:
+    return String::New("Undefined Conversion");
   }
+  
   return Undefined();
 }
 // VALUE rr_v82rb(v8::ScriptData *data) {

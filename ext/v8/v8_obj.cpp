@@ -1,6 +1,7 @@
 #include "v8_obj.h"
 #include "v8_ref.h"
 #include "v8_value.h"
+#include "v8_template.h"
 #include "converters.h"
 
 using namespace v8;
@@ -21,9 +22,20 @@ void rr_init_obj() {
 
 VALUE rr_reflect_v8_object(Handle<Value> value) {
   Local<Object> object(Object::Cast(*value));
-  VALUE obj = V8_Ref_Create(rr_cV8_C_Object, object);
-  rb_iv_set(obj, "@context", rr_v82rb(Context::GetEntered()));
-  return obj;
+  Local<Value> peer = object->GetHiddenValue(String::New("TheRubyRacer::RubyObject"));
+  if (peer.IsEmpty()) {
+    VALUE obj = V8_Ref_Create(rr_cV8_C_Object, object);
+    rb_iv_set(obj, "@context", rr_v82rb(Context::GetEntered()));
+    return obj;
+  } else {
+    return (VALUE)External::Unwrap(peer);
+  }
+}
+
+v8::Handle<v8::Value> rr_reflect_rb_object(VALUE value) {
+  Local<Object> o = Racer_Create_V8_ObjectTemplate(value)->NewInstance();
+  o->SetHiddenValue(String::New("TheRubyRacer::RubyObject"), External::Wrap((void *) value));
+  return o;  
 }
 
 namespace {

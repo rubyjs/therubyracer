@@ -70,8 +70,8 @@ Handle<Value> RacerRubyInvocationCallback(const Arguments& args) {
     VALUE result = rb_funcall2(code, rb_intern("call"), args.Length(), arguments);
     delete [] arguments;
     
-    Handle<Value> convertedResult = RB2V8(result);
-    return convertedResult  ;
+    Handle<Value> convertedResult = rr_rb2v8(result);
+    return convertedResult;
   }
 }
 
