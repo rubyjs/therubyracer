@@ -1,25 +1,6 @@
 require 'stringio'
 
 module V8
-  module C
-    class Context
-      def enter
-        if block_given?
-          if IsEntered()
-            yield(self)
-          else
-            Enter()
-            begin
-              yield(self)
-            ensure
-              Exit()
-            end            
-          end          
-        end
-      end
-    end
-  end
-  
   class Context    
     attr_reader :native
     def initialize(opts = {})
@@ -98,5 +79,24 @@ module V8
       super("#{To.ruby(msg.Get())}: #{@source_name}:#{@line_number}")
     end
 
+  end
+  
+  module C
+    class Context
+      def enter
+        if block_given?
+          if IsEntered()
+            yield(self)
+          else
+            Enter()
+            begin
+              yield(self)
+            ensure
+              Exit()
+            end
+          end
+        end
+      end
+    end
   end
 end
