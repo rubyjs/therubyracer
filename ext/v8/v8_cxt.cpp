@@ -65,17 +65,26 @@ namespace {
     unwrap(self)->Exit();
     return self;
   }
+  
+  VALUE IsEntered(VALUE self) {
+    if (Context::InContext()) {
+      return rr_v82rb(unwrap(self) == Context::GetEntered());
+    } else {
+      return Qfalse;
+    }
+  }
 }
 
 void rr_init_cxt() {
-  VALUE Context = V8_C_Context = rr_define_class("Context");
-  rr_define_singleton_method(Context, "new", New, -1);
-  rr_define_singleton_method(Context, "New", New, -1);
-  rr_define_singleton_method(Context, "InContext", InContext, 0);
-  rr_define_singleton_method(Context, "GetEntered", GetEntered, 0);
-  rr_define_method(Context, "Global", Global, 0);
-  rr_define_method(Context, "Enter", Enter, 0);
-  rr_define_method(Context, "Exit", Exit, 0);
+  VALUE ContextClass = V8_C_Context = rr_define_class("Context");
+  rr_define_singleton_method(ContextClass, "new", New, -1);
+  rr_define_singleton_method(ContextClass, "New", New, -1);
+  rr_define_singleton_method(ContextClass, "InContext", InContext, 0);
+  rr_define_singleton_method(ContextClass, "GetEntered", GetEntered, 0);
+  rr_define_method(ContextClass, "Global", Global, 0);
+  rr_define_method(ContextClass, "Enter", Enter, 0);
+  rr_define_method(ContextClass, "Exit", Exit, 0);
+  rr_define_method(ContextClass, "IsEntered", IsEntered, 0);
 }
 
 VALUE rr_reflect_v8_context(Handle<Context> value) {

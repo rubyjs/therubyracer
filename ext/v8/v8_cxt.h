@@ -5,7 +5,6 @@
 #include "v8.h"
 #include "v8_ref.h"
 
-extern VALUE V8_C_Object;
 extern VALUE V8_C_Context;
 
 void rr_init_cxt();
