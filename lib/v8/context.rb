@@ -5,12 +5,16 @@ module V8
     class Context
       def enter
         if block_given?
-          Enter()
-          begin
+          if IsEntered()
             yield(self)
-          ensure
-            Exit()
-          end
+          else
+            Enter()
+            begin
+              yield(self)
+            ensure
+              Exit()
+            end            
+          end          
         end
       end
     end
@@ -18,7 +22,7 @@ module V8
   
   class Context    
     attr_reader :native
-    def initialize(opts = {})      
+    def initialize(opts = {})
       @native = C::Context.new(opts[:with])
     end
     
@@ -32,32 +36,17 @@ module V8
       if IO === javascript || StringIO === javascript
         javascript = javascript.read()
       end      
-      @native.Enter()
-      begin
-        C::TryCatch.try do |try|
+      C::TryCatch.try do |try|
+        @native.enter do
           script = C::Script::Compile(To.v8(javascript.to_s), To.v8(filename.to_s))
           raise JavascriptError.new(try) if try.HasCaught()
           result = script.Run()
-          raise JavascriptError.new(try) if try.HasCaught()
+          raise JavascriptError.new(try) if try.HasCaught()          
           To.ruby(result)
-        end                
-      ensure
-        @native.Exit()
+        end
       end
     end
-    
-    # def eval(javascript, sourcename = '<eval>', line = 1)
-    #   if IO === javascript || StringIO === javascript
-    #     javascript = javascript.read()
-    #   end
-    #   @native.open do        
-    #     @native.eval(javascript, sourcename).tap do |result|
-    #       raise JavascriptError.new(result) if result.kind_of?(C::Message)
-    #       return To.ruby(result)
-    #     end
-    #   end
-    # end
-        
+            
     def evaluate(*args)
       self.eval(*args)
     end
@@ -96,16 +85,7 @@ module V8
       V8::Context.eval(*args)
     end
   end
-  
-  class ContextError < StandardError
-    def initialize(caller_name)
-      super("tried to call method '#{caller_name} without an open context")
-    end
-    def self.check_open(caller_name)
-      raise new(caller_name) unless C::Context::InContext()
-    end
-  end
-  
+    
   class JavascriptError < StandardError
     attr_reader :source_name, :source_line, :line_number, :javascript_stacktrace
     
@@ -118,7 +98,5 @@ module V8
       super("#{To.ruby(msg.Get())}: #{@source_name}:#{@line_number}")
     end
 
-  end
-  class RunawayScriptError < ContextError
   end
 end
