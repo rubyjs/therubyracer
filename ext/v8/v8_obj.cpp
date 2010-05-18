@@ -25,16 +25,36 @@ namespace {
       return rr_v82rb(obj->Get(rr_rb2v8(rb_str_to_str(key))));
     }
   }
+  
+  VALUE New(VALUE clazz) {
+    HandleScope handles;
+    return V8_Ref_Create(clazz, Object::New());
+  }
+  
+  VALUE Set(VALUE self, VALUE key, VALUE value) {
+    HandleScope handles;
+    Local<Object> obj = unwrap(self);
+
+    VALUE keystr = rb_funcall(key, rb_intern("to_s"), 0);
+    obj->Set(rr_rb2v8(keystr), RB2V8(value));
+    return Qnil;
+  }
+
+  VALUE GetPropertyNames(VALUE self) {
+    HandleScope handles;
+    Local<Object> object = unwrap(self);  
+    Local<Value> names = object->GetPropertyNames();
+    return rr_v82rb(names);
+  }  
 }
 
 void rr_init_obj() {
   rr_cV8_C_Object = rr_define_class("Object", rr_cV8_C_Value);
   rb_define_attr(rr_cV8_C_Object, "context", 1, 0);
-  rr_define_singleton_method(rr_cV8_C_Object, "New", v8_Object_New, 0);
+  rr_define_singleton_method(rr_cV8_C_Object, "New", New, 0);
   rr_define_method(rr_cV8_C_Object, "Get", Get, 1);
-  rr_define_method(rr_cV8_C_Object, "Set", v8_Object_Set, 2);
-  rr_define_method(rr_cV8_C_Object, "GetPropertyNames", v8_Object_GetPropertyNames, 0);
-  rr_define_method(rr_cV8_C_Object, "ToString", v8_Object_ToString, 0);
+  rr_define_method(rr_cV8_C_Object, "Set", Set, 2);
+  rr_define_method(rr_cV8_C_Object, "GetPropertyNames", GetPropertyNames, 0);
 }
 
 VALUE rr_reflect_v8_object(Handle<Value> value) {
@@ -54,32 +74,4 @@ v8::Handle<v8::Value> rr_reflect_rb_object(VALUE value) {
   Local<Object> o = Racer_Create_V8_ObjectTemplate(value)->NewInstance();
   o->SetHiddenValue(String::New("TheRubyRacer::RubyObject"), External::Wrap((void *) value));
   return o;  
-}
-
-VALUE v8_Object_New(VALUE clazz) {
-  HandleScope handles;
-  return V8_Ref_Create(clazz, Object::New());
-}
-
-VALUE v8_Object_Set(VALUE self, VALUE key, VALUE value) {
-  HandleScope handles;
-  Local<Object> obj = unwrap(self);
-
-  VALUE keystr = rb_funcall(key, rb_intern("to_s"), 0);
-  obj->Set(rr_rb2v8(keystr), RB2V8(value));
-  return Qnil;
-}
-
-VALUE v8_Object_GetPropertyNames(VALUE self) {
-  HandleScope handles;
-  Local<Object> object = unwrap(self);  
-  Local<Value> names = object->GetPropertyNames();
-  return rr_v82rb(names);
-}
-
-VALUE v8_Object_ToString(VALUE self) {
-  HandleScope handles;
-  Local<Object> object = unwrap(self);
-  Local<Value> string = object->ToString();
-  return V82RB(string);
 }
