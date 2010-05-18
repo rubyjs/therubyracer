@@ -26,7 +26,7 @@ namespace {
       } else {
         Persistent<Context> cxt = Context::New();
         Context::Scope scope(cxt);
-        thisObject = cxt->Global();
+        thisObject = Object::New();
         cxt.Dispose();
       }
     } else {
