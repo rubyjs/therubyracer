@@ -5,6 +5,7 @@
 #include "v8_func.h"
 #include "v8_array.h"
 #include "v8_str.h"
+#include "v8_msg.h"
 
 using namespace v8;
 
@@ -59,6 +60,9 @@ VALUE rr_v82rb(Handle<Value> value) {
 
 VALUE rr_v82rb(Handle<Context> value) {
   return rr_reflect_v8_context(value);
+}
+VALUE rr_v82rb(Handle<Message> value) {
+  return rr_reflect_v8_message(value);
 }
 VALUE rr_v82rb(Handle<Boolean> value) {
   return rr_v82rb((Handle<Value>)value);

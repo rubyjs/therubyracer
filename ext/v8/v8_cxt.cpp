@@ -62,57 +62,6 @@ namespace {
     unwrap(self)->Exit();
     return self;
   }
-  
-  VALUE v8_cxt_open(VALUE self) {
-    HandleScope handles;
-    Local<Context> cxt = V8_Ref_Get<Context>(self);
-    Context::Scope enter(cxt);
-    if (rb_block_given_p()) {
-      return rb_yield(self);
-    } else {
-      return Qnil;
-    }
-  }
-
-  VALUE Racer_Error_Message(TryCatch& exception) {
-    VALUE msg = V8_Wrap_Message(exception.Message());
-    Local<Value> stack = exception.StackTrace();
-    if (!stack.IsEmpty()) {
-      rb_iv_set(msg,"@stack",V82RB(stack));    
-    }
-    return msg;  
-  }
-
-  VALUE v8_cxt_eval(VALUE self, VALUE source, VALUE filename) {
-    HandleScope handles;
-    TryCatch exceptions;
-    Local<Context> cxt = V8_Ref_Get<Context>(self);
-    Context::Scope enter(cxt);
-    Local<Value> source_str = RB2V8(source);
-    Local<Value> source_name = RTEST(filename) ? RB2V8(filename) : *String::New("<eval>");
-    Local<Script> script = Script::Compile(source_str->ToString(), source_name);
-  	if (exceptions.HasCaught()) {	  
-      return Racer_Error_Message(exceptions);
-  	} 
-    Local<Value> result = script->Run();
-    if (exceptions.HasCaught()) {
-      return Racer_Error_Message(exceptions);
-    } else {
-      return rr_v82rb(result);
-    }
-  }
-
-  VALUE v8_cxt_eql(VALUE self, VALUE other) {
-    HandleScope handles;
-    if (RTEST(CLASS_OF(other) != V8_C_Context)) {
-      return Qnil;
-    } else {
-      Local<Context> cxt = V8_Ref_Get<Context>(self);
-      Local<Context> that = V8_Ref_Get<Context>(other);
-      return cxt == that ? Qtrue : Qfalse;
-    }
-    return Qnil;
-  }  
 }
 
 void rr_init_cxt() {
@@ -124,10 +73,6 @@ void rr_init_cxt() {
   rr_define_method(Context, "Global", Global, 0);
   rr_define_method(Context, "Enter", Enter, 0);
   rr_define_method(Context, "Exit", Exit, 0);
-  rr_define_method(Context, "open", v8_cxt_open, 0);
-  rr_define_method(Context, "eval", v8_cxt_eval, 2);
-  rr_define_method(Context, "eql?", v8_cxt_eql, 1);
-  rr_define_method(Context, "==", v8_cxt_eql, 1);  
 }
 
 VALUE rr_reflect_v8_context(Handle<Context> value) {

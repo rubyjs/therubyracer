@@ -11,15 +11,9 @@ describe C::Context do
   
   it "can determine if there is a current context" do
     C::Context::InContext().should be(false)
-    C::Context.new.open do |cxt|
+    Context.open do
       C::Context::InContext().should be(true)
     end
   end
-  
-  it "returns the currently open context" do
-    C::Context.new.open do |cxt|
-      cxt.should be_eql(C::Context::GetEntered())
-      cxt.should == C::Context::GetEntered()
-    end
-  end
+    
 end

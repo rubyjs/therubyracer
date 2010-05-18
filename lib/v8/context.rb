@@ -1,34 +1,62 @@
 require 'stringio'
 
-module V8  
+module V8
+  module C
+    class Context
+      def enter
+        if block_given?
+          Enter()
+          begin
+            yield(self)
+          ensure
+            Exit()
+          end
+        end
+      end
+    end
+  end
+  
   class Context    
+    attr_reader :native
     def initialize(opts = {})      
       @native = C::Context.new(opts[:with])
     end
     
-    def open(&block)
-      if block_given?
-        unless @native == C::Context::GetEntered()
-          @native.open do
-            block.call(self)
-          end
-        else
-          block.call(self)
-        end
+    def open
+      @native.enter do
+        yield(self)
+      end if block_given?
+    end
+    
+    def eval(javascript, filename = "<eval>", line = 1)
+      if IO === javascript || StringIO === javascript
+        javascript = javascript.read()
+      end      
+      @native.Enter()
+      begin
+        C::TryCatch.try do |try|
+          script = C::Script::Compile(To.v8(javascript.to_s), To.v8(filename.to_s))
+          raise JavascriptError.new(try) if try.HasCaught()
+          result = script.Run()
+          raise JavascriptError.new(try) if try.HasCaught()
+          To.ruby(result)
+        end                
+      ensure
+        @native.Exit()
       end
     end
     
-    def eval(javascript, sourcename = '<eval>', line = 1)
-      if IO === javascript || StringIO === javascript
-        javascript = javascript.read()
-      end
-      @native.open do        
-        @native.eval(javascript, sourcename).tap do |result|
-          raise JavascriptError.new(result) if result.kind_of?(C::Message)
-          return To.ruby(result)
-        end
-      end
-    end
+    # def eval(javascript, sourcename = '<eval>', line = 1)
+    #   if IO === javascript || StringIO === javascript
+    #     javascript = javascript.read()
+    #   end
+    #   @native.open do        
+    #     @native.eval(javascript, sourcename).tap do |result|
+    #       raise JavascriptError.new(result) if result.kind_of?(C::Message)
+    #       return To.ruby(result)
+    #     end
+    #   end
+    # end
         
     def evaluate(*args)
       self.eval(*args)
@@ -77,35 +105,20 @@ module V8
       raise new(caller_name) unless C::Context::InContext()
     end
   end
+  
   class JavascriptError < StandardError
-    def initialize(v8_message)
-      super("#{v8_message.Get()}: #{v8_message.GetScriptResourceName()}:#{v8_message.GetLineNumber()}")
-      @native = v8_message
+    attr_reader :source_name, :source_line, :line_number, :javascript_stacktrace
+    
+    def initialize(try)
+      msg = try.Message()
+      @source_name = To.ruby(msg.GetScriptResourceName())
+      @source_line = To.ruby(msg.GetSourceLine())
+      @line_number = To.ruby(msg.GetLineNumber())
+      @javascript_stacktrace = To.ruby(try.StackTrace())
+      super("#{To.ruby(msg.Get())}: #{@source_name}:#{@line_number}")
     end
 
-    def source_name
-      @native.GetScriptResourceName()      
-    end
-    
-    def source_line
-      @native.GetSourceLine()
-    end
-    
-    def line_number
-      @native.GetLineNumber()
-    end
-    
-    def javascript_stacktrace
-      @native.stack
-    end
-    
   end
   class RunawayScriptError < ContextError
-  end
-  
-  module C
-    class Message
-      attr_reader :stack
-    end
   end
 end

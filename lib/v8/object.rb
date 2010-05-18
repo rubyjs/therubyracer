@@ -8,21 +8,21 @@ module V8
     end
     
     def [](key)
-      @native.context.open do
+      @native.context.enter do
         To.ruby(@native.Get(key.to_s))        
       end
     end
     
     def []=(key, value)
       value.tap do
-        @native.context.open do
+        @native.context.enter do
           @native.Set(key.to_s, value)
         end
       end
     end
     
     def to_s
-      @native.context.open do
+      @native.context.enter do
         @native.ToString()
       end
     end

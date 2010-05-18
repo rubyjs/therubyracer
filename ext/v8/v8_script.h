@@ -5,6 +5,4 @@
 
 void rr_init_script();
 
-VALUE v8_script_new(VALUE self, VALUE source);
-VALUE v8_script_Run(VALUE self);
 #endif
