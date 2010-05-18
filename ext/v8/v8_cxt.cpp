@@ -77,7 +77,6 @@ namespace {
 
 void rr_init_cxt() {
   VALUE ContextClass = V8_C_Context = rr_define_class("Context");
-  rr_define_singleton_method(ContextClass, "new", New, -1);
   rr_define_singleton_method(ContextClass, "New", New, -1);
   rr_define_singleton_method(ContextClass, "InContext", InContext, 0);
   rr_define_singleton_method(ContextClass, "GetEntered", GetEntered, 0);

@@ -12,7 +12,9 @@ using namespace v8;
 VALUE rr_define_class(const char *name, VALUE superclass) {
   VALUE V8 = rb_define_module("V8");
   VALUE V8_C = rb_define_module_under(V8, "C");
-  return rb_define_class_under(V8_C, name, superclass);
+  VALUE klass = rb_define_class_under(V8_C, name, superclass);
+  rb_funcall(klass, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+  return klass;
 }
 
 VALUE rr_str_to_perl_case(VALUE str) {

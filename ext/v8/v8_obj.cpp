@@ -30,7 +30,7 @@ namespace {
 void rr_init_obj() {
   rr_cV8_C_Object = rr_define_class("Object", rr_cV8_C_Value);
   rb_define_attr(rr_cV8_C_Object, "context", 1, 0);
-  rr_define_singleton_method(rr_cV8_C_Object, "new", v8_Object_New, 0);
+  rr_define_singleton_method(rr_cV8_C_Object, "New", v8_Object_New, 0);
   rr_define_method(rr_cV8_C_Object, "Get", Get, 1);
   rr_define_method(rr_cV8_C_Object, "Set", v8_Object_Set, 2);
   rr_define_method(rr_cV8_C_Object, "GetPropertyNames", v8_Object_GetPropertyNames, 0);

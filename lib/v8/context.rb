@@ -4,7 +4,7 @@ module V8
   class Context    
     attr_reader :native
     def initialize(opts = {})
-      @native = C::Context.new(opts[:with])
+      @native = C::Context::New(opts[:with])
     end
     
     def open
