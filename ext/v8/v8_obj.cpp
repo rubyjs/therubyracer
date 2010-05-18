@@ -56,9 +56,6 @@ v8::Handle<v8::Value> rr_reflect_rb_object(VALUE value) {
   return o;  
 }
 
-namespace {
-}
-
 VALUE v8_Object_New(VALUE clazz) {
   HandleScope handles;
   return V8_Ref_Create(clazz, Object::New());
@@ -69,7 +66,7 @@ VALUE v8_Object_Set(VALUE self, VALUE key, VALUE value) {
   Local<Object> obj = unwrap(self);
 
   VALUE keystr = rb_funcall(key, rb_intern("to_s"), 0);
-  obj->Set(RB2V8(keystr), RB2V8(value));
+  obj->Set(rr_rb2v8(keystr), RB2V8(value));
   return Qnil;
 }
 
@@ -77,7 +74,7 @@ VALUE v8_Object_GetPropertyNames(VALUE self) {
   HandleScope handles;
   Local<Object> object = unwrap(self);  
   Local<Value> names = object->GetPropertyNames();
-  return V82RB(names);
+  return rr_v82rb(names);
 }
 
 VALUE v8_Object_ToString(VALUE self) {

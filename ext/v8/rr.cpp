@@ -28,7 +28,7 @@ VALUE rr_str_to_camel_case(VALUE str) {
 }
 
 VALUE rr_v82rb(Handle<Value> value) {
-  if (value->IsUndefined() || value->IsNull()) {
+  if (value.IsEmpty() || value->IsUndefined() || value->IsNull()) {
     return Qnil;
   }
   if (value->IsUint32()) {

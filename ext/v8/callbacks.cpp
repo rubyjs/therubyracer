@@ -51,6 +51,7 @@ namespace {
     if (FIX2INT(rb_funcall(method, rb_intern("arity"), 0)) == 0) {
       return Racer_Call_Ruby_Method(object, name, Array::New(0));      
     } else {
+      //causes out of memory if we use rr_rb2v8
       return RB2V8(method);
     }        
   }
@@ -64,6 +65,7 @@ Handle<Value> RacerRubyInvocationCallback(const Arguments& args) {
     VALUE* arguments = new VALUE[args.Length()];
     for(int c=0;c<args.Length(); ++c) {
       Handle<Value> val = args[c];
+      // arguments[c] = rr_v82rb(val); // segfaults... why?
       arguments[c] = V82RB(val);
     }
       
@@ -89,6 +91,7 @@ Handle<Value> RacerRubyNamedPropertyGetter(Local<String> property, const Accesso
     return Handle<Value>();
   }
   VALUE object = unwrap(info);
+  // VALUE camel_name = rr_v82rb(property); //segfaults. why??
   VALUE camel_name = V82RB((Local<Value>&)property);
   VALUE perl_name = rr_str_to_perl_case(camel_name);
   // VALUE perl_name = rb_funcall(V8_To, rb_intern("perl_case"), 1, camel_name);
@@ -176,7 +179,7 @@ Handle<Array> RacerRubyNamedPropertyEnumerator(const AccessorInfo& info) {
   for (int i = 0; i < length; i++) {
     // VALUE camel_name = rb_funcall(V8_To, rb_intern("camel_case"), 1, rb_ary_entry(methods, i));
     VALUE camel_name = rr_str_to_camel_case(rb_ary_entry(methods, i));
-    properties->Set(Integer::New(i), RB2V8(camel_name));
+    properties->Set(Integer::New(i), rr_rb2v8(camel_name));
   }
   return properties;
 }

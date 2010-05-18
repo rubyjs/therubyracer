@@ -8,6 +8,7 @@
 #include "v8_script.h"
 #include "v8_template.h"
 #include "v8_try_catch.h"
+#include "v8_arguments.h"
 #include "converters.h"
 
 #include <stdio.h>
@@ -27,6 +28,7 @@ extern "C" {
         rr_init_func();
         rr_init_v8_array();
         rr_init_msg();
-        rr_init_v8_try_catch();                           
+        rr_init_v8_try_catch();
+        rr_init_v8_arguments();
     }
 }
