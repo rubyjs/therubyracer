@@ -23,7 +23,10 @@ namespace {
     VALUE scope;
     rb_scan_args(argc,argv, "01", &scope);
     if (NIL_P(scope)) {
-      return V8_Ref_Create(self, Context::New());
+      Persistent<Context> cxt(Context::New());
+      VALUE ref = V8_Ref_Create(self, cxt);
+      cxt.Dispose();
+      return ref;
     } else {
       Persistent<Context> context = Context::New(0, Racer_Create_V8_ObjectTemplate(scope));
       Context::Scope enter(context);
