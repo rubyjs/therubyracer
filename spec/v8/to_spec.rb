@@ -11,5 +11,4 @@ describe V8::To do
     To.perl_case("XMLDocument").should == "xml_document"
   end
   
-  
 end

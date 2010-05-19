@@ -22,22 +22,27 @@ namespace {
     if (rb_obj_is_kind_of(key, rb_cNumeric)) {
       return rr_v82rb(obj->Get(NUM2UINT(key)));
     } else {
-      return rr_v82rb(obj->Get(rr_rb2v8(rb_str_to_str(key))));
+      return rr_v82rb(obj->Get(rr_rb2v8(key)->ToString()));
     }
   }
   
   VALUE New(VALUE clazz) {
     HandleScope handles;
+    if (!Context::InContext()) {
+      rb_raise(rb_eScriptError, "tried to allocate an Object, but no context was open");
+      return Qnil;
+    }
     return V8_Ref_Create(clazz, Object::New());
   }
   
   VALUE Set(VALUE self, VALUE key, VALUE value) {
     HandleScope handles;
     Local<Object> obj = unwrap(self);
-
-    VALUE keystr = rb_funcall(key, rb_intern("to_s"), 0);
-    obj->Set(rr_rb2v8(keystr), RB2V8(value));
-    return Qnil;
+    if (rb_obj_is_kind_of(key, rb_cNumeric)) {
+      return rr_v82rb(obj->Set(NUM2UINT(key), RB2V8(value)));
+    } else {
+      return rr_v82rb(obj->Set(rr_rb2v8(key), rr_rb2v8(value)));
+    }
   }
 
   VALUE GetPropertyNames(VALUE self) {

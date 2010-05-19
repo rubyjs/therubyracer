@@ -57,16 +57,19 @@ namespace {
   }  
   
   VALUE Enter(VALUE self) {
+    HandleScope handles;
     unwrap(self)->Enter();
     return self;
   }
   
   VALUE Exit(VALUE self) {
+    HandleScope handles;
     unwrap(self)->Exit();
     return self;
   }
   
   VALUE IsEntered(VALUE self) {
+    HandleScope handles;
     if (Context::InContext()) {
       return rr_v82rb(unwrap(self) == Context::GetEntered());
     } else {

@@ -15,10 +15,16 @@ module V8
       
       def v8(value)
         case value
-        when String then  C::String.new(value)
-        when Proc   then  C::FunctionTemplate.new(&value).GetFunction()
-        when Method then  C::FunctionTemplate.new(&value.to_proc).GetFunction()
-        when V8::Object then value.instance_variable_get(:@native)
+        when String, Symbol then  C::String::New(value.to_s)
+        when Proc,Method
+          C::FunctionTemplate::New() do |arguments|
+            rbargs = []
+            for i in 0..arguments.Length() - 1
+              rbargs << To.ruby(arguments[i])
+            end
+            To.v8(value.call(*rbargs))
+          end.GetFunction()
+        when V8::Object then value.instance_eval {@native}
         else
           value
         end

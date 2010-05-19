@@ -30,7 +30,14 @@ namespace {
         cxt.Dispose();
       }
     } else {
-      thisObject = rr_rb2v8(recv)->ToObject();
+      if (!Context::InContext()) {
+        Persistent<Context> cxt = Context::New();
+        cxt->Enter();
+        thisObject = rr_rb2v8(recv)->ToObject();
+        cxt->Exit();
+      } else {
+        thisObject = rr_rb2v8(recv)->ToObject();
+      }
     }
     int f_argc = argc - 1;
     Local<Value> arguments[f_argc];

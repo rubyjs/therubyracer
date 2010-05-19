@@ -9,14 +9,14 @@ module V8
     
     def [](key)
       @native.context.enter do
-        To.ruby(@native.Get(key.to_s))        
+        To.ruby(@native.Get(To.v8(key)))        
       end
     end
     
     def []=(key, value)
       value.tap do
         @native.context.enter do
-          @native.Set(key.to_s, value)
+          @native.Set(To.v8(key), To.v8(value))
         end
       end
     end

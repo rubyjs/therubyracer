@@ -5,6 +5,7 @@ module V8
     attr_reader :native
     def initialize(opts = {})
       @native = C::Context::New(opts[:with])
+      yield(self) if block_given?
     end
     
     def open
@@ -20,9 +21,9 @@ module V8
       C::TryCatch.try do |try|
         @native.enter do
           script = C::Script::Compile(To.v8(javascript.to_s), To.v8(filename.to_s))
-          raise JavascriptError.new(try) if try.HasCaught()
+          JavascriptError.check try
           result = script.Run()
-          raise JavascriptError.new(try) if try.HasCaught()          
+          JavascriptError.check try
           To.ruby(result)
         end
       end
@@ -46,9 +47,9 @@ module V8
     
     def []=(key, value)
       value.tap do 
-        open do
+        open do          
           @native.Global().tap do |scope|
-            scope.Set(key.to_s, value)
+            scope.Set(To.v8(key.to_s), To.v8(value))
           end
         end
       end
@@ -77,6 +78,10 @@ module V8
       @line_number = To.ruby(msg.GetLineNumber())
       @javascript_stacktrace = To.ruby(try.StackTrace())
       super("#{To.ruby(msg.Get())}: #{@source_name}:#{@line_number}")
+    end
+    
+    def self.check(try)
+      raise JavascriptError.new(try) if try.HasCaught()
     end
 
   end

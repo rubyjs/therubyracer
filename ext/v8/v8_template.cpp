@@ -3,22 +3,70 @@
 #include "v8_ref.h"
 #include "v8_func.h"
 #include "v8_template.h"
-#include "converters.h"
+#include "v8_callbacks.h"
 #include "callbacks.h"
+#include "converters.h"
 
 using namespace v8;
 
+namespace {
+  Local<Template> tmpl(VALUE self) {
+    return V8_Ref_Get<Template>(self);
+  }
+  Local<ObjectTemplate> obj(VALUE self) {
+    return V8_Ref_Get<ObjectTemplate>(self);
+  }
+  Local<FunctionTemplate> func(VALUE self) {
+    return V8_Ref_Get<FunctionTemplate>(self);
+  }
+
+  VALUE Set(VALUE self, VALUE name, VALUE value) {
+    HandleScope handles;
+    Local<String> key = rr_rb2v8(name)->ToString();
+    Local<Data> data = V8_Ref_Get<Data>(value);
+    tmpl(self)->Set(key, data);
+    return Qnil;
+  }
+
+  namespace Obj {
+
+  }
+
+  namespace Func {
+    VALUE New(VALUE function_template) {
+      HandleScope handles;
+      rb_need_block();
+      VALUE code = rb_block_proc();
+      if (NIL_P(code)) {
+        return Qnil;
+      }
+      Local<FunctionTemplate> templ = FunctionTemplate::New(RubyInvocationCallback, External::Wrap((void *)code));
+      return V8_Ref_Create(function_template,templ,code);
+    }
+    VALUE GetFunction(VALUE self) {
+      if (!Context::InContext()) {
+        rb_raise(rb_eScriptError, "calls to FunctionTemplate::GetFunction() require a Context to be entered");
+        return Qnil;
+      }
+      HandleScope handles;
+      Local<FunctionTemplate> templ = func(self);
+      Local<Function> fun = templ->GetFunction();
+      return rr_v82rb(func(self)->GetFunction());
+    }
+  }
+}
 
 void rr_init_template() {
   VALUE Template = rr_define_class("Template");
-  rb_define_method(Template, "Set", (VALUE(*)(...))v8_Template_Set, 2);
+  rr_define_method(Template, "Set", Set, 2);
   
   VALUE ObjectTemplate = rr_define_class("ObjectTemplate", Template);
   rb_define_singleton_method(ObjectTemplate, "new", (VALUE(*)(...))v8_ObjectTemplate_New, 0);
   
   VALUE FunctionTemplate = rr_define_class("FunctionTemplate", Template);
-  rb_define_singleton_method(FunctionTemplate, "new", (VALUE(*)(...))v8_FunctionTemplate_New, -1);
-  rb_define_method(FunctionTemplate, "GetFunction", (VALUE(*)(...))v8_FunctionTemplate_GetFunction, 0);
+  rr_define_singleton_method(FunctionTemplate, "New", Func::New, 0);
+  // rb_define_singleton_method(FunctionTemplate, "new", (VALUE(*)(...))v8_FunctionTemplate_New, -1);
+  rr_define_method(FunctionTemplate, "GetFunction", Func::GetFunction, 0);
   
 }
 
