@@ -16,14 +16,17 @@ namespace {
     virtual ~Wrap();
   };
   
-  Wrap::Wrap(Handle<Object> thisObj_, Handle<Object> holder_, Handle<Value> data_) : thisObj(thisObj_), holder(holder_), data(data_) {}
+  Wrap::Wrap(Handle<Object> thisObj_, Handle<Object> holder_, Handle<Value> data_) : 
+    thisObj(Persistent<Object>::New(thisObj_)), 
+    holder(Persistent<Object>::New(holder_)), 
+    data(Persistent<Value>::New(data_)) {}
   Wrap::~Wrap() {
     thisObj.Dispose();
     holder.Dispose();
     data.Dispose();
   }
-  void gc_mark(Wrap *wrapper) {}
-  void gc_free(Wrap *wrapper) {
+  void gc_wrap_mark(Wrap *wrapper) {}
+  void gc_wrap_free(Wrap *wrapper) {
     delete wrapper;
   }
   
@@ -36,9 +39,10 @@ namespace {
     virtual ~WrapArguments();    
   };
   
-  WrapArguments::WrapArguments(const Arguments& arguments) : Wrap(arguments.This(), arguments.Holder(), arguments.Data()), values(*Array::New(arguments.Length())) {
+  WrapArguments::WrapArguments(const Arguments& arguments) : Wrap(arguments.This(), arguments.Holder(), arguments.Data()),
+    callee(Persistent<Function>::New(arguments.Callee())),
+    values(Persistent<Array>::New(Array::New(arguments.Length()))) {
     length = arguments.Length();
-    callee = *arguments.Callee();
     isConstructCall = arguments.IsConstructCall();
     for (int i = 0; i < arguments.Length(); i++) {
       values->Set(Integer::New(i), arguments[i]);
@@ -109,11 +113,11 @@ void rr_init_v8_callbacks() {
 }
 
 VALUE rr_v82rb(const AccessorInfo& info) {
-  return Data_Wrap_Struct(AccessorInfoClass, gc_mark, gc_free, new WrapAccessorInfo(info));
+  return Data_Wrap_Struct(AccessorInfoClass, gc_wrap_mark, gc_wrap_free, new WrapAccessorInfo(info));
 }
 
 VALUE rr_v82rb(const Arguments& arguments) {
-  return Data_Wrap_Struct(ArgumentsClass, gc_mark, gc_free, new WrapArguments(arguments));
+  return Data_Wrap_Struct(ArgumentsClass, gc_wrap_mark, gc_wrap_free, new WrapArguments(arguments));  
 }
 
 Handle<Value> RubyInvocationCallback(const Arguments& args) {

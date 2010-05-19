@@ -36,7 +36,6 @@ namespace {
     delete ptr;
   }
   
-  
   TryCatch *unwrap(VALUE self) {
     try_catch *ref = 0;
     Data_Get_Struct(self, struct try_catch, ref);
