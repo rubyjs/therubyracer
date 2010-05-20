@@ -11,15 +11,12 @@ struct v8_ref  {
   //the referenced object
   v8_ref(v8::Handle<void> object, VALUE ref = 0);
   virtual ~v8_ref();
+  void set(const char *name, VALUE ref);
   v8::Persistent<void> handle;
   VALUE references;
 };
 
-
-//memory management
-void v8_ref_mark(v8_ref* ref);
-void v8_ref_free(v8_ref* ref);
-
+void rr_v8_ref_setref(VALUE handle, const char *name, VALUE ref);
 VALUE V8_Ref_Create(VALUE ruby_class, v8::Handle<void> handle, VALUE ref = 0);
 
 template <class T> v8::Local<T> V8_Ref_Get(VALUE object) {
