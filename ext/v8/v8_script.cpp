@@ -9,7 +9,7 @@ namespace {
   VALUE Compile(VALUE self, VALUE source, VALUE source_name) {
     Local<String> src(rr_rb2v8(source)->ToString());
     Local<String> src_name(rr_rb2v8(source_name)->ToString());
-    return V8_Ref_Create(self, Script::Compile(src, src_name));
+    return rr_v8_ref_create(self, Script::Compile(src, src_name));
   }
 
   VALUE Run(VALUE self) {
