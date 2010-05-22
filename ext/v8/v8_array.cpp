@@ -14,8 +14,12 @@ namespace {
   }
   
   VALUE New(int argc, VALUE *argv, VALUE self) {
+    if (!Context::InContext()) {
+      rb_raise(rb_eScriptError, "must be in a context to call Array::New()");
+      return Qnil;
+    }
     VALUE length;
-    rb_scan_args(argc, argv, "0", &length);
+    rb_scan_args(argc, argv, "01", &length);
     if (NIL_P(length)) {
       length = INT2FIX(0);
     }
