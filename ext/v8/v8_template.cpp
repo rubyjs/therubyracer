@@ -196,9 +196,7 @@ void rr_init_template() {
 }
 
 Local<ObjectTemplate> Racer_Create_V8_ObjectTemplate(VALUE value) {
-  printf("legacy!!!\n");
-  rb_raise(rb_eScriptError, "wrapped legacy template");
-  Local<ObjectTemplate> tmpl = ObjectTemplate::New();
+    Local<ObjectTemplate> tmpl = ObjectTemplate::New();
   // tmpl->SetInternalFieldCount(2);
   tmpl->SetNamedPropertyHandler(
     RacerRubyNamedPropertyGetter,
