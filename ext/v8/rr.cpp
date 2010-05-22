@@ -17,6 +17,13 @@ VALUE rr_define_class(const char *name, VALUE superclass) {
   return klass;
 }
 
+VALUE rr_define_const(const char *name, VALUE value) {
+  VALUE V8 = rb_define_module("V8");
+  VALUE V8_C = rb_define_module_under(V8, "C");
+  rb_define_const(V8_C, name, value);
+  return value;
+}
+
 VALUE rr_str_to_perl_case(VALUE str) {
   VALUE V8 = rb_define_module("V8");
   VALUE to = rb_define_module_under(V8, "To");
@@ -30,6 +37,9 @@ VALUE rr_str_to_camel_case(VALUE str) {
 }
 
 VALUE rr_v82rb(Handle<Value> value) {
+  if (value.IsEmpty()) {
+    return rr_cV8_C_Empty;
+  }
   if (value.IsEmpty() || value->IsUndefined() || value->IsNull()) {
     return Qnil;
   }

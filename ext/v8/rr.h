@@ -8,6 +8,7 @@
 #define rr_define_singleton_method(object, name, impl, argc) rb_define_singleton_method(object, name, (VALUE(*)(...))impl, argc)
 
 VALUE rr_define_class(const char *name, VALUE superclass = rb_cObject);
+VALUE rr_define_const(const char *name, VALUE value);
 VALUE rr_str_to_perl_case(VALUE str);
 VALUE rr_str_to_camel_case(VALUE str);
 
