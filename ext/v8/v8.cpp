@@ -9,6 +9,7 @@
 #include "v8_template.h"
 #include "v8_try_catch.h"
 #include "v8_callbacks.h"
+#include "v8_external.h"
 
 #include <stdio.h>
 
@@ -29,5 +30,6 @@ extern "C" {
         rr_init_msg();
         rr_init_v8_try_catch();
         rr_init_v8_callbacks();
+        rr_init_v8_external();
     }
 }
