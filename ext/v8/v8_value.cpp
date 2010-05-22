@@ -95,10 +95,12 @@ namespace {
 }
 
 VALUE rr_cV8_C_Value;
+VALUE rr_cV8_C_Empty;
 
 void rr_init_value() {
   rr_cV8_C_Value = rr_define_class("Value");
-  
+  rr_cV8_C_Empty = rr_define_const("Empty", rr_v8_ref_create(rr_cV8_C_Value, Handle<Value>()));
+
   rr_define_method(rr_cV8_C_Value, "IsUndefined", IsUndefined, 0);
   rr_define_method(rr_cV8_C_Value, "IsNull", IsNull, 0);
   rr_define_method(rr_cV8_C_Value, "IsTrue", IsTrue, 0);
@@ -122,10 +124,10 @@ void rr_init_value() {
   rr_define_method(rr_cV8_C_Value, "ToInteger", ToInteger, 0);
   rr_define_method(rr_cV8_C_Value, "ToUint32", ToUint32, 0);
   rr_define_method(rr_cV8_C_Value, "ToArrayIndex", ToArrayIndex, 0);
-  
+
   rr_define_method(rr_cV8_C_Value, "Equals", Equals, 1);
   rr_define_method(rr_cV8_C_Value, "StrictEquals", StrictEquals, 1);
-  
+
   rr_define_method(rr_cV8_C_Value, "BooleanValue", BooleanValue, 0);
   rr_define_method(rr_cV8_C_Value, "NumberValue", NumberValue, 0);
 }

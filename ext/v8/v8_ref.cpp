@@ -31,6 +31,10 @@ VALUE V8_Ref_Create(VALUE ruby_class, v8::Handle<void> handle, VALUE ref) {
   return Data_Wrap_Struct(ruby_class, gc_mark, gc_free, new v8_ref(handle, ref));
 }
 
+VALUE rr_v8_ref_create(VALUE rbclass, v8::Handle<void> handle) {
+  return Data_Wrap_Struct(rbclass, gc_mark, gc_free, new v8_ref(handle));
+}
+
 void rr_v8_ref_setref(VALUE handle, const char *name, VALUE newref) {
   v8_ref *ref = 0;
   Data_Get_Struct(handle, struct v8_ref, ref);

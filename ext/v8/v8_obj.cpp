@@ -29,7 +29,7 @@ namespace {
   VALUE New(VALUE clazz) {
     HandleScope handles;
     if (!Context::InContext()) {
-      rb_raise(rb_eScriptError, "tried to allocate an Object, but no context was open");
+      rb_raise(rb_eScriptError, "Object::New() called without an entered Context");
       return Qnil;
     }
     return V8_Ref_Create(clazz, Object::New());
@@ -39,7 +39,7 @@ namespace {
     HandleScope handles;
     Local<Object> obj = unwrap(self);
     if (rb_obj_is_kind_of(key, rb_cNumeric)) {
-      return rr_v82rb(obj->Set(NUM2UINT(key), RB2V8(value)));
+      return rr_v82rb(obj->Set(NUM2UINT(key), rr_rb2v8(value)));
     } else {
       return rr_v82rb(obj->Set(rr_rb2v8(key), rr_rb2v8(value)));
     }
@@ -50,7 +50,18 @@ namespace {
     Local<Object> object = unwrap(self);  
     Local<Value> names = object->GetPropertyNames();
     return rr_v82rb(names);
-  }  
+  }
+  VALUE SetHiddenValue(VALUE self, VALUE key, VALUE value) {
+    HandleScope scope;
+    if (Context::InContext()) {
+      unwrap(self)->SetHiddenValue(rr_rb2v8(key)->ToString(), rr_rb2v8(value));
+    } else {
+      rb_raise(rb_eScriptError, "Object::SetHiddenValue() called without an entered Context");
+    }
+    //TODO: need to store a reference here? what's the best way
+    // rr_v8_ref_setref(self, "RubyPeer", )
+    return Qnil;
+  }
 }
 
 void rr_init_obj() {
@@ -60,6 +71,7 @@ void rr_init_obj() {
   rr_define_method(rr_cV8_C_Object, "Get", Get, 1);
   rr_define_method(rr_cV8_C_Object, "Set", Set, 2);
   rr_define_method(rr_cV8_C_Object, "GetPropertyNames", GetPropertyNames, 0);
+  rr_define_method(rr_cV8_C_Object, "SetHiddenValue", SetHiddenValue, 2);
 }
 
 VALUE rr_reflect_v8_object(Handle<Value> value) {

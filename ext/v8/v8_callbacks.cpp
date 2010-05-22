@@ -119,11 +119,3 @@ VALUE rr_v82rb(const AccessorInfo& info) {
 VALUE rr_v82rb(const Arguments& arguments) {
   return Data_Wrap_Struct(ArgumentsClass, gc_wrap_mark, gc_wrap_free, new WrapArguments(arguments));  
 }
-
-Handle<Value> RubyInvocationCallback(const Arguments& args) {
-  HandleScope handles;
-  VALUE code = (VALUE)External::Unwrap(args.Data());
-  VALUE rb_args = rr_v82rb(args);
-  VALUE result = rb_funcall(code, rb_intern("call"), 1, rb_args);
-  return rr_rb2v8(result);
-}

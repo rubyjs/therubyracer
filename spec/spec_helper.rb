@@ -1,3 +1,4 @@
+
 begin
   require 'spec'
 rescue LoadError

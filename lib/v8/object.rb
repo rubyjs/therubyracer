@@ -28,7 +28,7 @@ module V8
     end
     
     def each
-      for prop in To.ruby(@native.GetPropertyNames())
+      for prop in To.rb(@native.GetPropertyNames())
         yield prop, self[prop]
       end
     end

@@ -18,6 +18,7 @@ namespace {
     return V8_Ref_Get<Context>(value);
   }
   
+  //TODO: make this scriptable and less static
   VALUE New(int argc, VALUE *argv, VALUE self) {
     HandleScope handles;
     VALUE scope;
