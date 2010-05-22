@@ -10,4 +10,5 @@ module V8
   require 'v8/array'
   require 'v8/function'
   require 'v8/tap'
+  require 'v8/access'
 end
