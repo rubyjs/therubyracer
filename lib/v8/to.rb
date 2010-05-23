@@ -41,6 +41,12 @@ module V8
               a.Set(i, To.v8(item))
             end
           end
+        when ::Hash
+          C::Object::New().tap do |o|
+            value.each do |key, value|
+              o.Set(To.v8(key), To.v8(value))
+            end
+          end
         when nil,Numeric
           value
         else
