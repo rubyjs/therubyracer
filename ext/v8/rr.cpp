@@ -146,10 +146,10 @@ Handle<Value> rr_rb2v8(VALUE value) {
   case T_BIGNUM:
   case T_FILE:
   case T_SYMBOL:
-  case T_BLKTAG:
+//  case T_BLKTAG: (not in 1.9)
   case T_UNDEF:
-  case T_VARMAP:
-  case T_SCOPE:
+//  case T_VARMAP: (not in 1.9)
+//  case T_SCOPE: (not in 1.9)
   case T_NODE:  
   default:
     return String::New("Undefined Conversion");
