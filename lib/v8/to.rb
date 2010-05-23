@@ -32,6 +32,9 @@ module V8
             for i in 0..arguments.Length() - 1
               rbargs << To.ruby(arguments[i])
             end
+            #TODO: we need to catch ruby exceptions here and
+            #rethrow them as javascript exceptions in case
+            #we're embedded in a C++ stack. --cowboyd May 23rd 2010
             To.v8(value.call(*rbargs))
           end
           return template.GetFunction()
