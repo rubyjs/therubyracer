@@ -17,16 +17,26 @@ module V8
     def eval(javascript, filename = "<eval>", line = 1)
       if IO === javascript || StringIO === javascript
         javascript = javascript.read()
-      end      
+      end
+      err = nil
+      value = nil
       C::TryCatch.try do |try|
         @native.enter do
           script = C::Script::Compile(To.v8(javascript.to_s), To.v8(filename.to_s))
-          JavascriptError.check try
-          result = script.Run()
-          JavascriptError.check try
-          To.ruby(result)
+          if try.HasCaught()
+            err = JavascriptError.new(try)
+          else
+            result = script.Run()
+            if try.HasCaught()
+              err = JavascriptError.new(try)
+            else
+              value = To.ruby(result)
+            end
+          end
         end
       end
+      raise err if err
+      return value
     end
             
     def evaluate(*args)
