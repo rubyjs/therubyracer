@@ -9,7 +9,7 @@ manifest.exclude "ext/**/test/*", "ext/**/test/*", "ext/**/samples/*", "ext/**/b
 Gem::Specification.new do |gemspec|
   $gemspec = gemspec
   gemspec.name = gemspec.rubyforge_project = "therubyracer"
-  gemspec.version = "0.6.1"
+  gemspec.version = "0.7.0"
   gemspec.summary = "Embed the V8 Javascript interpreter into Ruby"
   gemspec.description = "Call javascript code and manipulate javascript objects from ruby. Call ruby code and manipulate ruby objects from javascript."
   gemspec.email = "cowboyd@thefrontside.net"
@@ -41,11 +41,14 @@ task :clean do
   sh "rm -rf lib/v8/*.bundle lib/v8/*.so"
 end
 
-namespace :clean do
-  desc "remove all built v8 objects"
-  task "v8" => "clean" do
-    sh "cd #{UPSTREAM} && make clean"
-  end  
+desc "remove all built v8 objects"
+task "v8:clean" => "clean" do
+  sh "cd #{UPSTREAM} && make clean"
+end
+
+desc "build v8 with debugging symbols (much slower)"
+task "v8:debug" do
+  sh "cd #{UPSTREAM} && make debug"
 end
 
 for file in Dir['tasks/*.rake']
