@@ -35,6 +35,12 @@ module V8
             To.v8(value.call(*rbargs))
           end
           return template.GetFunction()
+        when ::Array
+          C::Array::New(value.length).tap do |a|
+            value.each_with_index do |item, i|
+              a.Set(i, To.v8(item))
+            end
+          end
         when nil,Numeric
           value
         else
