@@ -23,7 +23,7 @@ module V8
     
     def to_s
       @native.context.enter do
-        @native.ToString()
+        To.rb(@native.ToString())
       end
     end
     
