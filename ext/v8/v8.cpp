@@ -5,6 +5,7 @@
 #include "v8_array.h"
 #include "v8_msg.h"
 #include "v8_func.h"
+#include "v8_date.h"
 #include "v8_script.h"
 #include "v8_template.h"
 #include "v8_try_catch.h"
@@ -28,6 +29,7 @@ extern "C" {
         rr_init_obj();
         rr_init_func();
         rr_init_v8_array();
+        rr_init_v8_date();
         rr_init_msg();
         rr_init_v8_try_catch();
         rr_init_v8_callbacks();

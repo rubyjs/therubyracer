@@ -5,6 +5,7 @@
 #include "v8_func.h"
 #include "v8_array.h"
 #include "v8_str.h"
+#include "v8_date.h"
 #include "v8_msg.h"
 
 using namespace v8;
@@ -63,6 +64,9 @@ VALUE rr_v82rb(Handle<Value> value) {
   }
   if (value->IsArray()) {
     return rr_reflect_v8_array(value);
+  }
+  if (value->IsDate()) {
+    return rr_reflect_v8_date(value);
   }
   if (value->IsObject()) {
     return rr_reflect_v8_object(value);

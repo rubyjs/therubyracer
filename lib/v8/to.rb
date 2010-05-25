@@ -13,6 +13,7 @@ module V8
         when V8::C::Array     then V8::Array.new(value)          
         when V8::C::Object    then V8::Object.new(value)
         when V8::C::String    then value.Utf8Value()
+        when V8::C::Date      then Time.at(value.NumberValue())
         else
           value
         end
@@ -50,6 +51,8 @@ module V8
               o.Set(To.v8(key), To.v8(value))
             end
           end
+        when ::Time
+          C::Date::New(value)
         when nil,Numeric
           value
         else
