@@ -2,12 +2,13 @@ require 'stringio'
 
 module V8
   class Context    
-    attr_reader :native
+    attr_reader :native, :scope
     def initialize(opts = {})
       @native = C::Context::New(opts[:with])
+      @scope = V8::Object.new(@native.Global(), @native)
       yield(self) if block_given?
     end
-    
+
     def open
       @native.enter do
         yield(self)

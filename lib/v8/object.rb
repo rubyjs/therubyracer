@@ -3,26 +3,28 @@ module V8
   class Object
     include Enumerable
     
-    def initialize(native)
+    def initialize(native, context = nil)
       @native = native
+      @context = context || C::Context::GetEntered()
+      raise ScriptError, "V8::Object.new called without an open V8 context" unless @context
     end
     
     def [](key)
-      @native.context.enter do
+      @context.enter do
         To.ruby(@native.Get(To.v8(key)))        
       end
     end
     
     def []=(key, value)
       value.tap do
-        @native.context.enter do
+        @context.enter do
           @native.Set(To.v8(key), To.v8(value))
         end
       end
     end
     
     def to_s
-      @native.context.enter do
+      @context.enter do
         To.rb(@native.ToString())
       end
     end

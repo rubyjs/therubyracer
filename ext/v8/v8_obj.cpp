@@ -77,13 +77,7 @@ void rr_init_obj() {
 VALUE rr_reflect_v8_object(Handle<Value> value) {
   Local<Object> object(Object::Cast(*value));
   Local<Value> peer = object->GetHiddenValue(String::New("TheRubyRacer::RubyObject"));
-  if (peer.IsEmpty()) {
-    VALUE obj = V8_Ref_Create(rr_cV8_C_Object, object);
-    rb_iv_set(obj, "@context", rr_v82rb(Context::GetEntered()));
-    return obj;
-  } else {
-    return (VALUE)External::Unwrap(peer);
-  }
+  return peer.IsEmpty() ? rr_v8_ref_create(rr_cV8_C_Object, object) : (VALUE)External::Unwrap(peer);
 }
 
 
