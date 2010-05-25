@@ -1,8 +1,6 @@
 require 'rubygems'
 
 UPSTREAM  = "ext/v8/upstream"
-SCONS     = "#{UPSTREAM}/scons"
-V8_SRC      = "#{UPSTREAM}/2.0.6"
 
 manifest = Rake::FileList.new("**/*")
 manifest.exclude "lib/v8/*.bundle", "lib/v8/*.so", "ext/**/test/*", "ext/**/test/*", "ext/**/samples/*", "ext/**/benchmarks/*", "#{UPSTREAM}/build", "tmp", "tmp/**/*", "**/*.gem"
