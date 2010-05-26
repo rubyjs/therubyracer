@@ -1,4 +1,4 @@
-
+require 'set'
 module V8
   
   class NamedPropertyGetter

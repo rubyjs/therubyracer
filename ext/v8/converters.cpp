@@ -5,6 +5,7 @@
 #include "v8_cxt.h"
 #include "v8_func.h"
 #include "v8_template.h"
+#include "v8_external.h"
 
 using namespace v8;
 
@@ -39,7 +40,7 @@ VALUE V82RB(Handle<Value>& value) {
     Local<Value> peer = object->GetHiddenValue(String::New("TheRubyRacer::RubyObject"));
     if (peer.IsEmpty()) {
       VALUE context_ref = V8_Ref_Create(V8_C_Context, Context::GetEntered());
-      object->SetHiddenValue(String::New("TheRubyRacer::Context"), External::Wrap((void *)context_ref));
+      object->SetHiddenValue(String::New("TheRubyRacer::Context"), rr_v8_external_create(context_ref));
       return V8_Ref_Create(type, value, context_ref);
     } else {      
       return (VALUE)External::Unwrap(peer);
@@ -51,7 +52,7 @@ VALUE V82RB(Handle<Value>& value) {
 Local<Value> RB2V8(VALUE value) {  
   VALUE valueClass = rb_class_of(value);
   if(valueClass == rb_cProc || valueClass == rb_cMethod) {
-    Local<FunctionTemplate> t = FunctionTemplate::New(RacerRubyInvocationCallback, External::Wrap((void *)value));
+    Local<FunctionTemplate> t = FunctionTemplate::New(RacerRubyInvocationCallback, rr_v8_external_create(value));
     return t->GetFunction();  
   }
   convert_rb_to_v8_t convert;
@@ -60,7 +61,7 @@ Local<Value> RB2V8(VALUE value) {
     return result;
   }
   Local<Object> o = Racer_Create_V8_ObjectTemplate(value)->NewInstance();
-  o->SetHiddenValue(String::New("TheRubyRacer::RubyObject"), External::Wrap((void *) value));
+  o->SetHiddenValue(String::New("TheRubyRacer::RubyObject"), rr_v8_external_create(value));
   return o;
 }
 

@@ -16,6 +16,6 @@ require 'v8'
 
 require 'erb'
 def rputs(msg)
-  puts "<div>#{ERB::Util.h(msg)}</div>"
+  puts "<pre>#{ERB::Util.h(msg)}</pre>"
   $stdout.flush
 end

@@ -2,6 +2,7 @@
 #include "v8_cxt.h"
 #include "v8_msg.h"
 #include "v8_template.h"
+#include "v8_external.h"
 #include "converters.h"
 
 using namespace v8;
@@ -31,7 +32,7 @@ namespace {
     } else {
       Persistent<Context> context = Context::New(0, Racer_Create_V8_ObjectTemplate(scope));
       Context::Scope enter(context);
-      context->Global()->SetHiddenValue(String::New("TheRubyRacer::RubyObject"), External::Wrap((void *)scope));
+      context->Global()->SetHiddenValue(String::New("TheRubyRacer::RubyObject"), rr_v8_external_create(scope));
       VALUE ref = V8_Ref_Create(self, context, scope);
       context.Dispose();
       return ref;

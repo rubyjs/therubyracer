@@ -28,10 +28,11 @@ module V8
             for i in 0..arguments.Length() - 1
               rbargs << To.ruby(arguments[i])
             end
-            #TODO: we need to catch ruby exceptions here and
-            #rethrow them as javascript exceptions in case
-            #we're embedded in a C++ stack. --cowboyd May 23rd 2010
-            To.v8(value.call(*rbargs))
+            begin
+              To.v8(value.call(*rbargs))
+            rescue StandardError => e
+              V8::C::ThrowException(V8::C::Exception::Error(V8::C::String::New(e.message)))
+            end
           end
           return template.GetFunction()
         when ::Array

@@ -3,6 +3,7 @@
 #include "v8_ref.h"
 #include "v8_func.h"
 #include "v8_template.h"
+#include "v8_external.h"
 #include "v8_callbacks.h"
 #include "callbacks.h"
 #include "converters.h"
@@ -121,6 +122,10 @@ namespace {
         return Qnil;
       }
       Local<Object> object(obj(self)->NewInstance());
+      if (object.IsEmpty()) {
+        rb_raise(rb_eFatal, "V8 returned empty handle on call to ObjectTemplate::NewInstance()");
+        return Qnil;
+      }
       return rr_v82rb(object);
     }
     VALUE SetNamedPropertyHandler(VALUE self, VALUE getter, VALUE setter, VALUE query, VALUE deleter, VALUE enumerator) {
@@ -142,7 +147,7 @@ namespace {
         RTEST(query) ? RubyNamedPropertyQuery : 0,
         RTEST(deleter) ? RubyNamedPropertyDeleter : 0,
         RTEST(enumerator) ? RubyNamedPropertyEnumerator : 0,
-        External::Wrap((void *)data)
+        rr_v8_external_create(data)
       );
       return Qnil;
     }
@@ -165,7 +170,7 @@ namespace {
       if (NIL_P(code)) {
         return Qnil;
       }
-      Local<FunctionTemplate> templ = FunctionTemplate::New(RubyInvocationCallback, External::Wrap((void *)code));
+      Local<FunctionTemplate> templ = FunctionTemplate::New(RubyInvocationCallback, rr_v8_external_create(code));
       return V8_Ref_Create(function_template,templ,code);
     }
     VALUE GetFunction(VALUE self) {
@@ -204,7 +209,7 @@ Local<ObjectTemplate> Racer_Create_V8_ObjectTemplate(VALUE value) {
     0, // RacerRubyNamedPropertyQuery,
     0, // RacerRubyNamedPropertyDeleter,
     RacerRubyNamedPropertyEnumerator,
-    External::Wrap((void *)value)
+    rr_v8_external_create(value)
   );
   return tmpl;
 }

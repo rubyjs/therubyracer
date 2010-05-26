@@ -2,6 +2,7 @@
 #include "v8_ref.h"
 #include "v8_value.h"
 #include "v8_template.h"
+#include "v8_external.h"
 #include "converters.h"
 
 using namespace v8;
@@ -83,6 +84,6 @@ VALUE rr_reflect_v8_object(Handle<Value> value) {
 
 v8::Handle<v8::Value> rr_reflect_rb_object(VALUE value) {
   Local<Object> o = Racer_Create_V8_ObjectTemplate(value)->NewInstance();
-  o->SetHiddenValue(String::New("TheRubyRacer::RubyObject"), External::Wrap((void *) value));
+  o->SetHiddenValue(String::New("TheRubyRacer::RubyObject"), rr_v8_external_create(value));
   return o;  
 }
