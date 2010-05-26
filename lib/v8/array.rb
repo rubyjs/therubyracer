@@ -7,5 +7,9 @@ module V8
         yield To.ruby(@native.Get(i))
       end
     end
+
+    def length
+      @native.Length()
+    end
   end
 end

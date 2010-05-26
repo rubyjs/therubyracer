@@ -51,19 +51,11 @@ module V8
     end
     
     def [](key)
-      open do
-        To.ruby(@native.Global().Get(key.to_s))
-      end
+      @scope[key]
     end
     
     def []=(key, value)
-      value.tap do 
-        open do          
-          @native.Global().tap do |scope|
-            scope.Set(To.v8(key.to_s), To.v8(value))
-          end
-        end
-      end
+      @scope[key] = value
     end
     
     def self.open(opts = {}, &block)
