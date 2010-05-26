@@ -49,7 +49,7 @@ module V8
           end
         when ::Time
           C::Date::New(value)
-        when nil,Numeric
+        when nil,Numeric,TrueClass,FalseClass
           value
         else
           rubyobject = C::ObjectTemplate::New()
