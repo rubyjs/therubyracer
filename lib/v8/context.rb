@@ -8,12 +8,6 @@ module V8
       @scope = V8::Object.new(@native.Global(), @native)
       yield(self) if block_given?
     end
-
-    def open
-      @native.enter do
-        yield(self)
-      end if block_given?
-    end
     
     def eval(javascript, filename = "<eval>", line = 1)
       if IO === javascript || StringIO === javascript
@@ -57,11 +51,7 @@ module V8
     def []=(key, value)
       @scope[key] = value
     end
-    
-    def self.open(opts = {}, &block)
-      new(opts).open(&block)
-    end
-    
+
     def self.eval(source)
       new.eval(source)
     end

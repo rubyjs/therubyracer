@@ -30,8 +30,10 @@ module V8
     end
     
     def each
-      for prop in To.rb(@native.GetPropertyNames())
-        yield prop, self[prop]
+      @context.enter do
+        for prop in To.rb(@native.GetPropertyNames())
+          yield prop, self[prop]
+        end
       end
     end
   end
@@ -39,8 +41,6 @@ end
 
 class Object  
   def eval_js(javascript)
-    V8::Context.open(:with => self) do |cxt|
-      cxt.eval(javascript)
-    end
+    V8::Context.new(:with => self).eval(javascript)
   end
 end
