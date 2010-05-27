@@ -15,7 +15,7 @@ module V8
       if method_name
         method = obj.method(method_name)
         if method.arity == 0
-          To.v8(method.call())
+          Function.rubycall(method)
         else
           To.v8(method)
         end

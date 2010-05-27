@@ -28,11 +28,7 @@ module V8
             for i in 0..arguments.Length() - 1
               rbargs << To.ruby(arguments[i])
             end
-            begin
-              To.v8(value.call(*rbargs))
-            rescue StandardError => e
-              V8::C::ThrowException(V8::C::Exception::Error(V8::C::String::New(e.message)))
-            end
+            V8::Function.rubycall(value, *rbargs)
           end
           return template.GetFunction()
         when ::Array

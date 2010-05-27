@@ -14,5 +14,14 @@ module V8
       raise err if err
       return return_value
     end
+
+    def self.rubycall(rubycode, *args)
+      begin
+        To.v8(rubycode.call(*args))
+      rescue StandardError => e
+        V8::C::ThrowException(V8::C::Exception::Error(V8::C::String::New(e.message)))
+      end
+    end
+
   end
 end
