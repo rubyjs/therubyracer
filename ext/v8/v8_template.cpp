@@ -13,7 +13,7 @@ using namespace v8;
 namespace {
 
   VALUE rb_hash_lookup(VALUE hash, const char *key) {
-    return ::rb_hash_lookup(hash, rb_str_new2(key));
+    return rb_funcall(hash, rb_intern("[]"), 1, rb_str_new2(key));
   }
 
   VALUE rb_hash_aset(VALUE hash, const char *key, VALUE value) {
