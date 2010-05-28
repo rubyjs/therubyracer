@@ -156,6 +156,7 @@ Handle<Value> rr_rb2v8(VALUE value) {
 //  case T_SCOPE: (not in 1.9)
   case T_NODE:  
   default:
+    rb_warn("unknown conversion to V8 for: %s<br/>", RSTRING_PTR(rb_inspect(value)));
     return String::New("Undefined Conversion");
   }
   

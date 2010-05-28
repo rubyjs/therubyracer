@@ -6,7 +6,7 @@ module V8
       name = To.rb(property)
       obj = To.rb(info.This())
       perl_name = To.perl_case(name)
-      methods = obj.public_methods(false).map(&:to_s)
+      methods = obj.public_methods(false).map {|m| m.to_s}
       method_name = if methods.include?(name)
         name
       elsif methods.include?(perl_name)
@@ -31,7 +31,7 @@ module V8
       setter = To.rb(property) + "="
       camel_name = To.camel_case(setter)
       perl_name = To.perl_case(setter)
-      methods = obj.public_methods(false).map(&:to_s)
+      methods = obj.public_methods(false).map {|m| m.to_s}
       if methods.include?(perl_name)
         obj.send(perl_name, To.rb(value))
       elsif methods.include?(camel_name)
