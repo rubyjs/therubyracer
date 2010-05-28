@@ -31,7 +31,7 @@ module V8
       elsif options.selftest
         self.test        
       end
-      Context.open(:with => Shell.new) do |cxt|
+      Context.new(:with => Shell.new) do |cxt|
         for libfile in options.libs do
           load(cxt,libfile)
         end        
