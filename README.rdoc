@@ -17,7 +17,8 @@ Embed the V8 Javascript interpreter into Ruby.
 * Currently ALPHA software. 
 
 == SYNOPSIS:
-  gem install therubyracer
+  gem install therubyracer (stable)
+  gem install therubyracer --pre (bleeding edge)
 
 # then in your ruby code
 
@@ -25,23 +26,20 @@ Embed the V8 Javascript interpreter into Ruby.
   
 # evaluate some simple javascript
 
-  V8.eval("7 * 6") #=> 42
+  cxt = V8::Context.new
+  cxt.eval('7 * 6') #=> 42
 
 # embed values into the scope of your context
 
-  V8::Context.open do |cxt|
-    cxt['foo'] = "bar"
-    cxt.eval('foo') # => "bar"
-  end
+  cxt['foo'] = "bar"
+  cxt.eval('foo') # => "bar"
 
-# evaluate a ruby function from javascript
+# embed ruby code into your scope and call it from javascript
   
-  V8::Context.open do |context|
-    context["say"] = lambda {|word, times| word * times}
-    context.eval("say("Hello", 3)") #=> HelloHelloHello
-  end
+  cxt["say"] = lambda {|word, times| word * times}
+  context.eval("say("Hello", 3)") #=> HelloHelloHello
   
-# embed a ruby object into your javascript environment
+# embed a ruby object into your scope and access its properties/methods from javascript
 
   class MyMath
     def plus(lhs, rhs)
@@ -49,36 +47,18 @@ Embed the V8 Javascript interpreter into Ruby.
     end
   end
 
-  V8::Context.open do |context|
-    context["math"] = MyMath.new
-    context.eval("math.plus(20,22)") #=> 42
-  end
+  cxt['math'] = MyMath.new
+  cxt.eval("math.plus(20,22)") #=> 42
 
-# make a ruby object *be* your javascript environment
+# make a ruby object *be* your global javascript scope.
   math = MyMath.new
-  V8::Context.open(:with => math) do |context|
-    context.eval("plus(20,22)") #=> 42
+  V8::Context.new(:with => math) do |cxt|
+    cxt.eval("plus(20,22)") #=> 42
   end
   
-  #or the equivalent
+  #you can do the same thing with Object#eval_js 
   
   math.eval_js("plus(20,22)")
-
-# Configure your embedding setup
-
-  #COMING SOON!
-  # Make your standard objects (Object, String, etc...) immutable
-  V8::Context.open(:sealed => true) do |context|
-    context.eval("Object.prototype.toString = function() {}") # this is an error!
-  end
-  
-  #COMING SOON!
-  #limit the number of instructions that can be executed in order to prevent
-  #rogue scripts
-  V8::Context.open do |context|
-    context.instruction_limit = 100000
-    context.eval("while (true);") # => Error!
-  end
 
 ==== Different ways of loading javascript source
 
@@ -86,13 +66,12 @@ In addition to just evaluating strings, you can also use streams such as files.
 
 # evaluate bytes read from any File/IO object:
   File.open("mysource.js") do |file|
-    eval_js file, "mysource.js"
+    cxt.eval(file, "mysource.js")
   end
 
 # or load it by filename
-  V8::Context.open do |context|
-    context.load("mysource.js")
-  end
+  
+  cxt.load("mysource.js")
 
 === Safe by default
 
@@ -116,12 +95,12 @@ exposed by default. E.g.
   end
 
 
-  V8::Context.open do |cxt|
+  V8::Context.new do |cxt|
     cxt['a'] = A.new
     cxt['b'] = B.new
-    cxt.eval("a.a()") # => 'a'
-    cxt.eval("b.b()") # => 'b'
-    cxt.eval("b.a()") # => 'TypeError: undefined property 'a' is not a function'
+    cxt.eval("a.a") # => 'a'
+    cxt.eval("b.b") # => 'b'
+    cxt.eval("b.a") # => undef
   end
   
 == REQUIREMENTS:
