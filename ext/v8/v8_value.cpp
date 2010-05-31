@@ -7,6 +7,9 @@ namespace {
   Local<Value> unwrap(VALUE value) {
     return V8_Ref_Get<Value>(value);
   }
+  VALUE IsEmpty(VALUE value) {
+    return value == rr_cV8_C_Empty ? Qtrue : Qfalse;
+  }
   VALUE IsUndefined(VALUE self) {
     HandleScope scope;
     return rr_v82rb(unwrap(self)->IsUndefined());
@@ -128,6 +131,7 @@ void rr_init_value() {
   rr_cV8_C_Value = rr_define_class("Value");
   rr_cV8_C_Empty = rr_define_const("Empty", rr_v8_ref_create(rr_cV8_C_Value, Handle<Value>()));
 
+  rr_define_method(rr_cV8_C_Value, "IsEmpty", IsEmpty, 0);
   rr_define_method(rr_cV8_C_Value, "IsUndefined", IsUndefined, 0);
   rr_define_method(rr_cV8_C_Value, "IsNull", IsNull, 0);
   rr_define_method(rr_cV8_C_Value, "IsTrue", IsTrue, 0);
