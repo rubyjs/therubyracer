@@ -63,6 +63,10 @@ namespace {
     // rr_v8_ref_setref(self, "RubyPeer", )
     return Qnil;
   }
+  VALUE GetHiddenValue(VALUE self, VALUE key) {
+    HandleScope scope;
+    return rr_v82rb(unwrap(self)->GetHiddenValue(rr_rb2v8(key)->ToString()));
+  }
 }
 
 void rr_init_obj() {
@@ -72,6 +76,7 @@ void rr_init_obj() {
   rr_define_method(rr_cV8_C_Object, "Get", Get, 1);
   rr_define_method(rr_cV8_C_Object, "Set", Set, 2);
   rr_define_method(rr_cV8_C_Object, "GetPropertyNames", GetPropertyNames, 0);
+  rr_define_method(rr_cV8_C_Object, "GetHiddenValue", GetHiddenValue, 1);
   rr_define_method(rr_cV8_C_Object, "SetHiddenValue", SetHiddenValue, 2);
 }
 
