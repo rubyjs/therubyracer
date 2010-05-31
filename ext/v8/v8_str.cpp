@@ -2,6 +2,7 @@
 #include "v8_str.h"
 #include "v8.h"
 #include "v8_ref.h"
+#include "v8_value.h"
 
 using namespace v8;
 
@@ -37,7 +38,7 @@ VALUE rr_reflect_v8_string(Handle<Value> value) {
 }
 
 void rr_init_str() {
-  StringClass = rr_define_class("String");
+  StringClass = rr_define_class("String", rr_cV8_C_Value);
   rr_define_singleton_method(StringClass, "New", New, 1);
   rr_define_method(StringClass, "Utf8Value", Utf8Value, 0);
   rr_define_method(StringClass, "Utf16Value", Utf16Value, 0);
