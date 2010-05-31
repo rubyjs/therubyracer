@@ -55,6 +55,7 @@ namespace {
       kill_try_catch kill_on_return(wrapper);
       VALUE rb_ref = Data_Wrap_Struct(TryCatchClass, mark_try_catch, free_try_catch, wrapper);
       VALUE result = rb_yield(rb_ref);
+      tc.Reset();
       return result;
     } else {
       return Qnil;
