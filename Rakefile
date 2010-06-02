@@ -16,7 +16,7 @@ Gem::Specification.new do |gemspec|
   gemspec.extra_rdoc_files = ["README.rdoc"]
   gemspec.executables = ["therubyracer", "v8"]
   gemspec.extensions = ["ext/v8/extconf.rb"]
-  gemspec.require_paths = ["lib", "ext"]
+  gemspec.require_paths = ["lib", "ext", "contrib"]
   gemspec.files = manifest.to_a
 end
 
