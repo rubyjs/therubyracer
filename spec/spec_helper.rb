@@ -11,6 +11,7 @@ end
 # $: is the load path $LOAD_PATH
 #
 $:.unshift(File.dirname(__FILE__) + '/../lib')
+$:.unshift(File.dirname(__FILE__) + '/../contrib')
 $:.unshift(File.dirname(__FILE__) + '/..')
 require 'v8'
 
