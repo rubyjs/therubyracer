@@ -1,4 +1,5 @@
-
+require 'v8'
+require 'v8/jasmine/context'
 module V8
   module Jasmine
     FILENAME = File.join(File.dirname(__FILE__), "jasmine",Dir.new(File.join(File.dirname(__FILE__), "jasmine")).find {|f| f =~ /(\d+.\d+\.\d+)\.js$/})
@@ -19,4 +20,3 @@ module V8
   end
 end
 
-require 'v8/jasmine/context'
