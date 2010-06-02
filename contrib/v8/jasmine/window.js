@@ -3,7 +3,9 @@
   window = {
     setInterval: noop,
     clearInterval: noop,
-    setTimeout: noop,
+    setTimeout: function(callback, delay) {
+      callback()
+    },
     clearTimeout: noop
   }
 })(function() {})
