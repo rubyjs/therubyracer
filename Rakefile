@@ -7,7 +7,7 @@ manifest.exclude "lib/v8/*.bundle", "lib/v8/*.so", "ext/**/test/*", "ext/**/test
 Gem::Specification.new do |gemspec|
   $gemspec = gemspec
   gemspec.name = gemspec.rubyforge_project = "therubyracer"
-  gemspec.version = "0.7.1.pre"
+  gemspec.version = "0.7.1"
   gemspec.summary = "Embed the V8 Javascript interpreter into Ruby"
   gemspec.description = "Call javascript code and manipulate javascript objects from ruby. Call ruby code and manipulate ruby objects from javascript."
   gemspec.email = "cowboyd@thefrontside.net"

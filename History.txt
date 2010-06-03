@@ -1,3 +1,17 @@
+=== 0.7.1 2010-06-03
+* 5 major enhancements
+  * Function#call() now uses the global scope for 'this' by default
+  * Function#methodcall() added to allow passing in 'this' object
+  * Function#new() method to invoke javascript constructor from ruby
+  * access javascript properties and call javascript methods from ruby
+  * bundled Jasmine DOM-Less browser testing framework.
+
+* 3 minor enhancements
+  * added Object::GetHiddenValue() to v8 metal
+  * added Handle::IsEmpty() to v8 metal
+  * fixed bug where iterating over arrays sometimes failed
+  * numerous bug /segfault fixes.
+
 === 0.7.0 2010-05-31
 * 10 major enhancements
   * upgraded to V8 2.1.10
