@@ -21,7 +21,7 @@ module V8
     
     def new(*args)
       @context.enter do
-        To.rb(@native.NewInstance(args.length, To.v8(args)))
+        To.rb(@native.NewInstance(To.v8(args)))
       end
     end
 
