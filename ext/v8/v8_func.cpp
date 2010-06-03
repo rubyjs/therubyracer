@@ -13,40 +13,23 @@ namespace {
   Local<Function> unwrap(VALUE value) {
     return V8_Ref_Get<Function>(value);
   }  
-  VALUE Call(int argc, VALUE *argv, VALUE self) {
+  VALUE Call(VALUE self, VALUE recv, VALUE arguments) {
     HandleScope handles;
-    VALUE recv; VALUE f_argv;
-    rb_scan_args(argc, argv, "1*", &recv, &f_argv);
-    
-    Local<Function> function = V8_Ref_Get<Function>(self);
-    Local<Object> thisObject;
-    if (NIL_P(recv)) {
-      if (Context::InContext()) {
-        thisObject = Context::GetEntered()->Global();
-      } else {
-        Persistent<Context> cxt = Context::New();
-        Context::Scope scope(cxt);
-        thisObject = Object::New();
-        cxt.Dispose();
-      }
-    } else {
-      if (!Context::InContext()) {
-        Persistent<Context> cxt = Context::New();
-        cxt->Enter();
-        thisObject = rr_rb2v8(recv)->ToObject();
-        cxt->Exit();
-      } else {
-        thisObject = rr_rb2v8(recv)->ToObject();
-      }
+    if (!Context::InContext()) {
+      rb_raise(rb_eScriptError, "no open V8 Context in V8::C::Function::Call()");
+      return Qnil;
     }
-    int f_argc = argc - 1;
-    Local<Value> arguments[f_argc];
-    for (int i = 0; i < f_argc; i++) {
-      arguments[i] = *rr_rb2v8(rb_ary_entry(f_argv, i));
+    Local<Function> function = unwrap(self);
+    Local<Object> thisObj = rr_rb2v8(recv)->ToObject();
+    Handle<Array> args = V8_Ref_Get<Array>(arguments);
+    int argc = args->Length();
+    Handle<Value> argv[argc];
+    for (int i = 0; i < argc; i++) {
+      argv[i] = args->Get(i);
     }
-    Local<Value> result = function->Call(thisObject, f_argc, arguments);
-    return rr_v82rb(result);
+    return rr_v82rb(function->Call(thisObj, argc, argv));
   }
+  
   VALUE NewInstance(VALUE self, VALUE argc, VALUE args) {
     HandleScope scope;
     Local<Function> function = unwrap(self);
@@ -72,7 +55,7 @@ namespace {
 
 void rr_init_func() {
   FunctionClass = rr_define_class("Function", rr_cV8_C_Object);
-  rr_define_method(FunctionClass, "Call", Call, -1);
+  rr_define_method(FunctionClass, "Call", Call, 2);
   rr_define_method(FunctionClass, "NewInstance", NewInstance, 2);
   rr_define_method(FunctionClass, "GetName", GetName, 0);
   rr_define_method(FunctionClass, "SetName", SetName, 1);
