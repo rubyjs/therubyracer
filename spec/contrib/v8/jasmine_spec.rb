@@ -23,7 +23,7 @@ describe V8::Jasmine do
   it "extends a bare context with the jasmine runtime" do
     V8::Context.new do |cxt|
       cxt.extend V8::Jasmine
-      cxt['jasmine'].should_not be_nil
+      cxt['jasmine'].getEnv().should_not be_nil
     end
   end
 end
