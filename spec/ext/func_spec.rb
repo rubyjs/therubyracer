@@ -6,21 +6,21 @@ describe C::Function do
   it "is callable" do
     Context.new do |cxt|
       f = cxt.eval('(function() {return "Hello World"})', '<eval>');      
-      f.call(nil).should == "Hello World"      
+      f.call().should == "Hello World"      
     end
   end
   
   it "receives proper argument length from ruby" do
     Context.new do |cxt|
       f = cxt.eval('(function() {return arguments.length})', 'eval')
-      f.call(nil,1, 2, 3).should == 3
+      f.call(1, 2, 3).should == 3
     end
   end
   
   it "maps all arguments from ruby" do
     Context.new do |cxt|
       f = cxt.eval('(function(one, two, three) {return one + two + three})', 'eval')
-      f.call(nil, 1,2,3).should == 6
+      f.call(1,2,3).should == 6
     end
   end
   
@@ -28,7 +28,7 @@ describe C::Function do
     Context.new do |cxt|
       Object.new.tap do |this|
          f = cxt.eval('(function() {return this})', 'eval')
-         f.call(this).should be(this)
+         f.methodcall(this).should be(this)
       end
     end
   end 
@@ -37,7 +37,7 @@ describe C::Function do
     Context.new do |cxt|
       @f = cxt.eval('(function() {return "Call Me"})', 'eval')
     end
-    @f.call(nil).should == "Call Me"
+    @f.call().should == "Call Me"
   end
   
   it "is reflected properly" do

@@ -47,16 +47,15 @@ namespace {
     Local<Value> result = function->Call(thisObject, f_argc, arguments);
     return rr_v82rb(result);
   }
-  VALUE NewInstance(int argc, VALUE *argv, VALUE self) {
-    HandleScope handles;
-    VALUE f_argv;
-    rb_scan_args(argc, argv, "*", &f_argv);
-    Local<Function> function = V8_Ref_Get<Function>(self);
-    Local<Value> arguments[argc];
-    for (int i = 0; i < argc; i++) {
-      arguments[i] = *rr_rb2v8(rb_ary_entry(f_argv, i));
+  VALUE NewInstance(VALUE self, VALUE argc, VALUE args) {
+    HandleScope scope;
+    Local<Function> function = unwrap(self);
+    Handle<Array> arguments = V8_Ref_Get<Array>(args);
+    Handle<Value> argv[arguments->Length()];
+    for (int i = 0; i < arguments->Length(); i++) {
+      argv[i] = arguments->Get(i);
     }
-    return rr_v82rb(function->NewInstance(argc, arguments));
+    return rr_v82rb(function->NewInstance(NUM2INT(argc), argv));
   }
   VALUE GetName(VALUE self) {
     return rr_v82rb(unwrap(self)->GetName());
@@ -74,7 +73,7 @@ namespace {
 void rr_init_func() {
   FunctionClass = rr_define_class("Function", rr_cV8_C_Object);
   rr_define_method(FunctionClass, "Call", Call, -1);
-  rr_define_method(FunctionClass, "NewInstance", NewInstance, -1);
+  rr_define_method(FunctionClass, "NewInstance", NewInstance, 2);
   rr_define_method(FunctionClass, "GetName", GetName, 0);
   rr_define_method(FunctionClass, "SetName", SetName, 1);
   // rr_define_method(FunctionClass, "GetScriptOrigin", GetScriptOrigin, 0);

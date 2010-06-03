@@ -1,7 +1,7 @@
 module V8
   class Function < V8::Object
     
-    def call(thisObject, *args)
+    def methodcall(thisObject, *args)
       err = nil
       return_value = nil
       C::TryCatch.try do |try|
@@ -13,6 +13,16 @@ module V8
       end
       raise err if err
       return return_value
+    end
+    
+    def call(*args)
+      self.methodcall(@context.Global(), *args)
+    end
+    
+    def new(*args)
+      @context.enter do
+        To.rb(@native.NewInstance(args.length, To.v8(args)))
+      end
     end
 
     def self.rubycall(rubycode, *args)
