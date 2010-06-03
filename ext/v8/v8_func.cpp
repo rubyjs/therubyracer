@@ -36,7 +36,7 @@ namespace {
     Handle<Array> args = V8_Ref_Get<Array>(arguments);
     int argc = args->Length();
     Handle<Value> argv[argc];
-    for (uint i = 0; i < argc; i++) {
+    for (int i = 0; i < argc; i++) {
       argv[i] = args->Get(i);
     }
     return rr_v82rb(function->NewInstance(argc, argv));
