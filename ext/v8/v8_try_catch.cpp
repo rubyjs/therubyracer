@@ -72,7 +72,7 @@ namespace {
     return tc ? rr_v82rb(tc->Exception()) : Qnil;
   }
   
-  VALUE StackTrace(VALUE self) {
+  VALUE _StackTrace(VALUE self) {
     TryCatch *tc = unwrap(self);
     return tc ? rr_v82rb(tc->StackTrace()) : Qnil;
   }    
@@ -93,7 +93,7 @@ void rr_init_v8_try_catch() {
   rr_define_singleton_method(TryCatchClass, "try", Try, -1);
   rr_define_method(TryCatchClass, "HasCaught", HasCaught, 0);
   rr_define_method(TryCatchClass, "Exception", _Exception, 0);
-  rr_define_method(TryCatchClass, "StackTrace", StackTrace, 0);
+  rr_define_method(TryCatchClass, "StackTrace", _StackTrace, 0);
   rr_define_method(TryCatchClass, "Message", _Message, 0);
   rr_define_method(TryCatchClass, "CanContinue", CanContinue, 0);
   rb_funcall(TryCatchClass, rb_intern("private_class_method"), 1, rb_str_new2("new"));
