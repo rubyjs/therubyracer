@@ -1,5 +1,4 @@
 #include "converters.h"
-#include "callbacks.h"
 #include "v8_ref.h"
 #include "v8_obj.h"
 #include "v8_cxt.h"
@@ -51,10 +50,10 @@ VALUE V82RB(Handle<Value>& value) {
 
 Local<Value> RB2V8(VALUE value) {  
   VALUE valueClass = rb_class_of(value);
-  if(valueClass == rb_cProc || valueClass == rb_cMethod) {
-    Local<FunctionTemplate> t = FunctionTemplate::New(RacerRubyInvocationCallback, rr_v8_external_create(value));
-    return t->GetFunction();  
-  }
+  // if(valueClass == rb_cProc || valueClass == rb_cMethod) {
+  //   Local<FunctionTemplate> t = FunctionTemplate::New(RacerRubyInvocationCallback, rr_v8_external_create(value));
+  //   return t->GetFunction();  
+  // }
   convert_rb_to_v8_t convert;
   Local<Value> result;
   if (convert(value, result)) {

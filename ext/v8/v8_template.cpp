@@ -5,7 +5,6 @@
 #include "v8_template.h"
 #include "v8_external.h"
 #include "v8_callbacks.h"
-#include "callbacks.h"
 #include "converters.h"
 
 using namespace v8;
