@@ -5,7 +5,9 @@ module V8
     attr_reader :native, :scope
     def initialize(opts = {})
       @native = C::Context::New(opts[:with])
-      @scope = V8::Object.new(@native.Global(), @native)
+      @native.enter do
+        @scope = To.rb(@native.Global())
+      end
       yield(self) if block_given?
     end
     
