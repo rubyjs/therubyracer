@@ -25,18 +25,6 @@ VALUE rr_define_const(const char *name, VALUE value) {
   return value;
 }
 
-VALUE rr_str_to_perl_case(VALUE str) {
-  VALUE V8 = rb_define_module("V8");
-  VALUE to = rb_define_module_under(V8, "To");
-  return rb_funcall(to, rb_intern("perl_case"), 1, str);  
-}
-
-VALUE rr_str_to_camel_case(VALUE str) {
-  VALUE V8 = rb_define_module("V8");
-  VALUE to = rb_define_module_under(V8, "To");
-  return rb_funcall(to, rb_intern("camel_case"), 1, str);
-}
-
 VALUE rr_v82rb(Handle<Value> value) {
   if (value.IsEmpty()) {
     return rr_cV8_C_Empty;
