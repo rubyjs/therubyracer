@@ -138,7 +138,6 @@ Handle<Value> rr_rb2v8(VALUE value) {
   case T_DATA:
     return V8_Ref_Get<Value>(value);
   case T_OBJECT:
-    return rr_reflect_rb_object(value);
   case T_CLASS:
   case T_ICLASS:
   case T_MODULE:
