@@ -30,7 +30,7 @@ namespace {
       cxt.Dispose();
       return ref;
     } else {
-      Persistent<Context> context = Context::New(0, Racer_Create_V8_ObjectTemplate(scope));
+      Persistent<Context> context = Context::New(0, rr_template_std_rubyobject());
       Context::Scope enter(context);
       context->Global()->SetHiddenValue(String::New("TheRubyRacer::RubyObject"), rr_v8_external_create(scope));
       VALUE ref = V8_Ref_Create(self, context, scope);

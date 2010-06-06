@@ -7,6 +7,5 @@ extern VALUE rr_cV8_C_Object;
 
 void rr_init_obj();
 VALUE rr_reflect_v8_object(v8::Handle<v8::Value> value);
-v8::Handle<v8::Value> rr_reflect_rb_object(VALUE value);
 
 #endif

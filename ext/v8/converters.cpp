@@ -60,9 +60,10 @@ Local<Value> RB2V8(VALUE value) {
   if (convert(value, result)) {
     return result;
   }
-  Local<Object> o = Racer_Create_V8_ObjectTemplate(value)->NewInstance();
-  o->SetHiddenValue(String::New("TheRubyRacer::RubyObject"), rr_v8_external_create(value));
-  return o;
+  
+  // Local<Object> o = Racer_Create_V8_ObjectTemplate(value)->NewInstance();
+  // o->SetHiddenValue(String::New("TheRubyRacer::RubyObject"), rr_v8_external_create(value));
+  return Object::New();
 }
 
 std::string V82String(Handle<Value>& value) {

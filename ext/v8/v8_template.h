@@ -4,9 +4,9 @@
 #include "rr.h"
 
 void rr_init_template();
+v8::Handle<v8::ObjectTemplate> rr_template_std_rubyobject();
 
-v8::Local<v8::ObjectTemplate> Racer_Create_V8_ObjectTemplate(VALUE object);
-
+//kill
 VALUE v8_ObjectTemplate_New(VALUE clazz);
 
 #endif

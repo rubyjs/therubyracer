@@ -200,16 +200,9 @@ void rr_init_template() {
 
 }
 
-Local<ObjectTemplate> Racer_Create_V8_ObjectTemplate(VALUE value) {
-    Local<ObjectTemplate> tmpl = ObjectTemplate::New();
-  // tmpl->SetInternalFieldCount(2);
-  tmpl->SetNamedPropertyHandler(
-    RacerRubyNamedPropertyGetter,
-    RacerRubyNamedPropertySetter,
-    0, // RacerRubyNamedPropertyQuery,
-    0, // RacerRubyNamedPropertyDeleter,
-    RacerRubyNamedPropertyEnumerator,
-    rr_v8_external_create(value)
-  );
-  return tmpl;
+Handle<ObjectTemplate> rr_template_std_rubyobject() {
+  VALUE V8 = rb_define_module("V8");
+  VALUE to = rb_define_module_under(V8, "To");
+  VALUE tmpl = rb_funcall(to, rb_intern("template"), 0);
+  return V8_Ref_Get<ObjectTemplate>(tmpl);
 }

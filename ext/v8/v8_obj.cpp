@@ -86,9 +86,3 @@ VALUE rr_reflect_v8_object(Handle<Value> value) {
   return peer.IsEmpty() ? rr_v8_ref_create(rr_cV8_C_Object, object) : (VALUE)External::Unwrap(peer);
 }
 
-
-v8::Handle<v8::Value> rr_reflect_rb_object(VALUE value) {
-  Local<Object> o = Racer_Create_V8_ObjectTemplate(value)->NewInstance();
-  o->SetHiddenValue(String::New("TheRubyRacer::RubyObject"), rr_v8_external_create(value));
-  return o;  
-}
