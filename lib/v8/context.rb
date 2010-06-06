@@ -4,8 +4,9 @@ module V8
   class Context    
     attr_reader :native, :scope
     def initialize(opts = {})
-      @native = C::Context::New(opts[:with])
+      @native = opts[:with] ? C::Context::New(To.template) : C::Context::New()
       @native.enter do
+        @native.Global().SetHiddenValue(C::String::New("TheRubyRacer::RubyObject"), C::External::Wrap(opts[:with])) if opts[:with]
         @scope = To.rb(@native.Global())
       end
       yield(self) if block_given?

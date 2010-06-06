@@ -9,34 +9,22 @@ using namespace v8;
 
 VALUE V8_C_Context;
 
-//TODO: rename everything to Context_
-//TODO: do the object init from within here
-
-
 namespace {
   
   Local<Context> unwrap(VALUE value) {
     return V8_Ref_Get<Context>(value);
   }
-  
-  //TODO: make this scriptable and less static
+
   VALUE New(int argc, VALUE *argv, VALUE self) {
     HandleScope handles;
-    VALUE scope;
-    rb_scan_args(argc,argv, "01", &scope);
-    if (NIL_P(scope)) {
-      Persistent<Context> cxt(Context::New());
-      VALUE ref = V8_Ref_Create(self, cxt);
-      cxt.Dispose();
-      return ref;
-    } else {
-      Persistent<Context> context = Context::New(0, rr_template_std_rubyobject());
-      Context::Scope enter(context);
-      context->Global()->SetHiddenValue(String::New("TheRubyRacer::RubyObject"), rr_v8_external_create(scope));
-      VALUE ref = V8_Ref_Create(self, context, scope);
-      context.Dispose();
-      return ref;
-    }
+    VALUE global_template; VALUE global_object;
+    rb_scan_args(argc,argv, "02", &global_template, &global_object);
+    Handle<ObjectTemplate> v8_global_template(NIL_P(global_template) ? Handle<ObjectTemplate>() : V8_Ref_Get<ObjectTemplate>(global_template));
+    Handle<Value> v8_global_object(NIL_P(global_object) ? Handle<Value>() : V8_Ref_Get<Value>(global_object));
+    Persistent<Context> cxt(Context::New(0, v8_global_template, v8_global_object));
+    VALUE ref = V8_Ref_Create(self, cxt);
+    cxt.Dispose();
+    return ref;
   }
 
   VALUE InContext(VALUE self) {
