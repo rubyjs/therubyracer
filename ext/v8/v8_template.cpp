@@ -1,11 +1,9 @@
-#include <ruby.h>
-#include <v8.h>
+#include "rr.h"
 #include "v8_ref.h"
 #include "v8_func.h"
 #include "v8_template.h"
 #include "v8_external.h"
 #include "v8_callbacks.h"
-#include "converters.h"
 
 using namespace v8;
 

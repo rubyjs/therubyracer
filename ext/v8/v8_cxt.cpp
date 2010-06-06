@@ -3,7 +3,6 @@
 #include "v8_msg.h"
 #include "v8_template.h"
 #include "v8_external.h"
-#include "converters.h"
 
 using namespace v8;
 

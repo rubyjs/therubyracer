@@ -1,6 +1,5 @@
 #include "v8_value.h"
 #include "v8_ref.h"
-#include "converters.h"
 
 using namespace v8;
 namespace {
