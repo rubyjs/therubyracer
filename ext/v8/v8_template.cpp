@@ -52,7 +52,6 @@ namespace {
      * Otherwise, returns an empty handle.
      */
     Handle<Value> RubyNamedPropertySetter(Local<String> property, Local<Value> value, const AccessorInfo& info) {
-      HandleScope handles;
       VALUE code = (VALUE)External::Unwrap(info.Data());
       VALUE setter = rb_hash_lookup(code, "setter");
       VALUE result = rb_funcall(setter, rb_intern("call"), 3, rr_v82rb(property), rr_v82rb(value), rr_v82rb(info));
@@ -65,7 +64,6 @@ namespace {
      * The result is true if the property exists and false otherwise.
      */
     Handle<Boolean> RubyNamedPropertyQuery(Local<String> property, const AccessorInfo& info) {
-      HandleScope handles;
       VALUE code = (VALUE)External::Unwrap(info.Data());
       VALUE query = rb_hash_lookup(code, "query");
       VALUE result = rb_funcall(query, rb_intern("call"), 2, rr_v82rb(property), rr_v82rb(info));
@@ -79,7 +77,6 @@ namespace {
      * otherwise.
      */
     Handle<Boolean> RubyNamedPropertyDeleter(Local<String> property, const AccessorInfo& info) {
-      HandleScope handles;
       VALUE code = (VALUE)External::Unwrap(info.Data());
       VALUE deleter = rb_hash_lookup(code, "deleter");
       VALUE result = rb_funcall(deleter, rb_intern("call"), 2, rr_v82rb(property), rr_v82rb(info));
@@ -92,7 +89,6 @@ namespace {
      * property getter intercepts.
      */
     Handle<Array> RubyNamedPropertyEnumerator(const AccessorInfo& info) {
-      HandleScope handles;
       VALUE code = (VALUE)External::Unwrap(info.Data());
       VALUE enumerator = rb_hash_lookup(code, "enumerator");
       VALUE result = rb_funcall(enumerator, rb_intern("call"), 1, rr_v82rb(info));
@@ -153,7 +149,6 @@ namespace {
   namespace Func {
 
     Handle<Value> RubyInvocationCallback(const Arguments& args) {
-      HandleScope handles;
       VALUE code = (VALUE)External::Unwrap(args.Data());
       VALUE rb_args = rr_v82rb(args);
       VALUE result = rb_funcall(code, rb_intern("call"), 1, rb_args);
