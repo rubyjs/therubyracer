@@ -48,29 +48,33 @@ module V8
         when nil,Numeric,TrueClass,FalseClass, C::Value
           value
         else
-          rubyobject = C::ObjectTemplate::New()
-          rubyobject.SetNamedPropertyHandler(
-            NamedPropertyGetter,
-            NamedPropertySetter,
-            nil,
-            nil,
-            NamedPropertyEnumerator
-          )
           obj = nil
           unless C::Context::InContext()
             cxt = C::Context::New()
             cxt.Enter()
             begin
-              obj = rubyobject.NewInstance()
+              obj = To.template.NewInstance()
               obj.SetHiddenValue(C::String::New("TheRubyRacer::RubyObject"), C::External::Wrap(value))
             ensure
               cxt.Exit()
             end
           else
-            obj = rubyobject.NewInstance()
+            obj = To.template.NewInstance()
             obj.SetHiddenValue(C::String::New("TheRubyRacer::RubyObject"), C::External::Wrap(value))
           end
           return obj
+        end
+      end
+      
+      def template
+        @rubyobject ||= C::ObjectTemplate::New().tap do |t|
+          t.SetNamedPropertyHandler(
+            NamedPropertyGetter,
+            NamedPropertySetter,
+            nil,
+            nil,
+          NamedPropertyEnumerator
+          )
         end
       end
 
