@@ -163,5 +163,5 @@ void rr_init_value() {
 }
 
 VALUE rr_wrap_v8_value(Handle<Value>& value) {
-  return V8_Ref_Create(rr_cV8_C_Value, value);
+  return rr_v8_ref_create(rr_cV8_C_Value, value);
 }

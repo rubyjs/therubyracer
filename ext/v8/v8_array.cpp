@@ -24,7 +24,7 @@ namespace {
       length = INT2FIX(0);
     }
     HandleScope scope;
-    return V8_Ref_Create(self, Array::New(NUM2INT(length)));
+    return rr_v8_ref_create(self, Array::New(NUM2INT(length)));
   }
   
   VALUE Length(VALUE self) {

@@ -15,7 +15,7 @@ namespace {
   VALUE New(VALUE klazz, VALUE data) {
     HandleScope handles;
     VALUE str = rb_funcall(data, rb_intern("to_s"), 0);
-    return V8_Ref_Create(StringClass, String::New(RSTRING_PTR(str), RSTRING_LEN(str)));
+    return rr_v8_ref_create(StringClass, String::New(RSTRING_PTR(str), RSTRING_LEN(str)));
   }
   VALUE Utf8Value(VALUE self) {
     HandleScope handles;
@@ -34,7 +34,7 @@ namespace {
 VALUE rr_reflect_v8_string(Handle<Value> value) {
   HandleScope handles;
   Local<String> string = String::Cast(*value);
-  return V8_Ref_Create(StringClass, string);
+  return rr_v8_ref_create(StringClass, string);
 }
 
 void rr_init_str() {

@@ -26,13 +26,13 @@ namespace {
     }
   }
   
-  VALUE New(VALUE clazz) {
+  VALUE New(VALUE rbclass) {
     HandleScope handles;
     if (!Context::InContext()) {
       rb_raise(rb_eScriptError, "Object::New() called without an entered Context");
       return Qnil;
     }
-    return V8_Ref_Create(clazz, Object::New());
+    return rr_v8_ref_create(rbclass, Object::New());
   }
   
   VALUE Set(VALUE self, VALUE key, VALUE value) {

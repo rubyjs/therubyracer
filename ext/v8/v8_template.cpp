@@ -104,9 +104,9 @@ namespace {
       }
     }
 
-    VALUE New(VALUE clazz) {
+    VALUE New(VALUE rbclass) {
       HandleScope handles;
-      return V8_Ref_Create(clazz, ObjectTemplate::New());
+      return rr_v8_ref_create(rbclass, ObjectTemplate::New());
     }
     VALUE NewInstance(VALUE self) {
       HandleScope scope;
@@ -163,7 +163,9 @@ namespace {
         return Qnil;
       }
       Local<FunctionTemplate> templ = FunctionTemplate::New(RubyInvocationCallback, rr_v8_external_create(code));
-      return V8_Ref_Create(function_template,templ,code);
+      VALUE ref = rr_v8_ref_create(function_template,templ);
+      rr_v8_ref_setref(ref, "code", code);
+      return ref;
     }
     VALUE GetFunction(VALUE self) {
       HandleScope handles;
