@@ -70,7 +70,7 @@ namespace {
     return rr_v82rb(args(self)->length);
   }
   VALUE Get(VALUE self, VALUE index) {
-    int i = NUM2INT(rb_to_int(index));
+    int i = NUM2INT(index);
     return rr_v82rb(args(self)->values->Get(i));
   }
   VALUE Callee(VALUE self) {

@@ -157,7 +157,6 @@ namespace {
 
     VALUE New(VALUE function_template) {
       HandleScope handles;
-      rb_need_block();
       VALUE code = rb_block_proc();
       if (NIL_P(code)) {
         return Qnil;

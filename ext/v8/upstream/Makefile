@@ -5,7 +5,7 @@ V8SRC=build/v8
 LIBV8=build/v8/libv8.a
 LIBV8_G=build/v8/libv8_g.a
 GCC_VERSION=$(shell ruby -e 'puts %x{gcc --version} =~ /(\d)\.(\d)\.\d/ ? $$1 + $$2 : "UNKNOWN"')
-ARCH=$(shell ruby -e "puts ['foo'].pack('p').size == 8 ? 'x64' : 'ia32'")
+ARCH=$(shell ruby build_cpu.rb)
 
 all: $(LIBV8)
 
