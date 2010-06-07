@@ -11,7 +11,7 @@ module V8
 
     def [](key)
       @context.enter do
-        To.ruby(@native.Get(To.v8(key)))        
+        To.rb(@native.Get(To.v8(key)))
       end
     end
 

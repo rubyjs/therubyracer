@@ -28,7 +28,7 @@ module V8
             if try.HasCaught()
               err = JavascriptError.new(try)
             else
-              value = To.ruby(result)
+              value = To.rb(result)
             end
           end
         end
@@ -69,11 +69,11 @@ module V8
     
     def initialize(try)
       msg = try.Message()
-      @source_name = To.ruby(msg.GetScriptResourceName())
-      @source_line = To.ruby(msg.GetSourceLine())
-      @line_number = To.ruby(msg.GetLineNumber())
-      @javascript_stacktrace = To.ruby(try.StackTrace())
-      super("#{To.ruby(msg.Get())}: #{@source_name}:#{@line_number}")
+      @source_name = To.rb(msg.GetScriptResourceName())
+      @source_line = To.rb(msg.GetSourceLine())
+      @line_number = To.rb(msg.GetLineNumber())
+      @javascript_stacktrace = To.rb(try.StackTrace())
+      super("#{To.rb(msg.Get())}: #{@source_name}:#{@line_number}")
     end
     
     def self.check(try)

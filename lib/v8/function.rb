@@ -7,7 +7,7 @@ module V8
       C::TryCatch.try do |try|
         @context.enter do
           this = To.v8(thisObject)
-          return_value = To.ruby(@native.Call(this, To.v8(args)))
+          return_value = To.rb(@native.Call(this, To.v8(args)))
           err = JavascriptError.new(try) if try.HasCaught()
         end
       end

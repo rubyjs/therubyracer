@@ -5,7 +5,7 @@ module V8
     def each
       @context.enter do
         for i in 0..(@native.Length() - 1)
-          yield To.ruby(@native.Get(i))
+          yield To.rb(@native.Get(i))
         end
       end
     end

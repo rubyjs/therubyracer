@@ -2,7 +2,7 @@
 module V8
   module To
     class << self
-      def ruby(value)
+      def rb(value)
         case value
         when V8::C::Function  then V8::Function.new(value)
         when V8::C::Array     then V8::Array.new(value)          
@@ -14,8 +14,6 @@ module V8
         end
       end
 
-      alias_method :rb, :ruby
-
       def v8(value)
         case value
         when V8::Object
@@ -26,7 +24,7 @@ module V8
           template = C::FunctionTemplate::New() do |arguments|
             rbargs = []
             for i in 0..arguments.Length() - 1
-              rbargs << To.ruby(arguments[i])
+              rbargs << To.rb(arguments[i])
             end
             V8::Function.rubycall(value, *rbargs)
           end
