@@ -51,5 +51,6 @@ void rr_init_v8_exception() {
   rr_define_singleton_method(ExceptionClass, "Error", Error, 1);
   
   v8::V8::SetFatalErrorHandler(fatal);
-  signal(SIGSEGV, segfault);
+  //comment this in for debugging.
+  // signal(SIGSEGV, segfault);
 }
