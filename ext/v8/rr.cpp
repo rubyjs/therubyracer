@@ -62,9 +62,6 @@ VALUE rr_v82rb(Handle<Value> value) {
   return rr_wrap_v8_value(value);  
 }
 
-VALUE rr_v82rb(Handle<Context> value) {
-  return rr_reflect_v8_context(value);
-}
 VALUE rr_v82rb(Handle<Message> value) {
   return rr_reflect_v8_message(value);
 }

@@ -19,7 +19,6 @@ VALUE rr_v82rb(v8::Handle<v8::Function> value);
 VALUE rr_v82rb(v8::Handle<v8::Integer> value);
 VALUE rr_v82rb(v8::Handle<v8::Uint32> value);
 VALUE rr_v82rb(v8::Handle<v8::Int32> value);
-VALUE rr_v82rb(v8::Handle<v8::Context> value);
 VALUE rr_v82rb(v8::Handle<v8::Message> value);
 VALUE rr_v82rb(bool value);
 VALUE rr_v82rb(double value);
