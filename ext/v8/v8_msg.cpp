@@ -57,6 +57,6 @@ void rr_init_msg() {
 }
 
 VALUE rr_reflect_v8_message(Handle<Message> value) {
-  return V8_Ref_Create(MessageClass, value);
+  return rr_v8_ref_create(MessageClass, value);
 }
 
