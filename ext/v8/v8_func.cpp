@@ -4,8 +4,6 @@
 
 using namespace v8;
 
-VALUE rr_cV8_C_Function;
-
 namespace {
   VALUE FunctionClass;
   
