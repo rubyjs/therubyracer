@@ -31,5 +31,4 @@ void rr_init_script() {
   rr_define_singleton_method(ScriptClass, "New", New, 2);
   rr_define_singleton_method(ScriptClass, "Compile", Compile, 2);
   rr_define_method(ScriptClass, "Run", Run, 0);
-  rb_funcall(ScriptClass, rb_intern("private_class_method"), 1, rb_str_new2("new"));
 }
