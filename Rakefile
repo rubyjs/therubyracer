@@ -33,10 +33,10 @@ task :gemspec => :clean do
 end
 
 task :clean do
-  sh "rm -f ext/v8/Makefile"
-  sh "rm -rf ext/v8/v8.bundle"
   sh "rm -rf pkg"
   sh "rm -rf *.gem"
+  sh "rm -rf ext/v8/Makefile"
+  sh "rm -rf ext/v8/*.bundle ext/v8/*.so"
   sh "rm -rf lib/v8/*.bundle lib/v8/*.so"
 end
 
