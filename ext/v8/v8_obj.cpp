@@ -58,8 +58,6 @@ namespace {
     } else {
       rb_raise(rb_eScriptError, "Object::SetHiddenValue() called without an entered Context");
     }
-    //TODO: need to store a reference here? what's the best way
-    // rr_v8_ref_setref(self, "RubyPeer", )
     return Qnil;
   }
   VALUE GetHiddenValue(VALUE self, VALUE key) {
@@ -70,7 +68,6 @@ namespace {
 
 void rr_init_obj() {
   rr_cV8_C_Object = rr_define_class("Object", rr_cV8_C_Value);
-  rb_define_attr(rr_cV8_C_Object, "context", 1, 0);
   rr_define_singleton_method(rr_cV8_C_Object, "New", New, 0);
   rr_define_method(rr_cV8_C_Object, "Get", Get, 1);
   rr_define_method(rr_cV8_C_Object, "Set", Set, 2);
