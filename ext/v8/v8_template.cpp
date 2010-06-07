@@ -188,13 +188,4 @@ void rr_init_template() {
   VALUE FunctionTemplate = rr_define_class("FunctionTemplate", Template);
   rr_define_singleton_method(FunctionTemplate, "New", Func::New, 0);
   rr_define_method(FunctionTemplate, "GetFunction", Func::GetFunction, 0);
-
-
-}
-
-Handle<ObjectTemplate> rr_template_std_rubyobject() {
-  VALUE V8 = rb_define_module("V8");
-  VALUE to = rb_define_module_under(V8, "To");
-  VALUE tmpl = rb_funcall(to, rb_intern("template"), 0);
-  return V8_Ref_Get<ObjectTemplate>(tmpl);
 }
