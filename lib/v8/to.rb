@@ -5,9 +5,9 @@ module V8
     class << self
       def rb(value)
         case value
-        when V8::C::Function  then V8::Function.new(value)
-        when V8::C::Array     then V8::Array.new(value)          
-        when V8::C::Object    then V8::Object.new(value)
+        when V8::C::Function  then peer(value) {V8::Function}
+        when V8::C::Array     then peer(value) {V8::Array}
+        when V8::C::Object    then peer(value) {V8::Object}
         when V8::C::String    then value.Utf8Value()
         when V8::C::Date      then Time.at(value.NumberValue())
         else
@@ -44,17 +44,29 @@ module V8
           end
         when ::Time
           C::Date::New(value)
+        when ::Class
+          To.class_template(value).GetFunction().tap do |f|
+            f.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), C::External::New(value))
+          end
         when nil,Numeric,TrueClass,FalseClass, C::Value
           value
         else
-          # obj = To.template.NewInstance()
           args = C::Array::New(1)
           args.Set(0, C::External::New(value))
           obj = To.class_template(value.class).GetFunction().NewInstance(args)
           return obj
         end
       end
-      
+
+      def peer(value)
+        external = value.GetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"))
+        if external && !external.IsEmpty()
+          external.Value()
+        else
+          yield.new(value)
+        end
+      end
+
       def template
         @rubyobject ||= C::ObjectTemplate::New().tap do |t|
           t.SetNamedPropertyHandler(
@@ -78,7 +90,7 @@ module V8
           end
         else
           class_template = C::FunctionTemplate::New() do |arguments|
-            if arguments.Length() > 0 && arguments[0].IsExternal()
+            if arguments.Length() > 0 && arguments[0].kind_of?(C::External)
               wrapper = arguments[0]
             else
               rbargs = []
@@ -89,7 +101,7 @@ module V8
               wrapper = C::External::New(instance)
             end
             arguments.This().tap do |this|
-              this.SetHiddenValue(C::String::New("TheRubyRacer::RubyObject"), wrapper)              
+              this.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), wrapper)              
             end
           end
           class_template.InstanceTemplate().SetNamedPropertyHandler(

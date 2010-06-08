@@ -22,7 +22,10 @@ namespace {
       return Qnil;
     }
   }
-
+  VALUE _Value(VALUE self) {
+    HandleScope scope;
+    return (VALUE)V8_Ref_Get<External>(self)->Value();
+  }
   void GCWeakReferenceCallback(Persistent<Value> object, void* parameter) {
     // printf("V8 GC!!!!\n");
     Local<External> external(External::Cast(*object));
@@ -37,7 +40,7 @@ void rr_init_v8_external() {
   rb_define_const(ExternalClass, "OBJECTS_REFERENCED_FROM_WITHIN_V8", references);
   rr_define_singleton_method(ExternalClass, "New", New, 1);
   rr_define_singleton_method(ExternalClass, "Unwrap", Unwrap, 1);
-  // rr_define_method(ExternalClass, "Value", _Value, 0);
+  rr_define_method(ExternalClass, "Value", _Value, 0);
 }
 
 VALUE rr_reflect_v8_external(Handle<Value> external) {
