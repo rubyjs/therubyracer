@@ -49,7 +49,7 @@ module V8
         else
           # obj = To.template.NewInstance()
           args = C::Array::New(1)
-          args.Set(0, C::External::Wrap(value))
+          args.Set(0, C::External::New(value))
           obj = To.class_template(value.class).GetFunction().NewInstance(args)
           return obj
         end
@@ -86,7 +86,7 @@ module V8
                 rbargs << To.rb(arguments[i])
               end
               instance = V8::Function.rubycall(cls.method(:new), *rbargs)
-              wrapper = C::External::Wrap(instance)
+              wrapper = C::External::New(instance)
             end
             arguments.This().tap do |this|
               this.SetHiddenValue(C::String::New("TheRubyRacer::RubyObject"), wrapper)              

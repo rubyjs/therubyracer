@@ -6,7 +6,7 @@ module V8
     def initialize(opts = {})
       @native = opts[:with] ? C::Context::New(To.template) : C::Context::New()
       @native.enter do
-        @native.Global().SetHiddenValue(C::String::New("TheRubyRacer::RubyObject"), C::External::Wrap(opts[:with])) if opts[:with]
+        @native.Global().SetHiddenValue(C::String::New("TheRubyRacer::RubyObject"), C::External::New(opts[:with])) if opts[:with]
         @scope = To.rb(@native.Global())
       end
       yield(self) if block_given?

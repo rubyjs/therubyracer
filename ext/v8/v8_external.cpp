@@ -9,7 +9,7 @@ namespace {
   VALUE ExternalClass;
   VALUE references;
 
-  VALUE Wrap(VALUE rbclass, VALUE value) {
+  VALUE New(VALUE rbclass, VALUE value) {
     HandleScope scope;
     return rr_v8_ref_create(rbclass, rr_v8_external_create(value));
   }
@@ -35,7 +35,7 @@ void rr_init_v8_external() {
   ExternalClass = rr_define_class("External", rr_cV8_C_Value);
   references = rb_hash_new();
   rb_define_const(ExternalClass, "OBJECTS_REFERENCED_FROM_WITHIN_V8", references);
-  rr_define_singleton_method(ExternalClass, "Wrap", Wrap, 1);
+  rr_define_singleton_method(ExternalClass, "New", New, 1);
   rr_define_singleton_method(ExternalClass, "Unwrap", Unwrap, 1);
   // rr_define_method(ExternalClass, "Value", _Value, 0);
 }
