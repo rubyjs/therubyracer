@@ -1,6 +1,89 @@
 require 'set'
 module V8
-  
+  class Access
+    def self.[](cls)
+      @access ||= Access.new
+      @access[cls]
+    end
+
+    def initialize
+      @classes = {}
+    end
+
+    def [](cls)
+      @classes ||= {}
+      if ref = @classes[cls.object_id]
+        if ref.weakref_alive?
+          ref.__getobj__
+        else
+          @classes.delete(cls.object_id)
+          self[cls]
+        end
+      else
+        template(cls).tap do |t|
+          t.InstanceTemplate().SetNamedPropertyHandler(
+            NamedPropertyGetter,
+            NamedPropertySetter,
+            nil,
+            nil,
+            NamedPropertyEnumerator
+          )
+          if cls.name && cls.name =~ /(::)?(\w+?)$/
+            t.SetClassName(C::String::NewSymbol($2))
+          else
+            t.SetClassName("Ruby")
+          end
+          @classes[cls.object_id] = WeakRef.new(t)
+        end
+      end
+    end
+
+    def template(cls)
+      C::FunctionTemplate::New() do |arguments|
+        unless arguments.Length() == 1 && arguments[0].kind_of?(C::External)
+          C::ThrowException(C::Exception::Error(C::String::New("cannot call native constructor from javascript")))
+        else
+          arguments.This().tap do |this|
+            this.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), arguments[0])              
+          end
+        end
+      end
+    end
+
+    def self.rubyobject
+      @rubyobject ||= C::ObjectTemplate::New().tap do |t|
+        t.SetNamedPropertyHandler(
+          NamedPropertyGetter,
+          NamedPropertySetter,
+          nil,
+          nil,
+        NamedPropertyEnumerator
+        )
+      end
+    end
+  end
+
+  class Constructors < Access
+    def self.[](cls)
+      @constructors ||= Constructors.new
+      @constructors[cls]
+    end
+
+    def template(cls)
+      t = C::FunctionTemplate::New() do |arguments|
+        rbargs = []
+        for i in 0..arguments.Length() - 1
+          rbargs << To.rb(arguments[i])
+        end
+        instance = V8::Function.rubycall(cls.method(:new), *rbargs)
+        arguments.This().tap do |this|
+          this.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), C::External::New(instance))
+        end
+      end
+      t.Inherit(Access[cls])
+      return t
+    end
+  end
   class NamedPropertyGetter
     def self.call(property, info)
       name = To.rb(property)
@@ -41,7 +124,7 @@ module V8
       end
     end
   end
-  
+
   class NamedPropertyEnumerator
     def self.call(info)
       obj = To.rb(info.This())
