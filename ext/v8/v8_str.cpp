@@ -12,14 +12,14 @@ namespace {
   Handle<String> unwrap(VALUE value) {
     return V8_Ref_Get<String>(value);
   }
-  VALUE New(VALUE klazz, VALUE data) {
+  VALUE New(VALUE string_class, VALUE data) {
     HandleScope handles;
     VALUE str = rb_funcall(data, rb_intern("to_s"), 0);
-    return rr_v8_ref_create(StringClass, String::New(RSTRING_PTR(str), RSTRING_LEN(str)));
+    return rr_v8_ref_create(string_class, String::New(RSTRING_PTR(str), RSTRING_LEN(str)));
   }
-  VALUE NewSymbol(VALUE rbclass, VALUE data) {
+  VALUE NewSymbol(VALUE string_class, VALUE data) {
     VALUE str = rb_funcall(data, rb_intern("to_s"), 0);
-    return rr_v8_ref_create(StringClass, String::NewSymbol(RSTRING_PTR(str), RSTRING_LEN(str)))
+    return rr_v8_ref_create(string_class, String::NewSymbol(RSTRING_PTR(str), RSTRING_LEN(str)));
   }
   VALUE Utf8Value(VALUE self) {
     HandleScope handles;
@@ -44,7 +44,7 @@ VALUE rr_reflect_v8_string(Handle<Value> value) {
 void rr_init_str() {
   StringClass = rr_define_class("String", rr_cV8_C_Value);
   rr_define_singleton_method(StringClass, "New", New, 1);
-  rr_define_singleton_method(StringClass, "NewSymbol", NewSymbol, 1)
+  rr_define_singleton_method(StringClass, "NewSymbol", NewSymbol, 1);
   rr_define_method(StringClass, "Utf8Value", Utf8Value, 0);
   rr_define_method(StringClass, "Utf16Value", Utf16Value, 0);
   rr_define_method(StringClass, "AsciiValue", AsciiValue, 0);

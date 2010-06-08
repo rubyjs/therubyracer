@@ -8,6 +8,9 @@
 using namespace v8;
 
 namespace {
+  
+  VALUE ObjectTemplateClass;
+  VALUE FunctionTemplateClass;
 
   VALUE rb_hash_lookup(VALUE hash, const char *key) {
     return rb_funcall(hash, rb_intern("[]"), 1, rb_str_new2(key));
@@ -168,11 +171,11 @@ namespace {
     }
     VALUE PrototypeTemplate(VALUE self) {
       HandleScope scope;
-      return rr_v8_ref_create(ObjectTemplate, func(self)->PrototypeTemplate());
+      return rr_v8_ref_create(ObjectTemplateClass, func(self)->PrototypeTemplate());
     }
     VALUE InstanceTemplate(VALUE self) {
       HandleScope scope;
-      return rr_v8_ref_create(ObjectTemplate, func(self)->InstanceTemplate());
+      return rr_v8_ref_create(ObjectTemplateClass, func(self)->InstanceTemplate());
     }
     VALUE Inherit(VALUE self, VALUE function_template) {
       HandleScope scope;
@@ -194,15 +197,15 @@ void rr_init_template() {
   VALUE Template = rr_define_class("Template");
   rr_define_method(Template, "Set", Set, 2);
 
-  VALUE ObjectTemplate = rr_define_class("ObjectTemplate", Template);
-  rr_define_singleton_method(ObjectTemplate, "New", Obj::New, 0);
-  rr_define_method(ObjectTemplate, "NewInstance", Obj::NewInstance, 0);
-  rr_define_method(ObjectTemplate, "SetNamedPropertyHandler", Obj::SetNamedPropertyHandler, 5);
+  VALUE ObjectTemplateClass = rr_define_class("ObjectTemplate", Template);
+  rr_define_singleton_method(ObjectTemplateClass, "New", Obj::New, 0);
+  rr_define_method(ObjectTemplateClass, "NewInstance", Obj::NewInstance, 0);
+  rr_define_method(ObjectTemplateClass, "SetNamedPropertyHandler", Obj::SetNamedPropertyHandler, 5);
 
-  VALUE FunctionTemplate = rr_define_class("FunctionTemplate", Template);
-  rr_define_singleton_method(FunctionTemplate, "New", Func::New, 0);
-  rr_define_method(FunctionTemplate, "PrototypeTemplate", Func::PrototypeTemplate, 0);
-  rr_define_method(FunctionTemplate, "InstanceTemplate", Func::InstanceTemplate, 0);
-  rr_define_method(FunctionTemplate, "Inherit", Func::Inherit, 1);
-  rr_define_method(FunctionTemplate, "GetFunction", Func::GetFunction, 0);
+  VALUE FunctionTemplateClass = rr_define_class("FunctionTemplate", Template);
+  rr_define_singleton_method(FunctionTemplateClass, "New", Func::New, 0);
+  rr_define_method(FunctionTemplateClass, "PrototypeTemplate", Func::PrototypeTemplate, 0);
+  rr_define_method(FunctionTemplateClass, "InstanceTemplate", Func::InstanceTemplate, 0);
+  rr_define_method(FunctionTemplateClass, "Inherit", Func::Inherit, 1);
+  rr_define_method(FunctionTemplateClass, "GetFunction", Func::GetFunction, 0);
 }

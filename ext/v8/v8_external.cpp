@@ -6,17 +6,15 @@ using namespace v8;
 namespace {
   VALUE ExternalClass;
   VALUE references;
-  VALUE _Value(VALUE self) {
-    HandleScope scope;
-    return (VALUE)V8_Ref_Get<External>(self)->Value();
-  }
+
   VALUE Wrap(VALUE rbclass, VALUE value) {
     HandleScope scope;
     return rr_v8_ref_create(rbclass, rr_v8_external_create(value));
   }
   VALUE Unwrap(VALUE self, VALUE value) {
+    HandleScope scope;
     if (rb_obj_is_kind_of(value, self)) {
-      return _Value(value);
+      return (VALUE)External::Unwrap(V8_Ref_Get<External>(self));
     } else {
       rb_raise(rb_eArgError, "cannot unwrap %s. It is not a kind of %s", RSTRING_PTR(rb_class_name(rb_class_of(value))), RSTRING_PTR(rb_class_name(self)));
       return Qnil;
@@ -37,7 +35,7 @@ void rr_init_v8_external() {
   rb_define_const(ExternalClass, "OBJECTS_REFERENCED_FROM_WITHIN_V8", references);
   rr_define_singleton_method(ExternalClass, "Wrap", Wrap, 1);
   rr_define_singleton_method(ExternalClass, "Unwrap", Unwrap, 1);
-  rr_define_method(ExternalClass, "Value", _Value, 0);
+  // rr_define_method(ExternalClass, "Value", _Value, 0);
 }
 
 Handle<Value> rr_v8_external_create(VALUE value) {
