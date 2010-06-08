@@ -166,6 +166,19 @@ namespace {
       rr_v8_ref_setref(ref, "code", code);
       return ref;
     }
+    VALUE PrototypeTemplate(VALUE self) {
+      HandleScope scope;
+      return rr_v8_ref_create(ObjectTemplate, func(self)->PrototypeTemplate());
+    }
+    VALUE InstanceTemplate(VALUE self) {
+      HandleScope scope;
+      return rr_v8_ref_create(ObjectTemplate, func(self)->InstanceTemplate());
+    }
+    VALUE Inherit(VALUE self, VALUE function_template) {
+      HandleScope scope;
+      func(self)->Inherit(func(function_template));
+      return Qnil;
+    }
     VALUE GetFunction(VALUE self) {
       HandleScope handles;
       if (!Context::InContext()) {
@@ -188,5 +201,8 @@ void rr_init_template() {
 
   VALUE FunctionTemplate = rr_define_class("FunctionTemplate", Template);
   rr_define_singleton_method(FunctionTemplate, "New", Func::New, 0);
+  rr_define_method(FunctionTemplate, "PrototypeTemplate", Func::PrototypeTemplate, 0);
+  rr_define_method(FunctionTemplate, "InstanceTemplate", Func::InstanceTemplate, 0);
+  rr_define_method(FunctionTemplate, "Inherit", Func::Inherit, 1);
   rr_define_method(FunctionTemplate, "GetFunction", Func::GetFunction, 0);
 }
