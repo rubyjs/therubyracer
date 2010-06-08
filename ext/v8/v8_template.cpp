@@ -169,6 +169,15 @@ namespace {
       rr_v8_ref_setref(ref, "code", code);
       return ref;
     }
+    VALUE SetCallHandler(VALUE self) {
+      HandleScope handles;
+      VALUE code = rb_block_proc();
+      if (NIL_P(code)) {
+        return Qnil;
+      }
+      func(self)->SetCallHandler(RubyInvocationCallback, rr_v8_external_create(code));
+      return Qnil;
+    }
     VALUE PrototypeTemplate(VALUE self) {
       HandleScope scope;
       return rr_v8_ref_create(ObjectTemplateClass, func(self)->PrototypeTemplate());
@@ -209,6 +218,7 @@ void rr_init_template() {
 
   FunctionTemplateClass = rr_define_class("FunctionTemplate", Template);
   rr_define_singleton_method(FunctionTemplateClass, "New", Func::New, 0);
+  rr_define_method(FunctionTemplateClass, "SetCallHandler", Func::SetCallHandler, 0);
   rr_define_method(FunctionTemplateClass, "PrototypeTemplate", Func::PrototypeTemplate, 0);
   rr_define_method(FunctionTemplateClass, "InstanceTemplate", Func::InstanceTemplate, 0);
   rr_define_method(FunctionTemplateClass, "Inherit", Func::Inherit, 1);

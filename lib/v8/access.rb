@@ -1,5 +1,9 @@
 require 'set'
 module V8
+  
+  #TODO each context should get its own access rules instead of sharing them across
+  #     contetxts
+  ###### --cowboyd 07/07/2010
   class Access
     def self.[](cls)
       @access ||= Access.new
@@ -29,7 +33,7 @@ module V8
             NamedPropertyEnumerator
           )
           if cls.name && cls.name =~ /(::)?(\w+?)$/
-            t.SetClassName(C::String::NewSymbol($2))
+            t.SetClassName(C::String::NewSymbol("rb::" + $2))
           else
             t.SetClassName("Ruby")
           end
@@ -65,25 +69,27 @@ module V8
 
   class Constructors < Access
     def self.[](cls)
-      @constructors ||= Constructors.new
-      @constructors[cls]
-    end
-
-    def template(cls)
-      t = C::FunctionTemplate::New() do |arguments|
-        rbargs = []
-        for i in 0..arguments.Length() - 1
-          rbargs << To.rb(arguments[i])
-        end
-        instance = V8::Function.rubycall(cls.method(:new), *rbargs)
-        arguments.This().tap do |this|
-          this.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), C::External::New(instance))
+      Access[cls].tap do |template|
+        template.SetCallHandler() do |arguments|
+          wrap = nil
+          if arguments.Length() > 0 && arguments[0].kind_of?(C::External)
+            wrap = arguments[0]
+          else
+            rbargs = []
+            for i in 0..arguments.Length() - 1
+              rbargs << To.rb(arguments[i])
+            end
+            instance = V8::Function.rubycall(cls.method(:new), *rbargs)
+            wrap = C::External::New(instance)
+          end
+          arguments.This().tap do |this|
+            this.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), wrap)
+          end
         end
       end
-      t.Inherit(Access[cls])
-      return t
     end
   end
+
   class NamedPropertyGetter
     def self.call(property, info)
       name = To.rb(property)
