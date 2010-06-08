@@ -32,6 +32,5 @@ module V8
         V8::C::ThrowException(V8::C::Exception::Error(V8::C::String::New(e.message)))
       end
     end
-
   end
 end

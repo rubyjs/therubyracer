@@ -8,7 +8,7 @@
 using namespace v8;
 
 namespace {
-  
+
   VALUE ObjectTemplateClass;
   VALUE FunctionTemplateClass;
 
@@ -182,6 +182,11 @@ namespace {
       func(self)->Inherit(func(function_template));
       return Qnil;
     }
+    VALUE SetClassName(VALUE self, VALUE name) {
+      HandleScope scope;
+      func(self)->SetClassName(rr_rb2v8(name)->ToString());
+      return Qnil;
+    }
     VALUE GetFunction(VALUE self) {
       HandleScope handles;
       if (!Context::InContext()) {
@@ -197,15 +202,16 @@ void rr_init_template() {
   VALUE Template = rr_define_class("Template");
   rr_define_method(Template, "Set", Set, 2);
 
-  VALUE ObjectTemplateClass = rr_define_class("ObjectTemplate", Template);
+  ObjectTemplateClass = rr_define_class("ObjectTemplate", Template);
   rr_define_singleton_method(ObjectTemplateClass, "New", Obj::New, 0);
   rr_define_method(ObjectTemplateClass, "NewInstance", Obj::NewInstance, 0);
   rr_define_method(ObjectTemplateClass, "SetNamedPropertyHandler", Obj::SetNamedPropertyHandler, 5);
 
-  VALUE FunctionTemplateClass = rr_define_class("FunctionTemplate", Template);
+  FunctionTemplateClass = rr_define_class("FunctionTemplate", Template);
   rr_define_singleton_method(FunctionTemplateClass, "New", Func::New, 0);
   rr_define_method(FunctionTemplateClass, "PrototypeTemplate", Func::PrototypeTemplate, 0);
   rr_define_method(FunctionTemplateClass, "InstanceTemplate", Func::InstanceTemplate, 0);
   rr_define_method(FunctionTemplateClass, "Inherit", Func::Inherit, 1);
+  rr_define_method(FunctionTemplateClass, "SetClassName", Func::SetClassName, 1);
   rr_define_method(FunctionTemplateClass, "GetFunction", Func::GetFunction, 0);
 }
