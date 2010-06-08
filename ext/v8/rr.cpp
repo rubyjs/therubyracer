@@ -7,6 +7,7 @@
 #include "v8_str.h"
 #include "v8_date.h"
 #include "v8_msg.h"
+#include "v8_external.h"
 
 using namespace v8;
 
@@ -29,8 +30,11 @@ VALUE rr_v82rb(Handle<Value> value) {
   if (value.IsEmpty()) {
     return rr_cV8_C_Empty;
   }
-  if (value.IsEmpty() || value->IsUndefined() || value->IsNull()) {
+  if (value->IsUndefined() || value->IsNull()) {
     return Qnil;
+  }
+  if (value->IsExternal()) {
+    return rr_reflect_v8_external(value);
   }
   if (value->IsUint32()) {
     return UINT2NUM(value->Uint32Value());

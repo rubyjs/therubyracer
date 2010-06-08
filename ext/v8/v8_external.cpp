@@ -38,6 +38,10 @@ void rr_init_v8_external() {
   // rr_define_method(ExternalClass, "Value", _Value, 0);
 }
 
+VALUE rr_reflect_v8_external(Handle<Value> external) {
+  return rr_v8_ref_create(ExternalClass, external);
+}
+
 Handle<Value> rr_v8_external_create(VALUE value) {
   rb_hash_aset(references, rb_obj_id(value), value);
   Local<Value> external(External::Wrap((void *)value));
