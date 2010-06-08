@@ -1,6 +1,8 @@
-#include "v8_external.h"
 #include "rr.h"
+#include "v8_external.h"
+
 #include "v8_ref.h"
+#include "v8_value.h"
 using namespace v8;
 
 namespace {
@@ -30,7 +32,7 @@ namespace {
 }
 
 void rr_init_v8_external() {
-  ExternalClass = rr_define_class("External");
+  ExternalClass = rr_define_class("External", rr_cV8_C_Value);
   references = rb_hash_new();
   rb_define_const(ExternalClass, "OBJECTS_REFERENCED_FROM_WITHIN_V8", references);
   rr_define_singleton_method(ExternalClass, "Wrap", Wrap, 1);
@@ -44,7 +46,7 @@ VALUE rr_reflect_v8_external(Handle<Value> external) {
 
 Handle<Value> rr_v8_external_create(VALUE value) {
   rb_hash_aset(references, rb_obj_id(value), value);
-  Local<Value> external(External::Wrap((void *)value));
+  Local<Value> external(External::New((void *)value));
   Persistent<Value> record = Persistent<Value>::New(external);
   // V8::AdjustAmountOfExternalAllocatedMemory(100000000);
   record.MakeWeak(NULL, GCWeakReferenceCallback);

@@ -18,6 +18,7 @@ namespace {
     return rr_v8_ref_create(string_class, String::New(RSTRING_PTR(str), RSTRING_LEN(str)));
   }
   VALUE NewSymbol(VALUE string_class, VALUE data) {
+    HandleScope scope;
     VALUE str = rb_funcall(data, rb_intern("to_s"), 0);
     return rr_v8_ref_create(string_class, String::NewSymbol(RSTRING_PTR(str), RSTRING_LEN(str)));
   }

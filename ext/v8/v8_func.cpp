@@ -36,7 +36,7 @@ namespace {
     for (int i = 0; i < argc; i++) {
       argv[i] = args->Get(i);
     }
-    return rr_v82rb(function->NewInstance(argc, argv));
+    return rr_v8_ref_create(rr_cV8_C_Object, function->NewInstance(argc, argv));
   }
   VALUE GetName(VALUE self) {
     return rr_v82rb(unwrap(self)->GetName());

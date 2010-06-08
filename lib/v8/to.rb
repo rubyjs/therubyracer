@@ -50,7 +50,6 @@ module V8
           # obj = To.template.NewInstance()
           args = C::Array::New(1)
           args.Set(0, C::External::Wrap(value))
-          rputs "about to call this mother."
           obj = To.class_template(value.class).GetFunction().NewInstance(args)
           return obj
         end
@@ -79,13 +78,9 @@ module V8
           end
         else
           class_template = C::FunctionTemplate::New() do |arguments|
-            rputs "In constructor"
-            if arguments.Length() > 0
             if arguments.Length() > 0 && arguments[0].IsExternal()
-              rputs "this path?"
               wrapper = arguments[0]
             else
-              rputs "this path?????"
               rbargs = []
               for i in 0..arguments.Length() - 1
                 rbargs << To.rb(arguments[i])
@@ -93,18 +88,19 @@ module V8
               instance = V8::Function.rubycall(cls.method(:new), *rbargs)
               wrapper = C::External::Wrap(instance)
             end
-            arguments.This().SetHiddenValue(C::String::New("TheRubyRacer::RubyObject"), wrapper)
-            arguments.This()
+            arguments.This().tap do |this|
+              this.SetHiddenValue(C::String::New("TheRubyRacer::RubyObject"), wrapper)              
+            end
           end
-          class_template.PrototypeTemplate().SetNamedPropertyHandler(
+          class_template.InstanceTemplate().SetNamedPropertyHandler(
             NamedPropertyGetter,
             NamedPropertySetter,
             nil,
             nil,
             NamedPropertyEnumerator
           )
-          if cls.name && cls.name =~ /::(\w+?)$/
-            class_template.SetClassName(C::String::NewSymbol($1))
+          if cls.name && cls.name =~ /(::)?(\w+?)$/
+            class_template.SetClassName(C::String::NewSymbol($2))
           else
             class_template.SetClassName("Ruby")
           end

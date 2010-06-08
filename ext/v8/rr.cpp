@@ -109,7 +109,6 @@ VALUE rr_v82rb(int32_t value) {
   return INT2FIX(value);
 }
 
-
 Handle<Value> rr_rb2v8(VALUE value) {
   switch (TYPE(value)) {
   case T_FIXNUM:
