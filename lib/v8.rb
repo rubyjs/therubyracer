@@ -11,4 +11,5 @@ module V8
   require 'v8/function'
   require 'v8/tap'
   require 'v8/access'
+  require 'v8/error'
 end

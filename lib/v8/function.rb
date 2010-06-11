@@ -8,7 +8,7 @@ module V8
         @context.enter do
           this = To.v8(thisObject)
           return_value = To.rb(@native.Call(this, To.v8(args)))
-          err = JavascriptError.new(try) if try.HasCaught()
+          err = JSError.new(try) if try.HasCaught()
         end
       end
       raise err if err

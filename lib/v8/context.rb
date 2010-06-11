@@ -22,11 +22,11 @@ module V8
         @native.enter do
           script = C::Script::Compile(To.v8(javascript.to_s), To.v8(filename.to_s))
           if try.HasCaught()
-            err = JavascriptError.new(try)
+            err = JSError.new(try)
           else
             result = script.Run()
             if try.HasCaught()
-              err = JavascriptError.new(try)
+              err = JSError.new(try)
             else
               value = To.rb(result)
             end
@@ -63,25 +63,7 @@ module V8
       V8::Context.eval(*args)
     end
   end
-    
-  class JavascriptError < StandardError
-    attr_reader :source_name, :source_line, :line_number, :javascript_stacktrace
-    
-    def initialize(try)
-      msg = try.Message()
-      @source_name = To.rb(msg.GetScriptResourceName())
-      @source_line = To.rb(msg.GetSourceLine())
-      @line_number = To.rb(msg.GetLineNumber())
-      @javascript_stacktrace = To.rb(try.StackTrace())
-      super("#{To.rb(msg.Get())}: #{@source_name}:#{@line_number}")
-    end
-    
-    def self.check(try)
-      raise JavascriptError.new(try) if try.HasCaught()
-    end
 
-  end
-  
   module C
     class Context
       def enter
