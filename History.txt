@@ -1,3 +1,16 @@
+=== 0.7.2 2010-06-14
+* 5 major enhancements
+  * embed ruby classes as constructors
+  * support for rubinius
+  * uniform backtrace() function on JSError mixes the ruby
+  * String::NewSymbol() is now scriptable
+  * InstanceTemplate(), PrototypeTemplate(), Inherit() methods on v8::FunctionTemplate now scriptable.
+
+* 3 minor enhancements
+  * reuse the standard ruby object access template
+  * fix a bunch of compile warnings
+  * Store any ruby object in V8 with V8::C::External
+
 === 0.7.1 2010-06-03
 * 5 major enhancements
   * Function#call() now uses the global scope for 'this' by default
