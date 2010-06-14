@@ -10,6 +10,7 @@ module V8
         when V8::C::Object    then peer(value) {V8::Object}
         when V8::C::String    then value.Utf8Value()
         when V8::C::Date      then Time.at(value.NumberValue())
+        when V8::C::Value     then nil if value.IsEmpty()
         else
           value
         end

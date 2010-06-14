@@ -28,8 +28,10 @@ module V8
     def self.rubycall(rubycode, *args)
       begin
         To.v8(rubycode.call(*args))
-      rescue StandardError => e
-        V8::C::ThrowException(V8::C::Exception::Error(V8::C::String::New(e.message)))
+      rescue Exception => e
+        error = V8::C::Exception::Error(V8::C::String::New(e.message))
+        error.SetHiddenValue("TheRubyRacer::Cause", C::External::New(e))
+        V8::C::ThrowException(error)
       end
     end
   end
