@@ -16,7 +16,7 @@ module V8
     def initialize_unsafe(try)
       message = nil
       ex = To.rb(try.Exception())
-      @boundaries = [Boundary.new :rbframes => caller(3), :jsframes => parse_js_frames(try)]
+      @boundaries = [Boundary.new(:rbframes => caller(3), :jsframes => parse_js_frames(try))]
       if V8::Object === ex
         if msg = ex['message']
           message = msg
