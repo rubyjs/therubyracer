@@ -3,7 +3,7 @@ require 'rubygems'
 UPSTREAM  = "ext/v8/upstream"
 
 manifest = Rake::FileList.new("**/*")
-manifest.exclude "lib/v8/*.bundle", "lib/v8/*.so", "ext/**/test/*", "ext/**/test/*", "ext/**/samples/*", "ext/**/benchmarks/*", "#{UPSTREAM}/build", "tmp", "tmp/**/*", "**/*.gem"
+manifest.exclude "lib/v8/*.bundle", "lib/v8/*.so", "ext/**/test/*", "ext/**/test/*", "ext/**/samples/*", "ext/**/benchmarks/*", "#{UPSTREAM}/build/", "tmp", "tmp/**/*", "**/*.gem"
 Gem::Specification.new do |gemspec|
   $gemspec = gemspec
   gemspec.name = gemspec.rubyforge_project = "therubyracer"
