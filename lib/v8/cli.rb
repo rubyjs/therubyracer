@@ -52,8 +52,9 @@ module V8
     def self.load(cxt, libfile)
       begin
         cxt.load(libfile)
-      rescue V8::JavascriptError => e
-        puts e.javascript_stacktrace
+      rescue V8::JSError => e
+        puts e.message
+        puts e.backtrace(:javascript)
       rescue StandardError => e
         puts e
       end      
@@ -87,10 +88,12 @@ module V8
         begin
           result = cxt.eval(line, '<shell>')
           puts(result) unless result.nil?                
-        rescue V8::JavascriptError => e
-          puts e.javascript_stacktrace
+        rescue V8::JSError => e
+          puts e.message
+          puts e.backtrace(:javascript)
         rescue StandardError => e
           puts e
+          puts e.backtrace.join("\n")
         end
       end          
     end            
@@ -99,15 +102,11 @@ module V8
       def to_s
         "[object Shell]"
       end
-      
+
       def print(string)
         puts string
       end
-      
-      def evalrb(src)
-        eval(src)
-      end
-      
+
       def exit(status = 0)
         Kernel.exit(status)
       end
