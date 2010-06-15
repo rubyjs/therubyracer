@@ -29,9 +29,14 @@ module V8
       begin
         To.v8(rubycode.call(*args))
       rescue Exception => e
-        error = V8::C::Exception::Error(V8::C::String::New(e.message))
-        error.SetHiddenValue("TheRubyRacer::Cause", C::External::New(e))
-        V8::C::ThrowException(error)
+        case e
+        when SystemExit, NoMemoryError
+          raise e
+        else
+          error = V8::C::Exception::Error(V8::C::String::New(e.message))
+          error.SetHiddenValue("TheRubyRacer::Cause", C::External::New(e))
+          V8::C::ThrowException(error)
+        end
       end
     end
   end
