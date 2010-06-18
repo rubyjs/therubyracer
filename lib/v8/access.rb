@@ -123,8 +123,10 @@ module V8
       methods = obj.public_methods(false).map {|m| m.to_s}
       if methods.include?(perl_name)
         obj.send(perl_name, To.rb(value))
+        value
       elsif methods.include?(camel_name)
         obj.send(camel_name, To.rb(value))
+        value
       else
          C::Empty
       end
