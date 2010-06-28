@@ -94,8 +94,7 @@ module V8
     def self.call(property, info)
       name = To.rb(property)
       obj = To.rb(info.This())
-      perl_name = To.perl_case(name)
-      methods = obj.public_methods(false).map {|m| m.to_s}
+      methods = accessible_methods(obj)
       if methods.include?(name)
         method = obj.method(name)
         if method.arity == 0
@@ -113,17 +112,12 @@ module V8
     def self.call(property, value, info)
       obj = To.rb(info.This())
       setter = To.rb(property) + "="
-      camel_name = To.camel_case(setter)
-      perl_name = To.perl_case(setter)
-      methods = obj.public_methods(false).map {|m| m.to_s}
-      if methods.include?(perl_name)
-        obj.send(perl_name, To.rb(value))
-        value
-      elsif methods.include?(camel_name)
-        obj.send(camel_name, To.rb(value))
+      methods = accessible_methods(obj)
+      if methods.include?(setter)
+        obj.send(setter, To.rb(value))
         value
       else
-         C::Empty
+        C::Empty
       end
     end
   end
@@ -131,16 +125,25 @@ module V8
   class NamedPropertyEnumerator
     def self.call(info)
       obj = To.rb(info.This())
-      camel_methods = obj.public_methods(false).inject(Set.new) do |set, name|
-        set.tap do
-          set << To.camel_case(name)
-        end
-      end
-      names = V8::C::Array::New(camel_methods.length)
-      camel_methods.each_with_index do |name, i|
+      methods = accessible_methods(obj)
+      names = V8::C::Array::New(methods.length)
+      methods.each_with_index do |name, i|
         names.Set(i, C::String::New(name))
       end
       return names
     end
   end
+  
+  private
+  # evil - but access will be plugggable
+  def accessible_methods(obj)
+    obj.public_methods(false).to_set.tap do |methods|
+      ancestors = obj.class.ancestors.dup
+      while ancestor = ancestors.shift
+        break if ancestor == ::Object
+        methods.merge(ancestor.public_instance_methods(false))
+      end
+    end
+  end
+  
 end
