@@ -107,6 +107,69 @@ namespace {
       }
     }
 
+    /**
+     * Returns the value of the property if the getter intercepts the
+     * request.  Otherwise, returns an empty handle.
+     */
+    Handle<Value> RubyIndexedPropertyGetter(uint32_t index, const AccessorInfo& info) {
+      VALUE code = (VALUE)External::Unwrap(info.Data());
+      VALUE getter = rb_hash_lookup(code, "getter");
+      VALUE result = rb_funcall(getter, rb_intern("call"), 1, UINT2NUM(index));
+      return rr_rb2v8(result);
+    }
+
+    Handle<Value> RubyIndexedPropertySetter(uint32_t index, Local<Value> value, const AccessorInfo& info) {
+      VALUE code = (VALUE)External::Unwrap(info.Data());
+      VALUE setter = rb_hash_lookup(code, "setter");
+      VALUE result = rb_funcall(setter, rb_intern("call"), 3, UINT2NUM(index), rr_v82rb(value), rr_v82rb(info));
+      return rr_rb2v8(result);
+    }
+
+    /**
+     * Returns a non-empty handle if the interceptor intercepts the request.
+     * The result is true if the property exists and false otherwise.
+     */
+     Handle<Boolean> RubyIndexedPropertyQuery(uint32_t index, const AccessorInfo& info) {
+       VALUE code = (VALUE)External::Unwrap(info.Data());
+       VALUE query = rb_hash_lookup(code, "query");
+       VALUE result = rb_funcall(query, rb_intern("call"), 2, UINT2NUM(index), rr_v82rb(info));
+       Handle<Value> intercepts = rr_rb2v8(result);
+       return intercepts.IsEmpty() ? Handle<Boolean>() : intercepts->ToBoolean();
+     }
+
+    /**
+     * Returns a non-empty handle if the deleter intercepts the request.
+     * The return value is true if the property could be deleted and false
+     * otherwise.
+     */
+     Handle<Boolean> RubyIndexedPropertyDeleter(uint32_t index, const AccessorInfo& info) {
+       VALUE code = (VALUE)External::Unwrap(info.Data());
+       VALUE deleter = rb_hash_lookup(code, "deleter");
+       VALUE result = rb_funcall(deleter, rb_intern("call"), 2, UINT2NUM(index), rr_v82rb(info));
+       Handle<Value> intercepts = rr_rb2v8(result);
+       return intercepts.IsEmpty() ? Handle<Boolean>() : intercepts->ToBoolean();
+     }
+
+    /**
+     * Returns an array containing the indices of the properties the
+     * indexed property getter intercepts.
+     */
+     Handle<Array> RubyIndexedPropertyEnumerator(const AccessorInfo& info) {
+       VALUE code = (VALUE)External::Unwrap(info.Data());
+       VALUE enumerator = rb_hash_lookup(code, "enumerator");
+       VALUE result = rb_funcall(enumerator, rb_intern("call"), 1, rr_v82rb(info));
+       Handle<Value> v(rr_rb2v8(result));
+       if (v.IsEmpty()) {
+         return Array::New();
+       } else if (!v->IsArray()) {
+         Local<Array> a = Array::New();
+         a->Set(Integer::New(0), v->ToString());
+         return a;
+       } else {
+         return (Handle<Array>)Array::Cast(*v);
+       }
+     }
+
     VALUE New(VALUE rbclass) {
       HandleScope handles;
       return rr_v8_ref_create(rbclass, ObjectTemplate::New());
@@ -143,6 +206,30 @@ namespace {
         RTEST(query) ? RubyNamedPropertyQuery : 0,
         RTEST(deleter) ? RubyNamedPropertyDeleter : 0,
         RTEST(enumerator) ? RubyNamedPropertyEnumerator : 0,
+        rr_v8_external_create(data)
+      );
+      return Qnil;
+    }
+    VALUE SetIndexedPropertyHandler(VALUE self, VALUE getter, VALUE setter, VALUE query, VALUE deleter, VALUE enumerator) {
+      HandleScope scope;
+      if (!RTEST(getter)) {
+        rb_raise(rb_eArgError, "you must supply at least a getter to V8::C::ObjectTemplate#SetNamedPropertyHandler()");
+        return Qnil;
+      }
+      VALUE data = rb_hash_new();
+      rb_hash_aset(data, "getter", getter);
+      rb_hash_aset(data, "setter", setter);
+      rb_hash_aset(data, "query", query);
+      rb_hash_aset(data, "deleter", deleter);
+      rb_hash_aset(data, "enumerator", enumerator);
+      //TODO: is this really necessary?
+      rr_v8_ref_setref(self, "data", data);
+      obj(self)->SetIndexedPropertyHandler(
+        RubyIndexedPropertyGetter,
+        RTEST(setter) ? RubyIndexedPropertySetter : 0,
+        RTEST(query) ? RubyIndexedPropertyQuery : 0,
+        RTEST(deleter) ? RubyIndexedPropertyDeleter : 0,
+        RTEST(enumerator) ? RubyIndexedPropertyEnumerator : 0,
         rr_v8_external_create(data)
       );
       return Qnil;

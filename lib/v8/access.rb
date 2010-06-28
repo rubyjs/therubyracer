@@ -96,13 +96,8 @@ module V8
       obj = To.rb(info.This())
       perl_name = To.perl_case(name)
       methods = obj.public_methods(false).map {|m| m.to_s}
-      method_name = if methods.include?(name)
-        name
-      elsif methods.include?(perl_name)
-        perl_name
-      end
-      if method_name
-        method = obj.method(method_name)
+      if methods.include?(name)
+        method = obj.method(name)
         if method.arity == 0
           Function.rubycall(method)
         else
