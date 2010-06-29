@@ -25,13 +25,7 @@ module V8
         end
       else
         template(cls).tap do |t|
-          t.InstanceTemplate().SetNamedPropertyHandler(
-            NamedPropertyGetter,
-            NamedPropertySetter,
-            nil,
-            nil,
-            NamedPropertyEnumerator
-          )
+          Access.setuptemplate(t.InstanceTemplate())
           if cls.name && cls.name =~ /(::)?(\w+?)$/
             t.SetClassName(C::String::NewSymbol("rb::" + $2))
           else
@@ -56,14 +50,25 @@ module V8
 
     def self.rubyobject
       @rubyobject ||= C::ObjectTemplate::New().tap do |t|
-        t.SetNamedPropertyHandler(
-          NamedPropertyGetter,
-          NamedPropertySetter,
-          nil,
-          nil,
-        NamedPropertyEnumerator
-        )
+        setuptemplate(t)
       end
+    end
+
+    def self.setuptemplate(t)
+      t.SetNamedPropertyHandler(
+        NamedPropertyGetter,
+        NamedPropertySetter,
+        nil,
+        nil,
+        NamedPropertyEnumerator
+      )
+      t.SetIndexedPropertyHandler(
+        IndexedPropertyGetter,
+        IndexedPropertySetter,
+        nil,
+        nil,
+        IndexedPropertyEnumerator
+      )
     end
   end
 
@@ -133,7 +138,46 @@ module V8
       return names
     end
   end
-  
+
+  class IndexedPropertyGetter
+    def self.call(index, info)
+      obj = To.rb(info.This())
+      if obj.respond_to?(:[])
+        obj[index]
+      else
+        C::Empty
+      end
+    end
+  end
+
+  class IndexedPropertySetter
+    def self.call(index, value, info)
+      obj = To.rb(info.This())
+      if obj.respond_to?(:[]=)
+        obj[index] = To.rb(value)
+        value
+      else
+        C::Empty
+      end
+    end
+  end
+
+  class IndexedPropertyEnumerator
+    def self.call(info)
+      obj = To.rb(info.This())
+      if obj.respond_to?(:length)
+        C::Array::New(obj.length).tap do |indices|
+          for index in 0..obj.length - 1
+            rputs "index: #{index}"
+            indices.Set(index,index)
+          end
+        end
+      else
+        C::Array::New()
+      end
+    end
+  end
+
   private
   # evil - but access will be plugggable
   def accessible_methods(obj)

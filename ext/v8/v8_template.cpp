@@ -114,10 +114,14 @@ namespace {
     Handle<Value> RubyIndexedPropertyGetter(uint32_t index, const AccessorInfo& info) {
       VALUE code = (VALUE)External::Unwrap(info.Data());
       VALUE getter = rb_hash_lookup(code, "getter");
-      VALUE result = rb_funcall(getter, rb_intern("call"), 1, UINT2NUM(index));
+      VALUE result = rb_funcall(getter, rb_intern("call"), 2, UINT2NUM(index), rr_v82rb(info));
       return rr_rb2v8(result);
     }
 
+    /**
+     * Returns the value if the setter intercepts the request.
+     * Otherwise, returns an empty handle.
+     */
     Handle<Value> RubyIndexedPropertySetter(uint32_t index, Local<Value> value, const AccessorInfo& info) {
       VALUE code = (VALUE)External::Unwrap(info.Data());
       VALUE setter = rb_hash_lookup(code, "setter");
@@ -302,6 +306,7 @@ void rr_init_template() {
   rr_define_singleton_method(ObjectTemplateClass, "New", Obj::New, 0);
   rr_define_method(ObjectTemplateClass, "NewInstance", Obj::NewInstance, 0);
   rr_define_method(ObjectTemplateClass, "SetNamedPropertyHandler", Obj::SetNamedPropertyHandler, 5);
+  rr_define_method(ObjectTemplateClass, "SetIndexedPropertyHandler", Obj::SetIndexedPropertyHandler, 5);
 
   FunctionTemplateClass = rr_define_class("FunctionTemplate", Template);
   rr_define_singleton_method(FunctionTemplateClass, "New", Func::New, 0);
