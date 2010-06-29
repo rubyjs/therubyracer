@@ -107,6 +107,8 @@ module V8
         else
           To.v8(method)
         end
+      elsif obj.respond_to?(:[])
+        To.v8(obj[name])
       else
         C::Empty
       end
@@ -116,10 +118,14 @@ module V8
   class NamedPropertySetter
     def self.call(property, value, info)
       obj = To.rb(info.This())
-      setter = To.rb(property) + "="
+      name = To.rb(property)
+      setter = name + "="
       methods = accessible_methods(obj)
       if methods.include?(setter)
         obj.send(setter, To.rb(value))
+        value
+      elsif obj.respond_to?(:[]=)
+        obj.send(:[]=, name, To.rb(value))
         value
       else
         C::Empty
@@ -187,6 +193,7 @@ module V8
         break if ancestor == ::Object
         methods.merge(ancestor.public_instance_methods(false).map {|m| m.to_s})
       end
+      methods.reject! {|m| m == "[]" || m == "[]="}
     end
   end
   
