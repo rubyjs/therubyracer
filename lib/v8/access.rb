@@ -181,11 +181,11 @@ module V8
   private
   # evil - but access will be plugggable
   def accessible_methods(obj)
-    obj.public_methods(false).to_set.tap do |methods|
+    obj.public_methods(false).map {|m| m.to_s}.to_set.tap do |methods|
       ancestors = obj.class.ancestors.dup
       while ancestor = ancestors.shift
         break if ancestor == ::Object
-        methods.merge(ancestor.public_instance_methods(false))
+        methods.merge(ancestor.public_instance_methods(false).map {|m| m.to_s})
       end
     end
   end
