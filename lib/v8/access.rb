@@ -95,7 +95,21 @@ module V8
     end
   end
 
+  module AccessibleMethods
+    def accessible_methods(obj)
+      obj.public_methods(false).map {|m| m.to_s}.to_set.tap do |methods|
+        ancestors = obj.class.ancestors.dup
+        while ancestor = ancestors.shift
+          break if ancestor == ::Object
+          methods.merge(ancestor.public_instance_methods(false).map {|m| m.to_s})
+        end
+        methods.reject! {|m| m == "[]" || m == "[]="}
+      end
+    end
+  end
+
   class NamedPropertyGetter
+    extend AccessibleMethods
     def self.call(property, info)
       name = To.rb(property)
       obj = To.rb(info.This())
@@ -116,6 +130,7 @@ module V8
   end
 
   class NamedPropertySetter
+    extend AccessibleMethods
     def self.call(property, value, info)
       obj = To.rb(info.This())
       name = To.rb(property)
@@ -134,6 +149,7 @@ module V8
   end
 
   class NamedPropertyEnumerator
+    extend AccessibleMethods
     def self.call(info)
       obj = To.rb(info.This())
       methods = accessible_methods(obj)
@@ -183,18 +199,4 @@ module V8
       end
     end
   end
-
-  private
-  # evil - but access will be plugggable
-  def accessible_methods(obj)
-    obj.public_methods(false).map {|m| m.to_s}.to_set.tap do |methods|
-      ancestors = obj.class.ancestors.dup
-      while ancestor = ancestors.shift
-        break if ancestor == ::Object
-        methods.merge(ancestor.public_instance_methods(false).map {|m| m.to_s})
-      end
-      methods.reject! {|m| m == "[]" || m == "[]="}
-    end
-  end
-  
 end
