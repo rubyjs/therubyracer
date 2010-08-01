@@ -26,7 +26,7 @@ module V8
       end
       if options.version_info
         puts "The Ruby Racer #{V8::VERSION}"
-        puts "V8 Version 2.1.10"
+        puts "V8 Version 2.3.3"
         exit
       elsif options.selftest
         self.test        
