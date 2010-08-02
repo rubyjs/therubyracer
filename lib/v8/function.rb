@@ -39,5 +39,9 @@ module V8
         end
       end
     end
+
+    def self.rubysend(obj, message, *args)
+      rubycall(obj.method(message), *args)
+    end
   end
 end

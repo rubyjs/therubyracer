@@ -84,7 +84,7 @@ module V8
             for i in 0..arguments.Length() - 1
               rbargs << To.rb(arguments[i])
             end
-            instance = V8::Function.rubycall(cls.method(:new), *rbargs)
+            instance = V8::Function.rubysend(cls, :new, *rbargs)
             wrap = C::External::New(instance)
           end
           arguments.This().tap do |this|
@@ -122,7 +122,7 @@ module V8
           To.v8(method)
         end
       elsif obj.respond_to?(:[])
-        Function.rubycall(obj.method(:[]), name)
+        Function.rubysend(obj, :[], name)
       else
         C::Empty
       end
@@ -137,10 +137,10 @@ module V8
       setter = name + "="
       methods = accessible_methods(obj)
       if methods.include?(setter)
-        Function.rubycall(obj.method(setter), To.rb(value))
+        Function.rubysend(obj, setter, To.rb(value))
         value
       elsif obj.respond_to?(:[]=)
-        Function.rubycall(obj.method(:[]=), name, To.rb(value))
+        Function.rubysend(obj, :[]=, name, To.rb(value))
         value
       else
         C::Empty
@@ -165,7 +165,7 @@ module V8
     def self.call(index, info)
       obj = To.rb(info.This())
       if obj.respond_to?(:[])
-        Function.rubycall(obj.method(:[]), index)
+        Function.rubysend(obj, :[], index)
       else
         C::Empty
       end
@@ -176,7 +176,7 @@ module V8
     def self.call(index, value, info)
       obj = To.rb(info.This())
       if obj.respond_to?(:[]=)
-        Function.rubycall(obj.method(:[]=), index, To.rb(value))
+        Function.rubysend(obj, :[]=, index, To.rb(value))
         value
       else
         C::Empty
