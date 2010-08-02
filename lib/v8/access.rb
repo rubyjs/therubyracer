@@ -165,7 +165,7 @@ module V8
     def self.call(index, info)
       obj = To.rb(info.This())
       if obj.respond_to?(:[])
-        obj[index]
+        Function.rubycall(obj.method(:[]), index)
       else
         C::Empty
       end
@@ -176,7 +176,7 @@ module V8
     def self.call(index, value, info)
       obj = To.rb(info.This())
       if obj.respond_to?(:[]=)
-        obj[index] = To.rb(value)
+        Function.rubycall(obj.method(:[]=), index, To.rb(value))
         value
       else
         C::Empty
