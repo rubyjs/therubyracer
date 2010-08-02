@@ -122,7 +122,7 @@ module V8
           To.v8(method)
         end
       elsif obj.respond_to?(:[])
-        To.v8(obj[name])
+        Function.rubycall(obj.method(:[]), name)
       else
         C::Empty
       end
@@ -137,10 +137,10 @@ module V8
       setter = name + "="
       methods = accessible_methods(obj)
       if methods.include?(setter)
-        obj.send(setter, To.rb(value))
+        Function.rubycall(obj.method(setter), To.rb(value))
         value
       elsif obj.respond_to?(:[]=)
-        obj.send(:[]=, name, To.rb(value))
+        Function.rubycall(obj.method(:[]=), name, To.rb(value))
         value
       else
         C::Empty
