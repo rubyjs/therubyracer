@@ -25,9 +25,9 @@ module V8
       end
     end
 
-    def self.rubycall(rubycode, *args)
+    def self.rubyprotect
       begin
-        To.v8(rubycode.call(*args))
+        To.v8(yield)
       rescue Exception => e
         case e
         when SystemExit, NoMemoryError
@@ -40,8 +40,16 @@ module V8
       end
     end
 
+    def self.rubycall(rubycode, *args)
+      rubyprotect do
+        rubycode.call(*args)
+      end
+    end
+
     def self.rubysend(obj, message, *args)
-      rubycall(obj.method(message), *args)
+      rubyprotect do
+        obj.send(message, *args)
+      end
     end
   end
 end
