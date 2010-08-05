@@ -122,7 +122,11 @@ module V8
           To.v8(method)
         end
       elsif obj.respond_to?(:[])
-        Function.rubysend(obj, :[], name)
+        intercepts = true
+        result = Function.rubysend(obj, :[], name) do
+          intercepts = false
+        end
+        intercepts ? result : C::Empty
       else
         C::Empty
       end
@@ -140,8 +144,11 @@ module V8
         Function.rubysend(obj, setter, To.rb(value))
         value
       elsif obj.respond_to?(:[]=)
-        Function.rubysend(obj, :[]=, name, To.rb(value))
-        value
+        intercepts = true
+        Function.rubysend(obj, :[]=, name, To.rb(value)) do
+          intercepts = false
+        end
+        intercepts ? value : C::Empty
       else
         C::Empty
       end
@@ -165,7 +172,11 @@ module V8
     def self.call(index, info)
       obj = To.rb(info.This())
       if obj.respond_to?(:[])
-        Function.rubysend(obj, :[], index)
+        intercepts = true
+        value = Function.rubysend(obj, :[], index) do
+          intercepts = false
+        end
+        intercepts ? value : C::Empty
       else
         C::Empty
       end
@@ -176,8 +187,11 @@ module V8
     def self.call(index, value, info)
       obj = To.rb(info.This())
       if obj.respond_to?(:[]=)
-        Function.rubysend(obj, :[]=, index, To.rb(value))
-        value
+        intercepts = true
+        Function.rubysend(obj, :[]=, index, To.rb(value)) do
+          intercepts = false
+        end
+        intercepts ? value : C::Empty
       else
         C::Empty
       end
@@ -190,7 +204,6 @@ module V8
       if obj.respond_to?(:length)
         C::Array::New(obj.length).tap do |indices|
           for index in 0..obj.length - 1
-            rputs "index: #{index}"
             indices.Set(index,index)
           end
         end

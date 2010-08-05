@@ -40,15 +40,15 @@ module V8
       end
     end
 
-    def self.rubycall(rubycode, *args)
+    def self.rubycall(rubycode, *args, &block)
       rubyprotect do
-        rubycode.call(*args)
+        rubycode.call(*args, &block)
       end
     end
 
-    def self.rubysend(obj, message, *args)
+    def self.rubysend(obj, message, *args, &block)
       rubyprotect do
-        obj.send(message, *args)
+        obj.send(message, *args, &block)
       end
     end
   end
