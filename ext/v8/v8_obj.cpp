@@ -64,6 +64,20 @@ namespace {
     HandleScope scope;
     return rr_v82rb(unwrap(self)->GetHiddenValue(rr_rb2v8(key)->ToString()));
   }
+  VALUE GetPrototype(VALUE self) {
+    HandleScope scope;
+    return rr_v82rb(unwrap(self)->GetPrototype());
+  }
+  VALUE SetPrototype(VALUE self, VALUE prototype) {
+    HandleScope scope;
+    Handle<Value> proto = rr_rb2v8(prototype);
+    Local<Object> me = unwrap(self);
+    printf("self: %s", *String::AsciiValue(me->ToString()));
+    printf("proto: %s", *String::AsciiValue(proto->ToString()));
+    // unwrap(self)->SetPrototype();
+        // return rr_v82rb(unwrap(self)->SetPrototype(rr_rb2v8(prototype)));
+      return Qnil;
+  }
 }
 
 void rr_init_obj() {
@@ -74,6 +88,8 @@ void rr_init_obj() {
   rr_define_method(rr_cV8_C_Object, "GetPropertyNames", GetPropertyNames, 0);
   rr_define_method(rr_cV8_C_Object, "GetHiddenValue", GetHiddenValue, 1);
   rr_define_method(rr_cV8_C_Object, "SetHiddenValue", SetHiddenValue, 2);
+  rr_define_method(rr_cV8_C_Object, "GetPrototype", GetPrototype, 0);
+  rr_define_method(rr_cV8_C_Object, "SetPrototype", SetPrototype, 1);
 }
 
 VALUE rr_reflect_v8_object(Handle<Value> value) {
