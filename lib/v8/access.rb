@@ -106,29 +106,36 @@ module V8
         methods.reject! {|m| m == "[]" || m == "[]="}
       end
     end
+
+    def access(info, retval = nil, &code)
+      obj = To.rb(info.This())
+      intercepts = true
+      result = Function.rubyprotect do
+        code.call(obj) do
+          intercepts = false
+        end
+      end
+      intercepts ? (retval || result) : C::Empty
+    end
   end
 
   class NamedPropertyGetter
     extend AccessibleMethods
     def self.call(property, info)
-      name = To.rb(property)
-      obj = To.rb(info.This())
+      access(info) do |obj, &dontintercept|
+        access_get(obj, To.rb(property), &dontintercept)
+      end
+    end
+
+    def self.access_get(obj, name, &dontintercept)
       methods = accessible_methods(obj)
       if methods.include?(name)
         method = obj.method(name)
-        if method.arity == 0
-          Function.rubycall(method)
-        else
-          To.v8(method)
-        end
+        method.arity == 0 ? method.call : method
       elsif obj.respond_to?(:[])
-        intercepts = true
-        result = Function.rubysend(obj, :[], name) do
-          intercepts = false
-        end
-        intercepts ? result : C::Empty
+        obj.send(:[], name, &dontintercept)
       else
-        C::Empty
+        yield
       end
     end
   end
@@ -136,21 +143,20 @@ module V8
   class NamedPropertySetter
     extend AccessibleMethods
     def self.call(property, value, info)
-      obj = To.rb(info.This())
-      name = To.rb(property)
+      access(info, value) do |obj, &dontintercept|
+        access_set(obj, To.rb(property), To.rb(value), &dontintercept)
+      end
+    end
+
+    def self.access_set(obj, name, value, &dontintercept)
       setter = name + "="
       methods = accessible_methods(obj)
       if methods.include?(setter)
-        Function.rubysend(obj, setter, To.rb(value))
-        value
+        obj.send(setter, value)
       elsif obj.respond_to?(:[]=)
-        intercepts = true
-        Function.rubysend(obj, :[]=, name, To.rb(value)) do
-          intercepts = false
-        end
-        intercepts ? value : C::Empty
+        obj.send(:[]=, name, value, &dontintercept)
       else
-        C::Empty
+        yield
       end
     end
   end
@@ -169,31 +175,35 @@ module V8
   end
 
   class IndexedPropertyGetter
+    extend AccessibleMethods
     def self.call(index, info)
-      obj = To.rb(info.This())
+      access(info) do |obj, &dontintercept|
+        access_iget(obj, index, &dontintercept)
+      end
+    end
+
+    def self.access_iget(obj, index, &dontintercept)
       if obj.respond_to?(:[])
-        intercepts = true
-        value = Function.rubysend(obj, :[], index) do
-          intercepts = false
-        end
-        intercepts ? value : C::Empty
+        obj.send(:[], index, &dontintercept)
       else
-        C::Empty
+        yield
       end
     end
   end
 
   class IndexedPropertySetter
+    extend AccessibleMethods
     def self.call(index, value, info)
-      obj = To.rb(info.This())
+      access(info, value) do |obj, &dontintercept|
+        access_iset(obj, index, To.rb(value), &dontintercept)
+      end
+    end
+
+    def self.access_iset(obj, index, value, &dontintercept)
       if obj.respond_to?(:[]=)
-        intercepts = true
-        Function.rubysend(obj, :[]=, index, To.rb(value)) do
-          intercepts = false
-        end
-        intercepts ? value : C::Empty
+        obj.send(:[]=, index, value, &dontintercept)
       else
-        C::Empty
+        yield
       end
     end
   end
@@ -212,4 +222,4 @@ module V8
       end
     end
   end
-end
+end 
