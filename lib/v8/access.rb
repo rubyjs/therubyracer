@@ -111,9 +111,10 @@ module V8
       obj = To.rb(info.This())
       intercepts = true
       result = Function.rubyprotect do
-        code.call(obj) do
+        dontintercept = proc do
           intercepts = false
         end
+        code.call(obj, dontintercept)
       end
       intercepts ? (retval || result) : C::Empty
     end
@@ -122,7 +123,7 @@ module V8
   class NamedPropertyGetter
     extend AccessibleMethods
     def self.call(property, info)
-      access(info) do |obj, &dontintercept|
+      access(info) do |obj, dontintercept|
         access_get(obj, To.rb(property), &dontintercept)
       end
     end
@@ -143,7 +144,7 @@ module V8
   class NamedPropertySetter
     extend AccessibleMethods
     def self.call(property, value, info)
-      access(info, value) do |obj, &dontintercept|
+      access(info, value) do |obj, dontintercept|
         access_set(obj, To.rb(property), To.rb(value), &dontintercept)
       end
     end
@@ -177,7 +178,7 @@ module V8
   class IndexedPropertyGetter
     extend AccessibleMethods
     def self.call(index, info)
-      access(info) do |obj, &dontintercept|
+      access(info) do |obj, dontintercept|
         access_iget(obj, index, &dontintercept)
       end
     end
@@ -194,7 +195,7 @@ module V8
   class IndexedPropertySetter
     extend AccessibleMethods
     def self.call(index, value, info)
-      access(info, value) do |obj, &dontintercept|
+      access(info, value) do |obj, dontintercept|
         access_iset(obj, index, To.rb(value), &dontintercept)
       end
     end
