@@ -162,6 +162,52 @@ module V8
     end
   end
 
+  class NamedPropertyQuery
+    extend AccessibleMethods
+    class Attrs
+      def initialize
+        @flags = 0
+      end
+
+      def read_only
+        tap do
+          @flags |= V8::C::ReadOnly
+        end
+      end
+
+      def dont_enum
+        tap do
+          @flags |= V8::C::DontEnum
+        end
+      end
+
+      def dont_delete
+        tap do
+          @flags |= V8::C::DontDelete
+        end
+      end
+    end
+
+    def self.call(property, info)
+      attrs = Attrs.new
+      intercepts = true
+      access_query(To.rb(info.This()), To.rb(property), attrs) do
+        intercepts = false
+      end
+      intercepts ? C::Integer::New(attrs.flags) : C::Empty
+    end
+
+    def self.access_attributes(obj, name, attrs)
+      unless obj.respond_to?(name)
+        attrs.dont_enum
+        attrs.dont_delete
+      end
+      unless obj.respond_to?("name=")
+        attrs.read_only
+      end
+    end
+  end
+
   class NamedPropertyEnumerator
     extend AccessibleMethods
     def self.call(info)
