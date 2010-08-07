@@ -71,6 +71,75 @@ module V8
       )
     end
   end
+  module AccessibleMethods
+    def ruby
+      @ruby ||= RubyAccess.new
+    end
+    def access(info, retval = nil, &code)
+      obj = To.rb(info.This())
+      intercepts = true
+      result = Function.rubyprotect do
+        dontintercept = proc do
+          intercepts = false
+        end
+        code.call(obj, dontintercept)
+      end
+      intercepts ? (retval || result) : C::Empty
+    end
+  end
+
+  class RubyAccess
+    def get(obj, name, &dontintercept)
+      methods = accessible_methods(obj)
+      if methods.include?(name)
+        method = obj.method(name)
+        method.arity == 0 ? method.call : method
+      elsif obj.respond_to?(:[])
+        obj.send(:[], name, &dontintercept)
+      else
+        yield
+      end
+    end
+    
+    def iget(obj, index, &dontintercept)
+      if obj.respond_to?(:[])
+        obj.send(:[], index, &dontintercept)
+      else
+        yield
+      end
+    end
+
+    def set(obj, name, value, &dontintercept)
+      setter = name + "="
+      methods = accessible_methods(obj)
+      if methods.include?(setter)
+        obj.send(setter, value)
+      elsif obj.respond_to?(:[]=)
+        obj.send(:[]=, name, value, &dontintercept)
+      else
+        yield
+      end
+    end
+
+    def iset(obj, index, value, &dontintercept)
+      if obj.respond_to?(:[]=)
+        obj.send(:[]=, index, value, &dontintercept)
+      else
+        yield
+      end
+    end
+
+    def accessible_methods(obj)
+      obj.public_methods(false).map {|m| m.to_s}.to_set.tap do |methods|
+        ancestors = obj.class.ancestors.dup
+        while ancestor = ancestors.shift
+          break if ancestor == ::Object
+          methods.merge(ancestor.public_instance_methods(false).map {|m| m.to_s})
+        end
+        methods.reject! {|m| m == "[]" || m == "[]="}
+      end
+    end
+  end
 
   class Constructors < Access
     def self.[](cls)
@@ -95,48 +164,11 @@ module V8
     end
   end
 
-  module AccessibleMethods
-    def accessible_methods(obj)
-      obj.public_methods(false).map {|m| m.to_s}.to_set.tap do |methods|
-        ancestors = obj.class.ancestors.dup
-        while ancestor = ancestors.shift
-          break if ancestor == ::Object
-          methods.merge(ancestor.public_instance_methods(false).map {|m| m.to_s})
-        end
-        methods.reject! {|m| m == "[]" || m == "[]="}
-      end
-    end
-
-    def access(info, retval = nil, &code)
-      obj = To.rb(info.This())
-      intercepts = true
-      result = Function.rubyprotect do
-        dontintercept = proc do
-          intercepts = false
-        end
-        code.call(obj, dontintercept)
-      end
-      intercepts ? (retval || result) : C::Empty
-    end
-  end
-
   class NamedPropertyGetter
     extend AccessibleMethods
     def self.call(property, info)
       access(info) do |obj, dontintercept|
-        access_get(obj, To.rb(property), &dontintercept)
-      end
-    end
-
-    def self.access_get(obj, name, &dontintercept)
-      methods = accessible_methods(obj)
-      if methods.include?(name)
-        method = obj.method(name)
-        method.arity == 0 ? method.call : method
-      elsif obj.respond_to?(:[])
-        obj.send(:[], name, &dontintercept)
-      else
-        yield
+        ruby.get(obj, To.rb(property), &dontintercept)
       end
     end
   end
@@ -145,19 +177,7 @@ module V8
     extend AccessibleMethods
     def self.call(property, value, info)
       access(info, value) do |obj, dontintercept|
-        access_set(obj, To.rb(property), To.rb(value), &dontintercept)
-      end
-    end
-
-    def self.access_set(obj, name, value, &dontintercept)
-      setter = name + "="
-      methods = accessible_methods(obj)
-      if methods.include?(setter)
-        obj.send(setter, value)
-      elsif obj.respond_to?(:[]=)
-        obj.send(:[]=, name, value, &dontintercept)
-      else
-        yield
+        ruby.set(obj, To.rb(property), To.rb(value), &dontintercept)
       end
     end
   end
@@ -212,7 +232,7 @@ module V8
     extend AccessibleMethods
     def self.call(info)
       obj = To.rb(info.This())
-      methods = accessible_methods(obj)
+      methods = ruby.accessible_methods(obj)
       methods.reject! {|m| m.to_s =~ /=$/}
       names = V8::C::Array::New(methods.length)
       methods.each_with_index do |name, i|
@@ -226,15 +246,7 @@ module V8
     extend AccessibleMethods
     def self.call(index, info)
       access(info) do |obj, dontintercept|
-        access_iget(obj, index, &dontintercept)
-      end
-    end
-
-    def self.access_iget(obj, index, &dontintercept)
-      if obj.respond_to?(:[])
-        obj.send(:[], index, &dontintercept)
-      else
-        yield
+        ruby.iget(obj, index, &dontintercept)
       end
     end
   end
@@ -243,15 +255,7 @@ module V8
     extend AccessibleMethods
     def self.call(index, value, info)
       access(info, value) do |obj, dontintercept|
-        access_iset(obj, index, To.rb(value), &dontintercept)
-      end
-    end
-
-    def self.access_iset(obj, index, value, &dontintercept)
-      if obj.respond_to?(:[]=)
-        obj.send(:[]=, index, value, &dontintercept)
-      else
-        yield
+        ruby.iset(obj, index, To.rb(value), &dontintercept)
       end
     end
   end
