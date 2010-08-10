@@ -69,14 +69,6 @@ module V8
           yield.new(value)
         end
       end
-
-      def camel_case(str)
-        str.to_s.gsub(/_(\w)/) {$1.upcase}
-      end
-      
-      def perl_case(str)
-        str.gsub(/([A-Z])([a-z])/) {"_#{$1.downcase}#{$2}"}.downcase
-      end
     end
   end
 end
