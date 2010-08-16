@@ -25,9 +25,13 @@ module V8
       end
     end
 
-    def self.rubyprotect
+    def self.rubyprotect(&blk)
+      To.v8(rubyprotect2(&blk))
+    end
+    
+    def self.rubyprotect2
       begin
-        To.v8(yield)
+        yield
       rescue Exception => e
         case e
         when SystemExit, NoMemoryError

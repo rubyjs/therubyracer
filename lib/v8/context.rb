@@ -4,6 +4,7 @@ module V8
   class Context    
     attr_reader :native, :scope
     def initialize(opts = {})
+      @to = Convert.new(self)
       @native = opts[:with] ? C::Context::New(Access.rubyobject) : C::Context::New()
       @native.enter do
         @scope = To.rb(@native.Global())
