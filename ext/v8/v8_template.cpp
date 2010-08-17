@@ -38,6 +38,13 @@ namespace {
     return Qnil;
   }
 
+  Handle<Value> RubyInvocationCallback(const Arguments& args) {
+    VALUE code = (VALUE)External::Unwrap(args.Data());
+    VALUE rb_args = rr_v82rb(args);
+    VALUE result = rb_funcall(code, rb_intern("call"), 1, rb_args);
+    return rr_rb2v8(result);
+  }
+
   namespace Obj {
 
     /**
@@ -238,16 +245,18 @@ namespace {
       );
       return Qnil;
     }
+    VALUE SetCallAsFunctionHandler(VALUE self) {
+      HandleScope scope;
+      VALUE code = rb_block_proc();
+      if (NIL_P(code)) {
+        return Qnil;
+      }
+      obj(self)->SetCallAsFunctionHandler(RubyInvocationCallback, rr_v8_external_create(code));
+      return Qnil;
+    }
   }
 
   namespace Func {
-
-    Handle<Value> RubyInvocationCallback(const Arguments& args) {
-      VALUE code = (VALUE)External::Unwrap(args.Data());
-      VALUE rb_args = rr_v82rb(args);
-      VALUE result = rb_funcall(code, rb_intern("call"), 1, rb_args);
-      return rr_rb2v8(result);
-    }
 
     VALUE New(VALUE function_template) {
       HandleScope handles;
@@ -307,6 +316,7 @@ void rr_init_template() {
   rr_define_method(ObjectTemplateClass, "NewInstance", Obj::NewInstance, 0);
   rr_define_method(ObjectTemplateClass, "SetNamedPropertyHandler", Obj::SetNamedPropertyHandler, 5);
   rr_define_method(ObjectTemplateClass, "SetIndexedPropertyHandler", Obj::SetIndexedPropertyHandler, 5);
+  rr_define_method(ObjectTemplateClass, "SetCallAsFunctionHandler", Obj::SetCallAsFunctionHandler, 0);
 
   FunctionTemplateClass = rr_define_class("FunctionTemplate", Template);
   rr_define_singleton_method(FunctionTemplateClass, "New", Func::New, 0);
