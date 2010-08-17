@@ -72,11 +72,7 @@ namespace {
     HandleScope scope;
     Handle<Value> proto = rr_rb2v8(prototype);
     Local<Object> me = unwrap(self);
-    printf("self: %s", *String::AsciiValue(me->ToString()));
-    printf("proto: %s", *String::AsciiValue(proto->ToString()));
-    // unwrap(self)->SetPrototype();
-        // return rr_v82rb(unwrap(self)->SetPrototype(rr_rb2v8(prototype)));
-      return Qnil;
+    return rr_v82rb(unwrap(self)->SetPrototype(rr_rb2v8(prototype)));
   }
 }
 
