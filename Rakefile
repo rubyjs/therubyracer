@@ -20,6 +20,8 @@ Gem::Specification.new do |gemspec|
   gemspec.files = manifest.to_a
 end
 
+task :default => :spec
+
 desc "Build gem"
 task :gem => :gemspec do
   Gem::Builder.new($gemspec).build
