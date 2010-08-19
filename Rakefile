@@ -32,8 +32,8 @@ task :gemspec => :clean do
   end
 end
 
+desc "remove all generated artifacts except built v8 objects"
 task :clean do
-  sh "rm -rf pkg"
   sh "rm -rf *.gem"
   sh "rm -rf ext/v8/Makefile"
   sh "rm -rf ext/v8/*.bundle ext/v8/*.so"
