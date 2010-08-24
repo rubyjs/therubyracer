@@ -106,7 +106,7 @@ VALUE rr_v82rb(double value) {
   return rb_float_new(value);
 }
 VALUE rr_v82rb(int64_t value) {
-  return INT2FIX(value);
+  return LONG2NUM(value);
 }
 VALUE rr_v82rb(uint32_t value) {
   return UINT2NUM(value);
@@ -118,7 +118,7 @@ VALUE rr_v82rb(int32_t value) {
 Handle<Value> rr_rb2v8(VALUE value) {
   switch (TYPE(value)) {
   case T_FIXNUM:
-    return Integer::New(FIX2INT(value));
+    return Integer::New(FIX2LONG(value));
   case T_FLOAT:
     return Number::New(NUM2DBL(value));    
   case T_STRING:
