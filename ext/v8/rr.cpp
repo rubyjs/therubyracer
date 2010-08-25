@@ -118,7 +118,8 @@ VALUE rr_v82rb(int32_t value) {
 Handle<Value> rr_rb2v8(VALUE value) {
   switch (TYPE(value)) {
   case T_FIXNUM:
-    return Integer::New(FIX2LONG(value));
+    // TODO: use this conversion if value will fit in 32 bits.
+    // return Integer::New(FIX2LONG(value));
   case T_FLOAT:
     return Number::New(NUM2DBL(value));    
   case T_STRING:
