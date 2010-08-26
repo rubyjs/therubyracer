@@ -38,7 +38,7 @@ Embed the V8 Javascript interpreter into Ruby.
 # embed ruby code into your scope and call it from javascript
   
   cxt["say"] = lambda {|word, times| word * times}
-  context.eval("say("Hello", 3)") #=> HelloHelloHello
+  cxt.eval("say('Hello', 3)") #=> HelloHelloHello
   
 # embed a ruby object into your scope and access its properties/methods from javascript
 
