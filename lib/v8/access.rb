@@ -166,7 +166,8 @@ module V8
     extend AccessibleMethods
     def self.call(info)
       obj = To.rb(info.This())
-      methods = accessible_methods(obj).reject! {|m| m.to_s =~ /=$/}
+      methods = accessible_methods(obj)
+      methods.reject! {|m| m.to_s =~ /=$/}
       names = V8::C::Array::New(methods.length)
       methods.each_with_index do |name, i|
         names.Set(i, C::String::New(name))
