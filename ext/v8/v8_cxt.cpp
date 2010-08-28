@@ -72,7 +72,7 @@ namespace {
   }
   VALUE SetData(VALUE self, VALUE data) {
     HandleScope scope;
-    unwrap(self)->SetData(rr_rb2v8(data));
+    unwrap(self)->SetData(rr_rb2v8(data)->ToString());
     return Qnil;
   }
 }
