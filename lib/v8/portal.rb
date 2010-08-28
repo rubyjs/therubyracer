@@ -10,12 +10,34 @@ module V8
       @named_property_query = nil
       @named_property_deleter = nil
       @named_property_enumerator = Interceptor(NamedPropertyEnumerator)
-      
+
       @indexed_property_getter = Interceptor(IndexedPropertyGetter)
       @indexed_property_setter = Interceptor(IndexedPropertySetter)
       @indexed_property_query = nil
       @indexed_property_deleter = nil
       @indexed_property_enumerator = Interceptor(IndexedPropertyEnumerator)
+
+
+      @constructors = Hash.new do |h, cls|
+        template = @context.access[cls]
+        template.SetCallHandler() do |arguments|
+          wrap = nil
+          if arguments.Length() > 0 && arguments[0].kind_of?(C::External)
+            wrap = arguments[0]
+          else
+            rbargs = []
+            for i in 0..arguments.Length() - 1
+              rbargs << rb(arguments[i])
+            end
+            instance = rubysend(cls, :new, *rbargs)
+            wrap = C::External::New(instance)
+          end
+          arguments.This().tap do |this|
+            this.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), wrap)
+          end
+        end
+        h[cls] = template
+      end
     end
 
     def open
@@ -69,7 +91,7 @@ module V8
       when ::Time
         C::Date::New(value)
       when ::Class
-        Constructors[value].GetFunction().tap do |f|
+        @constructors[value].GetFunction().tap do |f|
           f.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), C::External::New(value))
         end
       when nil,Numeric,TrueClass,FalseClass, C::Value

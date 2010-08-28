@@ -1,6 +1,5 @@
 require 'set'
 module V8
-  
   class Access
     def initialize(portal)
       @classes = Hash.new do |h, cls|
@@ -118,29 +117,6 @@ module V8
           methods.merge(ancestor.public_instance_methods(false).map {|m| m.to_s})
         end
         methods.reject! {|m| m == "[]" || m == "[]=" || m =~ /=$/} unless special_methods
-      end
-    end
-  end
-
-  class Constructors < Access
-    def self.[](cls)
-      Access[cls].tap do |template|
-        template.SetCallHandler() do |arguments|
-          wrap = nil
-          if arguments.Length() > 0 && arguments[0].kind_of?(C::External)
-            wrap = arguments[0]
-          else
-            rbargs = []
-            for i in 0..arguments.Length() - 1
-              rbargs << To.rb(arguments[i])
-            end
-            instance = V8::Function.rubysend(cls, :new, *rbargs)
-            wrap = C::External::New(instance)
-          end
-          arguments.This().tap do |this|
-            this.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), wrap)
-          end
-        end
       end
     end
   end
