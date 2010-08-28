@@ -60,7 +60,7 @@ module V8
 
     def set(obj, name, value, &dontintercept)
       setter = name + "="
-      methods = accessible_methods(obj)
+      methods = accessible_methods(obj, true)
       if methods.include?(setter)
         obj.send(setter, value)
       elsif obj.respond_to?(:[]=)
@@ -101,14 +101,7 @@ module V8
     end
 
     def names(obj)
-      obj.public_methods(false).map {|m| m.to_s}.to_set.tap do |methods|
-        ancestors = obj.class.ancestors.dup
-        while ancestor = ancestors.shift
-          break if ancestor == ::Object
-          methods.merge(ancestor.public_instance_methods(false).map {|m| m.to_s})
-        end
-        methods.reject! {|m| m == "[]" || m == "[]="}
-      end
+      accessible_methods(obj)
     end
 
     def indices(obj)
@@ -117,14 +110,14 @@ module V8
 
     private
 
-    def accessible_methods(obj)
+    def accessible_methods(obj, special_methods = false)
       obj.public_methods(false).map {|m| m.to_s}.to_set.tap do |methods|
         ancestors = obj.class.ancestors.dup
         while ancestor = ancestors.shift
           break if ancestor == ::Object
           methods.merge(ancestor.public_instance_methods(false).map {|m| m.to_s})
         end
-        methods.reject! {|m| m == "[]" || m == "[]="}
+        methods.reject! {|m| m == "[]" || m == "[]=" || m =~ /=$/} unless special_methods
       end
     end
   end

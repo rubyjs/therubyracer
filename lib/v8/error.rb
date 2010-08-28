@@ -3,7 +3,8 @@ module V8
   class JSError < StandardError
     attr_reader :value, :boundaries
 
-    def initialize(try)
+    def initialize(try, to)
+      @to = to
       begin
         super(initialize_unsafe(try))
       rescue Exception => e
@@ -15,7 +16,7 @@ module V8
 
     def initialize_unsafe(try)
       message = nil
-      ex = To.rb(try.Exception())
+      ex = @to.rb(try.Exception())
       @boundaries = [Boundary.new(:rbframes => caller(3), :jsframes => parse_js_frames(try))]
       if V8::Object === ex
         if msg = ex['message']
@@ -87,7 +88,7 @@ module V8
     end
 
     def parse_js_frames(try)
-      raw = To.rb(try.StackTrace())
+      raw = @to.rb(try.StackTrace())
       if raw && !raw.empty?
         raw.split("\n")[1..-1].tap do |frames|
           frames.each {|frame| frame.strip!.chomp!(",")}

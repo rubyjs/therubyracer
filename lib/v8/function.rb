@@ -8,7 +8,7 @@ module V8
         @portal.open do |to|
           this = to.v8(thisObject)
           return_value = to.rb(@native.Call(this, to.v8(args)))
-          err = JSError.new(try) if try.HasCaught()
+          err = JSError.new(try, to) if try.HasCaught()
         end
       end
       raise err if err

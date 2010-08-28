@@ -113,6 +113,12 @@ module V8
       end
     end
     
+    def rubytemplate
+      C::ObjectTemplate::New().tap do |t|
+        setuptemplate(t)
+      end
+    end
+    
     def setuptemplate(t)
       t.SetNamedPropertyHandler(
         @named_property_getter,
@@ -223,7 +229,7 @@ module V8
     class NamedPropertyEnumerator < Interceptor
       def call(info)
         intercept(info) do |obj, dontintercept|
-          access.names(obj, &dontintercept)
+          access.names(obj, &dontintercept).to_a
         end
       end
     end

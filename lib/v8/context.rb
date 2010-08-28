@@ -6,7 +6,7 @@ module V8
     def initialize(opts = {})
       @to = Portal.new(self)
       @access = Access.new(@to)
-      @native = opts[:with] ? C::Context::New(Access.rubyobject) : C::Context::New()
+      @native = opts[:with] ? C::Context::New(@to.rubytemplate) : C::Context::New()
       @native.enter do
         @scope = @to.rb(@native.Global())
         @native.Global().SetHiddenValue(C::String::New("TheRubyRacer::RubyObject"), C::External::New(opts[:with])) if opts[:with]
@@ -24,11 +24,11 @@ module V8
         @native.enter do
           script = C::Script::Compile(@to.v8(javascript.to_s), @to.v8(filename.to_s))
           if try.HasCaught()
-            err = JSError.new(try)
+            err = JSError.new(try, @to)
           else
             result = script.Run()
             if try.HasCaught()
-              err = JSError.new(try)
+              err = JSError.new(try, @to)
             else
               value = @to.rb(result)
             end
