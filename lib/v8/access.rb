@@ -1,17 +1,6 @@
 require 'set'
 module V8
   class Access
-    def initialize
-      @impl = RubyAccess.new
-    end
-
-    def method_missing(name, *args, &blk)
-      @impl.send(name, *args, &blk)
-    end
-
-  end
-
-  class RubyAccess
     def get(obj, name, &dontintercept)
       methods = accessible_methods(obj)
       if methods.include?(name)
