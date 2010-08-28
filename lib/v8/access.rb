@@ -32,8 +32,8 @@ module V8
       end
     end
 
-    def method_missing(name, *args)
-      @impl.send(name, *args)
+    def method_missing(name, *args, &blk)
+      @impl.send(name, *args, &blk)
     end
   end
 
