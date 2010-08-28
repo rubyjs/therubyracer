@@ -3,35 +3,33 @@ module V8
   class Object
     include Enumerable
 
-    def initialize(native, context = nil)
-      @native = native
-      @context = context || C::Context::GetEntered()
-      raise ScriptError, "V8::Object.new called without an open V8 context" unless @context
+    def initialize(native, portal)
+      @native, @portal = native, portal
     end
 
     def [](key)
-      @context.enter do
-        To.rb(@native.Get(To.v8(key)))
+      @portal.open do |to|
+        to.rb(@native.Get(to.v8(key)))
       end
     end
 
     def []=(key, value)
       value.tap do
-        @context.enter do
-          @native.Set(To.v8(key), To.v8(value))
+        @portal.open do |to|
+          @native.Set(to.v8(key), to.v8(value))
         end
       end
     end
 
     def to_s
       @context.enter do
-        To.rb(@native.ToString())
+        to.rb(@native.ToString())
       end
     end
 
     def each
       @context.enter do
-        for prop in To.rb(@native.GetPropertyNames())
+        for prop in to.rb(@native.GetPropertyNames())
           yield prop, self[prop]
         end
       end

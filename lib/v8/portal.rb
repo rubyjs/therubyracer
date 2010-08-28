@@ -1,18 +1,26 @@
 
 module V8
-  class Convert
+  class Portal
+
     def initialize(context)
-      @named_property_getter = NamedPropertyGetter.new(self, context.access)
-      @named_property_setter = NamedPropertySetter.new(self, context.access)
+      @context = context
+      @named_property_getter = Interceptor(NamedPropertyGetter)
+      @named_property_setter = Interceptor(NamedPropertySetter)
       @named_property_query = nil
       @named_property_deleter = nil
-      @named_property_enumerator = NamedPropertyEnumerator.new(self, context.access)
+      @named_property_enumerator = Interceptor(NamedPropertyEnumerator)
       
-      @indexed_property_getter = IndexedPropertyGetter.new(self, context.access)
-      @indexed_property_setter = IndexedPropertySetter.new(self, context.access)
+      @indexed_property_getter = Interceptor(IndexedPropertyGetter)
+      @indexed_property_setter = Interceptor(IndexedPropertySetter)
       @indexed_property_query = nil
       @indexed_property_deleter = nil
-      @indexed_property_enumerator = IndexedPropertyEnumerator.new(self, context.access)
+      @indexed_property_enumerator = Interceptor(IndexedPropertyEnumerator)
+    end
+
+    def open
+      @context.native.enter do
+        yield(self)
+      end if block_given?
     end
 
     def rb(value)
@@ -42,7 +50,7 @@ module V8
           for i in 0..arguments.Length() - 1
             rbargs << rb(arguments[i])
           end
-          V8::Function.rubycall(value, *rbargs)
+          rubycall(value, *rbargs)
         end
         return template.GetFunction()
       when ::Array
@@ -68,30 +76,82 @@ module V8
       else
         args = C::Array::New(1)
         args.Set(0, C::External::New(value))
-        obj = Access[value.class].GetFunction().NewInstance(args)
+        obj = @context.access[value.class].GetFunction().NewInstance(args)
         return obj
       end
     end
+    
+################################
+    def rubyprotect(&blk)
+      self.v8(rubyprotect2(&blk))
+    end
+
+    def rubyprotect2
+      begin
+        yield
+      rescue Exception => e
+        case e
+        when SystemExit, NoMemoryError
+          raise e
+        else
+          error = V8::C::Exception::Error(V8::C::String::New(e.message))
+          error.SetHiddenValue("TheRubyRacer::Cause", C::External::New(e))
+          V8::C::ThrowException(error)
+        end
+      end
+    end
+
+    def rubycall(rubycode, *args, &block)
+      rubyprotect do
+        rubycode.call(*args, &block)
+      end
+    end
+
+    def rubysend(obj, message, *args, &block)
+      rubyprotect do
+        obj.send(message, *args, &block)
+      end
+    end
+    
+    def setuptemplate(t)
+      t.SetNamedPropertyHandler(
+        @named_property_getter,
+        @named_property_setter,
+        nil,
+        nil,
+        @named_property_enumerator
+      )
+      t.SetIndexedPropertyHandler(
+        @indexed_property_getter,
+        @indexed_property_setter,
+        nil,
+        nil,
+        @indexed_property_enumerator
+      )
+    end
+################################
+    
+    private
 
     def peer(value)
       external = value.GetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"))
       if external && !external.IsEmpty()
         external.Value()
       else
-        yield.new(value)
+        yield.new(value, self)
       end
     end
 
     class Interceptor
-      def initialize(convert, access)
-        @to = convert
-        @access = access
+      def initialize(portal, context)
+        @to = portal
+        @context = context
       end
 
       def intercept(info, retval = nil, &code)
         obj = @to.rb(info.This())
         intercepts = true
-        result = Function.rubyprotect do
+        result = @to.rubyprotect do
           dontintercept = proc do
             intercepts = false
           end
@@ -99,6 +159,14 @@ module V8
         end
         intercepts ? (retval || result) : C::Empty
       end
+      
+      def access
+        @context.access
+      end
+    end
+    
+    def Interceptor(cls)
+      cls.new self, @context
     end
 
     class PropertyAttributes
@@ -129,7 +197,7 @@ module V8
     class NamedPropertyGetter < Interceptor
       def call(property, info)
         intercept(info) do |obj, dontintercept|
-          @access.get(obj, @to.rb(property), &dontintercept)
+          access.get(obj, @to.rb(property), &dontintercept)
         end
       end
     end
@@ -137,7 +205,7 @@ module V8
     class NamedPropertySetter < Interceptor
       def call(property, value, info)
         intercept(info, value) do |obj, dontintercept|
-          @access.set(obj, @to.rb(property), @to.rb(value), &dontintercept)
+          access.set(obj, @to.rb(property), @to.rb(value), &dontintercept)
         end
       end
     end
@@ -146,7 +214,7 @@ module V8
       def call(property, info)
         attributes = PropertyAttributes.new
         result = intercept(info) do |obj, dontintercept|
-          @access.query(obj, @to.rb(property), attributes, &dontintercept)
+          access.query(obj, @to.rb(property), attributes, &dontintercept)
         end
         return result == C::Empty ? result : C::Integer::New(attributes.flags)
       end
@@ -155,7 +223,7 @@ module V8
     class NamedPropertyEnumerator < Interceptor
       def call(info)
         intercept(info) do |obj, dontintercept|
-          @access.names(obj, &dontintercept)
+          access.names(obj, &dontintercept)
         end
       end
     end
@@ -163,7 +231,7 @@ module V8
     class NamedPropertyDeleter < Interceptor
       def call(property, info)
         intercept(info) do |obj, dontintercept|
-          @access.delete(obj, property, &dontintercept)
+          access.delete(obj, property, &dontintercept)
         end
       end
     end
@@ -171,7 +239,7 @@ module V8
     class IndexedPropertyGetter < Interceptor
       def call(index, info)
         intercept(info) do |obj, dontintercept|
-          @access.iget(obj, index, &dontintercept)
+          access.iget(obj, index, &dontintercept)
         end
       end
     end
@@ -179,7 +247,7 @@ module V8
     class IndexedPropertySetter < Interceptor
       def call(index, value, info)
         intercept(info, value) do |obj, dontintercept|
-          @access.iset(obj, index, @to.rb(value), &dontintercept)
+          access.iset(obj, index, @to.rb(value), &dontintercept)
         end
       end
     end
@@ -188,7 +256,7 @@ module V8
       def call(property, info)
         attributes = PropertyAttributes.new
         result = intercept(info) do |obj, dontintercept|
-          @access.indices(obj, &dontintercept)
+          access.indices(obj, &dontintercept)
         end
         result == C::Empty ? C::Empty : C::Integer::New(attributes.flags)
       end
@@ -197,7 +265,7 @@ module V8
     class IndexedPropertyDeleter < Interceptor
       def call(index, info)
         intercept(info) do |obj, dontintercept|
-          @access.idelete(obj, index, &dontintercept)
+          access.idelete(obj, index, &dontintercept)
         end
       end
     end
@@ -205,7 +273,7 @@ module V8
     class IndexedPropertyEnumerator < Interceptor
       def call(info)
         intercept(info) do |obj, dontintercept|
-          @access.indices(obj, &dontintercept)
+          access.indices(obj, &dontintercept)
         end
       end
     end

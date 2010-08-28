@@ -66,6 +66,15 @@ namespace {
       return Qfalse;
     }
   }
+  VALUE GetData(VALUE self) {
+    HandleScope scope;
+    return rr_v82rb(unwrap(self)->GetData());
+  }
+  VALUE SetData(VALUE self, VALUE data) {
+    HandleScope scope;
+    unwrap(self)->SetData(rr_rb2v8(data));
+    return Qnil;
+  }
 }
 
 void rr_init_cxt() {
@@ -77,5 +86,7 @@ void rr_init_cxt() {
   rr_define_method(ContextClass, "Enter", Enter, 0);
   rr_define_method(ContextClass, "Exit", Exit, 0);
   rr_define_method(ContextClass, "IsEntered", IsEntered, 0);
+  rr_define_method(ContextClass, "GetData", GetData, 0);
+  rr_define_method(ContextClass, "SetData", SetData, 1);
 }
 

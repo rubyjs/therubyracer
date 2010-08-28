@@ -1,39 +1,23 @@
 require 'set'
 module V8
   
-  #TODO each context should get its own access rules instead of sharing them across
-  #     contetxts
-  ###### --cowboyd 07/07/2010
   class Access
-    def self.[](cls)
-      @access ||= Access.new
-      @access[cls]
-    end
-
-    def initialize
-      @classes = {}
-    end
-
-    def [](cls)
-      @classes ||= {}
-      if ref = @classes[cls.object_id]
-        if ref.weakref_alive?
-          ref.__getobj__
-        else
-          @classes.delete(cls.object_id)
-          self[cls]
-        end
-      else
-        template(cls).tap do |t|
-          Access.setuptemplate(t.InstanceTemplate())
+    def initialize(portal)
+      @classes = Hash.new do |h, cls|
+        h[cls] = template(cls).tap do |t|
+          portal.setuptemplate(t.InstanceTemplate())
           if cls.name && cls.name =~ /(::)?(\w+?)$/
             t.SetClassName(C::String::NewSymbol("rb::" + $2))
           else
             t.SetClassName("Ruby")
           end
-          @classes[cls.object_id] = WeakRef.new(t)
         end
       end
+      @impl = RubyAccess.new
+    end
+
+    def [](cls)
+      @classes[cls]
     end
 
     def template(cls)
@@ -48,43 +32,8 @@ module V8
       end
     end
 
-    def self.rubyobject
-      @rubyobject ||= C::ObjectTemplate::New().tap do |t|
-        setuptemplate(t)
-      end
-    end
-
-    def self.setuptemplate(t)
-      t.SetNamedPropertyHandler(
-        NamedPropertyGetter,
-        NamedPropertySetter,
-        nil,
-        nil,
-        NamedPropertyEnumerator
-      )
-      t.SetIndexedPropertyHandler(
-        IndexedPropertyGetter,
-        IndexedPropertySetter,
-        nil,
-        nil,
-        IndexedPropertyEnumerator
-      )
-    end
-  end
-  module AccessibleMethods
-    def ruby
-      @ruby ||= RubyAccess.new
-    end
-    def access(info, retval = nil, &code)
-      obj = To.rb(info.This())
-      intercepts = true
-      result = Function.rubyprotect do
-        dontintercept = proc do
-          intercepts = false
-        end
-        code.call(obj, dontintercept)
-      end
-      intercepts ? (retval || result) : C::Empty
+    def method_missing(name, *args)
+      @impl.send(name, *args)
     end
   end
 
@@ -166,6 +115,8 @@ module V8
       obj.respond_to?(:length) ? (0..obj.length).to_a : yield
     end
 
+    private
+
     def accessible_methods(obj)
       obj.public_methods(false).map {|m| m.to_s}.to_set.tap do |methods|
         ancestors = obj.class.ancestors.dup
@@ -197,117 +148,6 @@ module V8
             this.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), wrap)
           end
         end
-      end
-    end
-  end
-
-  class NamedPropertyGetter
-    extend AccessibleMethods
-    def self.call(property, info)
-      access(info) do |obj, dontintercept|
-        ruby.get(obj, To.rb(property), &dontintercept)
-      end
-    end
-  end
-
-  class NamedPropertySetter
-    extend AccessibleMethods
-    def self.call(property, value, info)
-      access(info, value) do |obj, dontintercept|
-        ruby.set(obj, To.rb(property), To.rb(value), &dontintercept)
-      end
-    end
-  end
-
-  class NamedPropertyQuery
-    extend AccessibleMethods
-    class Attrs
-      def initialize
-        @flags = 0
-      end
-
-      def read_only
-        tap do
-          @flags |= V8::C::ReadOnly
-        end
-      end
-
-      def dont_enum
-        tap do
-          @flags |= V8::C::DontEnum
-        end
-      end
-
-      def dont_delete
-        tap do
-          @flags |= V8::C::DontDelete
-        end
-      end
-    end
-
-    def self.call(property, info)
-      attrs = Attrs.new
-      intercepts = true
-      access_query(To.rb(info.This()), To.rb(property), attrs) do
-        intercepts = false
-      end
-      intercepts ? C::Integer::New(attrs.flags) : C::Empty
-    end
-
-    def self.access_attributes(obj, name, attrs)
-      unless obj.respond_to?(name)
-        attrs.dont_enum
-        attrs.dont_delete
-      end
-      unless obj.respond_to?("name=")
-        attrs.read_only
-      end
-    end
-  end
-
-  class NamedPropertyEnumerator
-    extend AccessibleMethods
-    def self.call(info)
-      obj = To.rb(info.This())
-      methods = ruby.accessible_methods(obj)
-      methods.reject! {|m| m.to_s =~ /=$/}
-      names = V8::C::Array::New(methods.length)
-      methods.each_with_index do |name, i|
-        names.Set(i, C::String::New(name))
-      end
-      return names
-    end
-  end
-
-  class IndexedPropertyGetter
-    extend AccessibleMethods
-    def self.call(index, info)
-      access(info) do |obj, dontintercept|
-        ruby.iget(obj, index, &dontintercept)
-      end
-    end
-  end
-
-  class IndexedPropertySetter
-    extend AccessibleMethods
-    def self.call(index, value, info)
-      access(info, value) do |obj, dontintercept|
-        ruby.iset(obj, index, To.rb(value), &dontintercept)
-      end
-    end
-  end
-
-  class IndexedPropertyEnumerator
-    def self.call(info)
-      obj = To.rb(info.This())
-      if obj.respond_to?(:length)
-        C::Array::New(obj.length).tap do |indices|
-          for index in 0..obj.length - 1
-            indices.Set(index,index)
-          end
-        end
-      else
-        C::Array::New()
       end
     end
   end

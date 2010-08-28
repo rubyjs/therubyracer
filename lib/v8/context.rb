@@ -2,12 +2,13 @@ require 'stringio'
 
 module V8
   class Context    
-    attr_reader :native, :scope
+    attr_reader :native, :scope, :access
     def initialize(opts = {})
-      @to = Convert.new(self)
+      @to = Portal.new(self)
+      @access = Access.new(@to)
       @native = opts[:with] ? C::Context::New(Access.rubyobject) : C::Context::New()
       @native.enter do
-        @scope = To.rb(@native.Global())
+        @scope = @to.rb(@native.Global())
         @native.Global().SetHiddenValue(C::String::New("TheRubyRacer::RubyObject"), C::External::New(opts[:with])) if opts[:with]
       end
       yield(self) if block_given?
@@ -21,7 +22,7 @@ module V8
       value = nil
       C::TryCatch.try do |try|
         @native.enter do
-          script = C::Script::Compile(To.v8(javascript.to_s), To.v8(filename.to_s))
+          script = C::Script::Compile(@to.v8(javascript.to_s), @to.v8(filename.to_s))
           if try.HasCaught()
             err = JSError.new(try)
           else
@@ -29,7 +30,7 @@ module V8
             if try.HasCaught()
               err = JSError.new(try)
             else
-              value = To.rb(result)
+              value = @to.rb(result)
             end
           end
         end

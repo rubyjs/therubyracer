@@ -3,9 +3,9 @@ module V8
   class Array < V8::Object
     
     def each
-      @context.enter do
+      @portal.open do |to|
         for i in 0..(@native.Length() - 1)
-          yield To.rb(@native.Get(i))
+          yield to.rb(@native.Get(i))
         end
       end
     end
