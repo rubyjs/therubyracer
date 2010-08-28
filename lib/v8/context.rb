@@ -4,8 +4,8 @@ module V8
   class Context    
     attr_reader :native, :scope, :access
     def initialize(opts = {})
-      @to = Portal.new(self)
-      @access = Access.new(@to)
+      @access = Access.new
+      @to = Portal.new(self, @access)
       @native = opts[:with] ? C::Context::New(@to.rubytemplate) : C::Context::New()
       @native.enter do
         @scope = @to.rb(@native.Global())

@@ -3,8 +3,8 @@ module V8
   class Portal
     attr_reader :context
 
-    def initialize(context)
-      @context = context
+    def initialize(context, access)
+      @context, @access = context, access
       @named_property_getter = Interceptor(NamedPropertyGetter)
       @named_property_setter = Interceptor(NamedPropertySetter)
       @named_property_query = nil
@@ -189,9 +189,8 @@ module V8
     end
 
     class Interceptor
-      def initialize(portal, context)
-        @to = portal
-        @context = context
+      def initialize(portal, access)
+        @to, @access = portal, access
       end
 
       def intercept(info, retval = nil, &code)
@@ -205,14 +204,11 @@ module V8
         end
         intercepts ? (retval || result) : C::Empty
       end
-      
-      def access
-        @context.access
-      end
+
     end
-    
+
     def Interceptor(cls)
-      cls.new self, @context
+      cls.new self, @access
     end
 
     class PropertyAttributes
@@ -243,7 +239,7 @@ module V8
     class NamedPropertyGetter < Interceptor
       def call(property, info)
         intercept(info) do |obj, dontintercept|
-          access.get(obj, @to.rb(property), &dontintercept)
+          @access.get(obj, @to.rb(property), &dontintercept)
         end
       end
     end
@@ -251,7 +247,7 @@ module V8
     class NamedPropertySetter < Interceptor
       def call(property, value, info)
         intercept(info, value) do |obj, dontintercept|
-          access.set(obj, @to.rb(property), @to.rb(value), &dontintercept)
+          @access.set(obj, @to.rb(property), @to.rb(value), &dontintercept)
         end
       end
     end
@@ -260,7 +256,7 @@ module V8
       def call(property, info)
         attributes = PropertyAttributes.new
         result = intercept(info) do |obj, dontintercept|
-          access.query(obj, @to.rb(property), attributes, &dontintercept)
+          @access.query(obj, @to.rb(property), attributes, &dontintercept)
         end
         return result == C::Empty ? result : C::Integer::New(attributes.flags)
       end
@@ -269,7 +265,7 @@ module V8
     class NamedPropertyEnumerator < Interceptor
       def call(info)
         intercept(info) do |obj, dontintercept|
-          access.names(obj, &dontintercept).to_a
+          @access.names(obj, &dontintercept).to_a
         end
       end
     end
@@ -277,7 +273,7 @@ module V8
     class NamedPropertyDeleter < Interceptor
       def call(property, info)
         intercept(info) do |obj, dontintercept|
-          access.delete(obj, property, &dontintercept)
+          @access.delete(obj, property, &dontintercept)
         end
       end
     end
@@ -285,7 +281,7 @@ module V8
     class IndexedPropertyGetter < Interceptor
       def call(index, info)
         intercept(info) do |obj, dontintercept|
-          access.iget(obj, index, &dontintercept)
+          @access.iget(obj, index, &dontintercept)
         end
       end
     end
@@ -293,7 +289,7 @@ module V8
     class IndexedPropertySetter < Interceptor
       def call(index, value, info)
         intercept(info, value) do |obj, dontintercept|
-          access.iset(obj, index, @to.rb(value), &dontintercept)
+          @access.iset(obj, index, @to.rb(value), &dontintercept)
         end
       end
     end
@@ -302,7 +298,7 @@ module V8
       def call(property, info)
         attributes = PropertyAttributes.new
         result = intercept(info) do |obj, dontintercept|
-          access.indices(obj, &dontintercept)
+          @access.indices(obj, &dontintercept)
         end
         result == C::Empty ? C::Empty : C::Integer::New(attributes.flags)
       end
@@ -311,7 +307,7 @@ module V8
     class IndexedPropertyDeleter < Interceptor
       def call(index, info)
         intercept(info) do |obj, dontintercept|
-          access.idelete(obj, index, &dontintercept)
+          @access.idelete(obj, index, &dontintercept)
         end
       end
     end
@@ -319,7 +315,7 @@ module V8
     class IndexedPropertyEnumerator < Interceptor
       def call(info)
         intercept(info) do |obj, dontintercept|
-          access.indices(obj, &dontintercept)
+          @access.indices(obj, &dontintercept)
         end
       end
     end

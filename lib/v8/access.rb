@@ -1,7 +1,7 @@
 require 'set'
 module V8
   class Access
-    def initialize(portal)
+    def initialize
       @impl = RubyAccess.new
     end
 
