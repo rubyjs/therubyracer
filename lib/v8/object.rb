@@ -22,13 +22,13 @@ module V8
     end
 
     def to_s
-      @context.enter do
+      @portal.open do |to|
         to.rb(@native.ToString())
       end
     end
 
     def each
-      @context.enter do
+      @portal.open do |to|
         for prop in to.rb(@native.GetPropertyNames())
           yield prop, self[prop]
         end
