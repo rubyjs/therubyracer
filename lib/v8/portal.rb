@@ -36,6 +36,24 @@ module V8
           end
         end
       end
+
+      @instances = Hash.new do |h, obj|
+        args = C::Array::New(1)
+        args.Set(0, C::External::New(obj))
+        h[obj] = @constructors[obj.class].GetFunction().NewInstance(args)
+      end
+
+      @functions = Hash.new do |h, code|
+        template = C::FunctionTemplate::New() do |arguments|
+          rbargs = []
+          for i in 0..arguments.Length() - 1
+            rbargs << rb(arguments[i])
+          end
+          rubycall(code, *rbargs)
+        end
+        h[code] = template.GetFunction()
+      end
+
       @embedded_constructors = Hash.new do |h, cls|
         template = @constructors[cls]
         template.SetCallHandler() do |arguments|
@@ -86,14 +104,7 @@ module V8
       when Symbol
         C::String::NewSymbol(value.to_s)
       when Proc,Method
-        template = C::FunctionTemplate::New() do |arguments|
-          rbargs = []
-          for i in 0..arguments.Length() - 1
-            rbargs << rb(arguments[i])
-          end
-          rubycall(value, *rbargs)
-        end
-        return template.GetFunction()
+        @functions[value]
       when ::Array
         C::Array::New(value.length).tap do |a|
           value.each_with_index do |item, i|
@@ -120,10 +131,7 @@ module V8
       when nil,Numeric,TrueClass,FalseClass, C::Value
         value
       else
-        args = C::Array::New(1)
-        args.Set(0, C::External::New(value))
-        obj = @constructors[value.class].GetFunction().NewInstance(args)
-        return obj
+        @instances[value]
       end
     end
 
