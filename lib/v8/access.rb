@@ -2,38 +2,13 @@ require 'set'
 module V8
   class Access
     def initialize(portal)
-      @classes = Hash.new do |h, cls|
-        h[cls] = template(cls).tap do |t|
-          portal.setuptemplate(t.InstanceTemplate())
-          if cls.name && cls.name =~ /(::)?(\w+?)$/
-            t.SetClassName(C::String::NewSymbol("rb::" + $2))
-          else
-            t.SetClassName("Ruby")
-          end
-        end
-      end
       @impl = RubyAccess.new
-    end
-
-    def [](cls)
-      @classes[cls]
-    end
-
-    def template(cls)
-      C::FunctionTemplate::New() do |arguments|
-        unless arguments.Length() == 1 && arguments[0].kind_of?(C::External)
-          C::ThrowException(C::Exception::Error(C::String::New("cannot call native constructor from javascript")))
-        else
-          arguments.This().tap do |this|
-            this.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), arguments[0])              
-          end
-        end
-      end
     end
 
     def method_missing(name, *args, &blk)
       @impl.send(name, *args, &blk)
     end
+
   end
 
   class RubyAccess
@@ -48,7 +23,7 @@ module V8
         yield
       end
     end
-    
+
     def iget(obj, index, &dontintercept)
       if obj.respond_to?(:[])
         obj.send(:[], index, &dontintercept)

@@ -17,9 +17,27 @@ module V8
       @indexed_property_deleter = nil
       @indexed_property_enumerator = Interceptor(IndexedPropertyEnumerator)
 
-
       @constructors = Hash.new do |h, cls|
-        template = @context.access[cls]
+        h[cls] = template = C::FunctionTemplate::New() do |arguments|
+          unless arguments.Length() == 1 && arguments[0].kind_of?(C::External)
+            C::ThrowException(C::Exception::Error(C::String::New("cannot call native constructor from javascript")))
+          else
+            arguments.This().tap do |this|
+              this.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), arguments[0])              
+            end
+          end
+        end
+        template.tap do
+          setuptemplate(template.InstanceTemplate())
+          if cls.name && cls.name =~ /(::)?(\w+?)$/
+            template.SetClassName(C::String::NewSymbol("rb::" + $2))
+          else
+            template.SetClassName("Ruby")
+          end
+        end
+      end
+      @embedded_constructors = Hash.new do |h, cls|
+        template = @constructors[cls]
         template.SetCallHandler() do |arguments|
           wrap = nil
           if arguments.Length() > 0 && arguments[0].kind_of?(C::External)
@@ -91,7 +109,7 @@ module V8
       when ::Time
         C::Date::New(value)
       when ::Class
-        @constructors[value].GetFunction().tap do |f|
+        @embedded_constructors[value].GetFunction().tap do |f|
           f.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), C::External::New(value))
           #set the function's prototype object to the object that will have the named property handlers
           prototype = rubytemplate.NewInstance()
@@ -104,19 +122,14 @@ module V8
       else
         args = C::Array::New(1)
         args.Set(0, C::External::New(value))
-        obj = @context.access[value.class].GetFunction().NewInstance(args)
+        obj = @constructors[value.class].GetFunction().NewInstance(args)
         return obj
       end
     end
-    
-################################
-    def rubyprotect(&blk)
-      self.v8(rubyprotect2(&blk))
-    end
 
-    def rubyprotect2
+    def rubyprotect
       begin
-        yield
+        v8 yield
       rescue Exception => e
         case e
         when SystemExit, NoMemoryError
@@ -163,8 +176,7 @@ module V8
         @indexed_property_enumerator
       )
     end
-################################
-    
+
     private
 
     def peer(value)
