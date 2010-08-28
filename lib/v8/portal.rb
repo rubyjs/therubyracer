@@ -1,6 +1,7 @@
 
 module V8
   class Portal
+    attr_reader :context
 
     def initialize(context)
       @context = context

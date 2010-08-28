@@ -16,7 +16,7 @@ module V8
     end
     
     def call(*args)
-      self.methodcall(@context.Global(), *args)
+      self.methodcall(@portal.context.native.Global(), *args)
     end
     
     def new(*args)
