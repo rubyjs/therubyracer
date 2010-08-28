@@ -93,6 +93,11 @@ module V8
       when ::Class
         @constructors[value].GetFunction().tap do |f|
           f.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), C::External::New(value))
+          #set the function's prototype object to the object that will have the named property handlers
+          prototype = rubytemplate.NewInstance()
+          #set *that* object's prototype to an empty function so that it will look and behave like a function.
+          prototype.SetPrototype(C::FunctionTemplate::New() {}.GetFunction())
+          f.SetPrototype(prototype)
         end
       when nil,Numeric,TrueClass,FalseClass, C::Value
         value
