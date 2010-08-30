@@ -5,6 +5,7 @@ module V8
   VERSION = '0.7.6.pre'
   require 'v8/v8' #native glue
   require 'v8/portal'
+  require 'v8/portal/functions'
   require 'v8/context'
   require 'v8/object'
   require 'v8/array'

@@ -43,16 +43,7 @@ module V8
         h[obj] = @constructors[obj.class].GetFunction().NewInstance(args)
       end
 
-      @functions = Hash.new do |h, code|
-        template = C::FunctionTemplate::New() do |arguments|
-          rbargs = []
-          for i in 0..arguments.Length() - 1
-            rbargs << rb(arguments[i])
-          end
-          rubycall(code, *rbargs)
-        end
-        h[code] = template.GetFunction()
-      end
+      @functions = Functions.new(self)
 
       @embedded_constructors = Hash.new do |h, cls|
         template = @constructors[cls]
