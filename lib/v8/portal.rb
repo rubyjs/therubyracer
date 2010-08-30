@@ -94,7 +94,7 @@ module V8
         C::String::New(value.to_s)
       when Symbol
         C::String::NewSymbol(value.to_s)
-      when Proc,Method
+      when Proc,Method,UnboundMethod
         @functions[value]
       when ::Array
         C::Array::New(value.length).tap do |a|

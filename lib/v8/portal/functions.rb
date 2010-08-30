@@ -7,41 +7,39 @@ module V8
       end
       
       def [](code)
-        case code
-        when Proc
-          @procs[code] ||= begin
-            template = C::FunctionTemplate::New() do |arguments|
-              rbargs = []
-              for i in 0..arguments.Length() - 1
-                rbargs << @portal.rb(arguments[i])
-              end
-              @portal.rubycall(code, *rbargs)
+        self.send(code.class.name, code)
+      end
+
+      def Proc(p)
+        @procs[p] ||= begin
+          template = C::FunctionTemplate::New() do |arguments|
+            rbargs = []
+            for i in 0..arguments.Length() - 1
+              rbargs << @portal.rb(arguments[i])
             end
-            template.GetFunction()
+            @portal.rubycall(p, *rbargs)
           end
-        when Method
-          get_method(code)
+          template.GetFunction()
         end
       end
-      
-      def get_method(method)
-        unbound = method.unbind
-        @methods[unbound.to_s] ||= begin
+
+      def UnboundMethod(method)
+        @methods[method.to_s] ||= begin
           template = C::FunctionTemplate::New() do |arguments|
             rbargs = []
             for i in 0..arguments.Length() - 1
               rbargs << @portal.rb(arguments[i])
             end
             this = @portal.rb(arguments.This())
-            begin
-              @portal.rubycall(unbound.bind(this), *rbargs)
-            rescue Exception => e
-              raise e
+            @portal.rubyprotect do
+              method.bind(this).call(*rbargs)
             end
           end
           template.GetFunction()
         end
       end
+
+      alias_method :Method, :Proc
     end
   end
 end

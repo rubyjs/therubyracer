@@ -5,7 +5,7 @@ module V8
       methods = accessible_methods(obj)
       if methods.include?(name)
         method = obj.method(name)
-        method.arity == 0 ? method.call : method
+        method.arity == 0 ? method.call : method.unbind
       elsif obj.respond_to?(:[])
         obj.send(:[], name, &dontintercept)
       else
