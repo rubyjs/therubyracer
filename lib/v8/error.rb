@@ -80,7 +80,7 @@ module V8
         end if trace_javascript
         rbcontext = b.rbframes
         jscontext = b.jsframes
-        rbframes.reject! {|f| f =~ /lib\/v8\/\w+\.rb/} unless trace_framework
+        rbframes.reject! {|f| f =~ /lib\/v8\/.*\.rb/} unless trace_framework
         mixed.unshift(*rbframes) if trace_ruby
         mixed.unshift(*jsframes) if trace_javascript
       end
