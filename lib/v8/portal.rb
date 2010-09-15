@@ -29,6 +29,9 @@ module V8
         end
         template.tap do
           setuptemplate(template.InstanceTemplate())
+          if cls != ::Object && cls.superclass != ::Object && cls.superclass != ::Class
+            template.Inherit(@constructors[cls.superclass])
+          end
           if cls.name && cls.name =~ /(::)?(\w+?)$/
             template.SetClassName(C::String::NewSymbol("rb::" + $2))
           else
