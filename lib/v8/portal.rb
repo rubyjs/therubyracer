@@ -82,7 +82,7 @@ module V8
       when V8::C::Array     then peer(value) {V8::Array}
       when V8::C::Object    then peer(value) {V8::Object}
       when V8::C::String    then value.Utf8Value()
-      when V8::C::Date      then Time.at(value.NumberValue())
+      when V8::C::Date      then Time.at(value.NumberValue() / 1000)
       when V8::C::Value     then nil if value.IsEmpty()
       else
         value
@@ -112,7 +112,7 @@ module V8
           end
         end
       when ::Time
-        C::Date::New(value)
+        C::Date::New(value.to_f * 1000)
       when ::Class
         @embedded_constructors[value].GetFunction().tap do |f|
           f.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), C::External::New(value))
