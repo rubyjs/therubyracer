@@ -40,6 +40,15 @@ module V8
     end
 
     def method_missing(name, *args, &block)
+      if name.to_s =~ /(.*)=$/
+        if args.length > 1
+          self[$1] = args
+          return args
+        else
+          self[$1] = args.first
+          return args
+        end
+      end
       return super(name, *args, &block) unless self.respond_to?(name)
       property = self[name]
       if property.kind_of?(V8::Function)
