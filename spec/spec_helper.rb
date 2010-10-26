@@ -1,18 +1,4 @@
 
-begin
-  require 'rspec'
-rescue LoadError
-  require 'rubygems' unless ENV['NO_RUBYGEMS']
-  gem 'rspec'
-  require 'rspec'
-end
-
-#
-# $: is the load path $LOAD_PATH
-#
-$:.unshift(File.dirname(__FILE__) + '/../lib')
-$:.unshift(File.dirname(__FILE__) + '/../contrib')
-$:.unshift(File.dirname(__FILE__) + '/..')
 require 'v8'
 
 require 'erb'
