@@ -57,17 +57,17 @@ module V8
         puts e.backtrace(:javascript)
       rescue StandardError => e
         puts e
-      end      
+      end
     end
     
     def self.test
       begin
         require 'rubygems'
-        require 'spec'
-        parser = ::Spec::Runner::OptionParser.new($stderr, $stdout)
-        parser.order!([File.dirname(__FILE__) + '/../../spec/'])
-        ::Spec::Runner.use(parser.options)  
-        exit parser.options.run_examples
+        require 'rspec'
+        ARGV.clear
+        ARGV << File.dirname(__FILE__) + '/../../spec/'
+        ::RSpec::Core::Runner.autorun
+        exit(0)
       rescue LoadError => e
         puts "selftest requires rspec to be installed (gem install rspec)"
         exit(1)
