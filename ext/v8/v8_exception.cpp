@@ -1,5 +1,6 @@
 #include "v8_exception.h"
 #include "rr.h"
+#include "v8_ref.h"
 #include "execinfo.h"
 #include "signal.h"
 
@@ -38,19 +39,90 @@ namespace {
     HandleScope scope;
     return rr_v82rb(Exception::Error(rr_rb2v8(value)->ToString()));
   }
+
+  VALUE StackTraceClass;
+  VALUE StackFrameClass;
+  namespace Trace {
+
+    Local<StackTrace> trace(VALUE value) {
+      return V8_Ref_Get<StackTrace>(value);
+    }
+    VALUE GetFrame(VALUE self, VALUE index) {
+      HandleScope scope;
+      return rr_v82rb(trace(self)->GetFrame(NUM2UINT(index)));
+    }
+    VALUE GetFrameCount(VALUE self) {
+      HandleScope scope;
+      Local<StackTrace> t = trace(self);
+      return rr_v82rb(t->GetFrameCount());
+    }
+    VALUE AsArray(VALUE self) {
+      return rr_v82rb(trace(self)->AsArray());
+    }
+    VALUE CurrentStackTrace(VALUE self, VALUE frame_limit) {
+      return rr_v82rb(StackTrace::CurrentStackTrace(NUM2INT(frame_limit)));
+    }
+  }
+
+  namespace Frame {
+    Local<StackFrame> frame(VALUE value) {
+     return V8_Ref_Get<StackFrame>(value);
+    }
+    VALUE GetLineNumber(VALUE self) {
+      return rr_v82rb(frame(self)->GetLineNumber());
+    }
+    VALUE GetColumn(VALUE self) {
+      return rr_v82rb(frame(self)->GetColumn());
+    }
+    VALUE GetScriptName(VALUE self) {
+      return rr_v82rb(frame(self)->GetScriptName());
+    }
+    VALUE GetFunctionName(VALUE self) {
+      return rr_v82rb(frame(self)->GetFunctionName());
+    }
+    VALUE IsEval(VALUE self) {
+      return rr_v82rb(frame(self)->IsEval());
+    }
+    VALUE IsConstructor(VALUE self) {
+      return rr_v82rb(frame(self)->IsConstructor());
+    }
+  }
+
 }
 
 void rr_init_v8_exception() {
   VALUE V8 = rb_define_module("V8");
   VALUE V8_C = rb_define_module_under(V8, "C");
   rr_define_singleton_method(V8_C, "ThrowException", _ThrowException, 1);
+
   VALUE ExceptionClass = rr_define_class("Exception");
   rr_define_singleton_method(ExceptionClass, "RangeError", RangeError, 1);
   rr_define_singleton_method(ExceptionClass, "ReferenceError", ReferenceError, 1);
   rr_define_singleton_method(ExceptionClass, "SyntaxError", SyntaxError, 1);
   rr_define_singleton_method(ExceptionClass, "Error", Error, 1);
-  
+
+  StackTraceClass = rr_define_class("StackTrace");
+  rr_define_singleton_method(StackTraceClass, "CurrentStackTrace", Trace::CurrentStackTrace, 0);
+  rr_define_method(StackTraceClass, "GetFrame", Trace::GetFrame, 1);
+  rr_define_method(StackTraceClass, "GetFrameCount", Trace::GetFrameCount, 0);
+  rr_define_method(StackTraceClass, "AsArray", Trace::AsArray, 0);
+
+  StackFrameClass = rr_define_class("StackFrame");
+  rr_define_method(StackFrameClass, "GetLineNumber", Frame::GetLineNumber, 0);
+  rr_define_method(StackFrameClass, "GetColumn", Frame::GetColumn, 0);
+  rr_define_method(StackFrameClass, "GetScriptName", Frame::GetScriptName, 0);
+  rr_define_method(StackFrameClass, "GetFunctionName", Frame::GetFunctionName, 0);
+  rr_define_method(StackFrameClass, "IsEval", Frame::IsEval, 0);
+  rr_define_method(StackFrameClass, "IsConstructor", Frame::IsConstructor, 0);
+
   v8::V8::SetFatalErrorHandler(fatal);
   //comment this in for debugging.
   // signal(SIGSEGV, segfault);
+}
+
+VALUE rr_reflect_v8_stacktrace(Handle<StackTrace> value) {
+  return rr_v8_ref_create(StackTraceClass, value);
+}
+VALUE rr_reflect_v8_stackframe(Handle<StackTrace> value) {
+  return rr_v8_ref_create(StackFrameClass, value);
 }

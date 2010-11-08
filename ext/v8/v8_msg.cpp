@@ -23,6 +23,10 @@ namespace {
     return rr_v82rb(unwrap(self)->GetScriptResourceName());
   }
 
+  VALUE GetStackTrace(VALUE self) {
+    return rr_v82rb(unwrap(self)->GetStackTrace());
+  }
+
   VALUE GetLineNumber(VALUE self) {
     return rr_v82rb(unwrap(self)->GetLineNumber());
   }
@@ -49,6 +53,7 @@ void rr_init_msg() {
   rr_define_method(MessageClass, "Get", Get, 0);
   rr_define_method(MessageClass, "GetSourceLine", GetSourceLine, 0);
   rr_define_method(MessageClass, "GetScriptResourceName", GetScriptResourceName, 0);
+  rr_define_method(MessageClass, "GetStackTrace", GetStackTrace, 0);
   rr_define_method(MessageClass, "GetLineNumber", GetLineNumber, 0);
   rr_define_method(MessageClass, "GetStartPosition", GetStartPosition, 0);
   rr_define_method(MessageClass, "GetEndPosition", GetEndPosition, 0);

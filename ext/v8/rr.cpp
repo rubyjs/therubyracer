@@ -8,6 +8,7 @@
 #include "v8_date.h"
 #include "v8_msg.h"
 #include "v8_external.h"
+#include "v8_exception.h"
 
 using namespace v8;
 
@@ -75,6 +76,13 @@ VALUE rr_v82rb(Handle<Value> value) {
 VALUE rr_v82rb(Handle<Message> value) {
   return rr_reflect_v8_message(value);
 }
+VALUE rr_v82rb(Handle<StackTrace> value) {
+  return rr_reflect_v8_stacktrace(value);
+}
+VALUE rr_v82rb(Handle<StackFrame> value) {
+  return rr_reflect_v8_stackframe(value);
+}
+
 VALUE rr_v82rb(Handle<Boolean> value) {
   return rr_v82rb((Handle<Value>)value);
 }
@@ -85,6 +93,9 @@ VALUE rr_v82rb(Handle<String> value) {
   return rr_v82rb((Handle<Value>)value);
 }
 VALUE rr_v82rb(Handle<Object> value) {
+  return rr_v82rb((Handle<Value>)value);
+}
+VALUE rr_v82rb(Handle<Array> value) {
   return rr_v82rb((Handle<Value>)value);
 }
 VALUE rr_v82rb(v8::Handle<v8::Function> value) {
