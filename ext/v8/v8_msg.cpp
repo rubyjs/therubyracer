@@ -24,7 +24,8 @@ namespace {
   }
 
   VALUE GetStackTrace(VALUE self) {
-    return rr_v82rb(unwrap(self)->GetStackTrace());
+    Handle<StackTrace> trace = unwrap(self)->GetStackTrace();
+    return trace.IsEmpty() ? Qnil : rr_v82rb(trace);
   }
 
   VALUE GetLineNumber(VALUE self) {

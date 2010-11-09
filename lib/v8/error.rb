@@ -41,7 +41,6 @@ module V8
       else
         @value = ex
         message = ex.to_s
-        @boundaries.first.jsframes << 'at [???].js'
       end
       return message
     end
@@ -88,13 +87,31 @@ module V8
     end
 
     def parse_js_frames(try)
+      #I can't figure out why V8 is not capturing the stacktrace here
+      #in terms of StackTrace and StackFrame objects, so we have to
+      #parse the string.
       raw = @to.rb(try.StackTrace())
-      if raw && !raw.empty?
+      if raw && !raw.empty? && !syntax_error?(try)
         raw.split("\n")[1..-1].tap do |frames|
           frames.each {|frame| frame.strip!.chomp!(",")}
         end
       else
-        []
+        msg = try.Message()
+        ["at #{@to.rb(msg.GetScriptResourceName())}:#{msg.GetLineNumber()}:#{msg.GetStartColumn() + 1}"]
+      end
+    end
+
+    #Syntax errors are weird in that they have a non-empty stack trace
+    #but it does not contain any source location information, so
+    #in these instances, we have to pull it out of the Message object
+    #in the TryCatch. Is there a better way to detect a syntax error
+    def syntax_error?(try)
+      ex = try.Exception()
+      if ex && ex.kind_of?(V8::C::Object)
+        type = ex.Get("constructor")
+        type && type.kind_of?(V8::C::Function) && type.GetName().AsciiValue == "SyntaxError"
+      else
+        false
       end
     end
 
