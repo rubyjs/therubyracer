@@ -13,5 +13,18 @@ module V8
     def length
       @native.Length()
     end
+    
+    def ==(o)
+      @portal.open do
+        return @native.Equals(o.native)
+      end
+    end
+    alias eql? ==
+    
+    protected
+    
+      def native
+        @native
+      end
   end
 end
