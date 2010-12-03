@@ -1,3 +1,13 @@
+=== 0.8.0 2010-12-02
+* 3 major enhancements
+  * every V8 Context gets its own unique access strategy
+  * ruby methods and procs embedded in javascript always return the same function per context.
+  * ruby classes and subclasses are now all connected via the javascript prototype chain
+* 3 minor enhancements
+  * better error reporting on syntax errors
+  * upgrade to rspec 2
+  * several bug fixes and stability fixes
+
 === 0.7.5 1010-08-03
 * 4 major enhancements
   * upgrade to V8 2.3.3
