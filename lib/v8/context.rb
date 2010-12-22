@@ -8,8 +8,9 @@ module V8
       @to = Portal.new(self, @access)
       @native = opts[:with] ? C::Context::New(@to.rubytemplate) : C::Context::New()
       @native.enter do
-        @scope = @to.rb(@native.Global())
-        @native.Global().SetHiddenValue(C::String::New("TheRubyRacer::RubyObject"), C::External::New(opts[:with])) if opts[:with]
+        @global = @native.Global()
+        @scope = @to.rb(@global)
+        @global.SetHiddenValue(C::String::New("TheRubyRacer::RubyObject"), C::External::New(opts[:with])) if opts[:with]
       end
       yield(self) if block_given?
     end

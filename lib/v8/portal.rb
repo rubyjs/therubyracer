@@ -186,7 +186,9 @@ module V8
       if external && !external.IsEmpty()
         external.Value()
       else
-        yield.new(value, self)
+        yield.new(value, self).tap do |object|
+          value.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), C::External::New(object))
+        end
       end
     end
 

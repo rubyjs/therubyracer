@@ -107,9 +107,9 @@ module V8
     #in the TryCatch. Is there a better way to detect a syntax error
     def syntax_error?(try)
       ex = try.Exception()
-      if ex && ex.kind_of?(V8::C::Object)
-        type = ex.Get("constructor")
-        type && type.kind_of?(V8::C::Function) && type.GetName().AsciiValue == "SyntaxError"
+      if ex && ex.kind_of?(V8::Object)
+        type = ex["constructor"]
+        type && type.kind_of?(V8::Function) && type.name == "SyntaxError"
       else
         false
       end
