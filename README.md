@@ -18,8 +18,8 @@ Embed the V8 Javascript interpreter into Ruby.
 
 ## SYNOPSIS:
 
-    gem install therubyracer (stable)
-    gem install therubyracer --pre (bleeding edge)
+    gem install therubyracer         ;: stable
+    gem install therubyracer --pre   ;: bleeding edge
 
 then in your ruby code
 
