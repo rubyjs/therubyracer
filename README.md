@@ -126,6 +126,7 @@ to allow whatever behavior you'd like
 * git clone git://github.com/cowboyd/therubyracer.git
 * cd therubyracer
 * git submodule update --init
+* bundle install
 * rake compile
 
 ## LICENSE:
