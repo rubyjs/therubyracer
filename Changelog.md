@@ -2,6 +2,9 @@
 
 ## EDGE
 
+* decruft all the crap that had accumulated in the gem
+* Javascript Objects are now always mapped to the same V8::Object when read from the context
+
 ## 0.8.0 - 2010/12/02
 
 * every V8 Context gets its own unique access strategy

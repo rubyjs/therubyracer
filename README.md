@@ -77,7 +77,7 @@ or load it by filename
     cxt.load("mysource.js")
 
 
-## Safe by default
+## Safe by default, dangerous by demand
 
 The Ruby Racer is designed to let you evaluate javascript as safely as possible unless you tell it to do something more
 dangerous. The default context is a hermetically sealed javascript environment with only the standard javascript objects
@@ -113,13 +113,8 @@ exposed by default. E.g.
       cxt.eval("b.object_id") #=> undefined, object_id is on Object
     end
 
-
-## Dangerous by Demand
-
-All aspects of ruby embedding are pluggable on a per context basis, including
-the visibility of ruby libraries and classes. If needed, you can expose more aspects
-of the It is possible to override this
-safe behavior.
+If needed, you can override the [Ruby Access](https://github.com/cowboyd/therubyracer/blob/master/lib/v8/access.rb)
+to allow whatever behavior you'd like
 
 ## REQUIREMENTS:
 
@@ -130,6 +125,7 @@ safe behavior.
 ## DEVELOP
 * git clone git://github.com/cowboyd/therubyracer.git
 * cd therubyracer
+* git submodule update --init
 * rake compile
 
 ## LICENSE:
