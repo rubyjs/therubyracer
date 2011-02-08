@@ -46,8 +46,6 @@ module V8
         h[obj] = @constructors[obj.class].GetFunction().NewInstance(args)
       end
 
-      @array_instances = {}
-
       @functions = Functions.new(self)
 
       @embedded_constructors = Hash.new do |h, cls|
@@ -78,7 +76,7 @@ module V8
       end if block_given?
     end
 
-    def rb(value) 
+    def rb(value)
       case value
       when V8::C::Function    then peer(value) {V8::Function}
       when V8::C::Array       then peer(value) {V8::Array}
@@ -103,15 +101,11 @@ module V8
       when Proc,Method,UnboundMethod
         @functions[value]
       when ::Array
-        unless @array_instances[value]
-          v8_arry = C::Array::New(value.length).tap do |a|
-            value.each_with_index do |item, i|
-              a.Set(i, v8(item))
-            end
+        C::Array::New(value.length).tap do |a|
+          value.each_with_index do |item, i|
+            a.Set(i, v8(item))
           end
-          @array_instances[value] = v8_arry
         end
-        @array_instances[value]
       when ::Hash
         C::Object::New().tap do |o|
           value.each do |key, val|
@@ -131,7 +125,7 @@ module V8
         end
       when nil,Numeric,TrueClass,FalseClass, C::Value
         value
-      else  
+      else
         @instances[value]
       end
     end
@@ -322,7 +316,7 @@ module V8
         end
       end
     end
-    
+
     class IndexedPropertyEnumerator < Interceptor
       def call(info)
         intercept(info) do |obj, dontintercept|
@@ -332,3 +326,4 @@ module V8
     end
   end
 end
+
