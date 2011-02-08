@@ -1,7 +1,7 @@
 
 module V8
   class Array < V8::Object
-    
+
     def each
       @portal.open do |to|
         for i in 0..(@native.Length() - 1)
@@ -13,16 +13,16 @@ module V8
     def length
       @native.Length()
     end
-    
+
     def ==(o)
       @portal.open do
         return @native.Equals(o.native)
       end
     end
     alias eql? ==
-    
+
     protected
-    
+
       def native
         @native
       end

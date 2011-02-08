@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Charles Lowell", "Bill Robertson"]
-  s.date = %q{2010-12-03}
+  s.date = %q{2011-01-06}
   s.description = %q{Call javascript code and manipulate javascript objects from ruby. Call ruby code and manipulate ruby objects from javascript.}
   s.email = %q{cowboyd@thefrontside.net}
   s.executables = ["therubyracer", "v8"]
