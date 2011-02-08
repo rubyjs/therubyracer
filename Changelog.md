@@ -1,0 +1,165 @@
+# Changelog  
+
+## EDGE
+
+* decruft all the crap that had accumulated in the gem
+* Javascript Objects are now always mapped to the same V8::Object when read from the context
+
+## 0.8.0 - 2010/12/02
+
+* every V8 Context gets its own unique access strategy
+* ruby methods and procs embedded in javascript always return the same function per context.
+* ruby classes and subclasses are now all connected via the javascript prototype chain
+* better error reporting on syntax errors
+* upgrade to rspec 2
+* several bug fixes and stability fixes
+
+## 0.7.5 - 1010/08/03
+
+* upgrade to V8 2.3.3
+* property interceptors from ruby via [] and []=
+* indexed property access via [] and []=
+* property
+* several bugfixes
+* stability: eliminate many segfaults
+* don't enumerate property setters such as foo= from javascript
+
+## 0.7.4 - 2010/06/15
+
+* bug fix for rvm ruby installs incorrectly detected as 32bit
+
+## 0.7.3 - 2010/06/15
+
+* don't catch SystemExit and NoMemoryError
+* fix bug bundling gem
+
+## 0.7.2 - 2010/06/14
+
+* embed ruby classes as constructors
+* support for rubinius
+* uniform backtrace() function on JSError mixes the ruby
+* String::NewSymbol() is now scriptable
+* InstanceTemplate(), PrototypeTemplate(), Inherit() methods on v8::FunctionTemplate now scriptable.
+* reuse the standard ruby object access template
+* fix a bunch of compile warnings
+* Store any ruby object in V8 with V8::C::External
+
+## 0.7.1 - 2010/06/03
+
+* Function#call() now uses the global scope for 'this' by default
+* Function#methodcall() added to allow passing in 'this' object
+* Function#new() method to invoke javascript constructor from ruby
+* access javascript properties and call javascript methods from ruby
+* bundled Jasmine DOM-Less browser testing framework.
+
+* added Object::GetHiddenValue() to v8 metal
+* added Handle::IsEmpty() to v8 metal
+* fixed bug where iterating over arrays sometimes failed
+* numerous bug /segfault fixes.
+
+## 0.7.0 - 2010/05/31
+
+* upgraded to V8 2.1.10
+* added low level scripting interface for V8 objects
+* ruby object property/method access is now implemented in ruby
+* auto-convert javascript arrays to rb arrays and vice-versa
+* auto-convert ruby hashes into javascript objects
+* auto-convert javascript Date into ruby Time object and vice versa.
+* better exception handling when passing through multiple language boundaries
+* objects maintain referential integrity when passing objects from ruby to javascript and vice-versa
+* added debug compile option for getting C/C++ backtraces whenever segfaults occur.
+* official support for REE 1.8.7
+* fixed numerous segfaults
+* implemented V8::Value#to_s
+* the global scope is available to every V8::Context as the 'scope' attribute
+* properly convert ruby boolean values into V8 booleans.
+
+## 0.6.3 - 2010/05/07
+
+* FIX: linkage error on OSX /usr/bin/ruby
+
+## 0.6.2 - 2010/05/06
+
+* FIX: linkage error on OSX 10.5
+
+## 0.6.1 - 2010/05/03
+
+* call JavaScript functions from Ruby
+
+## 0.6.0 - 2010/03/31
+
+* ruby 1.9 compatible
+* full featured command line bin/v8 and bin/therubyracer
+* self validating install (v8 --selftest)
+* Only dependency to build gem from source is rubygems.
+
+## 0.5.5 - 2010/03/15
+
+* fix string encoding issue that was breaking RHEL 5.x
+* fix pthread linking issue on RHEL 5.2
+
+## 0.5.4 - 2010/03/09
+
+* add ext directory to gem require paths which was causing problems for non-binary gems
+
+## 0.5.3 - 2010/03/01
+
+* added full back trace to javascript code
+
+## 0.5.2 - 2010/02/26
+
+* added javascript shell (bin/therubyracer)
+* added to_s method for embedded ruby objects
+* added line number and file name to error message.
+
+## 0.5.1 - 2010/02/17
+
+* fix bug in 1.8.6 by creating Object#tap if it does not exist
+
+## 0.5.0 - 2010/02/17
+
+* support for Linux 64 bit
+
+## 0.4.9 - 2010/02/16
+
+* support for Linux 32 bit
+
+## 0.4.8 - 2010/02/08
+
+* expose line number and source name on JavascriptErrors.
+
+## 0.4.5 - 2010/01/18
+
+* case munging so that ruby methods(perl_case) are accessed through javascript in camelCase.
+* access 0-arity ruby methods as javascript properties
+* invoke ruby setters from javascript as properties
+* contexts detect whether they are open or not and open when needed
+
+## 0.4.4 - 2010/01/14
+
+* Ruby objects embedded into javascript are passed back to ruby as themselves and not a wrapped V8 object wrapping a ruby object.
+* Use any ruby object as the scope of eval().
+* quick and dirty V8.eval() method added
+* native objects have a reference to the context that created them.
+* context now has equality check.
+* expose InContext() and GetCurrent() methods.
+* fix a couple of segmentation faults
+
+## 0.4.3 - 2010/10/11
+
+* access properties on Ruby objects with their camel case equivalents
+* reflect JavaScript objects into Ruby and access their properties
+* load JavaScript source from an IO object or by filename
+
+## 0.4.2 - 2010/10/10
+
+* embed Ruby Objects into Javascript and call their methods
+
+## 0.4.1 - 2010/01/09
+
+* embed bare Proc and Method objects into JavaScript and call them
+* catch JavaScript exceptions from Ruby
+
+## 0.4.0 - 2009/12/21
+
+* evaluate JavaScript code from inside Ruby.
