@@ -2,6 +2,7 @@
 
 ## EDGE
 
+* remove bin/v8 which conflicted with v8 executeable
 * decruft all the crap that had accumulated in the gem
 * Javascript Objects are now always mapped to the same V8::Object when read from the context
 
