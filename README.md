@@ -126,11 +126,11 @@ More documentation can be found on the [github wiki](https://github.com/cowboyd/
 
 
 ## DEVELOP
-* git clone git://github.com/cowboyd/therubyracer.git
-* cd therubyracer
-* git submodule update --init
-* bundle install
-* rake compile
+    git clone git://github.com/cowboyd/therubyracer.git
+    cd therubyracer
+    git submodule update --init
+    bundle install
+    rake compile
 
 ## LICENSE:
 
