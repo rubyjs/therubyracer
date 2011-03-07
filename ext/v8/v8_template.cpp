@@ -140,12 +140,12 @@ namespace {
      * Returns a non-empty handle if the interceptor intercepts the request.
      * The result is true if the property exists and false otherwise.
      */
-     Handle<Boolean> RubyIndexedPropertyQuery(uint32_t index, const AccessorInfo& info) {
+     Handle<Integer> RubyIndexedPropertyQuery(uint32_t index, const AccessorInfo& info) {
        VALUE code = (VALUE)External::Unwrap(info.Data());
        VALUE query = rb_hash_lookup(code, "query");
        VALUE result = rb_funcall(query, rb_intern("call"), 2, UINT2NUM(index), rr_v82rb(info));
        Handle<Value> intercepts = rr_rb2v8(result);
-       return intercepts.IsEmpty() ? Handle<Boolean>() : intercepts->ToBoolean();
+       return intercepts.IsEmpty() ? Handle<Integer>() : Integer::New(None);
      }
 
     /**
