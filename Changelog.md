@@ -1,7 +1,8 @@
 # Changelog  
 
-## EDGE
+## 0.8.1 - 2011/03/07
 
+* upgrade to v8 3.1.8
 * remove bin/v8 which conflicted with v8 executeable
 * decruft all the crap that had accumulated in the gem
 * Javascript Objects are now always mapped to the same V8::Object when read from the context
