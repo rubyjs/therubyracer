@@ -1,8 +1,9 @@
 # therubyracer
 
-* http://github.com/cowboyd/therubyracer
-* http://groups.google.com/group/therubyracer
-* irc://irc.freenode.net/therubyracer
+* [http://github.com/cowboyd/therubyracer](http://github.com/cowboyd/therubyracer)
+* [http://groups.google.com/group/therubyracer](http://groups.google.com/group/therubyracer)
+* [irc://irc.freenode.net/therubyracer](http://groups.google.com/group/therubyracer)
+* [Documentation](https://github.com/cowboyd/therubyracer/wiki)
 
 ## DESCRIPTION:
 
@@ -115,6 +116,8 @@ exposed by default. E.g.
 
 If needed, you can override the [Ruby Access](https://github.com/cowboyd/therubyracer/blob/master/lib/v8/access.rb)
 to allow whatever behavior you'd like
+
+More documentation can be found on the [github wiki](https://github.com/cowboyd/therubyracer/wiki)
 
 ## REQUIREMENTS:
 
