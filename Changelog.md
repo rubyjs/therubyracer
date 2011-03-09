@@ -1,5 +1,9 @@
 # Changelog  
 
+## Edge
+
+* force UTf-8 encoding on strings returned from javascript in ruby 1.9
+
 ## 0.8.1 - 2011/03/07
 
 * upgrade to v8 3.1.8
