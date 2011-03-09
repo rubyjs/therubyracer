@@ -81,7 +81,7 @@ module V8
       when V8::C::Function  then peer(value) {V8::Function}
       when V8::C::Array     then peer(value) {V8::Array}
       when V8::C::Object    then peer(value) {V8::Object}
-      when V8::C::String    then value.Utf8Value()
+      when V8::C::String    then value.Utf8Value.tap {|s| return s.respond_to?(:force_encoding) ? s.force_encoding("UTF-8") : s}
       when V8::C::Date      then Time.at(value.NumberValue() / 1000)
       when V8::C::Value     then nil if value.IsEmpty()
       else
@@ -94,7 +94,7 @@ module V8
       when V8::Object
         value.instance_eval {@native}
       when String
-        C::String::New(value.to_s)
+        C::String::New(value)
       when Symbol
         C::String::NewSymbol(value.to_s)
       when Proc,Method,UnboundMethod
@@ -107,8 +107,8 @@ module V8
         end
       when ::Hash
         C::Object::New().tap do |o|
-          value.each do |key, value|
-            o.Set(v8(key), v8(value))
+          value.each do |key, val|
+            o.Set(v8(key), v8(val))
           end
         end
       when ::Time
