@@ -1,4 +1,5 @@
 .bundle
+.rvmrc
 Gemfile.lock
 v8.bundle
 v8.so
