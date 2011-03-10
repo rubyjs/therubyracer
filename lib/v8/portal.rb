@@ -78,12 +78,13 @@ module V8
 
     def rb(value)
       case value
-      when V8::C::Function  then peer(value) {V8::Function}
-      when V8::C::Array     then peer(value) {V8::Array}
-      when V8::C::Object    then peer(value) {V8::Object}
-      when V8::C::String    then value.Utf8Value.tap {|s| return s.respond_to?(:force_encoding) ? s.force_encoding("UTF-8") : s}
-      when V8::C::Date      then Time.at(value.NumberValue() / 1000)
-      when V8::C::Value     then nil if value.IsEmpty()
+      when V8::C::Function    then peer(value) {V8::Function}
+      when V8::C::Array       then peer(value) {V8::Array}
+      when V8::C::Object      then peer(value) {V8::Object}
+      when V8::C::String      then value.Utf8Value.tap {|s| return s.respond_to?(:force_encoding) ? s.force_encoding("UTF-8") : s}
+      when V8::C::Date        then Time.at(value.NumberValue() / 1000)
+      when V8::C::StackTrace  then V8::StackTrace.new(self, value)
+      when V8::C::Value       then nil if value.IsEmpty()
       else
         value
       end

@@ -69,21 +69,27 @@ namespace {
      return V8_Ref_Get<StackFrame>(value);
     }
     VALUE GetLineNumber(VALUE self) {
+      HandleScope scope;
       return rr_v82rb(frame(self)->GetLineNumber());
     }
     VALUE GetColumn(VALUE self) {
+      HandleScope scope;
       return rr_v82rb(frame(self)->GetColumn());
     }
     VALUE GetScriptName(VALUE self) {
+      HandleScope scope;
       return rr_v82rb(frame(self)->GetScriptName());
     }
     VALUE GetFunctionName(VALUE self) {
+      HandleScope scope;
       return rr_v82rb(frame(self)->GetFunctionName());
     }
     VALUE IsEval(VALUE self) {
+      HandleScope scope;
       return rr_v82rb(frame(self)->IsEval());
     }
     VALUE IsConstructor(VALUE self) {
+      HandleScope scope;
       return rr_v82rb(frame(self)->IsConstructor());
     }
   }
@@ -102,7 +108,7 @@ void rr_init_v8_exception() {
   rr_define_singleton_method(ExceptionClass, "Error", Error, 1);
 
   StackTraceClass = rr_define_class("StackTrace");
-  rr_define_singleton_method(StackTraceClass, "CurrentStackTrace", Trace::CurrentStackTrace, 0);
+  rr_define_singleton_method(StackTraceClass, "CurrentStackTrace", Trace::CurrentStackTrace, 1);
   rr_define_method(StackTraceClass, "GetFrame", Trace::GetFrame, 1);
   rr_define_method(StackTraceClass, "GetFrameCount", Trace::GetFrameCount, 0);
   rr_define_method(StackTraceClass, "AsArray", Trace::AsArray, 0);
@@ -123,6 +129,6 @@ void rr_init_v8_exception() {
 VALUE rr_reflect_v8_stacktrace(Handle<StackTrace> value) {
   return rr_v8_ref_create(StackTraceClass, value);
 }
-VALUE rr_reflect_v8_stackframe(Handle<StackTrace> value) {
+VALUE rr_reflect_v8_stackframe(Handle<StackFrame> value) {
   return rr_v8_ref_create(StackFrameClass, value);
 }
