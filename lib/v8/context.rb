@@ -39,11 +39,7 @@ module V8
       raise err if err
       return value
     end
-            
-    def evaluate(*args)
-      self.eval(*args)
-    end
-    
+
     def load(filename)
       File.open(filename) do |file|
         evaluate file, filename, 1
@@ -56,14 +52,6 @@ module V8
     
     def []=(key, value)
       @scope[key] = value
-    end
-
-    def self.eval(source)
-      new.eval(source)
-    end
-    
-    def V8.eval(*args)
-      V8::Context.eval(*args)
     end
   end
 

@@ -3,6 +3,7 @@
 ## Edge
 
 * force UTf-8 encoding on strings returned from javascript in ruby 1.9
+* remove deprecated evaluate() methods
 
 ## 0.8.1 - 2011/03/07
 
