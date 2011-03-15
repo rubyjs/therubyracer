@@ -2,8 +2,10 @@
 
 ## Edge
 
+* expose the V8 debugger via V8::C::Debug::EnableAgent()
 * force UTf-8 encoding on strings returned from javascript in ruby 1.9
 * remove deprecated evaluate() methods
+* make the currently executing JavaScript stack available via Context#stack
 
 ## 0.8.1 - 2011/03/07
 
