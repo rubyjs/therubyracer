@@ -24,5 +24,19 @@ module V8
         to.rb(@native.NewInstance(to.v8(args)))
       end
     end
+
+    def name
+      @portal.open do |to|
+        to.rb(@native.GetName())
+      end
+    end
+
+    def name=(name)
+      name.tap do
+        @portal.open do |to|
+          @native.SetName(to.v8(name))
+        end
+      end
+    end
   end
 end

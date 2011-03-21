@@ -39,9 +39,11 @@ namespace {
     return rr_v8_ref_create(rr_cV8_C_Object, function->NewInstance(argc, argv));
   }
   VALUE GetName(VALUE self) {
+    HandleScope scope;
     return rr_v82rb(unwrap(self)->GetName());
   }
   VALUE SetName(VALUE self, VALUE name) {
+    HandleScope scope;
     Local<String> str = V8_Ref_Get<String>(name);
     unwrap(self)->SetName(str);
     return Qnil;

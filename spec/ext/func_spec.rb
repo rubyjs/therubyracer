@@ -46,4 +46,19 @@ describe C::Function do
       cxt.eval('say("Hello", 3)').should == "HelloHelloHello"
     end
   end
+  
+  it "has a name" do
+    Context.new do |cxt|
+      f = cxt.eval('(function hi() {return "Hello World"})', '<eval>')
+      f.name.should == "hi"
+    end
+  end
+
+  it "can have its name set" do
+    Context.new do |cxt|
+      f = cxt.eval('(function () {return "Goodbye World"})', '<eval>')
+      f.name = 'bye'
+      f.name.should == 'bye'
+    end
+  end
 end
