@@ -1,3 +1,4 @@
+#include "v8_handle.h"
 #include "v8_cxt.h"
 #include "v8_value.h"
 #include "v8_str.h"
@@ -19,27 +20,28 @@
 #include <stdio.h>
 
 extern "C" {
-    void Init_v8();
+  void Init_v8();
 }
 
 extern "C" {
-    void Init_v8() {
-        rr_init_cxt();
-        rr_init_value();
-        rr_init_str();
-        rr_init_script();
-        rr_init_template();
-        rr_init_obj();
-        rr_init_func();
-        rr_init_v8_array();
-        rr_init_v8_date();
-        rr_init_msg();
-        rr_init_v8_try_catch();
-        rr_init_v8_callbacks();
-        rr_init_v8_external();
-        rr_init_v8_exception();
-        rr_init_v8_locker();
-        rr_init_v8_debug();
-        rr_init_v8_v8();
-    }
+  void Init_v8() {
+    rr_init_handle();
+    rr_init_cxt();
+    rr_init_value();
+    rr_init_str();
+    rr_init_script();
+    rr_init_template();
+    rr_init_obj();
+    rr_init_func();
+    rr_init_v8_array();
+    rr_init_v8_date();
+    rr_init_msg();
+    rr_init_v8_try_catch();
+    rr_init_v8_callbacks();
+    rr_init_v8_external();
+    rr_init_v8_exception();
+    rr_init_v8_locker();
+    rr_init_v8_debug();
+    rr_init_v8_v8();
+  }
 }

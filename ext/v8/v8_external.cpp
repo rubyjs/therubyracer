@@ -27,10 +27,8 @@ namespace {
     return (VALUE)V8_Ref_Get<External>(self)->Value();
   }
   void GCWeakReferenceCallback(Persistent<Value> object, void* parameter) {
-    // printf("V8 GC!!!!\n");
     Local<External> external(External::Cast(*object));
     rb_hash_delete(references, rb_obj_id((VALUE)external->Value()));
-    // V8::AdjustAmountOfExternalAllocatedMemory(-100000000);
   }
 }
 
@@ -51,7 +49,6 @@ Handle<Value> rr_v8_external_create(VALUE value) {
   rb_hash_aset(references, rb_obj_id(value), value);
   Local<Value> external(External::New((void *)value));
   Persistent<Value> record = Persistent<Value>::New(external);
-  // V8::AdjustAmountOfExternalAllocatedMemory(100000000);
   record.MakeWeak(NULL, GCWeakReferenceCallback);
   return external;
 }
