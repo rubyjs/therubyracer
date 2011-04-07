@@ -44,7 +44,7 @@ module V8
 
     def load(filename)
       File.open(filename) do |file|
-        evaluate file, filename, 1
+        self.eval file, filename, 1
       end
     end
 
