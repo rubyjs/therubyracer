@@ -23,19 +23,12 @@ describe "Memory Usage" do
 
     context "a ruby proxy for a JavaScript object" do
       it "holds a strong reference to the JavaScript object" do
-        pending
-        cxt = V8::C::Context::New()
-        handle = c::Handle::New(cxt)
+        # pending
+        handle = c::Handle::New(c::Context::New())
         handle.MakeWeak()
+        handle.IsWeak().should be_true
         gc do
-          handle.IsEmpty().should be_false
-          handle.IsNearDeath().should be_false
-          handle.IsWeak().should be_true
-        end
-        cxt = nil
-        gc do
-          # handle.IsEmpty().should be_true
-          handle.IsNearDeath().should be_true
+          handle.IsEmpty().should be_true
         end
       end
     end
@@ -65,10 +58,8 @@ describe "Memory Usage" do
   end
 
   def gc
-    GC.start
     while !V8::C::V8::IdleNotification();end
     GC.start
-    while !V8::C::V8::IdleNotification();end
     yield
   end
   
