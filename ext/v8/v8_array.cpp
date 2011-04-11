@@ -1,6 +1,6 @@
 #include "v8_handle.h"
 #include "v8_array.h"
-#include "v8_obj.h"
+#include "v8_object.h"
 
 using namespace v8;
 

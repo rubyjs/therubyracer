@@ -1,6 +1,6 @@
 #include "rr.h"
 #include "v8_try_catch.h"
-#include "v8_msg.h"
+#include "v8_message.h"
 
 using namespace v8;
 

@@ -4,7 +4,7 @@
 #include "rr.h"
 #include "v8.h"
 
-void rr_init_func();
+void rr_init_function();
 
 VALUE rr_reflect_v8_function(v8::Handle<v8::Value> value);
 

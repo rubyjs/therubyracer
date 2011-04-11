@@ -1,6 +1,6 @@
 
-#include "v8_func.h"
-#include "v8_obj.h"
+#include "v8_function.h"
+#include "v8_object.h"
 #include "v8_handle.h"
 
 using namespace v8;
@@ -54,7 +54,7 @@ namespace {
   // }
 }
 
-void rr_init_func() {
+void rr_init_function() {
   FunctionClass = rr_define_class("Function", rr_cV8_C_Object);
   rr_define_method(FunctionClass, "Call", Call, 2);
   rr_define_method(FunctionClass, "NewInstance", NewInstance, 1);

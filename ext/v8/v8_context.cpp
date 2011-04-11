@@ -1,7 +1,7 @@
 #include "rr.h"
 #include "v8_handle.h"
-#include "v8_cxt.h"
-#include "v8_msg.h"
+#include "v8_context.h"
+#include "v8_message.h"
 #include "v8_template.h"
 #include "v8_external.h"
 
@@ -77,7 +77,7 @@ namespace {
   }
 }
 
-void rr_init_cxt() {
+void rr_init_context() {
   ContextClass = rr_define_class("Context");
   rr_define_singleton_method(ContextClass, "New", New, -1);
   rr_define_singleton_method(ContextClass, "InContext", InContext, 0);

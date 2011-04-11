@@ -2,7 +2,7 @@
 #include "v8.h"
 #include "v8_handle.h"
 #include "v8_value.h"
-#include "v8_str.h"
+#include "v8_string.h"
 
 using namespace v8;
 
@@ -42,7 +42,7 @@ VALUE rr_reflect_v8_string(Handle<Value> value) {
   return rr_v8_handle_new(StringClass, string);
 }
 
-void rr_init_str() {
+void rr_init_string() {
   StringClass = rr_define_class("String", rr_cV8_C_Value);
   rr_define_singleton_method(StringClass, "New", New, 1);
   rr_define_singleton_method(StringClass, "NewSymbol", NewSymbol, 1);

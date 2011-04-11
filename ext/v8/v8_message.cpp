@@ -1,4 +1,4 @@
-#include "v8_msg.h"
+#include "v8_message.h"
 #include "v8_handle.h"
 
 using namespace v8;
@@ -48,7 +48,7 @@ namespace {
   }
 }
 
-void rr_init_msg() {
+void rr_init_message() {
   MessageClass = rr_define_class("Message");
   rr_define_method(MessageClass, "Get", Get, 0);
   rr_define_method(MessageClass, "GetSourceLine", GetSourceLine, 0);

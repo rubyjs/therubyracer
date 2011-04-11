@@ -1,6 +1,6 @@
 #include "rr.h"
 #include "v8_handle.h"
-#include "v8_func.h"
+#include "v8_function.h"
 #include "v8_template.h"
 #include "v8_external.h"
 #include "v8_callbacks.h"

@@ -5,7 +5,7 @@
 
 extern VALUE rr_cV8_C_Object;
 
-void rr_init_obj();
+void rr_init_object();
 VALUE rr_reflect_v8_object(v8::Handle<v8::Value> value);
 
 #endif

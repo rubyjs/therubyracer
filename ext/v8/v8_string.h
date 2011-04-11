@@ -3,7 +3,7 @@
 
 #include "rr.h"
 
-void rr_init_str();
+void rr_init_string();
 
 VALUE rr_reflect_v8_string(v8::Handle<v8::Value> value);
 #endif

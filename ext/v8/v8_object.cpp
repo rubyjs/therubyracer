@@ -1,5 +1,5 @@
 #include "v8_handle.h"
-#include "v8_obj.h"
+#include "v8_object.h"
 #include "v8_value.h"
 #include "v8_template.h"
 #include "v8_external.h"
@@ -75,7 +75,7 @@ namespace {
   }
 }
 
-void rr_init_obj() {
+void rr_init_object() {
   rr_cV8_C_Object = rr_define_class("Object", rr_cV8_C_Value);
   rr_define_singleton_method(rr_cV8_C_Object, "New", New, 0);
   rr_define_method(rr_cV8_C_Object, "Get", Get, 1);
