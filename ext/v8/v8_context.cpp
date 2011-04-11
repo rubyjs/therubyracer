@@ -78,7 +78,7 @@ namespace {
 }
 
 void rr_init_context() {
-  ContextClass = rr_define_class("Context");
+  ContextClass = rr_define_class("Context", rr_v8_handle_class());
   rr_define_singleton_method(ContextClass, "New", New, -1);
   rr_define_singleton_method(ContextClass, "InContext", InContext, 0);
   rr_define_singleton_method(ContextClass, "GetEntered", GetEntered, 0);

@@ -18,5 +18,6 @@ template <class T> v8::Persistent<T>& rr_v8_handle(VALUE value) {
   return (v8::Persistent<T>&)handle->handle;
 }
 VALUE rr_v8_handle_new(VALUE rbclass, v8::Handle<void> handle);
+VALUE rr_v8_handle_class();
 
 #endif

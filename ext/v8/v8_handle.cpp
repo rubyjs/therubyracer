@@ -78,3 +78,7 @@ VALUE rr_v8_handle_new(VALUE klass, v8::Handle<void> handle) {
   return Data_Wrap_Struct(klass, gc_mark, gc_free, new v8_handle(handle));
 }
 
+VALUE rr_v8_handle_class() {
+  return rr_define_class("Handle");
+}
+
