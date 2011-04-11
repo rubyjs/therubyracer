@@ -29,7 +29,7 @@ namespace {
 }
 
 void rr_init_script() {
-  VALUE ScriptClass = rr_define_class("Script");
+  VALUE ScriptClass = rr_define_class("Script", rr_v8_handle_class());
   rr_define_singleton_method(ScriptClass, "New", New, 2);
   rr_define_singleton_method(ScriptClass, "Compile", Compile, 2);
   rr_define_method(ScriptClass, "Run", Run, 0);

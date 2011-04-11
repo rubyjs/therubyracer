@@ -106,13 +106,13 @@ void rr_init_v8_exception() {
   rr_define_singleton_method(ExceptionClass, "SyntaxError", SyntaxError, 1);
   rr_define_singleton_method(ExceptionClass, "Error", Error, 1);
 
-  StackTraceClass = rr_define_class("StackTrace");
+  StackTraceClass = rr_define_class("StackTrace", rr_v8_handle_class());
   rr_define_singleton_method(StackTraceClass, "CurrentStackTrace", Trace::CurrentStackTrace, 1);
   rr_define_method(StackTraceClass, "GetFrame", Trace::GetFrame, 1);
   rr_define_method(StackTraceClass, "GetFrameCount", Trace::GetFrameCount, 0);
   rr_define_method(StackTraceClass, "AsArray", Trace::AsArray, 0);
 
-  StackFrameClass = rr_define_class("StackFrame");
+  StackFrameClass = rr_define_class("StackFrame", rr_v8_handle_class());
   rr_define_method(StackFrameClass, "GetLineNumber", Frame::GetLineNumber, 0);
   rr_define_method(StackFrameClass, "GetColumn", Frame::GetColumn, 0);
   rr_define_method(StackFrameClass, "GetScriptName", Frame::GetScriptName, 0);

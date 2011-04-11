@@ -49,7 +49,7 @@ namespace {
 }
 
 void rr_init_message() {
-  MessageClass = rr_define_class("Message");
+  MessageClass = rr_define_class("Message", rr_v8_handle_class());
   rr_define_method(MessageClass, "Get", Get, 0);
   rr_define_method(MessageClass, "GetSourceLine", GetSourceLine, 0);
   rr_define_method(MessageClass, "GetScriptResourceName", GetScriptResourceName, 0);

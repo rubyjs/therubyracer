@@ -135,7 +135,7 @@ VALUE rr_v8_value_empty() {
 }
 
 void rr_init_value() {
-  ValueClass = rr_define_class("Value");
+  ValueClass = rr_define_class("Value", rr_v8_handle_class());
   rr_define_const("Empty", rr_v8_handle_new(ValueClass, Handle<Value>()));
 
   rr_define_method(ValueClass, "IsEmpty", IsEmpty, 0);

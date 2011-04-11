@@ -311,7 +311,7 @@ namespace {
 }
 
 void rr_init_template() {
-  VALUE Template = rr_define_class("Template");
+  VALUE Template = rr_define_class("Template", rr_v8_handle_class());
   rr_define_method(Template, "Set", Set, 2);
 
   ObjectTemplateClass = rr_define_class("ObjectTemplate", Template);
