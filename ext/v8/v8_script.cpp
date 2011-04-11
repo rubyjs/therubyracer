@@ -1,5 +1,5 @@
 #include "v8.h"
-#include "v8_ref.h"
+#include "v8_handle.h"
 #include "v8_script.h"
 
 using namespace v8;
@@ -10,19 +10,19 @@ namespace {
     HandleScope scope;
     Local<String> src(rr_rb2v8(source)->ToString());
     Local<String> src_name(rr_rb2v8(source_name)->ToString());
-    return rr_v8_ref_create(self, Script::Compile(src, src_name));
+    return rr_v8_handle_new(self, Script::Compile(src, src_name));
   }
 
   VALUE Compile(VALUE self, VALUE source, VALUE source_name) {
     HandleScope scope;
     Local<String> src(rr_rb2v8(source)->ToString());
     Local<String> src_name(rr_rb2v8(source_name)->ToString());
-    return rr_v8_ref_create(self, Script::Compile(src, src_name));
+    return rr_v8_handle_new(self, Script::Compile(src, src_name));
   }
 
   VALUE Run(VALUE self) {
     HandleScope scope;
-    Local<Script> script(V8_Ref_Get<Script>(self));
+    Persistent<Script> script(rr_v8_handle<Script>(self));
     Local<Value> result(script->Run());
     return result.IsEmpty() ? Qnil : rr_v82rb(result);
   }

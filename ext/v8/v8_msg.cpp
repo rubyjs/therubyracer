@@ -1,18 +1,17 @@
 #include "v8_msg.h"
-#include "v8_ref.h"
+#include "v8_handle.h"
 
 using namespace v8;
 
 namespace {
   VALUE MessageClass;
   
-  Local<Message> unwrap(VALUE self) {
-    return V8_Ref_Get<Message>(self);
+  Persistent<Message>& unwrap(VALUE self) {
+    return rr_v8_handle<Message>(self);
   }
   
   VALUE Get(VALUE self) {
-    Local<Message> message(unwrap(self));
-    return rr_v82rb(message->Get());
+    return rr_v82rb(unwrap(self)->Get());
   }
 
   VALUE GetSourceLine(VALUE self) {
@@ -63,6 +62,6 @@ void rr_init_msg() {
 }
 
 VALUE rr_reflect_v8_message(Handle<Message> value) {
-  return rr_v8_ref_create(MessageClass, value);
+  return rr_v8_handle_new(MessageClass, value);
 }
 

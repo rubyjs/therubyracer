@@ -1,5 +1,6 @@
 #include "rr.h"
 #include "v8_cxt.h"
+#include "v8_handle.h"
 #include "v8_value.h"
 #include "v8_obj.h"
 #include "v8_func.h"
@@ -142,7 +143,7 @@ Handle<Value> rr_rb2v8(VALUE value) {
   case T_FALSE:
     return False();
   case T_DATA:
-    return V8_Ref_Get<Value>(value);
+    return rr_v8_handle<Value>(value);
   case T_OBJECT:
   case T_CLASS:
   case T_ICLASS:

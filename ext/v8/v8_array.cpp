@@ -1,5 +1,5 @@
+#include "v8_handle.h"
 #include "v8_array.h"
-#include "v8_ref.h"
 #include "v8_obj.h"
 
 using namespace v8;
@@ -9,8 +9,8 @@ namespace {
   
   VALUE ArrayClass;
   
-  Local<Array> unwrap(VALUE self) {
-    return V8_Ref_Get<Array>(self);
+  Persistent<Array>& unwrap(VALUE self) {
+    return rr_v8_handle<Array>(self);
   }
   
   VALUE New(int argc, VALUE *argv, VALUE self) {
@@ -24,7 +24,7 @@ namespace {
       length = INT2FIX(0);
     }
     HandleScope scope;
-    return rr_v8_ref_create(self, Array::New(NUM2INT(length)));
+    return rr_v8_handle_new(self, Array::New(NUM2INT(length)));
   }
   
   VALUE Length(VALUE self) {
@@ -46,5 +46,5 @@ void rr_init_v8_array() {
 VALUE rr_reflect_v8_array(Handle<Value> value) {
   Local<Array> array(Array::Cast(*value));
   Local<Value> peer = array->GetHiddenValue(String::NewSymbol("TheRubyRacer::RubyObject"));
-  return peer.IsEmpty() ? rr_v8_ref_create(ArrayClass, value) : (VALUE)External::Unwrap(peer);
+  return peer.IsEmpty() ? rr_v8_handle_new(ArrayClass, value) : (VALUE)External::Unwrap(peer);
 }

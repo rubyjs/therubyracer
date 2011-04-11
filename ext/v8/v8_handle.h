@@ -15,7 +15,7 @@ void rr_init_handle();
 template <class T> v8::Persistent<T>& rr_v8_handle(VALUE value) {
   v8_handle* handle = 0;
   Data_Get_Struct(value, struct v8_handle, handle);
-  return handle->handle;
+  return (v8::Persistent<T>&)handle->handle;
 }
 VALUE rr_v8_handle_new(VALUE rbclass, v8::Handle<void> handle);
 

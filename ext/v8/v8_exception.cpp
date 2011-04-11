@@ -1,6 +1,6 @@
 #include "v8_exception.h"
 #include "rr.h"
-#include "v8_ref.h"
+#include "v8_handle.h"
 #include "execinfo.h"
 #include "signal.h"
 
@@ -44,8 +44,8 @@ namespace {
   VALUE StackFrameClass;
   namespace Trace {
 
-    Local<StackTrace> trace(VALUE value) {
-      return V8_Ref_Get<StackTrace>(value);
+    Persistent<StackTrace>& trace(VALUE value) {
+      return rr_v8_handle<StackTrace>(value);
     }
     VALUE GetFrame(VALUE self, VALUE index) {
       HandleScope scope;
@@ -53,8 +53,7 @@ namespace {
     }
     VALUE GetFrameCount(VALUE self) {
       HandleScope scope;
-      Local<StackTrace> t = trace(self);
-      return rr_v82rb(t->GetFrameCount());
+      return rr_v82rb(trace(self)->GetFrameCount());
     }
     VALUE AsArray(VALUE self) {
       return rr_v82rb(trace(self)->AsArray());
@@ -65,8 +64,8 @@ namespace {
   }
 
   namespace Frame {
-    Local<StackFrame> frame(VALUE value) {
-     return V8_Ref_Get<StackFrame>(value);
+    Persistent<StackFrame>& frame(VALUE value) {
+     return rr_v8_handle<StackFrame>(value);
     }
     VALUE GetLineNumber(VALUE self) {
       HandleScope scope;
@@ -127,8 +126,8 @@ void rr_init_v8_exception() {
 }
 
 VALUE rr_reflect_v8_stacktrace(Handle<StackTrace> value) {
-  return rr_v8_ref_create(StackTraceClass, value);
+  return rr_v8_handle_new(StackTraceClass, value);
 }
 VALUE rr_reflect_v8_stackframe(Handle<StackFrame> value) {
-  return rr_v8_ref_create(StackFrameClass, value);
+  return rr_v8_handle_new(StackFrameClass, value);
 }

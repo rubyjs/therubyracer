@@ -1,14 +1,15 @@
 
 #include "v8_func.h"
 #include "v8_obj.h"
+#include "v8_handle.h"
 
 using namespace v8;
 
 namespace {
   VALUE FunctionClass;
   
-  Local<Function> unwrap(VALUE value) {
-    return V8_Ref_Get<Function>(value);
+  Persistent<Function>& unwrap(VALUE value) {
+    return rr_v8_handle<Function>(value);
   }  
   VALUE Call(VALUE self, VALUE recv, VALUE arguments) {
     HandleScope handles;
@@ -16,9 +17,9 @@ namespace {
       rb_raise(rb_eScriptError, "no open V8 Context in V8::C::Function::Call()");
       return Qnil;
     }
-    Local<Function> function = unwrap(self);
+    Handle<Function> function = unwrap(self);
     Local<Object> thisObj = rr_rb2v8(recv)->ToObject();
-    Handle<Array> args = V8_Ref_Get<Array>(arguments);
+    Handle<Array> args = rr_v8_handle<Array>(arguments);
     int argc = args->Length();
     Handle<Value> argv[argc];
     for (int i = 0; i < argc; i++) {
@@ -29,14 +30,14 @@ namespace {
   
   VALUE NewInstance(VALUE self, VALUE arguments) {
     HandleScope scope;
-    Local<Function> function = unwrap(self);
-    Handle<Array> args = V8_Ref_Get<Array>(arguments);
+    Handle<Function> function = unwrap(self);
+    Handle<Array> args = rr_v8_handle<Array>(arguments);
     int argc = args->Length();
     Handle<Value> argv[argc];
     for (int i = 0; i < argc; i++) {
       argv[i] = args->Get(i);
     }
-    return rr_v8_ref_create(rr_cV8_C_Object, function->NewInstance(argc, argv));
+    return rr_v8_handle_new(rr_cV8_C_Object, function->NewInstance(argc, argv));
   }
   VALUE GetName(VALUE self) {
     HandleScope scope;
@@ -44,7 +45,7 @@ namespace {
   }
   VALUE SetName(VALUE self, VALUE name) {
     HandleScope scope;
-    Local<String> str = V8_Ref_Get<String>(name);
+    Handle<String> str = rr_v8_handle<String>(name);
     unwrap(self)->SetName(str);
     return Qnil;
   }  
@@ -64,5 +65,5 @@ void rr_init_func() {
 
 VALUE rr_reflect_v8_function(Handle<Value> value) {
   Local<Function> function(Function::Cast(*value));
-  return rr_v8_ref_create(FunctionClass, function);
+  return rr_v8_handle_new(FunctionClass, function);
 }

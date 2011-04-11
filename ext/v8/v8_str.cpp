@@ -1,26 +1,26 @@
 
-#include "v8_str.h"
 #include "v8.h"
-#include "v8_ref.h"
+#include "v8_handle.h"
 #include "v8_value.h"
+#include "v8_str.h"
 
 using namespace v8;
 
 namespace {  
   VALUE StringClass;
   
-  Handle<String> unwrap(VALUE value) {
-    return V8_Ref_Get<String>(value);
+  Persistent<String>& unwrap(VALUE value) {
+    return rr_v8_handle<String>(value);
   }
   VALUE New(VALUE string_class, VALUE data) {
     HandleScope handles;
     VALUE str = rb_funcall(data, rb_intern("to_s"), 0);
-    return rr_v8_ref_create(string_class, String::New(RSTRING_PTR(str), RSTRING_LEN(str)));
+    return rr_v8_handle_new(string_class, String::New(RSTRING_PTR(str), RSTRING_LEN(str)));
   }
   VALUE NewSymbol(VALUE string_class, VALUE data) {
     HandleScope scope;
     VALUE str = rb_funcall(data, rb_intern("to_s"), 0);
-    return rr_v8_ref_create(string_class, String::NewSymbol(RSTRING_PTR(str), RSTRING_LEN(str)));
+    return rr_v8_handle_new(string_class, String::NewSymbol(RSTRING_PTR(str), RSTRING_LEN(str)));
   }
   VALUE Utf8Value(VALUE self) {
     HandleScope handles;
@@ -39,7 +39,7 @@ namespace {
 VALUE rr_reflect_v8_string(Handle<Value> value) {
   HandleScope handles;
   Local<String> string = String::Cast(*value);
-  return rr_v8_ref_create(StringClass, string);
+  return rr_v8_handle_new(StringClass, string);
 }
 
 void rr_init_str() {

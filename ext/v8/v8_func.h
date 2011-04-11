@@ -3,7 +3,6 @@
 
 #include "rr.h"
 #include "v8.h"
-#include "v8_ref.h"
 
 void rr_init_func();
 

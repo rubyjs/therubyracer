@@ -1,5 +1,5 @@
 #include "rr.h"
-#include "v8_ref.h"
+#include "v8_handle.h"
 #include "v8_func.h"
 #include "v8_template.h"
 #include "v8_external.h"
@@ -20,20 +20,20 @@ namespace {
     return ::rb_hash_aset(hash, rb_str_new2(key), value);
   }
 
-  Local<Template> tmpl(VALUE self) {
-    return V8_Ref_Get<Template>(self);
+  Persistent<Template> tmpl(VALUE self) {
+    return rr_v8_handle<Template>(self);
   }
-  Local<ObjectTemplate> obj(VALUE self) {
-    return V8_Ref_Get<ObjectTemplate>(self);
+  Persistent<ObjectTemplate> obj(VALUE self) {
+    return rr_v8_handle<ObjectTemplate>(self);
   }
-  Local<FunctionTemplate> func(VALUE self) {
-    return V8_Ref_Get<FunctionTemplate>(self);
+  Persistent<FunctionTemplate> func(VALUE self) {
+    return rr_v8_handle<FunctionTemplate>(self);
   }
 
   VALUE Set(VALUE self, VALUE name, VALUE value) {
     HandleScope handles;
     Local<String> key = rr_rb2v8(name)->ToString();
-    Local<Data> data = V8_Ref_Get<Data>(value);
+    Persistent<Data> data = rr_v8_handle<Data>(value);
     tmpl(self)->Set(key, data);
     return Qnil;
   }
@@ -183,7 +183,7 @@ namespace {
 
     VALUE New(VALUE rbclass) {
       HandleScope handles;
-      return rr_v8_ref_create(rbclass, ObjectTemplate::New());
+      return rr_v8_handle_new(rbclass, ObjectTemplate::New());
     }
     VALUE NewInstance(VALUE self) {
       HandleScope scope;
@@ -210,7 +210,8 @@ namespace {
       rb_hash_aset(data, "query", query);
       rb_hash_aset(data, "deleter", deleter);
       rb_hash_aset(data, "enumerator", enumerator);
-      rr_v8_ref_setref(self, "data", data);
+      //TODO: Make sure we retain this reference.
+      // rr_v8_ref_setref(self, "data", data);
       obj(self)->SetNamedPropertyHandler(
         RubyNamedPropertyGetter,
         RTEST(setter) ? RubyNamedPropertySetter : 0,
@@ -234,7 +235,7 @@ namespace {
       rb_hash_aset(data, "deleter", deleter);
       rb_hash_aset(data, "enumerator", enumerator);
       //TODO: is this really necessary?
-      rr_v8_ref_setref(self, "data", data);
+      //rr_v8_ref_setref(self, "data", data);
       obj(self)->SetIndexedPropertyHandler(
         RubyIndexedPropertyGetter,
         RTEST(setter) ? RubyIndexedPropertySetter : 0,
@@ -265,8 +266,10 @@ namespace {
         return Qnil;
       }
       Local<FunctionTemplate> templ = FunctionTemplate::New(RubyInvocationCallback, rr_v8_external_create(code));
-      VALUE ref = rr_v8_ref_create(function_template,templ);
-      rr_v8_ref_setref(ref, "code", code);
+      VALUE ref = rr_v8_handle_new(function_template,templ);
+      
+      //TODO: make sure that this reference is retained, if necessary.
+      // rr_v8_ref_setref(ref, "code", code);
       return ref;
     }
     VALUE SetCallHandler(VALUE self) {
@@ -280,11 +283,11 @@ namespace {
     }
     VALUE PrototypeTemplate(VALUE self) {
       HandleScope scope;
-      return rr_v8_ref_create(ObjectTemplateClass, func(self)->PrototypeTemplate());
+      return rr_v8_handle_new(ObjectTemplateClass, func(self)->PrototypeTemplate());
     }
     VALUE InstanceTemplate(VALUE self) {
       HandleScope scope;
-      return rr_v8_ref_create(ObjectTemplateClass, func(self)->InstanceTemplate());
+      return rr_v8_handle_new(ObjectTemplateClass, func(self)->InstanceTemplate());
     }
     VALUE Inherit(VALUE self, VALUE function_template) {
       HandleScope scope;

@@ -1,10 +1,10 @@
+#include "v8_handle.h"
 #include "v8_value.h"
-#include "v8_ref.h"
 
 using namespace v8;
 namespace {
-  Local<Value> unwrap(VALUE value) {
-    return V8_Ref_Get<Value>(value);
+  Persistent<Value>& unwrap(VALUE value) {
+    return rr_v8_handle<Value>(value);
   }
   VALUE IsEmpty(VALUE value) {
     return value == rr_cV8_C_Empty ? Qtrue : Qfalse;
@@ -128,7 +128,7 @@ VALUE rr_cV8_C_Empty;
 
 void rr_init_value() {
   rr_cV8_C_Value = rr_define_class("Value");
-  rr_cV8_C_Empty = rr_define_const("Empty", rr_v8_ref_create(rr_cV8_C_Value, Handle<Value>()));
+  rr_cV8_C_Empty = rr_define_const("Empty", rr_v8_handle_new(rr_cV8_C_Value, Handle<Value>()));
 
   rr_define_method(rr_cV8_C_Value, "IsEmpty", IsEmpty, 0);
   rr_define_method(rr_cV8_C_Value, "IsUndefined", IsUndefined, 0);
@@ -163,5 +163,5 @@ void rr_init_value() {
 }
 
 VALUE rr_wrap_v8_value(Handle<Value>& value) {
-  return rr_v8_ref_create(rr_cV8_C_Value, value);
+  return rr_v8_handle_new(rr_cV8_C_Value, value);
 }

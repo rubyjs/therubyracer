@@ -1,7 +1,7 @@
 #include "rr.h"
 #include "v8_external.h"
 
-#include "v8_ref.h"
+#include "v8_handle.h"
 #include "v8_value.h"
 using namespace v8;
 
@@ -11,12 +11,12 @@ namespace {
 
   VALUE New(VALUE rbclass, VALUE value) {
     HandleScope scope;
-    return rr_v8_ref_create(rbclass, rr_v8_external_create(value));
+    return rr_v8_handle_new(rbclass, rr_v8_external_create(value));
   }
   VALUE Unwrap(VALUE self, VALUE value) {
     HandleScope scope;
     if (rb_obj_is_kind_of(value, self)) {
-      return (VALUE)External::Unwrap(V8_Ref_Get<External>(self));
+      return (VALUE)External::Unwrap(rr_v8_handle<External>(self));
     } else {
       rb_raise(rb_eArgError, "cannot unwrap %s. It is not a kind of %s", RSTRING_PTR(rb_class_name(rb_class_of(value))), RSTRING_PTR(rb_class_name(self)));
       return Qnil;
@@ -24,7 +24,7 @@ namespace {
   }
   VALUE _Value(VALUE self) {
     HandleScope scope;
-    return (VALUE)V8_Ref_Get<External>(self)->Value();
+    return (VALUE)rr_v8_handle<External>(self)->Value();
   }
   void GCWeakReferenceCallback(Persistent<Value> object, void* parameter) {
     Local<External> external(External::Cast(*object));
@@ -42,7 +42,7 @@ void rr_init_v8_external() {
 }
 
 VALUE rr_reflect_v8_external(Handle<Value> external) {
-  return rr_v8_ref_create(ExternalClass, external);
+  return rr_v8_handle_new(ExternalClass, external);
 }
 
 Handle<Value> rr_v8_external_create(VALUE value) {

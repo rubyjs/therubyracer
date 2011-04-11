@@ -1,5 +1,5 @@
 #include "rr.h"
-#include "v8_ref.h"
+#include "v8_handle.h"
 #include "v8_cxt.h"
 #include "v8_msg.h"
 #include "v8_template.h"
@@ -11,18 +11,18 @@ namespace {
 
   VALUE ContextClass;
 
-  Local<Context> unwrap(VALUE value) {
-    return V8_Ref_Get<Context>(value);
+  Persistent<Context>& unwrap(VALUE value) {
+    return rr_v8_handle<Context>(value);
   }
 
   VALUE New(int argc, VALUE *argv, VALUE self) {
     HandleScope handles;
     VALUE global_template; VALUE global_object;
     rb_scan_args(argc,argv, "02", &global_template, &global_object);
-    Handle<ObjectTemplate> v8_global_template(NIL_P(global_template) ? Handle<ObjectTemplate>() : V8_Ref_Get<ObjectTemplate>(global_template));
-    Handle<Value> v8_global_object(NIL_P(global_object) ? Handle<Value>() : V8_Ref_Get<Value>(global_object));
+    Handle<ObjectTemplate> v8_global_template(NIL_P(global_template) ? Handle<ObjectTemplate>() : rr_v8_handle<ObjectTemplate>(global_template));
+    Handle<Value> v8_global_object(NIL_P(global_object) ? Handle<Value>() : rr_v8_handle<Value>(global_object));
     Persistent<Context> cxt(Context::New(0, v8_global_template, v8_global_object));
-    VALUE ref = rr_v8_ref_create(self, cxt);
+    VALUE ref = rr_v8_handle_new(self, cxt);
     cxt.Dispose();
     return ref;
   }
@@ -35,7 +35,7 @@ namespace {
     HandleScope handles;
     if (Context::InContext()) {
       Local<Context> current = Context::GetEntered();
-      return rr_v8_ref_create(self, current);    
+      return rr_v8_handle_new(self, current);    
     } else {
       return Qnil;
     }

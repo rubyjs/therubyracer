@@ -1,6 +1,5 @@
 
 #include "rr.h"
-#include "v8_ref.h"
 #include "v8_handle.h"
 
 using namespace v8;
@@ -21,9 +20,8 @@ namespace {
 
   VALUE New(VALUE self, VALUE handle) {
     if (RTEST(handle)) {
-      v8_ref* ref = 0;
-      Data_Get_Struct(handle, struct v8_ref, ref);
-      return rr_v8_handle_new(self, ref->handle);
+      Persistent<void> that = rr_v8_handle<void>(handle);
+      return rr_v8_handle_new(self, that);
     } else {
       return rr_v8_handle_new(self, Handle<void>());
     }
@@ -62,12 +60,6 @@ namespace {
   VALUE IsWeak(VALUE self) {
     return rr_v82rb(rr_v8_handle<void>(self).IsWeak());
   }
-
-  VALUE NewContext(VALUE self) {
-    Persistent<Context> cxt(Context::New(0));
-    return rr_v8_handle_new(self, cxt);
-    cxt.Dispose();
-  }
 }
 
 void rr_init_handle() {
@@ -80,8 +72,6 @@ void rr_init_handle() {
   rr_define_method(HandleClass, "ClearWeak", ClearWeak, 0);
   rr_define_method(HandleClass, "IsNearDeath", IsNearDeath, 0);
   rr_define_method(HandleClass, "IsWeak", IsWeak, 0);
-
-  rr_define_singleton_method(HandleClass, "NewContext", NewContext, 0);
 }
 
 VALUE rr_v8_handle_new(VALUE klass, v8::Handle<void> handle) {
