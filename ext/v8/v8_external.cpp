@@ -33,7 +33,7 @@ namespace {
 }
 
 void rr_init_v8_external() {
-  ExternalClass = rr_define_class("External", rr_cV8_C_Value);
+  ExternalClass = rr_define_class("External", rr_v8_value_class());
   references = rb_hash_new();
   rb_define_const(ExternalClass, "OBJECTS_REFERENCED_FROM_WITHIN_V8", references);
   rr_define_singleton_method(ExternalClass, "New", New, 1);

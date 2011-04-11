@@ -23,7 +23,7 @@ namespace {
 }
 
 void rr_init_v8_date() {
-  DateClass = rr_define_class("Date", rr_cV8_C_Value);
+  DateClass = rr_define_class("Date", rr_v8_value_class());
   rr_define_singleton_method(DateClass, "New", New, 1);
   rr_define_method(DateClass, "NumberValue", NumberValue, 0);
 }

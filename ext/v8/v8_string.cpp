@@ -43,7 +43,7 @@ VALUE rr_reflect_v8_string(Handle<Value> value) {
 }
 
 void rr_init_string() {
-  StringClass = rr_define_class("String", rr_cV8_C_Value);
+  StringClass = rr_define_class("String", rr_v8_value_class());
   rr_define_singleton_method(StringClass, "New", New, 1);
   rr_define_singleton_method(StringClass, "NewSymbol", NewSymbol, 1);
   rr_define_method(StringClass, "Utf8Value", Utf8Value, 0);

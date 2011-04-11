@@ -34,9 +34,15 @@ VALUE rr_define_const(const char *name, VALUE value) {
   return value;
 }
 
+VALUE rr_const_get(const char *name) {
+  VALUE V8 = rb_define_module("V8");
+  VALUE V8_C = rb_define_module_under(V8, "C");
+  return rb_const_get(V8_C, rb_intern(name));
+}
+
 VALUE rr_v82rb(Handle<Value> value) {
   if (value.IsEmpty()) {
-    return rr_cV8_C_Empty;
+    return rr_v8_value_empty();
   }
   if (value->IsUndefined() || value->IsNull()) {
     return Qnil;

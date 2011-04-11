@@ -3,11 +3,14 @@
 
 using namespace v8;
 namespace {
+
+  VALUE ValueClass;
+
   Persistent<Value>& unwrap(VALUE value) {
     return rr_v8_handle<Value>(value);
   }
   VALUE IsEmpty(VALUE value) {
-    return value == rr_cV8_C_Empty ? Qtrue : Qfalse;
+    return value == rr_v8_value_empty() ? Qtrue : Qfalse;
   }
   VALUE IsUndefined(VALUE self) {
     HandleScope scope;
@@ -123,45 +126,50 @@ namespace {
   }  
 }
 
-VALUE rr_cV8_C_Value;
-VALUE rr_cV8_C_Empty;
+VALUE rr_v8_value_class() {
+  return ValueClass;
+}
+
+VALUE rr_v8_value_empty() {
+  return rr_const_get("Empty");
+}
 
 void rr_init_value() {
-  rr_cV8_C_Value = rr_define_class("Value");
-  rr_cV8_C_Empty = rr_define_const("Empty", rr_v8_handle_new(rr_cV8_C_Value, Handle<Value>()));
+  ValueClass = rr_define_class("Value");
+  rr_define_const("Empty", rr_v8_handle_new(ValueClass, Handle<Value>()));
 
-  rr_define_method(rr_cV8_C_Value, "IsEmpty", IsEmpty, 0);
-  rr_define_method(rr_cV8_C_Value, "IsUndefined", IsUndefined, 0);
-  rr_define_method(rr_cV8_C_Value, "IsNull", IsNull, 0);
-  rr_define_method(rr_cV8_C_Value, "IsTrue", IsTrue, 0);
-  rr_define_method(rr_cV8_C_Value, "IsFalse", IsFalse, 0);
-  rr_define_method(rr_cV8_C_Value, "IsString", IsString, 0);
-  rr_define_method(rr_cV8_C_Value, "IsFunction", IsFunction, 0);
-  rr_define_method(rr_cV8_C_Value, "IsArray", IsArray, 0);
-  rr_define_method(rr_cV8_C_Value, "IsObject", IsObject, 0);
-  rr_define_method(rr_cV8_C_Value, "IsBoolean", IsBoolean, 0);
-  rr_define_method(rr_cV8_C_Value, "IsNumber", IsNumber, 0);
-  rr_define_method(rr_cV8_C_Value, "IsExternal", IsExternal, 0);
-  rr_define_method(rr_cV8_C_Value, "IsInt32", IsInt32, 0);
-  rr_define_method(rr_cV8_C_Value, "IsUint32", IsUint32, 0);
-  rr_define_method(rr_cV8_C_Value, "IsDate", IsDate, 0);
+  rr_define_method(ValueClass, "IsEmpty", IsEmpty, 0);
+  rr_define_method(ValueClass, "IsUndefined", IsUndefined, 0);
+  rr_define_method(ValueClass, "IsNull", IsNull, 0);
+  rr_define_method(ValueClass, "IsTrue", IsTrue, 0);
+  rr_define_method(ValueClass, "IsFalse", IsFalse, 0);
+  rr_define_method(ValueClass, "IsString", IsString, 0);
+  rr_define_method(ValueClass, "IsFunction", IsFunction, 0);
+  rr_define_method(ValueClass, "IsArray", IsArray, 0);
+  rr_define_method(ValueClass, "IsObject", IsObject, 0);
+  rr_define_method(ValueClass, "IsBoolean", IsBoolean, 0);
+  rr_define_method(ValueClass, "IsNumber", IsNumber, 0);
+  rr_define_method(ValueClass, "IsExternal", IsExternal, 0);
+  rr_define_method(ValueClass, "IsInt32", IsInt32, 0);
+  rr_define_method(ValueClass, "IsUint32", IsUint32, 0);
+  rr_define_method(ValueClass, "IsDate", IsDate, 0);
 
-  rr_define_method(rr_cV8_C_Value, "ToBoolean", ToBoolean, 0);
-  rr_define_method(rr_cV8_C_Value, "ToNumber", ToNumber, 0);
-  rr_define_method(rr_cV8_C_Value, "ToString", ToString, 0);
-  rr_define_method(rr_cV8_C_Value, "ToDetailString", ToDetailString, 0);
-  rr_define_method(rr_cV8_C_Value, "ToObject", ToObject, 0);
-  rr_define_method(rr_cV8_C_Value, "ToInteger", ToInteger, 0);
-  rr_define_method(rr_cV8_C_Value, "ToUint32", ToUint32, 0);
-  rr_define_method(rr_cV8_C_Value, "ToArrayIndex", ToArrayIndex, 0);
+  rr_define_method(ValueClass, "ToBoolean", ToBoolean, 0);
+  rr_define_method(ValueClass, "ToNumber", ToNumber, 0);
+  rr_define_method(ValueClass, "ToString", ToString, 0);
+  rr_define_method(ValueClass, "ToDetailString", ToDetailString, 0);
+  rr_define_method(ValueClass, "ToObject", ToObject, 0);
+  rr_define_method(ValueClass, "ToInteger", ToInteger, 0);
+  rr_define_method(ValueClass, "ToUint32", ToUint32, 0);
+  rr_define_method(ValueClass, "ToArrayIndex", ToArrayIndex, 0);
 
-  rr_define_method(rr_cV8_C_Value, "Equals", Equals, 1);
-  rr_define_method(rr_cV8_C_Value, "StrictEquals", StrictEquals, 1);
+  rr_define_method(ValueClass, "Equals", Equals, 1);
+  rr_define_method(ValueClass, "StrictEquals", StrictEquals, 1);
 
-  rr_define_method(rr_cV8_C_Value, "BooleanValue", BooleanValue, 0);
-  rr_define_method(rr_cV8_C_Value, "NumberValue", NumberValue, 0);
+  rr_define_method(ValueClass, "BooleanValue", BooleanValue, 0);
+  rr_define_method(ValueClass, "NumberValue", NumberValue, 0);
 }
 
 VALUE rr_wrap_v8_value(Handle<Value>& value) {
-  return rr_v8_handle_new(rr_cV8_C_Value, value);
+  return rr_v8_handle_new(ValueClass, value);
 }

@@ -37,7 +37,7 @@ namespace {
     for (int i = 0; i < argc; i++) {
       argv[i] = args->Get(i);
     }
-    return rr_v8_handle_new(rr_cV8_C_Object, function->NewInstance(argc, argv));
+    return rr_v8_handle_new(rr_v8_object_class(), function->NewInstance(argc, argv));
   }
   VALUE GetName(VALUE self) {
     HandleScope scope;
@@ -55,7 +55,7 @@ namespace {
 }
 
 void rr_init_function() {
-  FunctionClass = rr_define_class("Function", rr_cV8_C_Object);
+  FunctionClass = rr_define_class("Function", rr_v8_object_class());
   rr_define_method(FunctionClass, "Call", Call, 2);
   rr_define_method(FunctionClass, "NewInstance", NewInstance, 1);
   rr_define_method(FunctionClass, "GetName", GetName, 0);

@@ -37,7 +37,7 @@ namespace {
 }
 
 void rr_init_v8_array() {
-  ArrayClass = rr_define_class("Array", rr_cV8_C_Object);
+  ArrayClass = rr_define_class("Array", rr_v8_object_class());
   rr_define_singleton_method(ArrayClass, "New", New, -1);
   rr_define_method(ArrayClass, "Length", Length, 0);
   rr_define_method(ArrayClass, "CloneElementAt", CloneElementAt, 1);

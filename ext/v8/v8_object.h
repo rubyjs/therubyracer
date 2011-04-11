@@ -3,9 +3,9 @@
 
 #include "rr.h"
 
-extern VALUE rr_cV8_C_Object;
 
 void rr_init_object();
+VALUE rr_v8_object_class();
 VALUE rr_reflect_v8_object(v8::Handle<v8::Value> value);
 
 #endif

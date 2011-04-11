@@ -8,14 +8,14 @@ using namespace v8;
 
 #include <cstdio>
 
-VALUE rr_cV8_C_Object;
-
 namespace {
-  
+
+  VALUE ObjectClass;
+
   Persistent<Object>& unwrap(VALUE object) {
     return rr_v8_handle<Object>(object);
   }
-  
+
   VALUE Get(VALUE self, VALUE key) {
     HandleScope handles;
     Persistent<Object> obj(unwrap(self));
@@ -25,7 +25,7 @@ namespace {
       return rr_v82rb(obj->Get(rr_rb2v8(key)->ToString()));
     }
   }
-  
+
   VALUE New(VALUE rbclass) {
     HandleScope handles;
     if (!Context::InContext()) {
@@ -34,7 +34,7 @@ namespace {
     }
     return rr_v8_handle_new(rbclass, Object::New());
   }
-  
+
   VALUE Set(VALUE self, VALUE key, VALUE value) {
     HandleScope handles;
     Persistent<Object> obj = unwrap(self);
@@ -47,7 +47,7 @@ namespace {
 
   VALUE GetPropertyNames(VALUE self) {
     HandleScope handles;
-    Persistent<Object> object = unwrap(self);  
+    Persistent<Object> object = unwrap(self);
     Local<Value> names = object->GetPropertyNames();
     return rr_v82rb(names);
   }
@@ -75,21 +75,25 @@ namespace {
   }
 }
 
+VALUE rr_v8_object_class() {
+  return ObjectClass;
+}
+
 void rr_init_object() {
-  rr_cV8_C_Object = rr_define_class("Object", rr_cV8_C_Value);
-  rr_define_singleton_method(rr_cV8_C_Object, "New", New, 0);
-  rr_define_method(rr_cV8_C_Object, "Get", Get, 1);
-  rr_define_method(rr_cV8_C_Object, "Set", Set, 2);
-  rr_define_method(rr_cV8_C_Object, "GetPropertyNames", GetPropertyNames, 0);
-  rr_define_method(rr_cV8_C_Object, "GetHiddenValue", GetHiddenValue, 1);
-  rr_define_method(rr_cV8_C_Object, "SetHiddenValue", SetHiddenValue, 2);
-  rr_define_method(rr_cV8_C_Object, "GetPrototype", GetPrototype, 0);
-  rr_define_method(rr_cV8_C_Object, "SetPrototype", SetPrototype, 1);
+  ObjectClass = rr_define_class("Object", rr_v8_value_class());
+  rr_define_singleton_method(ObjectClass, "New", New, 0);
+  rr_define_method(ObjectClass, "Get", Get, 1);
+  rr_define_method(ObjectClass, "Set", Set, 2);
+  rr_define_method(ObjectClass, "GetPropertyNames", GetPropertyNames, 0);
+  rr_define_method(ObjectClass, "GetHiddenValue", GetHiddenValue, 1);
+  rr_define_method(ObjectClass, "SetHiddenValue", SetHiddenValue, 2);
+  rr_define_method(ObjectClass, "GetPrototype", GetPrototype, 0);
+  rr_define_method(ObjectClass, "SetPrototype", SetPrototype, 1);
 }
 
 VALUE rr_reflect_v8_object(Handle<Value> value) {
   Local<Object> object(Object::Cast(*value));
   Local<Value> peer = object->GetHiddenValue(String::NewSymbol("TheRubyRacer::RubyObject"));
-  return peer.IsEmpty() ? rr_v8_handle_new(rr_cV8_C_Object, object) : (VALUE)External::Unwrap(peer);
+  return peer.IsEmpty() ? rr_v8_handle_new(ObjectClass, object) : (VALUE)External::Unwrap(peer);
 }
 

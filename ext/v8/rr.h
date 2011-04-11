@@ -10,6 +10,7 @@
 VALUE rr_define_class(const char *name, VALUE superclass = rb_cObject);
 VALUE rr_define_module(const char *name);
 VALUE rr_define_const(const char *name, VALUE value);
+VALUE rr_const_get(const char *name);
 
 VALUE rr_v82rb(v8::Handle<v8::Value> value);
 VALUE rr_v82rb(v8::Handle<v8::Boolean> value);
