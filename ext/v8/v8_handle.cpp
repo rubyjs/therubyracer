@@ -4,15 +4,29 @@
 
 using namespace v8;
 
-v8_handle::v8_handle(Handle<void> handle) : handle(Persistent<void>::New(handle)) {}
+v8_handle::v8_handle(Handle<void> handle) : handle(Persistent<void>::New(handle)) {
+  this->references = rb_hash_new();
+  this->dead = false;
+}
 
 v8_handle::~v8_handle() {
   handle.Dispose();
   handle.Clear();
+  dead = true;
+}
+
+void v8_handle::set_internal(const char* name, VALUE value) {
+  rb_hash_aset(this->references, rb_str_new2(name), value);
+}
+
+VALUE v8_handle::get_internal(const char* name) {
+  return rb_funcall(this->references, rb_intern("[]"), 1, rb_str_new2(name));
 }
 
 namespace {
-  void gc_mark(v8_handle* handle) {}
+  void gc_mark(v8_handle* handle) {
+    rb_gc_mark(handle->references);
+  }
 
   void gc_free(v8_handle* handle) {
     delete handle;
@@ -41,10 +55,22 @@ namespace {
     return Qnil;
   }
 
-  void NoopWeakReferenceCallback(Persistent<Value> object, void* parameter) {}
+  void RubyWeakReferenceCallback(Persistent<Value> value, void* parameter) {
+    value.Dispose();
+    v8_handle* handle = rr_v8_handle_raw((VALUE)parameter);
+    handle->handle.Dispose();
+    handle->handle.Clear();
+    handle->dead = true;
+    VALUE callback = rr_v8_handle_get_internal((VALUE)parameter, "weakref_callback");
+    if (RTEST(callback)) {
+      rb_funcall(callback, rb_intern("call"), 0);
+    }
+  }
+
 
   VALUE MakeWeak(VALUE self) {
-    rr_v8_handle<void>(self).MakeWeak(0, NoopWeakReferenceCallback);
+    rr_v8_handle_set_internal(self,"weakref_callback", rb_block_proc());
+    rr_v8_handle<void>(self).MakeWeak((void*)self, RubyWeakReferenceCallback);
     return Qnil;
   }
 
@@ -55,6 +81,10 @@ namespace {
 
   VALUE IsNearDeath(VALUE self) {
     return rr_v82rb(rr_v8_handle<void>(self).IsNearDeath());
+  }
+
+  VALUE IsDead(VALUE self) {
+    return rr_v82rb(rr_v8_handle_raw(self)->dead);
   }
 
   VALUE IsWeak(VALUE self) {
@@ -71,6 +101,7 @@ void rr_init_handle() {
   rr_define_method(HandleClass, "MakeWeak", MakeWeak, 0);
   rr_define_method(HandleClass, "ClearWeak", ClearWeak, 0);
   rr_define_method(HandleClass, "IsNearDeath", IsNearDeath, 0);
+  rr_define_method(HandleClass, "IsDead", IsDead, 0);
   rr_define_method(HandleClass, "IsWeak", IsWeak, 0);
 }
 
@@ -80,5 +111,19 @@ VALUE rr_v8_handle_new(VALUE klass, v8::Handle<void> handle) {
 
 VALUE rr_v8_handle_class() {
   return rr_define_class("Handle");
+}
+
+void rr_v8_handle_set_internal(VALUE handle, const char* name, VALUE value) {
+  rr_v8_handle_raw(handle)->set_internal(name, value);
+}
+
+VALUE rr_v8_handle_get_internal(VALUE handle, const char* name) {
+  return rr_v8_handle_raw(handle)->get_internal(name);
+}
+
+v8_handle* rr_v8_handle_raw(VALUE value) {
+  v8_handle* handle = 0;
+  Data_Get_Struct(value, struct v8_handle, handle);
+  return handle;
 }
 
