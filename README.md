@@ -5,19 +5,19 @@
 * [irc://irc.freenode.net/therubyracer](http://groups.google.com/group/therubyracer)
 * [Documentation](https://github.com/cowboyd/therubyracer/wiki)
 
-## DESCRIPTION:
+## DESCRIPTION
 
 Embed the V8 Javascript interpreter into Ruby.
 
 
-## FEATURES/PROBLEMS:
+## FEATURES
 
 * Evaluate Javascript from with in Ruby
 * Embed your Ruby objects into the Javascript world
 * Manipulate JavaScript objects and call JavaScript functions from Ruby
 * API compatible with the The Ruby Rhino (for JRuby: http://github.com/cowboyd/therubyrhino)
 
-## SYNOPSIS:
+## SYNOPSIS
 
     gem install therubyracer         ;: stable
     gem install therubyracer --pre   ;: bleeding edge
@@ -124,6 +124,12 @@ More documentation can be found on the [github wiki](https://github.com/cowboyd/
 * python >= 2.5 (required to compile v8)
 * C++ compiler
 
+## Rails/Bundler
+
+To use the ruby racer in rails, or any application using Bundler to manage gems, add the following to your Gemfile
+
+    gem "therubyracer", :require => 'v8'
+    gem "therubyracer", "~> 0.8.2.pre" #bleeding edge.
 
 ## DEVELOP
     git clone git://github.com/cowboyd/therubyracer.git
