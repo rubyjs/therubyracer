@@ -1,4 +1,5 @@
 #include "v8_handle.h"
+#include "v8_weakref.h"
 #include "v8_object.h"
 #include "v8_value.h"
 #include "v8_template.h"
@@ -91,9 +92,26 @@ void rr_init_object() {
   rr_define_method(ObjectClass, "SetPrototype", SetPrototype, 1);
 }
 
+VALUE rr_reflect_v8_object_as(Handle<Object> object, VALUE ruby_class) {
+  VALUE handle;
+  v8_weakref* backref;
+  Local<Value> holder = object->GetHiddenValue(String::NewSymbol("TheRubyRacer::Backref"));
+  if (holder.IsEmpty()) {
+    handle = rr_v8_handle_new(ruby_class, object);
+    backref = new v8_weakref(handle);
+    object->SetHiddenValue(String::NewSymbol("TheRubyRacer::Backref"), backref->external);
+  } else {
+    backref = (v8_weakref*)External::Unwrap(holder);
+    handle = backref->get();
+    if (!RTEST(handle)) {
+      handle = rr_v8_handle_new(ruby_class, object);
+      backref->set(handle);
+    }
+  }
+  return handle;
+}
+
 VALUE rr_reflect_v8_object(Handle<Value> value) {
-  Local<Object> object(Object::Cast(*value));
-  Local<Value> peer = object->GetHiddenValue(String::NewSymbol("TheRubyRacer::RubyObject"));
-  return peer.IsEmpty() ? rr_v8_handle_new(ObjectClass, object) : (VALUE)External::Unwrap(peer);
+  return rr_reflect_v8_object_as(value->ToObject(), ObjectClass);
 }
 

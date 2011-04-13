@@ -69,7 +69,8 @@ namespace {
 
 
   VALUE MakeWeak(VALUE self) {
-    rr_v8_handle_set_internal(self,"weakref_callback", rb_block_proc());
+    VALUE callback = rb_block_given_p() ? rb_block_proc() : Qnil;
+    rr_v8_handle_set_internal(self,"weakref_callback", callback);
     rr_v8_handle<void>(self).MakeWeak((void*)self, RubyWeakReferenceCallback);
     return Qnil;
   }
@@ -83,17 +84,18 @@ namespace {
     return rr_v82rb(rr_v8_handle<void>(self).IsNearDeath());
   }
 
-  VALUE IsDead(VALUE self) {
-    return rr_v82rb(rr_v8_handle_raw(self)->dead);
-  }
-
   VALUE IsWeak(VALUE self) {
     return rr_v82rb(rr_v8_handle<void>(self).IsWeak());
+  }
+
+  VALUE dead_p(VALUE self) {
+    return rr_v8_handle_raw(self)->dead ? Qtrue : Qfalse;
   }
 }
 
 void rr_init_handle() {
   VALUE HandleClass = rr_define_class("Handle");
+  rr_define_method(HandleClass, "dead?", dead_p, 0);
   rr_define_singleton_method(HandleClass, "New", New, 1);
   rr_define_method(HandleClass, "IsEmpty", IsEmpty, 0);
   rr_define_method(HandleClass, "Clear", Clear, 0);
@@ -101,7 +103,6 @@ void rr_init_handle() {
   rr_define_method(HandleClass, "MakeWeak", MakeWeak, 0);
   rr_define_method(HandleClass, "ClearWeak", ClearWeak, 0);
   rr_define_method(HandleClass, "IsNearDeath", IsNearDeath, 0);
-  rr_define_method(HandleClass, "IsDead", IsDead, 0);
   rr_define_method(HandleClass, "IsWeak", IsWeak, 0);
 }
 
@@ -126,4 +127,3 @@ v8_handle* rr_v8_handle_raw(VALUE value) {
   Data_Get_Struct(value, struct v8_handle, handle);
   return handle;
 }
-

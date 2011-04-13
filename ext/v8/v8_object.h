@@ -3,7 +3,6 @@
 
 #include "rr.h"
 
-
 void rr_init_object();
 VALUE rr_v8_object_class();
 VALUE rr_reflect_v8_object(v8::Handle<v8::Value> value);
