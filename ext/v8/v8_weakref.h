@@ -15,7 +15,9 @@ struct v8_weakref  {
   v8::Persistent<v8::External> external;
 };
 
-void  v8_weakref_finalize(v8::Persistent<v8::Value> value, void* weakref);
+void  v8_weakref_dispose(v8::Persistent<v8::Value> value, void* weakref);
+VALUE v8_weakref_finalize(VALUE self, VALUE object_id);
+VALUE v8_weakref_objectspace();
 VALUE v8_weakref_nil(VALUE nil, VALUE exception);
 VALUE v8_weakref_id2ref(VALUE id);
 
