@@ -10,12 +10,13 @@ module V8::ExtSpec
       end
       after do
         @cxt.Exit()
+        @cxt.Dispose()
       end
     end
   end
   
-  def v8_eval(script)
-    c::Script::New(c::String::New(script), c::String::New('<eval>')).Run()
+  def v8_eval(script, sourcename = "<eval>")
+    c::Script::New(c::String::New(script), c::String::New(sourcename)).Run()
   end
 
   def c
@@ -31,7 +32,8 @@ module V8::ExtSpec
   end
 
   def v8_gc
-    c::Script::New(c::String::New("gc()"), c::String::New("gc.js")).Run()
+    while !c::V8::IdleNotification();end
+    v8_eval('gc()', 'gc.js')
   end
 
 end
