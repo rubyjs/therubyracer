@@ -24,7 +24,7 @@ VALUE v8_weakref_id2ref(VALUE id);
 
 
 #if RUBY_VERSION_MAJOR == 1 && RUBY_VERSION_MINOR == 8
-VALUE rb_proc_new(VALUE (*)(ANYARGS/* VALUE yieldarg[, VALUE procarg] */), VALUE);
+extern "C" VALUE rb_proc_new(VALUE (*)(ANYARGS/* VALUE yieldarg[, VALUE procarg] */), VALUE);
 #endif
 
 #endif
