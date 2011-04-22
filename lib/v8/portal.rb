@@ -191,17 +191,6 @@ module V8
 
     private
 
-    # def peer(value)
-    #   external = value.GetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"))
-    #   if external && !external.IsEmpty()
-    #     external.Value()
-    #   else
-    #     yield.new(value, self).tap do |object|
-    #       value.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), C::External::New(object))
-    #     end
-    #   end
-    # end
-
     class Interceptor
       def initialize(portal, access)
         @to, @access = portal, access
