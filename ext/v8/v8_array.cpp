@@ -44,7 +44,5 @@ void rr_init_v8_array() {
 }
 
 VALUE rr_reflect_v8_array(Handle<Value> value) {
-  Local<Array> array(Array::Cast(*value));
-  Local<Value> peer = array->GetHiddenValue(String::NewSymbol("TheRubyRacer::RubyObject"));
-  return peer.IsEmpty() ? rr_v8_handle_new(ArrayClass, value) : (VALUE)External::Unwrap(peer);
+  return rr_reflect_v8_object_as(value, ArrayClass);
 }
