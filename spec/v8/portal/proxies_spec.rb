@@ -76,6 +76,57 @@ describe V8::Portal::Proxies do
         end
       end
     end
+
+    context "looking up a Ruby object from a random JavaScript object" do
+      it "checks first if it's a native Ruby object with a javascript proxy" do
+        target = Object.new
+        proxy = c::Object::New()
+        subject.register_javascript_proxy proxy, :for => target
+        subject.js2rb(proxy).should be(target)
+      end
+      it "then sees if maybe it's a native JavaScript that has a Ruby proxy" do
+        target = c::Object::New()
+        proxy = Object.new
+        subject.register_ruby_proxy proxy, :for => target
+        subject.js2rb(target).should be(proxy)
+      end
+      it "will assume that it is a native JavaScript object that needs a Ruby proxy if no corresponding Ruby object can be found" do
+        js = c::Object::New()
+        proxy = subject.js2rb(js) do |target|
+          {:target => target}
+        end
+        subject.js2rb(js).should be(proxy)
+      end
+    end
+
+    context "looking up a JavaScript object from a random Ruby object" do
+      it "checks first if it's a native JavaScript object with a Ruby proxy" do
+        target = c::Object::New()
+        proxy = Object.new
+        subject.register_ruby_proxy proxy, :for => target
+        subject.rb2js(proxy).should be(target)
+      end
+
+      it "then sees if maybe it's a native Ruby object that has a JavaScript proxy" do
+        target = Object.new
+        proxy = c::Object::New()
+        subject.register_javascript_proxy proxy, :for => target
+        subject.rb2js(target).should be(proxy)
+      end
+
+      it "assumes that it is a native Ruby object that needs a JavaScript proxy if no corresponding JavaScript object can be found" do
+        rb = Object.new
+        proxy = nil
+        js = subject.rb2js(rb) do |target|
+          target.should be(rb)
+          proxy = c::Object::New()
+        end
+        proxy.should_not be_nil
+        js.should be(proxy)
+        subject.rb2js(rb).should be(proxy)
+      end
+    end
+
   end
 
   private
