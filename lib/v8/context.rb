@@ -7,14 +7,28 @@ module V8
     def initialize(opts = {})
       @access = Access.new
       @to = Portal.new(self, @access)
-      @native = opts[:with] ? C::Context::New(@to.rubytemplate) : C::Context::New()
+      with = opts[:with]
+      constructor = nil
+      template = if with
+        constructor = @to.js_constructor_for(with.class)
+        constructor.SetCallHandler(&method(:tmp))
+        template = constructor.InstanceTemplate()
+      else
+        C::ObjectTemplate::New()
+      end
+      @native = opts[:with] ? C::Context::New(template) : C::Context::New()
       @native.enter do
         @global = @native.Global()
+        @to.proxies.register_javascript_proxy @global, :for => with if with
+        constructor.SetCallHandler(&@to.method(:invoke_non_callable_constructor)) if constructor
         @scope = @to.rb(@global)
-        @global.SetHiddenValue(C::String::New("TheRubyRacer::RubyObject"), C::External::New(opts[:with])) if opts[:with]
         @global.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyContext"), C::External::New(self))
       end
       yield(self) if block_given?
+    end
+
+    def tmp(arguments)
+      return arguments.This()
     end
 
     def eval(javascript, filename = "<eval>", line = 1)
