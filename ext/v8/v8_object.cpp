@@ -92,7 +92,8 @@ void rr_init_object() {
   rr_define_method(ObjectClass, "SetPrototype", SetPrototype, 1);
 }
 
-VALUE rr_reflect_v8_object_as(Handle<Object> object, VALUE ruby_class) {
+VALUE rr_reflect_v8_object_as(Handle<Value> value, VALUE ruby_class) {
+  Handle<Object> object = Handle<Object>::Cast(value);
   VALUE handle;
   v8_weakref* backref;
   Local<Value> holder = object->GetHiddenValue(String::NewSymbol("TheRubyRacer::Backref"));
@@ -112,6 +113,6 @@ VALUE rr_reflect_v8_object_as(Handle<Object> object, VALUE ruby_class) {
 }
 
 VALUE rr_reflect_v8_object(Handle<Value> value) {
-  return rr_reflect_v8_object_as(value->ToObject(), ObjectClass);
+  return rr_reflect_v8_object_as(value, ObjectClass);
 }
 

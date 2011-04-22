@@ -64,6 +64,5 @@ void rr_init_function() {
 }
 
 VALUE rr_reflect_v8_function(Handle<Value> value) {
-  Local<Function> function(Function::Cast(*value));
-  return rr_v8_handle_new(FunctionClass, function);
+  return rr_reflect_v8_object_as(value, FunctionClass);
 }
