@@ -47,16 +47,14 @@ module V8
     def callable_js_constructor_for(ruby_class)
       constructor = js_constructor_for(ruby_class)
       function = constructor.GetFunction()
-      unless constructor.embedded?
+      unless constructor.respond_to?(:embedded)
         constructor.SetCallHandler(&method(:invoke_callable_constructor))
         #create a prototype so that this constructor also acts like a ruby object
         prototype = rubytemplate.NewInstance()
         #set *that* object's prototype to an empty function so that it will look and behave like a function.
         prototype.SetPrototype(C::FunctionTemplate::New() {}.GetFunction())
         function.SetPrototype(prototype)
-        def constructor.embedded?
-          true
-        end
+        def constructor.embedded?;true;end
       end
       return function
     end
