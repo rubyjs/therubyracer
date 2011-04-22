@@ -1,10 +1,76 @@
 
 module V8
   class Portal
-    attr_reader :context
+    attr_reader :context, :proxies
+
+    def js_constructor_for(ruby_class)
+      @proxies.rb2js(ruby_class, &method(:make_js_constructor))
+    end
+
+    def invoke_non_callable_constructor(arguments)
+      unless arguments.Length() == 1 && arguments[0].kind_of?(C::External)
+        C::ThrowException(C::Exception::Error(C::String::New("cannot call native constructor from javascript")))
+      else
+        object = arguments[0].Value()
+        @proxies.register_javascript_proxy arguments.This(), :for => object
+      end
+    end
+
+    def invoke_callable_constructor(arguments)
+      instance = nil
+      if arguments.Length() > 0 && arguments[0].kind_of?(C::External)
+        instance = arguments[0].Value()
+      else
+        rbargs = []
+        for i in 0..arguments.Length() - 1
+          rbargs << rb(arguments[i])
+        end
+        instance = rubysend(cls, :new, *rbargs)
+      end
+      @proxies.register_javascript_proxy arguments.This(), :for => instance
+    end
+
+    def make_js_constructor(cls)
+      template = C::FunctionTemplate::New(&method(:invoke_non_callable_constructor))
+      setuptemplate(template.InstanceTemplate())
+      if cls != ::Object && cls.superclass != ::Object && cls.superclass != ::Class
+        template.Inherit(js_constructor_for(cls.superclass))
+      end
+      if cls.name && cls.name =~ /(::)?(\w+?)$/
+        template.SetClassName(C::String::NewSymbol("rb::" + $2))
+      else
+        template.SetClassName("Ruby")
+      end
+      return template
+    end
+
+    def callable_js_constructor_for(ruby_class)
+      constructor = js_constructor_for(ruby_class)
+      function = constructor.GetFunction()
+      unless constructor.embedded?
+        constructor.SetCallHandler(&method(:invoke_callable_constructor))
+        #create a prototype so that this constructor also acts like a ruby object
+        prototype = rubytemplate.NewInstance()
+        #set *that* object's prototype to an empty function so that it will look and behave like a function.
+        prototype.SetPrototype(C::FunctionTemplate::New() {}.GetFunction())
+        function.SetPrototype(prototype)
+        def constructor.embedded?
+          true
+        end
+      end
+      return function
+    end
+
+    def js_instance_for(ruby_object)
+      constructor = js_constructor_for(ruby_object.class)
+      arguments = C::Array::New(1)
+      arguments.Set(0, C::External::New(ruby_object))
+      constructor.GetFunction().NewInstance(arguments)
+    end
 
     def initialize(context, access)
       @context, @access = context, access
+      @proxies = Proxies.new
       @named_property_getter = Interceptor(NamedPropertyGetter)
       @named_property_setter = Interceptor(NamedPropertySetter)
       @named_property_query = nil
@@ -17,57 +83,7 @@ module V8
       @indexed_property_deleter = nil
       @indexed_property_enumerator = Interceptor(IndexedPropertyEnumerator)
 
-      @constructors = Hash.new do |h, cls|
-        h[cls] = template = C::FunctionTemplate::New() do |arguments|
-          unless arguments.Length() == 1 && arguments[0].kind_of?(C::External)
-            C::ThrowException(C::Exception::Error(C::String::New("cannot call native constructor from javascript")))
-          else
-            arguments.This().tap do |this|
-              this.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), arguments[0])              
-            end
-          end
-        end
-        template.tap do
-          setuptemplate(template.InstanceTemplate())
-          if cls != ::Object && cls.superclass != ::Object && cls.superclass != ::Class
-            template.Inherit(@constructors[cls.superclass])
-          end
-          if cls.name && cls.name =~ /(::)?(\w+?)$/
-            template.SetClassName(C::String::NewSymbol("rb::" + $2))
-          else
-            template.SetClassName("Ruby")
-          end
-        end
-      end
-
-      @instances = Hash.new do |h, obj|
-        args = C::Array::New(1)
-        args.Set(0, C::External::New(obj))
-        h[obj] = @constructors[obj.class].GetFunction().NewInstance(args)
-      end
-
       @functions = Functions.new(self)
-
-      @embedded_constructors = Hash.new do |h, cls|
-        template = @constructors[cls]
-        template.SetCallHandler() do |arguments|
-          wrap = nil
-          if arguments.Length() > 0 && arguments[0].kind_of?(C::External)
-            wrap = arguments[0]
-          else
-            rbargs = []
-            for i in 0..arguments.Length() - 1
-              rbargs << rb(arguments[i])
-            end
-            instance = rubysend(cls, :new, *rbargs)
-            wrap = C::External::New(instance)
-          end
-          arguments.This().tap do |this|
-            this.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), wrap)
-          end
-        end
-        h[cls] = template
-      end
     end
 
     def open
@@ -77,16 +93,18 @@ module V8
     end
 
     def rb(value)
-      case value
-      when V8::C::Function    then peer(value) {V8::Function}
-      when V8::C::Array       then peer(value) {V8::Array}
-      when V8::C::Object      then peer(value) {V8::Object}
-      when V8::C::String      then value.Utf8Value.tap {|s| return s.respond_to?(:force_encoding) ? s.force_encoding("UTF-8") : s}
-      when V8::C::Date        then Time.at(value.NumberValue() / 1000)
-      when V8::C::StackTrace  then V8::StackTrace.new(self, value)
-      when V8::C::Value       then nil if value.IsEmpty()
-      else
-        value
+      @proxies.js2rb(value) do
+        case value
+          when V8::C::Function    then V8::Function.new(value, self)
+          when V8::C::Array       then V8::Array.new(value, self)
+          when V8::C::Object      then V8::Object.new(value, self)
+          when V8::C::String      then value.Utf8Value.tap {|s| return s.respond_to?(:force_encoding) ? s.force_encoding("UTF-8") : s}
+          when V8::C::Date        then Time.at(value.NumberValue() / 1000)
+          when V8::C::StackTrace  then V8::StackTrace.new(self, value)
+          when V8::C::Value       then nil if value.IsEmpty()
+        else
+          value
+        end
       end
     end
 
@@ -126,7 +144,7 @@ module V8
       when nil,Numeric,TrueClass,FalseClass, C::Value
         value
       else
-        @instances[value]
+        @proxies.rb2js(value, &method(:js_instance_for))
       end
     end
 
@@ -182,16 +200,16 @@ module V8
 
     private
 
-    def peer(value)
-      external = value.GetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"))
-      if external && !external.IsEmpty()
-        external.Value()
-      else
-        yield.new(value, self).tap do |object|
-          value.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), C::External::New(object))
-        end
-      end
-    end
+    # def peer(value)
+    #   external = value.GetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"))
+    #   if external && !external.IsEmpty()
+    #     external.Value()
+    #   else
+    #     yield.new(value, self).tap do |object|
+    #       value.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyObject"), C::External::New(object))
+    #     end
+    #   end
+    # end
 
     class Interceptor
       def initialize(portal, access)

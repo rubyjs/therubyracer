@@ -16,7 +16,7 @@ module V8
           return rb
         else
           proxy = block_given? ? yield(js) : Object.new
-          register_ruby_proxy proxy, :for => js
+          register_ruby_proxy proxy, :for => js if proxy && js && js.kind_of?(V8::C::Handle)
           return proxy
         end
       end
@@ -52,7 +52,7 @@ module V8
 
       def register_ruby_proxy(proxy, options = {})
         target = options[:for] or fail ArgumentError, "must specify the object that you're proxying with the :for => param"
-        fail ArgumentError, "javascript proxy must be a Handle to an actual V8 object" unless target.kind_of?(V8::C::Handle)
+        fail ArgumentError, "'#{proxy.inspect}' is not a Handle to an actual V8 object" unless target.kind_of?(V8::C::Handle)
         @rb_proxies_rb2js[proxy.object_id] = target
         @rb_proxies_js2rb[target] = proxy.object_id
         ObjectSpace.define_finalizer(proxy, method(:clear_rb_proxy))
