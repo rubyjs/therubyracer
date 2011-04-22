@@ -37,9 +37,7 @@ namespace {
 }
 
 VALUE rr_reflect_v8_string(Handle<Value> value) {
-  HandleScope handles;
-  Local<String> string = String::Cast(*value);
-  return rr_v8_handle_new(StringClass, string);
+  return rr_v8_handle_new(StringClass, Handle<String>::Cast(value));
 }
 
 void rr_init_string() {
