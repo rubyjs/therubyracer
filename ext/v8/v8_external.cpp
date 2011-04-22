@@ -9,9 +9,9 @@ namespace {
   VALUE ExternalClass;
   VALUE references;
 
-  VALUE New(VALUE rbclass, VALUE value) {
+  VALUE New(VALUE self, VALUE value) {
     HandleScope scope;
-    return rr_v8_handle_new(rbclass, rr_v8_external_create(value));
+    return rr_v8_handle_new(self, rr_v8_external_create(value));
   }
   VALUE Unwrap(VALUE self, VALUE value) {
     HandleScope scope;
