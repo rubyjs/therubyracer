@@ -4,7 +4,10 @@ module V8
     attr_reader :context, :proxies
 
     def js_constructor_for(ruby_class)
-      @proxies.rb2js(ruby_class, &method(:make_js_constructor))
+      unless template = @templates[ruby_class]
+        template = @templates[ruby_class] = make_js_constructor(ruby_class)
+      end
+      return template
     end
 
     def invoke_non_callable_constructor(arguments)
@@ -45,18 +48,20 @@ module V8
     end
 
     def callable_js_constructor_for(ruby_class)
-      constructor = js_constructor_for(ruby_class)
-      function = constructor.GetFunction()
-      unless constructor.respond_to?(:embedded)
-        constructor.SetCallHandler(&method(:invoke_callable_constructor))
-        #create a prototype so that this constructor also acts like a ruby object
-        prototype = rubytemplate.NewInstance()
-        #set *that* object's prototype to an empty function so that it will look and behave like a function.
-        prototype.SetPrototype(C::FunctionTemplate::New() {}.GetFunction())
-        function.SetPrototype(prototype)
-        def constructor.embedded?;true;end
+      @proxies.rb2js(ruby_class) do 
+        constructor = js_constructor_for(ruby_class)
+        function = constructor.GetFunction()
+        unless constructor.respond_to?(:embedded)
+          constructor.SetCallHandler(&method(:invoke_callable_constructor))
+          #create a prototype so that this constructor also acts like a ruby object
+          prototype = rubytemplate.NewInstance()
+          #set *that* object's prototype to an empty function so that it will look and behave like a function.
+          prototype.SetPrototype(C::FunctionTemplate::New() {}.GetFunction())
+          function.SetPrototype(prototype)
+          def constructor.embedded?;true;end
+        end
+        function
       end
-      return function
     end
 
     def js_instance_for(ruby_object)
@@ -82,6 +87,9 @@ module V8
       @indexed_property_enumerator = Interceptor(IndexedPropertyEnumerator)
 
       @functions = Functions.new(self)
+      
+      #TODO: This is a memory leak!!
+      @templates = {}
     end
 
     def open
