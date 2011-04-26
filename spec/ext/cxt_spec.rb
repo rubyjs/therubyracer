@@ -11,10 +11,11 @@ describe C::Context do
 
   it "can get the current javascript execution stack" do
     V8::Context.new do |cxt|
+      trace = nil
       cxt['getTrace'] = lambda do
-        V8::Context.stack
+        trace = V8::Context.stack
       end
-      trace = cxt.eval(<<-JS, 'trace.js')
+      cxt.eval(<<-JS, 'trace.js')
       function one() {
         return two();
       }
@@ -28,7 +29,6 @@ describe C::Context do
       }
       one();
 JS
-
       trace.length.should be(4)
       trace.first.tap do |frame|
         frame.line_number.should == 10

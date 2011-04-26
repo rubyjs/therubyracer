@@ -73,7 +73,7 @@ module V8
 
     def self.stack(limit = 99)
       if native = C::Context::GetEntered()
-        global = native.Global().instance_eval {@native}
+        global = native.Global()
         cxt = global.GetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyContext")).Value()
         cxt.instance_eval {@to.rb(C::StackTrace::CurrentStackTrace(limit))}
       else
