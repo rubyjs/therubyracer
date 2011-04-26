@@ -1,13 +1,14 @@
 
 module V8
   class Portal
-    attr_reader :context, :access, :proxies, :templates
+    attr_reader :context, :access, :proxies, :templates, :interceptors
 
     def initialize(context, access)
       @context, @access = context, access
       @proxies = Proxies.new
       @functions = Functions.new(self)
       @templates = Templates.new(self)
+      @interceptors = Interceptors.new(self)
     end
 
     def open
