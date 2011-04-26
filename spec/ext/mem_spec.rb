@@ -11,7 +11,7 @@ describe "Memory:" do
 
     it "has a strong reference from the ruby side, which is not released until the Ruby reference goes away" do
       handle = c::Handle::New(object = c::Object::New())
-      handle.MakeWeak(&@weakref_callback)
+      handle.MakeWeak(nil, @weakref_callback)
       ruby_gc do
         v8_gc
         @weakref_callback.should_not have_been_invoked
@@ -28,11 +28,8 @@ describe "Memory:" do
     private
 
     class WeakrefCallback
-      def to_proc
-        method(:invoke).to_proc
-      end
 
-      def invoke
+      def call(value, parameters)
         @invoked = true
       end
 

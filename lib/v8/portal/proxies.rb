@@ -39,7 +39,7 @@ module V8
 
         @js_proxies_js2rb[proxy] = target
         @js_proxies_rb2js[target] = proxy
-        proxy.MakeWeak(&clear_js_proxy(proxy))
+        proxy.MakeWeak(nil, method(:clear_js_proxy))
       end
 
       def rb_object_2_js_proxy(object)
@@ -68,12 +68,10 @@ module V8
         @rb_proxies_rb2js[proxy.object_id]
       end
 
-      def clear_js_proxy(proxy)
-        lambda do
-          rb = @js_proxies_js2rb[proxy]
-          @js_proxies_js2rb.delete(proxy)
-          @js_proxies_rb2js.delete(rb)
-        end
+      def clear_js_proxy(proxy, parameter)
+        rb = @js_proxies_js2rb[proxy]
+        @js_proxies_js2rb.delete(proxy)
+        @js_proxies_rb2js.delete(rb)
       end
 
       def clear_rb_proxy(proxy_id)

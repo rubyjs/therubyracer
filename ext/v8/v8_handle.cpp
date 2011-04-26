@@ -56,21 +56,23 @@ namespace {
   }
 
   void RubyWeakReferenceCallback(Persistent<Value> value, void* parameter) {
+    VALUE self = (VALUE)parameter;
+    v8_handle* handle = rr_v8_handle_raw(self);
+    VALUE callback = rr_v8_handle_get_internal(self, "weakref_callback");
+    VALUE parameters = rr_v8_handle_get_internal(self, "weakref_callback_parameters");
+    if (RTEST(callback)) {
+      rb_funcall(callback, rb_intern("call"), 2, self, parameters);
+    }
     value.Dispose();
-    v8_handle* handle = rr_v8_handle_raw((VALUE)parameter);
     handle->handle.Dispose();
     handle->handle.Clear();
     handle->dead = true;
-    VALUE callback = rr_v8_handle_get_internal((VALUE)parameter, "weakref_callback");
-    if (RTEST(callback)) {
-      rb_funcall(callback, rb_intern("call"), 0);
-    }
+
   }
 
-
-  VALUE MakeWeak(VALUE self) {
-    VALUE callback = rb_block_given_p() ? rb_block_proc() : Qnil;
+  VALUE MakeWeak(VALUE self, VALUE parameters, VALUE callback) {
     rr_v8_handle_set_internal(self,"weakref_callback", callback);
+    rr_v8_handle_set_internal(self, "weakref_callback_parameters", parameters);
     rr_v8_handle<void>(self).MakeWeak((void*)self, RubyWeakReferenceCallback);
     return Qnil;
   }
@@ -100,7 +102,7 @@ void rr_init_handle() {
   rr_define_method(HandleClass, "IsEmpty", IsEmpty, 0);
   rr_define_method(HandleClass, "Clear", Clear, 0);
   rr_define_method(HandleClass, "Dispose", Dispose, 0);
-  rr_define_method(HandleClass, "MakeWeak", MakeWeak, 0);
+  rr_define_method(HandleClass, "MakeWeak", MakeWeak, 2);
   rr_define_method(HandleClass, "ClearWeak", ClearWeak, 0);
   rr_define_method(HandleClass, "IsNearDeath", IsNearDeath, 0);
   rr_define_method(HandleClass, "IsWeak", IsWeak, 0);
