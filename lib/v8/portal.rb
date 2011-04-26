@@ -29,7 +29,9 @@ module V8
           rbargs << rb(arguments[i])
         end
         cls = arguments.Data()
-        instance = rubysend(cls, :new, *rbargs)
+        instance = rubyprotectraw do
+          cls.new(*rbargs)
+        end
       end
       @proxies.register_javascript_proxy arguments.This(), :for => instance
     rescue StandardError => e
@@ -150,9 +152,9 @@ module V8
       end
     end
 
-    def rubyprotect
+    def rubyprotectraw
       begin
-        v8 yield
+        yield
       rescue Exception => e
         case e
         when SystemExit, NoMemoryError
@@ -163,6 +165,10 @@ module V8
           V8::C::ThrowException(error)
         end
       end
+    end
+
+    def rubyprotect(*args, &block)
+      v8 rubyprotectraw(*args, &block)
     end
 
     def rubycall(rubycode, *args, &block)
@@ -182,7 +188,7 @@ module V8
         setuptemplate(t)
       end
     end
-    
+
     def setuptemplate(t)
       t.SetNamedPropertyHandler(
         @named_property_getter,
