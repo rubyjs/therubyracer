@@ -7,6 +7,8 @@ module V8
   require 'v8/portal'
   require 'v8/portal/functions'
   require 'v8/portal/proxies'
+  require 'v8/portal/templates'
+  require 'v8/portal/constructor'
   require 'v8/context'
   require 'v8/object'
   require 'v8/array'

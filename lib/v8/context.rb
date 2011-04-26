@@ -10,9 +10,9 @@ module V8
       with = opts[:with]
       constructor = nil
       template = if with
-        constructor = @to.js_constructor_for(with.class)
-        constructor.SetCallHandler(method(:tmp))
-        template = constructor.InstanceTemplate()
+        constructor = @to.templates.to_constructor(with.class)
+        constructor.template.SetCallHandler(method(:tmp))
+        constructor.template.InstanceTemplate()
       else
         C::ObjectTemplate::New()
       end
@@ -20,7 +20,7 @@ module V8
       @native.enter do
         @global = @native.Global()
         @to.proxies.register_javascript_proxy @global, :for => with if with
-        constructor.SetCallHandler(@to.method(:invoke_non_callable_constructor)) if constructor
+        constructor.exposed = false if constructor
         @scope = @to.rb(@global)
         @global.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyContext"), C::External::New(self))
       end
