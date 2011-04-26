@@ -20,6 +20,15 @@ namespace {
     return ::rb_hash_aset(hash, rb_str_new2(key), value);
   }
 
+  Handle<Value> make_v8_data(int argc, VALUE *argv, const char* argf) {
+    VALUE handler; VALUE data;
+    rb_scan_args(argc, argv, argf, &handler, &data);
+    VALUE v8_data = rb_hash_new();
+    rb_hash_aset(v8_data, "handler", handler);
+    rb_hash_aset(v8_data, "data", data);
+    return rr_v8_external_create(v8_data);
+  }
+
   Persistent<Template> tmpl(VALUE self) {
     return rr_v8_handle<Template>(self);
   }
@@ -253,27 +262,14 @@ namespace {
       );
       return Qnil;
     }
-    VALUE SetCallAsFunctionHandler(VALUE self) {
-      HandleScope scope;
-      VALUE code = rb_block_proc();
-      if (NIL_P(code)) {
-        return Qnil;
-      }
-      obj(self)->SetCallAsFunctionHandler(RubyInvocationCallback, rr_v8_external_create(code));
+    VALUE SetCallAsFunctionHandler(int argc, VALUE *argv, VALUE self) {
+      Handle<Value> v8_data = make_v8_data(argc, argv, "11");
+      obj(self)->SetCallAsFunctionHandler(RubyInvocationCallback, v8_data);
       return Qnil;
     }
   }
 
   namespace Func {
-
-    Handle<Value> make_v8_data(int argc, VALUE *argv, const char* argf) {
-      VALUE handler; VALUE data;
-      rb_scan_args(argc, argv, argf, &handler, &data);
-      VALUE v8_data = rb_hash_new();
-      rb_hash_aset(v8_data, "handler", handler);
-      rb_hash_aset(v8_data, "data", data);
-      return rr_v8_external_create(v8_data);
-    }
 
     VALUE New(int argc, VALUE *argv, VALUE self) {
       HandleScope h;
@@ -325,7 +321,7 @@ void rr_init_template() {
   rr_define_method(ObjectTemplateClass, "NewInstance", Obj::NewInstance, 0);
   rr_define_method(ObjectTemplateClass, "SetNamedPropertyHandler", Obj::SetNamedPropertyHandler, 5);
   rr_define_method(ObjectTemplateClass, "SetIndexedPropertyHandler", Obj::SetIndexedPropertyHandler, 5);
-  rr_define_method(ObjectTemplateClass, "SetCallAsFunctionHandler", Obj::SetCallAsFunctionHandler, 0);
+  rr_define_method(ObjectTemplateClass, "SetCallAsFunctionHandler", Obj::SetCallAsFunctionHandler, -1);
 
   FunctionTemplateClass = rr_define_class("FunctionTemplate", Template);
   rr_define_singleton_method(FunctionTemplateClass, "New", Func::New, -1);
