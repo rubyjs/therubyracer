@@ -39,10 +39,17 @@ namespace {
   }
 
   Handle<Value> RubyInvocationCallback(const Arguments& args) {
-    VALUE code = (VALUE)External::Unwrap(args.Data());
+    VALUE v8_data = (VALUE)External::Unwrap(args.Data());
+    VALUE handler = rb_hash_lookup(v8_data, "handler");
+    VALUE data = rb_hash_lookup(v8_data, "data");
     VALUE rb_args = rr_v82rb(args);
-    VALUE result = rb_funcall(code, rb_intern("call"), 1, rb_args);
-    return rr_rb2v8(result);
+    rb_iv_set(rb_args, "data", data);
+    if (RTEST(handler)) {
+      VALUE result = rb_funcall(handler, rb_intern("call"), 1, rb_args);
+      return rr_rb2v8(result);
+    } else {
+      return Handle<Value>();
+    }
   }
 
   namespace Obj {
@@ -259,26 +266,25 @@ namespace {
 
   namespace Func {
 
-    VALUE New(VALUE function_template) {
-      HandleScope handles;
-      VALUE code = rb_block_proc();
-      if (NIL_P(code)) {
-        return Qnil;
-      }
-      Local<FunctionTemplate> templ = FunctionTemplate::New(RubyInvocationCallback, rr_v8_external_create(code));
-      VALUE ref = rr_v8_handle_new(function_template,templ);
-      
-      //TODO: make sure that this reference is retained, if necessary.
-      // rr_v8_ref_setref(ref, "code", code);
-      return ref;
+    Handle<Value> make_v8_data(int argc, VALUE *argv, const char* argf) {
+      VALUE handler; VALUE data;
+      rb_scan_args(argc, argv, argf, &handler, &data);
+      VALUE v8_data = rb_hash_new();
+      rb_hash_aset(v8_data, "handler", handler);
+      rb_hash_aset(v8_data, "data", data);
+      return rr_v8_external_create(v8_data);
     }
-    VALUE SetCallHandler(VALUE self) {
-      HandleScope handles;
-      VALUE code = rb_block_proc();
-      if (NIL_P(code)) {
-        return Qnil;
-      }
-      func(self)->SetCallHandler(RubyInvocationCallback, rr_v8_external_create(code));
+
+    VALUE New(int argc, VALUE *argv, VALUE self) {
+      HandleScope h;
+      Handle<Value> v8_data = make_v8_data(argc, argv, "02");
+      Local<FunctionTemplate> t = FunctionTemplate::New(RubyInvocationCallback, v8_data);
+      return rr_v8_handle_new(self,t);
+    }
+    VALUE SetCallHandler(int argc, VALUE *argv, VALUE self) {
+      HandleScope h;
+      Handle<Value> v8_data = make_v8_data(argc, argv, "11");
+      func(self)->SetCallHandler(RubyInvocationCallback, v8_data);
       return Qnil;
     }
     VALUE PrototypeTemplate(VALUE self) {
@@ -322,8 +328,8 @@ void rr_init_template() {
   rr_define_method(ObjectTemplateClass, "SetCallAsFunctionHandler", Obj::SetCallAsFunctionHandler, 0);
 
   FunctionTemplateClass = rr_define_class("FunctionTemplate", Template);
-  rr_define_singleton_method(FunctionTemplateClass, "New", Func::New, 0);
-  rr_define_method(FunctionTemplateClass, "SetCallHandler", Func::SetCallHandler, 0);
+  rr_define_singleton_method(FunctionTemplateClass, "New", Func::New, -1);
+  rr_define_method(FunctionTemplateClass, "SetCallHandler", Func::SetCallHandler, -1);
   rr_define_method(FunctionTemplateClass, "PrototypeTemplate", Func::PrototypeTemplate, 0);
   rr_define_method(FunctionTemplateClass, "InstanceTemplate", Func::InstanceTemplate, 0);
   rr_define_method(FunctionTemplateClass, "Inherit", Func::Inherit, 1);

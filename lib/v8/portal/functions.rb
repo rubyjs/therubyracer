@@ -11,35 +11,43 @@ module V8
       end
 
       def Proc(p)
+        #TODO: check this for memory leaks
         @procs[p] ||= begin
-          template = C::FunctionTemplate::New() do |arguments|
-            rbargs = []
-            for i in 0..arguments.Length() - 1
-              rbargs << @portal.rb(arguments[i])
-            end
-            @portal.rubycall(p, *rbargs)
-          end
+          template = C::FunctionTemplate::New(method(:callproc), p)
           template.GetFunction()
         end
       end
 
       def UnboundMethod(method)
+        #TODO: check this for memory leaks.
         @methods[method.to_s] ||= begin
-          template = C::FunctionTemplate::New() do |arguments|
-            rbargs = []
-            for i in 0..arguments.Length() - 1
-              rbargs << @portal.rb(arguments[i])
-            end
-            this = @portal.rb(arguments.This())
-            @portal.rubyprotect do
-              method.bind(this).call(*rbargs)
-            end
-          end
+          template = C::FunctionTemplate::New(method(:callmethod), method)
           template.GetFunction()
         end
       end
 
       alias_method :Method, :Proc
+
+      def callproc(arguments)
+        proc = arguments.Data()
+        rbargs = []
+        for i in 0..arguments.Length() - 1
+          rbargs << @portal.rb(arguments[i])
+        end
+        @portal.rubycall(proc, *rbargs)
+      end
+      
+      def callmethod(arguments)
+        method = arguments.Data()
+        rbargs = []
+        for i in 0..arguments.Length() - 1
+          rbargs << @portal.rb(arguments[i])
+        end
+        this = @portal.rb(arguments.This())
+        @portal.rubyprotect do
+          method.bind(this).call(*rbargs)
+        end
+      end
     end
   end
 end

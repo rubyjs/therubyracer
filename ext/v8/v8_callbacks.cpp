@@ -86,7 +86,7 @@ namespace {
     return rr_v82rb(args(self)->isConstructCall);
   }
   VALUE _Data(VALUE self) {
-    return rr_v82rb(info(self)->data);
+    return rb_iv_get(self, "data");
   }
   
   struct WrapAccessorInfo : Wrap {

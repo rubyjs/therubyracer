@@ -28,13 +28,16 @@ module V8
         for i in 0..arguments.Length() - 1
           rbargs << rb(arguments[i])
         end
+        cls = arguments.Data()
         instance = rubysend(cls, :new, *rbargs)
       end
       @proxies.register_javascript_proxy arguments.This(), :for => instance
+    rescue StandardError => e
+      warn e
     end
 
     def make_js_constructor(cls)
-      template = C::FunctionTemplate::New(&method(:invoke_non_callable_constructor))
+      template = C::FunctionTemplate::New(method(:invoke_non_callable_constructor))
       setuptemplate(template.InstanceTemplate())
       if cls != ::Object && cls.superclass != ::Object && cls.superclass != ::Class
         template.Inherit(js_constructor_for(cls.superclass))
@@ -52,11 +55,11 @@ module V8
         constructor = js_constructor_for(ruby_class)
         function = constructor.GetFunction()
         unless constructor.respond_to?(:embedded)
-          constructor.SetCallHandler(&method(:invoke_callable_constructor))
+          constructor.SetCallHandler(method(:invoke_callable_constructor), ruby_class)
           #create a prototype so that this constructor also acts like a ruby object
           prototype = rubytemplate.NewInstance()
           #set *that* object's prototype to an empty function so that it will look and behave like a function.
-          prototype.SetPrototype(C::FunctionTemplate::New() {}.GetFunction())
+          prototype.SetPrototype(C::FunctionTemplate::New().GetFunction())
           function.SetPrototype(prototype)
           def constructor.embedded?;true;end
         end
