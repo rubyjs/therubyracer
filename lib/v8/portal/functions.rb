@@ -3,49 +3,56 @@ module V8
     class Functions
       def initialize(portal)
         @portal = portal
-        @procs, @methods = {},{}
-      end
-      
-      def [](code)
-        self.send(code.class.name, code)
+        @procs = {}
+        @methods = {}
       end
 
-      def Proc(p)
-        #TODO: check this for memory leaks
-        @procs[p] ||= begin
-          template = C::FunctionTemplate::New(method(:callproc), p)
-          template.GetFunction()
+      def to_function(code)
+        case code
+        when Method, UnboundMethod
+          #TODO: clear this reference when the C::FunctionTemplate becomes weak.
+          @methods[code.to_s] ||= Template.new(@portal, code.kind_of?(Method) ? :invoke_callable : :invoke_unbound_method, code)
+        else
+          if code.respond_to?(:call)
+            #TODO: clear with reference when the C::FunctionTemplate becomes weak.
+            @procs[code] ||= Template.new(@portal, :invoke_callable, code)
+          else
+            fail "invalid code type: #{code.class}"
+          end
         end
       end
 
-      def UnboundMethod(method)
-        #TODO: check this for memory leaks.
-        @methods[method.to_s] ||= begin
-          template = C::FunctionTemplate::New(method(:callmethod), method)
-          template.GetFunction()
-        end
-      end
+      class Template
+        attr_reader :template, :function
 
-      alias_method :Method, :Proc
+        def initialize(portal, impl, code)
+          @portal = portal
+          @template = V8::C::FunctionTemplate::New(method(impl), code)
+        end
 
-      def callproc(arguments)
-        proc = arguments.Data()
-        rbargs = []
-        for i in 0..arguments.Length() - 1
-          rbargs << @portal.rb(arguments[i])
+        def function
+          @template.GetFunction()
         end
-        @portal.rubycall(proc, *rbargs)
-      end
-      
-      def callmethod(arguments)
-        method = arguments.Data()
-        rbargs = []
-        for i in 0..arguments.Length() - 1
-          rbargs << @portal.rb(arguments[i])
+
+        def invoke_callable(arguments)
+          proc = arguments.Data()
+          rbargs = []
+          for i in 0..arguments.Length() - 1
+            rbargs << @portal.rb(arguments[i])
+          end
+          @portal.rubycall(proc, *rbargs)
         end
-        this = @portal.rb(arguments.This())
-        @portal.rubyprotect do
-          method.bind(this).call(*rbargs)
+
+        def invoke_unbound_method(arguments)
+          method = arguments.Data()
+          rbargs = []
+          for i in 0..arguments.Length() - 1
+            rbargs << @portal.rb(arguments[i])
+          end
+          this = @portal.rb(arguments.This())
+          @portal.rubyprotect do
+            method.bind(this).call(*rbargs)
+          end
         end
       end
     end

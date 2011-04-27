@@ -42,7 +42,9 @@ module V8
       when Symbol
         C::String::NewSymbol(value.to_s)
       when Proc,Method,UnboundMethod
-        @functions[value]
+        @proxies.rb2js(value) do
+          @functions.to_function(value).function
+        end
       when ::Array
         C::Array::New(value.length).tap do |a|
           value.each_with_index do |item, i|
