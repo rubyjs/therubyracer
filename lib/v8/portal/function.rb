@@ -1,6 +1,6 @@
 module V8
   class Portal
-    class Function
+    class FunctionAdapter
 
       attr_reader :template, :function
 

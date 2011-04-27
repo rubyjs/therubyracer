@@ -17,7 +17,7 @@ module V8
         if constructor = @constructors[class_id]
           return constructor
         else
-          constructor = @constructors[class_id] = Constructor.new(self, class_id)
+          constructor = @constructors[class_id] = ConstructorAdapter.new(self, class_id)
           ObjectSpace.define_finalizer(ruby_class, bind(@constructors, :delete, class_id))
           return constructor
         end
@@ -29,7 +29,7 @@ module V8
           if fn = @methods[code.to_s]
             return fn
           else
-            function = @methods[code.to_s] = Function.new(@portal, code)
+            function = @methods[code.to_s] = FunctionAdapter.new(@portal, code)
             #TODO: test this weak behavior
             function.template.MakeWeak(0, bind(@methods, :delete, code.to_s))
             return function
@@ -38,7 +38,7 @@ module V8
           if fn = @procs[code]
             return fn
           else
-            function = Function.new(@portal, code)
+            function = FunctionAdapter.new(@portal, code)
             #TODO: test this weak behavior
             function.template.MakeWeak(0, bind(@procs, :delete, code))
             return function
