@@ -5,6 +5,7 @@ module V8
   require 'v8/version'
   require 'v8/v8' #native glue
   require 'v8/portal'
+  require 'v8/portal/caller'
   require 'v8/portal/functions'
   require 'v8/portal/proxies'
   require 'v8/portal/templates'

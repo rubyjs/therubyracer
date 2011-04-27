@@ -1,0 +1,36 @@
+
+module V8
+  class Portal
+    class Caller
+      
+      def initialize(portal)
+        @portal = portal
+      end
+      
+      def raw
+        begin
+          yield
+        rescue Exception => e
+          case e
+          when SystemExit, NoMemoryError
+            raise e
+          else
+            error = V8::C::Exception::Error(V8::C::String::New(e.message))
+            error.SetHiddenValue("TheRubyRacer::Cause", C::External::New(e))
+            V8::C::ThrowException(error)
+          end
+        end
+      end
+
+      def protect(*args, &block)
+        @portal.v8 raw(*args, &block)
+      end
+
+      def invoke(code, *args, &block)
+        protect do
+          code.call(*args, &block)
+        end
+      end
+    end
+  end
+end

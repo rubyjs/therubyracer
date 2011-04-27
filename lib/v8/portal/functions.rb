@@ -40,7 +40,7 @@ module V8
           for i in 0..arguments.Length() - 1
             rbargs << @portal.rb(arguments[i])
           end
-          @portal.rubycall(proc, *rbargs)
+          @portal.caller.invoke(proc, *rbargs)
         end
 
         def invoke_unbound_method(arguments)
@@ -50,7 +50,7 @@ module V8
             rbargs << @portal.rb(arguments[i])
           end
           this = @portal.rb(arguments.This())
-          @portal.rubyprotect do
+          @portal.caller.protect do
             method.bind(this).call(*rbargs)
           end
         end

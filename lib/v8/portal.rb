@@ -1,7 +1,7 @@
 
 module V8
   class Portal
-    attr_reader :context, :access, :proxies, :templates, :interceptors
+    attr_reader :context, :access, :proxies, :templates, :interceptors, :caller
 
     def initialize(context, access)
       @context, @access = context, access
@@ -9,6 +9,7 @@ module V8
       @functions = Functions.new(self)
       @templates = Templates.new(self)
       @interceptors = Interceptors.new(self)
+      @caller = Caller.new(self)
     end
 
     def open
@@ -73,37 +74,5 @@ module V8
         end
       end
     end
-
-    def rubyprotectraw
-      begin
-        yield
-      rescue Exception => e
-        case e
-        when SystemExit, NoMemoryError
-          raise e
-        else
-          error = V8::C::Exception::Error(V8::C::String::New(e.message))
-          error.SetHiddenValue("TheRubyRacer::Cause", C::External::New(e))
-          V8::C::ThrowException(error)
-        end
-      end
-    end
-
-    def rubyprotect(*args, &block)
-      v8 rubyprotectraw(*args, &block)
-    end
-
-    def rubycall(rubycode, *args, &block)
-      rubyprotect do
-        rubycode.call(*args, &block)
-      end
-    end
-
-    def rubysend(obj, message, *args, &block)
-      rubyprotect do
-        obj.send(message, *args, &block)
-      end
-    end
-
   end
 end

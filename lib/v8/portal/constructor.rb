@@ -52,7 +52,7 @@ module V8
           for i in 0..arguments.Length() - 1
             rbargs << @templates.portal.rb(arguments[i])
           end
-          instance = @templates.portal.rubyprotectraw do
+          instance = portal.caller.raw do
             self.ruby_class.new(*rbargs)
           end
         end

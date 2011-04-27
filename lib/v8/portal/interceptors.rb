@@ -54,7 +54,7 @@ module V8
         def intercept(info, retval = nil, &code)
           obj = @to.rb(info.This())
           intercepts = true
-          result = @to.rubyprotect do
+          result = @to.caller.protect do
             dontintercept = proc do
               intercepts = false
             end
