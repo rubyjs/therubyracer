@@ -6,7 +6,6 @@ module V8
     def initialize(context, access)
       @context, @access = context, access
       @proxies = Proxies.new
-      @functions = Functions.new(self)
       @templates = Templates.new(self)
       @interceptors = Interceptors.new(self)
       @caller = Caller.new(self)
@@ -44,7 +43,7 @@ module V8
         C::String::NewSymbol(value.to_s)
       when Proc,Method,UnboundMethod
         @proxies.rb2js(value) do
-          @functions.to_function(value).function
+          @templates.to_function(value).function
         end
       when ::Array
         C::Array::New(value.length).tap do |a|
