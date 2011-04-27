@@ -11,7 +11,7 @@ module V8
       constructor = nil
       template = if with
         constructor = @to.templates.to_constructor(with.class)
-        constructor.template.SetCallHandler(method(:tmp))
+        constructor.disable()
         constructor.template.InstanceTemplate()
       else
         C::ObjectTemplate::New()
@@ -25,11 +25,6 @@ module V8
         @global.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyContext"), C::External::New(self))
       end
       yield(self) if block_given?
-    end
-
-    #TODO: get rid of this.
-    def tmp(arguments)
-      return arguments.This()
     end
 
     def eval(javascript, filename = "<eval>", line = 1)

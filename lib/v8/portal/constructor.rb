@@ -9,7 +9,7 @@ module V8
         @exposed = false
         @class_id = class_id
         @templates = templates
-    
+
         @template = C::FunctionTemplate::New(method(:invoke_unexposed))
         portal.interceptors.setup(@template.InstanceTemplate())
         cls = self.ruby_class
@@ -32,6 +32,10 @@ module V8
         arguments = C::Array::New(1)
         arguments.Set(0, C::External::New(object))
         function.NewInstance(arguments)
+      end
+
+      def disable
+        @template.SetCallHandler(lambda {|arguments|})
       end
 
       def invoke_unexposed(arguments)
