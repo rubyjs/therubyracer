@@ -16,8 +16,8 @@ module V8
       end
 
       def setup(template)
-        template.SetNamedPropertyHandler(@getter,@setter,@query,@deleter,@enumerator)
-        template.SetIndexedPropertyHandler(@igetter,@isetter,@iquery,@ideleter,@ienumerator)
+        template.SetNamedPropertyHandler(@getter,@setter,@query,@deleter,@enumerator, nil)
+        template.SetIndexedPropertyHandler(@igetter,@isetter,@iquery,@ideleter,@ienumerator, nil)
       end
 
       class PropertyAttributes

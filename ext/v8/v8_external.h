@@ -5,5 +5,4 @@
 
 void rr_init_v8_external();
 VALUE rr_reflect_v8_external(v8::Handle<v8::Value> value);
-v8::Handle<v8::Value> rr_v8_external_create(VALUE value);
 #endif

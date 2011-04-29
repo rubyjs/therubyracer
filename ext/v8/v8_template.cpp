@@ -12,21 +12,13 @@ namespace {
   VALUE ObjectTemplateClass;
   VALUE FunctionTemplateClass;
 
-  VALUE rb_hash_lookup(VALUE hash, const char *key) {
-    return rb_funcall(hash, rb_intern("[]"), 1, rb_str_new2(key));
-  }
-
-  VALUE rb_hash_aset(VALUE hash, const char *key, VALUE value) {
-    return ::rb_hash_aset(hash, rb_str_new2(key), value);
-  }
-
   Handle<Value> make_v8_data(int argc, VALUE *argv, const char* argf) {
     VALUE handler; VALUE data;
     rb_scan_args(argc, argv, argf, &handler, &data);
-    VALUE v8_data = rb_hash_new();
-    rb_hash_aset(v8_data, "handler", handler);
-    rb_hash_aset(v8_data, "data", data);
-    return rr_v8_external_create(v8_data);
+    Handle<Array> v8_data = Array::New(2);
+    v8_data->Set(0, External::New((void*)handler));
+    v8_data->Set(1, External::New((void*)data));
+    return v8_data;
   }
 
   Persistent<Template> tmpl(VALUE self) {
@@ -48,9 +40,9 @@ namespace {
   }
 
   Handle<Value> RubyInvocationCallback(const Arguments& args) {
-    VALUE v8_data = (VALUE)External::Unwrap(args.Data());
-    VALUE handler = rb_hash_lookup(v8_data, "handler");
-    VALUE data = rb_hash_lookup(v8_data, "data");
+    Local<Array> v8_data = Local<Array>::Cast(args.Data());
+    VALUE handler = (VALUE)External::Unwrap(v8_data->Get(0));
+    VALUE data = (VALUE)External::Unwrap(v8_data->Get(1));
     VALUE rb_args = rr_v82rb(args);
     rb_iv_set(rb_args, "data", data);
     if (RTEST(handler)) {
@@ -63,14 +55,38 @@ namespace {
 
   namespace Obj {
 
+
+    VALUE accessor_info_get(const AccessorInfo& info, uint32_t index) {
+      Handle<Array> data = Handle<Array>::Cast(info.Data());
+      return (VALUE)External::Unwrap(data->Get(index));
+    }
+
+    VALUE accessor_info_rb(const AccessorInfo& info) {
+      Handle<Array> data = Handle<Array>::Cast(info.Data());
+      VALUE rb_data = accessor_info_get(info, 5);
+      VALUE rb_info = rr_v82rb(info);
+      rb_iv_set(rb_info, "data", rb_data);
+      return rb_info;
+    }
+
+    Local<Array> accessor_info_data(VALUE getter, VALUE setter, VALUE query, VALUE deleter, VALUE enumerator, VALUE data) {
+      Local<Array> v8_data = Array::New(6);
+      v8_data->Set(0, External::New((void*)getter));
+      v8_data->Set(1, External::New((void*)setter));
+      v8_data->Set(2, External::New((void*)query));
+      v8_data->Set(3, External::New((void*)deleter));
+      v8_data->Set(4, External::New((void*)enumerator));
+      v8_data->Set(5, External::New((void*)data));
+      return v8_data;
+    }
+
     /**
      * NamedProperty[Getter|Setter] are used as interceptors on object.
      * See ObjectTemplate::SetNamedPropertyHandler.
      */
     Handle<Value> RubyNamedPropertyGetter(Local<String> property, const AccessorInfo& info) {
-      VALUE code = (VALUE)External::Unwrap(info.Data());
-      VALUE getter = rb_hash_lookup(code, "getter");
-      return rr_rb2v8(rb_funcall(getter, rb_intern("call"), 2, rr_v82rb(property), rr_v82rb(info)));
+      VALUE getter = accessor_info_get(info, 0);
+      return rr_rb2v8(rb_funcall(getter, rb_intern("call"), 2, rr_v82rb(property), accessor_info_rb(info)));
     }
 
     /**
@@ -78,9 +94,8 @@ namespace {
      * Otherwise, returns an empty handle.
      */
     Handle<Value> RubyNamedPropertySetter(Local<String> property, Local<Value> value, const AccessorInfo& info) {
-      VALUE code = (VALUE)External::Unwrap(info.Data());
-      VALUE setter = rb_hash_lookup(code, "setter");
-      VALUE result = rb_funcall(setter, rb_intern("call"), 3, rr_v82rb(property), rr_v82rb(value), rr_v82rb(info));
+      VALUE setter = accessor_info_get(info, 1);
+      VALUE result = rb_funcall(setter, rb_intern("call"), 3, rr_v82rb(property), rr_v82rb(value), accessor_info_rb(info));
       return rr_rb2v8(result);
     }
 
@@ -90,9 +105,8 @@ namespace {
      * The result is true if the property exists and false otherwise.
      */
     Handle<Integer> RubyNamedPropertyQuery(Local<String> property, const AccessorInfo& info) {
-      VALUE code = (VALUE)External::Unwrap(info.Data());
-      VALUE query = rb_hash_lookup(code, "query");
-      VALUE result = rb_funcall(query, rb_intern("call"), 2, rr_v82rb(property), rr_v82rb(info));
+      VALUE query = accessor_info_get(info, 2);
+      VALUE result = rb_funcall(query, rb_intern("call"), 2, rr_v82rb(property), accessor_info_rb(info));
       Handle<Value> intercepts = rr_rb2v8(result);
       return intercepts.IsEmpty() ? Handle<Integer>() : Integer::New(None);
     }
@@ -103,9 +117,8 @@ namespace {
      * otherwise.
      */
     Handle<Boolean> RubyNamedPropertyDeleter(Local<String> property, const AccessorInfo& info) {
-      VALUE code = (VALUE)External::Unwrap(info.Data());
-      VALUE deleter = rb_hash_lookup(code, "deleter");
-      VALUE result = rb_funcall(deleter, rb_intern("call"), 2, rr_v82rb(property), rr_v82rb(info));
+      VALUE deleter = accessor_info_get(info, 3);
+      VALUE result = rb_funcall(deleter, rb_intern("call"), 2, rr_v82rb(property), accessor_info_rb(info));
       Handle<Value> intercepts = rr_rb2v8(result);
       return intercepts.IsEmpty() ? Handle<Boolean>() : intercepts->ToBoolean();
     }
@@ -115,9 +128,8 @@ namespace {
      * property getter intercepts.
      */
     Handle<Array> RubyNamedPropertyEnumerator(const AccessorInfo& info) {
-      VALUE code = (VALUE)External::Unwrap(info.Data());
-      VALUE enumerator = rb_hash_lookup(code, "enumerator");
-      VALUE result = rb_funcall(enumerator, rb_intern("call"), 1, rr_v82rb(info));
+      VALUE enumerator = accessor_info_get(info, 4);
+      VALUE result = rb_funcall(enumerator, rb_intern("call"), 1, accessor_info_rb(info));
       Handle<Value> v(rr_rb2v8(result));
       if (v.IsEmpty()) {
         return Array::New();
@@ -135,9 +147,8 @@ namespace {
      * request.  Otherwise, returns an empty handle.
      */
     Handle<Value> RubyIndexedPropertyGetter(uint32_t index, const AccessorInfo& info) {
-      VALUE code = (VALUE)External::Unwrap(info.Data());
-      VALUE getter = rb_hash_lookup(code, "getter");
-      VALUE result = rb_funcall(getter, rb_intern("call"), 2, UINT2NUM(index), rr_v82rb(info));
+      VALUE getter = accessor_info_get(info, 0);
+      VALUE result = rb_funcall(getter, rb_intern("call"), 2, UINT2NUM(index), accessor_info_rb(info));
       return rr_rb2v8(result);
     }
 
@@ -146,9 +157,8 @@ namespace {
      * Otherwise, returns an empty handle.
      */
     Handle<Value> RubyIndexedPropertySetter(uint32_t index, Local<Value> value, const AccessorInfo& info) {
-      VALUE code = (VALUE)External::Unwrap(info.Data());
-      VALUE setter = rb_hash_lookup(code, "setter");
-      VALUE result = rb_funcall(setter, rb_intern("call"), 3, UINT2NUM(index), rr_v82rb(value), rr_v82rb(info));
+      VALUE setter = accessor_info_get(info, 1);
+      VALUE result = rb_funcall(setter, rb_intern("call"), 3, UINT2NUM(index), rr_v82rb(value), accessor_info_rb(info));
       return rr_rb2v8(result);
     }
 
@@ -157,9 +167,8 @@ namespace {
      * The result is true if the property exists and false otherwise.
      */
      Handle<Integer> RubyIndexedPropertyQuery(uint32_t index, const AccessorInfo& info) {
-       VALUE code = (VALUE)External::Unwrap(info.Data());
-       VALUE query = rb_hash_lookup(code, "query");
-       VALUE result = rb_funcall(query, rb_intern("call"), 2, UINT2NUM(index), rr_v82rb(info));
+       VALUE query = accessor_info_get(info, 2);
+       VALUE result = rb_funcall(query, rb_intern("call"), 2, UINT2NUM(index), accessor_info_rb(info));
        Handle<Value> intercepts = rr_rb2v8(result);
        return intercepts.IsEmpty() ? Handle<Integer>() : Integer::New(None);
      }
@@ -170,9 +179,8 @@ namespace {
      * otherwise.
      */
      Handle<Boolean> RubyIndexedPropertyDeleter(uint32_t index, const AccessorInfo& info) {
-       VALUE code = (VALUE)External::Unwrap(info.Data());
-       VALUE deleter = rb_hash_lookup(code, "deleter");
-       VALUE result = rb_funcall(deleter, rb_intern("call"), 2, UINT2NUM(index), rr_v82rb(info));
+       VALUE deleter = accessor_info_get(info, 3);
+       VALUE result = rb_funcall(deleter, rb_intern("call"), 2, UINT2NUM(index), accessor_info_rb(info));
        Handle<Value> intercepts = rr_rb2v8(result);
        return intercepts.IsEmpty() ? Handle<Boolean>() : intercepts->ToBoolean();
      }
@@ -182,9 +190,8 @@ namespace {
      * indexed property getter intercepts.
      */
      Handle<Array> RubyIndexedPropertyEnumerator(const AccessorInfo& info) {
-       VALUE code = (VALUE)External::Unwrap(info.Data());
-       VALUE enumerator = rb_hash_lookup(code, "enumerator");
-       VALUE result = rb_funcall(enumerator, rb_intern("call"), 1, rr_v82rb(info));
+       VALUE enumerator = accessor_info_get(info, 4);
+       VALUE result = rb_funcall(enumerator, rb_intern("call"), 1, accessor_info_rb(info));
        Handle<Value> v(rr_rb2v8(result));
        if (v.IsEmpty()) {
          return Array::New();
@@ -214,51 +221,36 @@ namespace {
       }
       return rr_v82rb(object);
     }
-    VALUE SetNamedPropertyHandler(VALUE self, VALUE getter, VALUE setter, VALUE query, VALUE deleter, VALUE enumerator) {
+    VALUE SetNamedPropertyHandler(VALUE self, VALUE getter, VALUE setter, VALUE query, VALUE deleter, VALUE enumerator, VALUE data) {
       HandleScope handles;
       if (!RTEST(getter)) {
         rb_raise(rb_eArgError, "you must supply at least a getter to V8::C::ObjectTemplate#SetNamedPropertyHandler()");
         return Qnil;
       }
-      VALUE data = rb_hash_new();
-      rb_hash_aset(data, "getter", getter);
-      rb_hash_aset(data, "setter", setter);
-      rb_hash_aset(data, "query", query);
-      rb_hash_aset(data, "deleter", deleter);
-      rb_hash_aset(data, "enumerator", enumerator);
-      //TODO: Make sure we retain this reference.
-      // rr_v8_ref_setref(self, "data", data);
       obj(self)->SetNamedPropertyHandler(
         RubyNamedPropertyGetter,
         RTEST(setter) ? RubyNamedPropertySetter : 0,
         RTEST(query) ? RubyNamedPropertyQuery : 0,
         RTEST(deleter) ? RubyNamedPropertyDeleter : 0,
         RTEST(enumerator) ? RubyNamedPropertyEnumerator : 0,
-        rr_v8_external_create(data)
+        accessor_info_data(getter, setter, query, deleter, enumerator, data)
       );
       return Qnil;
     }
-    VALUE SetIndexedPropertyHandler(VALUE self, VALUE getter, VALUE setter, VALUE query, VALUE deleter, VALUE enumerator) {
+
+    VALUE SetIndexedPropertyHandler(VALUE self, VALUE getter, VALUE setter, VALUE query, VALUE deleter, VALUE enumerator, VALUE data) {
       HandleScope scope;
       if (!RTEST(getter)) {
         rb_raise(rb_eArgError, "you must supply at least a getter to V8::C::ObjectTemplate#SetNamedPropertyHandler()");
         return Qnil;
       }
-      VALUE data = rb_hash_new();
-      rb_hash_aset(data, "getter", getter);
-      rb_hash_aset(data, "setter", setter);
-      rb_hash_aset(data, "query", query);
-      rb_hash_aset(data, "deleter", deleter);
-      rb_hash_aset(data, "enumerator", enumerator);
-      //TODO: is this really necessary?
-      //rr_v8_ref_setref(self, "data", data);
       obj(self)->SetIndexedPropertyHandler(
         RubyIndexedPropertyGetter,
         RTEST(setter) ? RubyIndexedPropertySetter : 0,
         RTEST(query) ? RubyIndexedPropertyQuery : 0,
         RTEST(deleter) ? RubyIndexedPropertyDeleter : 0,
         RTEST(enumerator) ? RubyIndexedPropertyEnumerator : 0,
-        rr_v8_external_create(data)
+        accessor_info_data(getter, setter, query, deleter, enumerator, data)
       );
       return Qnil;
     }
@@ -275,7 +267,8 @@ namespace {
       HandleScope h;
       Handle<Value> v8_data = make_v8_data(argc, argv, "02");
       Local<FunctionTemplate> t = FunctionTemplate::New(RubyInvocationCallback, v8_data);
-      return rr_v8_handle_new(self,t);
+      VALUE handle = rr_v8_handle_new(self,t);
+      return handle;
     }
     VALUE SetCallHandler(int argc, VALUE *argv, VALUE self) {
       HandleScope h;
@@ -319,8 +312,8 @@ void rr_init_template() {
   ObjectTemplateClass = rr_define_class("ObjectTemplate", Template);
   rr_define_singleton_method(ObjectTemplateClass, "New", Obj::New, 0);
   rr_define_method(ObjectTemplateClass, "NewInstance", Obj::NewInstance, 0);
-  rr_define_method(ObjectTemplateClass, "SetNamedPropertyHandler", Obj::SetNamedPropertyHandler, 5);
-  rr_define_method(ObjectTemplateClass, "SetIndexedPropertyHandler", Obj::SetIndexedPropertyHandler, 5);
+  rr_define_method(ObjectTemplateClass, "SetNamedPropertyHandler", Obj::SetNamedPropertyHandler, 6);
+  rr_define_method(ObjectTemplateClass, "SetIndexedPropertyHandler", Obj::SetIndexedPropertyHandler, 6);
   rr_define_method(ObjectTemplateClass, "SetCallAsFunctionHandler", Obj::SetCallAsFunctionHandler, -1);
 
   FunctionTemplateClass = rr_define_class("FunctionTemplate", Template);
