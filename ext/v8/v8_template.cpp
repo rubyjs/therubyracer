@@ -12,13 +12,30 @@ namespace {
   VALUE ObjectTemplateClass;
   VALUE FunctionTemplateClass;
 
-  Handle<Value> make_v8_data(int argc, VALUE *argv, const char* argf) {
+  struct v8_callback_data {
+    VALUE handler;
+    VALUE getter;
+    VALUE setter;
+    VALUE query;
+    VALUE deleter;
+    VALUE enumerator;
+    VALUE data;
+  };
+
+  void delete_v8_data(Persistent<Value> value, void* parameter) {
+    value.Dispose();
+    delete (v8_callback_data*)parameter;
+  }
+
+  Local<External> make_v8_data(int argc, VALUE *argv, const char* argf) {
     VALUE handler; VALUE data;
     rb_scan_args(argc, argv, argf, &handler, &data);
-    Handle<Array> v8_data = Array::New(2);
-    v8_data->Set(0, External::New((void*)handler));
-    v8_data->Set(1, External::New((void*)data));
-    return v8_data;
+    v8_callback_data* v8_data = new v8_callback_data();
+    v8_data->handler = handler;
+    v8_data->data = data;
+    Local<External> external = External::New((void*)v8_data);
+    Persistent<External>::New(external).MakeWeak((void*)v8_data, delete_v8_data);
+    return external;
   }
 
   Persistent<Template> tmpl(VALUE self) {
@@ -40,13 +57,12 @@ namespace {
   }
 
   Handle<Value> RubyInvocationCallback(const Arguments& args) {
-    Local<Array> v8_data = Local<Array>::Cast(args.Data());
-    VALUE handler = (VALUE)External::Unwrap(v8_data->Get(0));
-    VALUE data = (VALUE)External::Unwrap(v8_data->Get(1));
+    Handle<External> v8_data_wrapper = Handle<External>::Cast(args.Data());
+    v8_callback_data* v8_data = (v8_callback_data*)v8_data_wrapper->Value();
     VALUE rb_args = rr_v82rb(args);
-    rb_iv_set(rb_args, "data", data);
-    if (RTEST(handler)) {
-      VALUE result = rb_funcall(handler, rb_intern("call"), 1, rb_args);
+    rb_iv_set(rb_args, "data", v8_data->data);
+    if (RTEST(v8_data->handler)) {
+      VALUE result = rb_funcall(v8_data->handler, rb_intern("call"), 1, rb_args);
       return rr_rb2v8(result);
     } else {
       return Handle<Value>();
@@ -56,28 +72,29 @@ namespace {
   namespace Obj {
 
 
-    VALUE accessor_info_get(const AccessorInfo& info, uint32_t index) {
-      Handle<Array> data = Handle<Array>::Cast(info.Data());
-      return (VALUE)External::Unwrap(data->Get(index));
+    v8_callback_data* accessor_info_data(const AccessorInfo& info) {
+      Handle<External> v8_data_wrapper = Handle<External>::Cast(info.Data());
+      return (v8_callback_data*)v8_data_wrapper->Value();
     }
 
     VALUE accessor_info_rb(const AccessorInfo& info) {
-      Handle<Array> data = Handle<Array>::Cast(info.Data());
-      VALUE rb_data = accessor_info_get(info, 5);
+      VALUE rb_data = accessor_info_data(info)->data;
       VALUE rb_info = rr_v82rb(info);
       rb_iv_set(rb_info, "data", rb_data);
       return rb_info;
     }
 
-    Local<Array> accessor_info_data(VALUE getter, VALUE setter, VALUE query, VALUE deleter, VALUE enumerator, VALUE data) {
-      Local<Array> v8_data = Array::New(6);
-      v8_data->Set(0, External::New((void*)getter));
-      v8_data->Set(1, External::New((void*)setter));
-      v8_data->Set(2, External::New((void*)query));
-      v8_data->Set(3, External::New((void*)deleter));
-      v8_data->Set(4, External::New((void*)enumerator));
-      v8_data->Set(5, External::New((void*)data));
-      return v8_data;
+    Local<External> accessor_info_data(VALUE getter, VALUE setter, VALUE query, VALUE deleter, VALUE enumerator, VALUE data) {
+      v8_callback_data* v8_data = new v8_callback_data();
+      v8_data->getter = getter;
+      v8_data->setter = setter;
+      v8_data->query = query;
+      v8_data->deleter = deleter;
+      v8_data->enumerator = enumerator;
+      v8_data->data = data;
+      Local<External> external = External::New((void*)v8_data);
+      Persistent<External>::New(external).MakeWeak((void*)v8_data, delete_v8_data);
+      return external;
     }
 
     /**
@@ -85,7 +102,7 @@ namespace {
      * See ObjectTemplate::SetNamedPropertyHandler.
      */
     Handle<Value> RubyNamedPropertyGetter(Local<String> property, const AccessorInfo& info) {
-      VALUE getter = accessor_info_get(info, 0);
+      VALUE getter = accessor_info_data(info)->getter;
       return rr_rb2v8(rb_funcall(getter, rb_intern("call"), 2, rr_v82rb(property), accessor_info_rb(info)));
     }
 
@@ -94,7 +111,7 @@ namespace {
      * Otherwise, returns an empty handle.
      */
     Handle<Value> RubyNamedPropertySetter(Local<String> property, Local<Value> value, const AccessorInfo& info) {
-      VALUE setter = accessor_info_get(info, 1);
+      VALUE setter = accessor_info_data(info)->setter;
       VALUE result = rb_funcall(setter, rb_intern("call"), 3, rr_v82rb(property), rr_v82rb(value), accessor_info_rb(info));
       return rr_rb2v8(result);
     }
@@ -105,7 +122,7 @@ namespace {
      * The result is true if the property exists and false otherwise.
      */
     Handle<Integer> RubyNamedPropertyQuery(Local<String> property, const AccessorInfo& info) {
-      VALUE query = accessor_info_get(info, 2);
+      VALUE query = accessor_info_data(info)->query;
       VALUE result = rb_funcall(query, rb_intern("call"), 2, rr_v82rb(property), accessor_info_rb(info));
       Handle<Value> intercepts = rr_rb2v8(result);
       return intercepts.IsEmpty() ? Handle<Integer>() : Integer::New(None);
@@ -117,7 +134,7 @@ namespace {
      * otherwise.
      */
     Handle<Boolean> RubyNamedPropertyDeleter(Local<String> property, const AccessorInfo& info) {
-      VALUE deleter = accessor_info_get(info, 3);
+      VALUE deleter = accessor_info_data(info)->deleter;
       VALUE result = rb_funcall(deleter, rb_intern("call"), 2, rr_v82rb(property), accessor_info_rb(info));
       Handle<Value> intercepts = rr_rb2v8(result);
       return intercepts.IsEmpty() ? Handle<Boolean>() : intercepts->ToBoolean();
@@ -128,7 +145,7 @@ namespace {
      * property getter intercepts.
      */
     Handle<Array> RubyNamedPropertyEnumerator(const AccessorInfo& info) {
-      VALUE enumerator = accessor_info_get(info, 4);
+      VALUE enumerator = accessor_info_data(info)->enumerator;
       VALUE result = rb_funcall(enumerator, rb_intern("call"), 1, accessor_info_rb(info));
       Handle<Value> v(rr_rb2v8(result));
       if (v.IsEmpty()) {
@@ -147,7 +164,7 @@ namespace {
      * request.  Otherwise, returns an empty handle.
      */
     Handle<Value> RubyIndexedPropertyGetter(uint32_t index, const AccessorInfo& info) {
-      VALUE getter = accessor_info_get(info, 0);
+      VALUE getter = accessor_info_data(info)->getter;
       VALUE result = rb_funcall(getter, rb_intern("call"), 2, UINT2NUM(index), accessor_info_rb(info));
       return rr_rb2v8(result);
     }
@@ -157,7 +174,7 @@ namespace {
      * Otherwise, returns an empty handle.
      */
     Handle<Value> RubyIndexedPropertySetter(uint32_t index, Local<Value> value, const AccessorInfo& info) {
-      VALUE setter = accessor_info_get(info, 1);
+      VALUE setter = accessor_info_data(info)->setter;
       VALUE result = rb_funcall(setter, rb_intern("call"), 3, UINT2NUM(index), rr_v82rb(value), accessor_info_rb(info));
       return rr_rb2v8(result);
     }
@@ -167,7 +184,7 @@ namespace {
      * The result is true if the property exists and false otherwise.
      */
      Handle<Integer> RubyIndexedPropertyQuery(uint32_t index, const AccessorInfo& info) {
-       VALUE query = accessor_info_get(info, 2);
+       VALUE query = accessor_info_data(info)->query;
        VALUE result = rb_funcall(query, rb_intern("call"), 2, UINT2NUM(index), accessor_info_rb(info));
        Handle<Value> intercepts = rr_rb2v8(result);
        return intercepts.IsEmpty() ? Handle<Integer>() : Integer::New(None);
@@ -179,7 +196,7 @@ namespace {
      * otherwise.
      */
      Handle<Boolean> RubyIndexedPropertyDeleter(uint32_t index, const AccessorInfo& info) {
-       VALUE deleter = accessor_info_get(info, 3);
+       VALUE deleter = accessor_info_data(info)->deleter;
        VALUE result = rb_funcall(deleter, rb_intern("call"), 2, UINT2NUM(index), accessor_info_rb(info));
        Handle<Value> intercepts = rr_rb2v8(result);
        return intercepts.IsEmpty() ? Handle<Boolean>() : intercepts->ToBoolean();
@@ -190,7 +207,7 @@ namespace {
      * indexed property getter intercepts.
      */
      Handle<Array> RubyIndexedPropertyEnumerator(const AccessorInfo& info) {
-       VALUE enumerator = accessor_info_get(info, 4);
+       VALUE enumerator = accessor_info_data(info)->enumerator;
        VALUE result = rb_funcall(enumerator, rb_intern("call"), 1, accessor_info_rb(info));
        Handle<Value> v(rr_rb2v8(result));
        if (v.IsEmpty()) {
@@ -265,7 +282,7 @@ namespace {
 
     VALUE New(int argc, VALUE *argv, VALUE self) {
       HandleScope h;
-      Handle<Value> v8_data = make_v8_data(argc, argv, "02");
+      Handle<External> v8_data = make_v8_data(argc, argv, "02");
       Local<FunctionTemplate> t = FunctionTemplate::New(RubyInvocationCallback, v8_data);
       VALUE handle = rr_v8_handle_new(self,t);
       return handle;

@@ -9,7 +9,6 @@ module V8
         @exposed = false
         @class_id = class_id
         @templates = templates
-
         @template = C::FunctionTemplate::New(method(:invoke_unexposed))
         portal.interceptors.setup(@template.InstanceTemplate())
         cls = self.ruby_class
