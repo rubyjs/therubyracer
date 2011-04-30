@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe V8::Portal::Proxies do
   include V8::ExtSpec
+  # include V8::MemSpec
 
   context "for Ruby objects which are embedded into javascript" do
 
@@ -19,6 +20,12 @@ describe V8::Portal::Proxies do
 
     it "can only register proxies which are low-level JavaScript objects" do
       expect {subject.register_javascript_proxy Object.new, :for => Object.new}.should raise_error(ArgumentError)
+    end
+
+    it "is only allowed to have a single JavaScript proxy" do
+      rb_object = Object.new
+      subject.register_javascript_proxy c::Object::New(), :for => rb_object
+      expect {subject.register_javascript_proxy c::Object::New(), :for => rb_object}.should raise_error(V8::Portal::Proxies::DoubleProxyError)
     end
 
     context "Memory Management" do
@@ -54,6 +61,16 @@ describe V8::Portal::Proxies do
 
     it "requires a JavaScript low level javascript object as the actual object that is proxied" do
       expect {subject.register_javascript_proxy Object.new, :for => c::Object::New()}.should raise_error(ArgumentError)
+    end
+
+    it "will not a proxy twice if the proxy creator block actually registers the proxy inside it" do
+      target = Object.new
+      proxy = c::Object::New()
+      expect {subject.rb2js(target) do |object| 
+        subject.register_javascript_proxy(proxy, :for => object)
+        c::Object::New()        
+      end}.should_not raise_error
+      subject.rb2js(target).should be(proxy)
     end
 
     context "Memory Management" do

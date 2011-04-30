@@ -28,14 +28,15 @@ module V8
           return js
         else
           proxy = block_given? ? yield(rb) : V8::C::Object::New()
-          register_javascript_proxy proxy, :for => rb
+          register_javascript_proxy proxy, :for => rb unless @js_proxies_rb2js[rb]
           return proxy
         end
       end
 
       def register_javascript_proxy(proxy, options = {})
         target = options[:for] or fail ArgumentError, "must specify the object that you're proxying with the :for => param"
-        fail ArgumentError, "javascript proxy must be a Handle to an actual V8 object" unless proxy.kind_of?(V8::C::Handle)
+        fail ArgumentError, "javascript proxy must be a V8::C::Handle, not #{proxy.class}" unless proxy.kind_of?(V8::C::Handle)
+        fail DoubleProxyError, "target already has a registered proxy" if @js_proxies_rb2js[target]
 
         @js_proxies_js2rb[proxy] = target
         @js_proxies_rb2js[target] = proxy
@@ -79,6 +80,8 @@ module V8
         @rb_proxies_rb2js.delete(proxy_id)
         @rb_proxies_js2rb.delete(js)
       end
+
+      DoubleProxyError = Class.new(StandardError)
     end
   end
 end
