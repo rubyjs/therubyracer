@@ -11,8 +11,8 @@ v8_weakref::v8_weakref(VALUE object) {
 
 void v8_weakref::set(VALUE value) {
   this->object_id = rb_obj_id(value);
-  VALUE self = Data_Wrap_Struct(rb_cObject, 0, 0, this);
-  VALUE finalizer = rb_proc_new((VALUE (*)(...))v8_weakref_finalize, self);
+  VALUE data = Data_Wrap_Struct(rb_cObject, 0, 0, this);
+  VALUE finalizer = rb_proc_new((VALUE (*)(...))v8_weakref_finalize, data);
   rb_funcall(v8_weakref_objectspace(), rb_intern("define_finalizer"), 2, value, finalizer);
 }
 
@@ -24,9 +24,9 @@ VALUE v8_weakref::get() {
   }
 }
 
-VALUE v8_weakref_finalize(VALUE self, VALUE object_id) {
+VALUE v8_weakref_finalize(VALUE object_id, VALUE data) {
   v8_weakref* weakref = 0;
-  Data_Get_Struct(self, struct v8_weakref, weakref);
+  Data_Get_Struct(data, struct v8_weakref, weakref);
   weakref->object_id = Qnil;
   return Qnil;
 }

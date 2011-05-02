@@ -7,6 +7,8 @@ module V8
         @js_proxies_js2rb = {}
         @rb_proxies_rb2js = {}
         @rb_proxies_js2rb = {}
+        @clear_js_proxy = ClearJSProxy.new(@js_proxies_rb2js, @js_proxies_js2rb)
+        @clear_rb_proxy = ClearRubyProxy.new(@rb_proxies_rb2js, @rb_proxies_js2rb)
       end
 
       def js2rb(js)
@@ -40,7 +42,7 @@ module V8
 
         @js_proxies_js2rb[proxy] = target
         @js_proxies_rb2js[target] = proxy
-        proxy.MakeWeak(nil, method(:clear_js_proxy))
+        proxy.MakeWeak(nil, @clear_js_proxy)
       end
 
       def rb_object_2_js_proxy(object)
@@ -56,7 +58,7 @@ module V8
         fail ArgumentError, "'#{proxy.inspect}' is not a Handle to an actual V8 object" unless target.kind_of?(V8::C::Handle)
         @rb_proxies_rb2js[proxy.object_id] = target
         @rb_proxies_js2rb[target] = proxy.object_id
-        ObjectSpace.define_finalizer(proxy, method(:clear_rb_proxy))
+        ObjectSpace.define_finalizer(proxy, @clear_rb_proxy)
       end
 
       def js_object_2_rb_proxy(object)
@@ -69,19 +71,32 @@ module V8
         @rb_proxies_rb2js[proxy.object_id]
       end
 
-      def clear_js_proxy(proxy, parameter)
-        rb = @js_proxies_js2rb[proxy]
-        @js_proxies_js2rb.delete(proxy)
-        @js_proxies_rb2js.delete(rb)
-      end
-
-      def clear_rb_proxy(proxy_id)
-        js = @rb_proxies_rb2js[proxy_id]
-        @rb_proxies_rb2js.delete(proxy_id)
-        @rb_proxies_js2rb.delete(js)
-      end
-
       DoubleProxyError = Class.new(StandardError)
+
+      class ClearJSProxy
+
+        def initialize(rb2js, js2rb)
+          @rb2js, @js2rb = rb2js, js2rb
+        end
+
+        def call(proxy, parameter)
+          rb = @js2rb[proxy]
+          @js2rb.delete(proxy)
+          @rb2js.delete(rb)
+        end
+      end
+
+      class ClearRubyProxy
+        def initialize(rb2js, js2rb)
+          @rb2js, @js2rb = rb2js, js2rb
+        end
+
+        def call(proxy_id)
+          js = @rb2js[proxy_id]
+          @rb2js.delete(proxy_id)
+          @js2rb.delete(js)
+        end
+      end
     end
   end
 end
