@@ -6,7 +6,9 @@ module V8
 
       def initialize(portal, code)
         @portal = portal
-        @template = V8::C::FunctionTemplate::New(code.respond_to?(:call) ? Call.new(portal) : BindAndCall.new(portal), code)
+        @caller = code.respond_to?(:call) ? Call.new(portal) : BindAndCall.new(portal)
+        @code = code
+        @template = V8::C::FunctionTemplate::New(@caller, @code)
       end
 
       def function
