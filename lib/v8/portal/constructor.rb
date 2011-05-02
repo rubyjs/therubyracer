@@ -69,22 +69,17 @@ module V8
       end
 
       def exposed=(exposed)
-        if exposed && !@exposed
+        if exposed && !@augmented
           #create a prototype so that this constructor also acts like a ruby object
           prototype_template = C::ObjectTemplate::New()
           portal.interceptors.setup(prototype_template)
           prototype = prototype_template.NewInstance()
           #set *that* object's prototype to an empty function so that it will look and behave like a function.
           prototype.SetPrototype(C::FunctionTemplate::New().GetFunction())
-          @function = @template.GetFunction()
-          @function.SetPrototype(prototype)
-          @exposed = true
-        elsif !exposed && @exposed
-          @template.SetCallHandler(method(:invoke_unexposed))
-          @exposed = false
-        else
-          @exposed
+          template.GetFunction().SetPrototype(prototype)
+          @augmented = true
         end
+        @exposed = exposed
       end
 
       def ruby_class
