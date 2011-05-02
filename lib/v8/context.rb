@@ -20,7 +20,7 @@ module V8
       @native.enter do
         @global = @native.Global()
         @to.proxies.register_javascript_proxy @global, :for => with if with
-        constructor.exposed = false if constructor
+        constructor.enable() if constructor
         @scope = @to.rb(@global)
         @global.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyContext"), C::External::New(self))
       end

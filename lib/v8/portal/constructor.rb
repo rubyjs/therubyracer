@@ -9,7 +9,8 @@ module V8
         @exposed = false
         @class_id = class_id
         @templates = templates
-        @template = C::FunctionTemplate::New(method(:invoke_unexposed))
+        @invoke = method(:invoke)
+        @template = C::FunctionTemplate::New(@invoke)
         portal.interceptors.setup(@template.InstanceTemplate())
         cls = self.ruby_class
         superclass = cls.superclass
@@ -34,39 +35,41 @@ module V8
       end
 
       def disable
-        @template.SetCallHandler(lambda {|arguments|})
+        @disabled = true
       end
 
-      def invoke_unexposed(arguments)
-        unless arguments.Length() == 1 && arguments[0].kind_of?(C::External)
-          C::ThrowException(C::Exception::Error(C::String::New("cannot call native constructor from javascript")))
-        else
-          object = arguments[0].Value()
-          proxies.register_javascript_proxy arguments.This(), :for => object
-        end
+      def enable
+        @disabled = nil
       end
 
-      def invoke_exposed(arguments)
-        instance = nil
-        if arguments.Length() > 0 && arguments[0].kind_of?(C::External)
-          instance = arguments[0].Value()
+      def invoke(arguments)
+        return if @disabled
+        if !@exposed
+          unless arguments.Length() == 1 && arguments[0].kind_of?(C::External)
+            C::ThrowException(C::Exception::Error(C::String::New("cannot call native constructor from javascript")))
+          else
+            object = arguments[0].Value()
+            proxies.register_javascript_proxy arguments.This(), :for => object
+          end
         else
-          rbargs = []
-          for i in 0..arguments.Length() - 1
-            rbargs << @templates.portal.rb(arguments[i])
+          instance = nil
+          if arguments.Length() > 0 && arguments[0].kind_of?(C::External)
+            instance = arguments[0].Value()
+          else
+            rbargs = []
+            for i in 0..arguments.Length() - 1
+              rbargs << @templates.portal.rb(arguments[i])
+            end
+            instance = portal.caller.raw do
+              self.ruby_class.new(*rbargs)
+            end
           end
-          instance = portal.caller.raw do
-            self.ruby_class.new(*rbargs)
-          end
+          proxies.register_javascript_proxy arguments.This(), :for => instance
         end
-        proxies.register_javascript_proxy arguments.This(), :for => instance
-      rescue StandardError => e
-        warn e
       end
 
       def exposed=(exposed)
         if exposed && !@exposed
-          @template.SetCallHandler(method(:invoke_exposed))
           #create a prototype so that this constructor also acts like a ruby object
           prototype_template = C::ObjectTemplate::New()
           portal.interceptors.setup(prototype_template)
