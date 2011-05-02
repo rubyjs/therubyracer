@@ -37,7 +37,7 @@ namespace {
     for (int i = 0; i < argc; i++) {
       argv[i] = args->Get(i);
     }
-    return rr_v8_handle_new(rr_v8_object_class(), function->NewInstance(argc, argv));
+    return rr_v82rb(function->NewInstance(argc, argv));
   }
   VALUE GetName(VALUE self) {
     HandleScope scope;
