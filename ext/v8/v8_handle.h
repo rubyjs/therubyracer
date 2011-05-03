@@ -7,12 +7,11 @@
 struct v8_handle  {
   v8_handle(v8::Handle<void> object);
   virtual ~v8_handle();
-  VALUE get_internal(const char* name);
-  void set_internal(const char* name, VALUE value);
 
   v8::Persistent<void> handle;
   bool dead;
-  VALUE references;
+  VALUE weakref_callback;
+  VALUE weakref_callback_parameters;
 };
 
 void rr_init_handle();
@@ -24,9 +23,5 @@ template <class T> v8::Persistent<T>& rr_v8_handle(VALUE value) {
 }
 VALUE rr_v8_handle_new(VALUE rbclass, v8::Handle<void> handle);
 VALUE rr_v8_handle_class();
-
-void rr_v8_handle_set_internal(VALUE handle, const char* name, VALUE value);
-VALUE rr_v8_handle_get_internal(VALUE handle, const char* name);
-
 
 #endif

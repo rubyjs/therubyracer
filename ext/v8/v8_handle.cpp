@@ -5,7 +5,8 @@
 using namespace v8;
 
 v8_handle::v8_handle(Handle<void> handle) : handle(Persistent<void>::New(handle)) {
-  this->references = rb_hash_new();
+  this->weakref_callback = Qnil;
+  this->weakref_callback_parameters = Qnil;
   this->dead = false;
 }
 
@@ -15,20 +16,13 @@ v8_handle::~v8_handle() {
   dead = true;
 }
 
-void v8_handle::set_internal(const char* name, VALUE value) {
-  rb_hash_aset(this->references, rb_str_new2(name), value);
-}
-
-VALUE v8_handle::get_internal(const char* name) {
-  return rb_funcall(this->references, rb_intern("[]"), 1, rb_str_new2(name));
-}
-
 namespace {
-  void gc_mark(v8_handle* handle) {
-    rb_gc_mark(handle->references);
+  void v8_handle_mark(v8_handle* handle) {
+    rb_gc_mark(handle->weakref_callback);
+    rb_gc_mark(handle->weakref_callback_parameters);
   }
 
-  void gc_free(v8_handle* handle) {
+  void v8_handle_free(v8_handle* handle) {
     delete handle;
   }
 
@@ -58,8 +52,8 @@ namespace {
   void RubyWeakReferenceCallback(Persistent<Value> value, void* parameter) {
     VALUE self = (VALUE)parameter;
     v8_handle* handle = rr_v8_handle_raw(self);
-    VALUE callback = rr_v8_handle_get_internal(self, "weakref_callback");
-    VALUE parameters = rr_v8_handle_get_internal(self, "weakref_callback_parameters");
+    VALUE callback = handle->weakref_callback;
+    VALUE parameters = handle->weakref_callback_parameters;
     if (RTEST(callback)) {
       rb_funcall(callback, rb_intern("call"), 2, self, parameters);
     }
@@ -71,8 +65,9 @@ namespace {
   }
 
   VALUE MakeWeak(VALUE self, VALUE parameters, VALUE callback) {
-    rr_v8_handle_set_internal(self,"weakref_callback", callback);
-    rr_v8_handle_set_internal(self, "weakref_callback_parameters", parameters);
+    v8_handle* handle = rr_v8_handle_raw(self);
+    handle->weakref_callback = callback;
+    handle->weakref_callback_parameters = parameters;
     rr_v8_handle<void>(self).MakeWeak((void*)self, RubyWeakReferenceCallback);
     return Qnil;
   }
@@ -109,19 +104,12 @@ void rr_init_handle() {
 }
 
 VALUE rr_v8_handle_new(VALUE klass, v8::Handle<void> handle) {
-  return Data_Wrap_Struct(klass, gc_mark, gc_free, new v8_handle(handle));
+  v8_handle* new_handle = new v8_handle(handle);
+  return Data_Wrap_Struct(klass, v8_handle_mark, v8_handle_free, new_handle);
 }
 
 VALUE rr_v8_handle_class() {
   return rr_define_class("Handle");
-}
-
-void rr_v8_handle_set_internal(VALUE handle, const char* name, VALUE value) {
-  rr_v8_handle_raw(handle)->set_internal(name, value);
-}
-
-VALUE rr_v8_handle_get_internal(VALUE handle, const char* name) {
-  return rr_v8_handle_raw(handle)->get_internal(name);
 }
 
 v8_handle* rr_v8_handle_raw(VALUE value) {
