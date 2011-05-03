@@ -2,6 +2,7 @@
 #include "v8_date.h"
 #include "v8_value.h"
 #include "v8_handle.h"
+#include "v8_object.h"
 
 using namespace v8;
 
@@ -29,7 +30,5 @@ void rr_init_v8_date() {
 }
 
 VALUE rr_reflect_v8_date(Handle<Value> value) {
-  HandleScope hs;
-  Local<Date> date(Date::Cast(*value));
-  return rr_v8_handle_new(DateClass, date);
+  return rr_reflect_v8_object_as(Handle<Object>::Cast(value), DateClass);
 }
