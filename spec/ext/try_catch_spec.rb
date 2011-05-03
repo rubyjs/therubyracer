@@ -28,5 +28,30 @@ describe C::TryCatch do
       tc.HasCaught()
     }.should raise_error(ScriptError)
   end
-  
+
+    it "doesn't segfault when an error is raised in a javascript function on a native prototype" do
+      constructor = Class.new
+      constructor.class_eval do
+        def detonate(*a)
+          raise "BOOM!"
+        end
+      end
+      V8::Context.new do |cxt|
+        cxt['Boom'] = constructor
+        cxt['puts'] = method(:puts)
+        danger = <<-JS
+  Boom.prototype.boom = function() {
+    this.detonate()
+  }
+  var go = new(Boom)()
+  try {
+    go.boom()
+  } catch (e) {
+  }
+  go.boom()
+  JS
+        expect {cxt.eval(danger, 'danger.js')}.should raise_error(V8::JSError)
+      end
+    end
+
 end
