@@ -1,3 +1,3 @@
 module V8
-  VERSION = "0.8.2.pre2"
+  VERSION = "0.9.0beta1"
 end
