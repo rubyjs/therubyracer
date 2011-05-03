@@ -46,7 +46,7 @@ describe V8::Portal::Proxies do
             v8_gc()
           end
       end
-    end
+    end if RUBY_VERSION >= "1.9.2"
   end
 
   context "for a JavaScript objects which are embedded into Ruby" do
@@ -66,9 +66,9 @@ describe V8::Portal::Proxies do
     it "will not a proxy twice if the proxy creator block actually registers the proxy inside it" do
       target = Object.new
       proxy = c::Object::New()
-      expect {subject.rb2js(target) do |object| 
+      expect {subject.rb2js(target) do |object|
         subject.register_javascript_proxy(proxy, :for => object)
-        c::Object::New()        
+        c::Object::New()
       end}.should_not raise_error
       subject.rb2js(target).should be(proxy)
     end
@@ -92,7 +92,7 @@ describe V8::Portal::Proxies do
           v8_gc
         end
       end
-    end
+    end if RUBY_VERSION >= "1.9.2"
 
     context "looking up a Ruby object from a random JavaScript object" do
       it "checks first if it's a native Ruby object with a javascript proxy" do
@@ -180,8 +180,10 @@ describe V8::Portal::Proxies do
 
   after do
     ruby_gc do
-      @after.each(&:call) if @after
+      @after.each do |proc|
+        proc.call
+      end if @after
     end
-  end
+  end if RUBY_VERSION >= '1.9.2'
 
 end

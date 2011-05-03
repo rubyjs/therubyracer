@@ -24,11 +24,15 @@ module V8::ExtSpec
   end
   
   def ruby_gc
-    current = GC.stress
-    GC.stress = true
+    if GC.respond_to?(:stress)
+      current = GC.stress
+      GC.stress = true
+    end
     yield
   ensure
-    GC.stress = current
+    if GC.respond_to?(:stess)
+      GC.stress = current
+    end
   end
 
   def v8_gc

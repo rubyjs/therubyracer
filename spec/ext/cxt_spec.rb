@@ -30,7 +30,7 @@ describe C::Context do
       one();
 JS
       trace.length.should be(4)
-      trace.first.tap do |frame|
+      trace.to_a[0].tap do |frame|
         frame.line_number.should == 10
         frame.column.should == 16
         frame.script_name.should == 'trace.js'
