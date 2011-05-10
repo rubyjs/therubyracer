@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
 require "v8/version"
+require 'pathname'
 
 Gem::Specification.new do |s|
   s.name = s.rubyforge_project = "therubyracer"
@@ -11,9 +12,13 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/cowboyd/therubyracer"
   s.email = "cowboyd@thefrontside.net"
   
-  s.files = `git ls-files`.split("\n").reject {|f| f =~ /^ext\/.*\/samples/ || f =~ /^ext\/.*\/test/ || f =~ /^ext\/.*\/benchmarks/}
-  s.files += Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), "spec/redjs"))) do
+  root = Pathname(__FILE__).dirname
+  s.files = `git ls-files`.split("\n")
+  s.files += Dir.chdir(root.join("spec/redjs")) do
     `git ls-files`.split("\n").map {|f| "spec/redjs/#{f}"}
+  end
+  s.files += Dir.chdir(root.join("ext/v8/upstream/v8")) do
+    `git ls-files`.split("\n").reject {|f| f =~ /^test/ || f =~ /^samples/ || f =~ /^benchmarks/}.map {|f| "ext/v8/upstream/v8/#{f}"}
   end
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.extensions = ["ext/v8/extconf.rb"]

@@ -2,7 +2,6 @@
 SCONS=build/scons/install/bin/scons
 SCONSSRC=build/scons
 V8SRC=build/v8
-V8VERSION=3.1.8
 LIBV8=build/v8/libv8.a
 LIBV8_G=build/v8/libv8_g.a
 GCC_VERSION=$(shell ruby -e 'puts %x{gcc --version} =~ /(\d)\.(\d)\.\d/ ? $$1 + $$2 : "UNKNOWN"')
@@ -24,7 +23,7 @@ $(SCONS): $(SCONSSRC)
 	python build/scons/setup.py install --prefix=install
 
 $(V8SRC): build
-	cp -r $(V8VERSION) build/v8
+	cp -r v8 build
 	patch -td build/v8 -i ../../fpic-on-linux-amd64.patch
 
 $(SCONSSRC): build
