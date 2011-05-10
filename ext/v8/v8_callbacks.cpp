@@ -118,4 +118,11 @@ VALUE rr_v82rb(const AccessorInfo& info) {
 
 VALUE rr_v82rb(const Arguments& arguments) {
   return Data_Wrap_Struct(ArgumentsClass, gc_wrap_mark, gc_wrap_free, new WrapArguments(arguments));  
+VALUE rr_v8_arguments_new(const Arguments& arguments) {
+  return Data_Wrap_Struct(ArgumentsClass, 0, 0, new WrapArguments(arguments));  
+}
+void rr_v8_arguments_destroy(VALUE args) {
+  WrapArguments* arguments = 0;
+  Data_Get_Struct(args, struct WrapArguments, arguments);
+  delete arguments;
 }
