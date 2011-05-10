@@ -4,6 +4,9 @@ include V8
 
 describe C::TryCatch do
 
+  before {@cxt = C::Context::New()}
+  after {@cxt.Dispose()}
+
   it "does not allow instance creation by default" do
     lambda {
      C::TryCatch.new 
