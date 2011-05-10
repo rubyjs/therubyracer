@@ -52,6 +52,9 @@ namespace {
     Local<Value> names = object->GetPropertyNames();
     return rr_v82rb(names);
   }
+  VALUE GetIdentityHash(VALUE self) {
+    return rr_v82rb(unwrap(self)->GetIdentityHash());
+  }
   VALUE SetHiddenValue(VALUE self, VALUE key, VALUE value) {
     HandleScope scope;
     if (Context::InContext()) {
@@ -86,6 +89,7 @@ void rr_init_object() {
   rr_define_method(ObjectClass, "Get", Get, 1);
   rr_define_method(ObjectClass, "Set", Set, 2);
   rr_define_method(ObjectClass, "GetPropertyNames", GetPropertyNames, 0);
+  rr_define_method(ObjectClass, "GetIdentityHash", GetIdentityHash, 0);
   rr_define_method(ObjectClass, "GetHiddenValue", GetHiddenValue, 1);
   rr_define_method(ObjectClass, "SetHiddenValue", SetHiddenValue, 2);
   rr_define_method(ObjectClass, "GetPrototype", GetPrototype, 0);
