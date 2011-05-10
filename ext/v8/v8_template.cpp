@@ -59,10 +59,12 @@ namespace {
   Handle<Value> RubyInvocationCallback(const Arguments& args) {
     Handle<External> v8_data_wrapper = Handle<External>::Cast(args.Data());
     v8_callback_data* v8_data = (v8_callback_data*)v8_data_wrapper->Value();
-    VALUE rb_args = rr_v82rb(args);
-    rb_iv_set(rb_args, "data", v8_data->data);
     if (RTEST(v8_data->handler)) {
+    // VALUE rb_args = rr_v82rb(args);
+      VALUE rb_args = rr_v8_arguments_new(args);
+      rb_iv_set(rb_args, "data", v8_data->data);
       VALUE result = rb_funcall(v8_data->handler, rb_intern("call"), 1, rb_args);
+      rr_v8_arguments_destroy(rb_args);
       return rr_rb2v8(result);
     } else {
       return Handle<Value>();
