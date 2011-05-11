@@ -43,6 +43,7 @@ module V8
         @js_proxies_js2rb[proxy] = target
         @js_proxies_rb2js[target] = proxy
         proxy.MakeWeak(nil, @clear_js_proxy)
+        V8::C::V8::AdjustAmountOfExternalAllocatedMemory(16 * 1024)
       end
 
       def rb_object_2_js_proxy(object)
@@ -59,6 +60,7 @@ module V8
         @rb_proxies_rb2js[proxy.object_id] = target
         @rb_proxies_js2rb[target] = proxy.object_id
         ObjectSpace.define_finalizer(proxy, @clear_rb_proxy)
+        V8::C::V8::AdjustAmountOfExternalAllocatedMemory(8 * 1024)
       end
 
       def js_object_2_rb_proxy(object)
@@ -83,6 +85,7 @@ module V8
           rb = @js2rb[proxy]
           @js2rb.delete(proxy)
           @rb2js.delete(rb)
+          V8::C::V8::AdjustAmountOfExternalAllocatedMemory(-16 * 1024)
         end
       end
 
@@ -95,6 +98,7 @@ module V8
           js = @rb2js[proxy_id]
           @rb2js.delete(proxy_id)
           @js2rb.delete(js)
+          V8::C::V8::AdjustAmountOfExternalAllocatedMemory(-8 * 1024)
         end
       end
     end
