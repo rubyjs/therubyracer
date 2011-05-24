@@ -12,8 +12,7 @@ v8_weakref::v8_weakref(VALUE object) {
 void v8_weakref::set(VALUE value) {
   this->object_id = rb_obj_id(value);
   VALUE data = Data_Wrap_Struct(rb_cObject, 0, 0, this);
-  VALUE finalizer = rb_proc_new((VALUE (*)(...))v8_weakref_finalize, data);
-  rb_funcall(v8_weakref_objectspace(), rb_intern("define_finalizer"), 2, value, finalizer);
+  rr_define_finalizer(value,(void*)v8_weakref_finalize, data);
 }
 
 VALUE v8_weakref::get() {

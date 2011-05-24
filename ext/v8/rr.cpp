@@ -40,6 +40,13 @@ VALUE rr_const_get(const char *name) {
   return rb_const_get(V8_C, rb_intern(name));
 }
 
+VALUE rr_define_finalizer(VALUE object, void* finalizer, VALUE data) {
+  VALUE finalizer_proc = rb_proc_new((VALUE (*)(...))finalizer, data);
+  rb_iv_set(finalizer_proc, "data", data);
+  VALUE ospace = rb_const_get(rb_cObject, rb_intern("ObjectSpace"));
+  rb_funcall(ospace, rb_intern("define_finalizer"), 2, object, finalizer_proc);
+}
+
 VALUE rr_v82rb(Handle<Value> value) {
   if (value.IsEmpty()) {
     return rr_v8_value_empty();
