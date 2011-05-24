@@ -73,6 +73,17 @@ module V8
         @rb_proxies_rb2js[proxy.object_id]
       end
 
+      def js_empty?
+        @js_proxies_rb2js.empty? && @js_proxies_js2rb.empty?
+      end
+
+      def rb_empty?
+        @rb_proxies_rb2js.empty? && @rb_proxies_js2rb.empty?
+      end
+
+      def empty?
+        js_empty? && rb_empty?
+      end
       DoubleProxyError = Class.new(StandardError)
 
       class ClearJSProxy
