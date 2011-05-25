@@ -1,6 +1,6 @@
 # Changelog  
 
-## Edge
+## 0.8.2 - 2011/05/25
 
 * expose the V8 debugger via V8::C::Debug::EnableAgent()
 * force UTf-8 encoding on strings returned from javascript in ruby 1.9
