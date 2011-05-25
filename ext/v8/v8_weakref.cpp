@@ -4,6 +4,8 @@
 using namespace v8;
 
 v8_weakref::v8_weakref(VALUE object) {
+  this->v8_active = true;
+  this->rb_active = true;
   this->external = Persistent<External>::New(External::New((void *)this));
   this->external.MakeWeak(this, v8_weakref_dispose);
   this->set(object);
@@ -11,6 +13,7 @@ v8_weakref::v8_weakref(VALUE object) {
 
 void v8_weakref::set(VALUE value) {
   this->object_id = rb_obj_id(value);
+  this->rb_active = true;
   VALUE data = Data_Wrap_Struct(rb_cObject, 0, 0, this);
   rr_define_finalizer(value,(void*)v8_weakref_finalize, data);
 }
@@ -27,13 +30,21 @@ VALUE v8_weakref_finalize(VALUE object_id, VALUE data) {
   v8_weakref* weakref = 0;
   Data_Get_Struct(data, struct v8_weakref, weakref);
   weakref->object_id = Qnil;
+  weakref->rb_active = false;
+  if (!weakref->v8_active) {
+    delete weakref;
+  }
   return Qnil;
 }
 
-void v8_weakref_dispose(Persistent<Value> value, void* weakref) {
+void v8_weakref_dispose(Persistent<Value> value, void* data) {
   value.Dispose();
   value.Clear();
-  delete (v8_weakref*)weakref;
+  v8_weakref* weakref = (v8_weakref*)data;
+  weakref->v8_active = false;
+  if (!weakref->rb_active) {
+    delete weakref;
+  }
 }
 
 VALUE v8_weakref_nil(VALUE nil, VALUE exception) {

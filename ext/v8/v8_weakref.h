@@ -13,6 +13,8 @@ struct v8_weakref  {
   void release();
 
   VALUE object_id;
+  bool v8_active;
+  bool rb_active;
   v8::Persistent<v8::External> external;
 };
 
