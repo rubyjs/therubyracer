@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.extensions = ["ext/v8/extconf.rb"]
   s.require_paths = ["lib", "ext"]
 
-  s.add_development_dependency "rake"
+  s.add_development_dependency "rake", "~> 0.8.7"
   s.add_development_dependency "rspec", ">= 2.0.0"
   s.add_development_dependency "rake-compiler"
 end
