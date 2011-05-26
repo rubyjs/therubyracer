@@ -5,6 +5,7 @@ v8.bundle
 v8.so
 *.o
 *.gem
+*.rbc
 *.log
 *~
 docs/cpp/html/*
