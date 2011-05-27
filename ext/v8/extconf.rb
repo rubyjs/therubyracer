@@ -1,6 +1,11 @@
 require 'mkmf'
 require 'set'
-require 'libv8'
+begin
+  require 'libv8'
+rescue LoadError
+  require 'rubygems'
+  require 'libv8'
+end
 
 puts "Compiling The Ruby Racer..."
 

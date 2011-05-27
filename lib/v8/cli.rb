@@ -25,8 +25,9 @@ module V8
         exit(1)
       end
       if options.version_info
+        require 'libv8'
         puts "The Ruby Racer #{V8::VERSION}"
-        puts "V8 Version 2.3.3"
+        puts "V8 Version #{Libv8::V8_VERSION}"
         exit
       elsif options.selftest
         self.test        
