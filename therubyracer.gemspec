@@ -17,12 +17,11 @@ Gem::Specification.new do |s|
   s.files += Dir.chdir(root.join("spec/redjs")) do
     `git ls-files`.split("\n").map {|f| "spec/redjs/#{f}"}
   end
-  s.files += Dir.chdir(root.join("ext/v8/upstream/v8")) do
-    `git ls-files`.split("\n").reject {|f| f =~ /^test/ || f =~ /^samples/ || f =~ /^benchmarks/}.map {|f| "ext/v8/upstream/v8/#{f}"}
-  end
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.extensions = ["ext/v8/extconf.rb"]
   s.require_paths = ["lib", "ext"]
+
+  s.add_dependency "libv8", "~> 3.3.8.2"
 
   s.add_development_dependency "rake", "~> 0.8.7"
   s.add_development_dependency "rspec", ">= 2.0.0"
