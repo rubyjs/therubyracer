@@ -8,9 +8,12 @@ module V8
       begin
         super(initialize_unsafe(try))
       rescue Exception => e
-        @boundaries = Boundary.new(:rbframes => e.backtrace)
+        @boundaries = [Boundary.new(:rbframes => e.backtrace)]
         @value = e
-        super("BUG! please report. JSError#initialize failed!: #{e.message}")
+        super(<<-EOMSG)
+You have uncovered what is probably a BUG in therubyracer exception code. An error report would be very helpful.
+JSError#initialize failed!: #{e.message}"
+EOMSG
       end
     end
 
@@ -93,8 +96,8 @@ module V8
       raw = @to.rb(try.StackTrace())
       if raw && !raw.empty? && !syntax_error?(try)
         raw.split("\n")[1..-1].tap do |frames|
-          frames.each {|frame| frame.strip!.chomp!(",")}
-        end
+          frames.each {|frame| frame.strip!; frame.chomp!(",")}
+        end.reject(&:empty?)
       else
         msg = try.Message()
         ["at #{@to.rb(msg.GetScriptResourceName())}:#{msg.GetLineNumber()}:#{msg.GetStartColumn() + 1}"]
