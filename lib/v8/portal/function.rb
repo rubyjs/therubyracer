@@ -2,7 +2,7 @@ module V8
   class Portal
     class FunctionAdapter
 
-      attr_reader :template, :function
+      attr_reader :template
 
       def initialize(portal, code)
         @portal = portal

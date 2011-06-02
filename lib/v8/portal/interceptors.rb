@@ -2,7 +2,6 @@ module V8
   class Portal
     class Interceptors
       def initialize(portal)
-        @portal
         @getter = NamedPropertyGetter.new(portal)
         @setter = NamedPropertySetter.new(portal)
         @query = nil

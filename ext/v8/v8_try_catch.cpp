@@ -23,6 +23,7 @@ namespace {
       HandleScope scope;
       TryCatch tc;
       VALUE try_catch = Data_Wrap_Struct(TryCatchClass, 0, 0, &tc);
+      rb_iv_set(try_catch, "dead", Qfalse);
       VALUE result = rb_yield(try_catch);
       rb_iv_set(try_catch, "dead", Qtrue);
       tc.Reset();

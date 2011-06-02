@@ -2,7 +2,7 @@
 module V8
   class Portal
     class ConstructorAdapter
-      attr_reader :template, :function, :exposed
+      attr_reader :template, :exposed
       alias_method :exposed?, :exposed
 
       def initialize(templates, class_id)
