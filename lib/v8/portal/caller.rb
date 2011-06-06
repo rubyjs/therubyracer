@@ -16,6 +16,8 @@ module V8
             raise e
           else
             error = V8::C::Exception::Error(V8::C::String::New(e.message))
+            #TODO: This is almost certainly a crash here.
+            #we need to hold onto `error` while it bubbles up the javascript stack.
             error.SetHiddenValue("TheRubyRacer::Cause", C::External::New(e))
             V8::C::ThrowException(error)
           end
