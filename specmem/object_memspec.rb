@@ -11,4 +11,9 @@ describe V8::C::Object do
       v8_eval('o').object_id.should_not be(old_id)
     end
   end
+
+  it "will include null character in string data" do
+    v8_eval('var o = "\0"')
+    v8_eval('o').Utf8Value().should == "\0"
+  end
 end
