@@ -24,7 +24,8 @@ namespace {
   }
   VALUE Utf8Value(VALUE self) {
     HandleScope handles;
-    return rb_str_new2(*String::Utf8Value(unwrap(self)));
+    Handle<String> str = unwrap(self);
+    return rb_str_new(*String::Utf8Value(str), str->Utf8Length());
   }
   VALUE Utf16Value(VALUE self) {
     //How are UTF16 strings represented in ruby 1.8, 1.9
@@ -32,7 +33,8 @@ namespace {
   }
   VALUE AsciiValue(VALUE self) {
     HandleScope handles;
-    return rb_str_new2(*String::AsciiValue(unwrap(self)));
+    Handle<String> str = unwrap(self);
+    return rb_str_new(*String::AsciiValue(str), str->Length());
   }
 }
 
