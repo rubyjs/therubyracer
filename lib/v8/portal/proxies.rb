@@ -46,10 +46,16 @@ module V8
         V8::C::V8::AdjustAmountOfExternalAllocatedMemory(16 * 1024)
       end
 
+      # Lookup the JavaScript proxy for a natively Ruby object
+      # @param [Object] object the Ruby object
+      # @return [V8::C::Handle] the JavaScript proxy representing `object`
       def rb_object_2_js_proxy(object)
         @js_proxies_rb2js[object]
       end
 
+      # Look up a natively Ruby object given its JavaScript proxy
+      # @param [V8::C::Handle] proxy the JavaScript proxy
+      # @return [Object] the Ruby object represented by `proxy`
       def js_proxy_2_rb_object(proxy)
         @js_proxies_js2rb[proxy]
       end
@@ -63,12 +69,18 @@ module V8
         V8::C::V8::AdjustAmountOfExternalAllocatedMemory(8 * 1024)
       end
 
+      # Looks up the Ruby proxy for an object that is natively JavaScript
+      # @param [V8::C::Handle] object the JavaScript whose proxy we want
+      # @return [Object] the Ruby proxy for `object`
       def js_object_2_rb_proxy(object)
         if id = @rb_proxies_js2rb[object]
           ObjectSpace._id2ref id
         end
       end
 
+      # Looks up the natively JavaScript object by its Ruby proxy
+      # @param [Object] proxy the Ruby proxy
+      # @return [V8::C::Handle] the native JavaScript object
       def rb_proxy_2_js_object(proxy)
         @rb_proxies_rb2js[proxy.object_id]
       end
