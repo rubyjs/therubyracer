@@ -12,11 +12,12 @@ describe V8::Portal::Proxies do
     end
 
     it "releases the hard reference if its corresponding javascript object has been garbage collected" do
-      rb_object = Object.new
-      js_proxy = c::Object::New()
-      subject.register_javascript_proxy js_proxy, :for => rb_object
-      rb_object = nil
       ruby_gc do
+        rb_object = Object.new
+        js_proxy = c::Object::New()
+        subject.should be_empty
+        subject.register_javascript_proxy js_proxy, :for => rb_object
+        rb_object = nil
         subject.should_not be_empty
         v8_gc()
       end
