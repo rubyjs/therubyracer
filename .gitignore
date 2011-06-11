@@ -8,9 +8,6 @@ v8.so
 *.rbc
 *.log
 *~
-docs/cpp/html/*
-
-ext/v8/upstream/build
-
 pkg/
 tmp/
+.yardoc/
