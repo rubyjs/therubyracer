@@ -25,6 +25,7 @@ extern "C" {
 
 extern "C" {
   void Init_v8() {
+    v8::Locker locker;
     rr_init_handle();
     rr_init_context();
     rr_init_value();

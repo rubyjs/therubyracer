@@ -4,12 +4,13 @@ module V8::ExtSpec
   def self.included(object)
     object.class_eval do
       before do
+        @lock = c::Locker.new
         @cxt = c::Context::New()
         @cxt.Enter()
       end
       after do
         @cxt.Exit()
-        @cxt.Dispose()
+        @lock.delete
       end
     end
   end

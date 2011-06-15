@@ -3,9 +3,7 @@ require "#{File.dirname(__FILE__)}/../spec_helper.rb"
 include V8
 
 describe C::TryCatch do
-
-  before {@cxt = C::Context::New()}
-  after {@cxt.Dispose()}
+  include V8::ExtSpec
 
   it "does not allow instance creation by default" do
     lambda {

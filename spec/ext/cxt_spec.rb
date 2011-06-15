@@ -5,6 +5,13 @@ include V8
 
 describe C::Context do  
 
+  before do
+    @locker = C::Locker.new
+  end
+  after do
+    @locker.delete
+  end
+
   it "should not have a current context if no context is open" do
     C::Context::GetEntered().should be_nil
   end

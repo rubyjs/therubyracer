@@ -4,8 +4,8 @@ module V8
     def methodcall(thisObject, *args)
       err = nil
       return_value = nil
-      C::TryCatch.try do |try|
-        @portal.open do |to|
+      @portal.open do |to|
+        C::TryCatch.try do |try|
           this = to.v8(thisObject)
           return_value = to.rb(@native.Call(this, to.v8(args)))
           err = JSError.new(try, to) if try.HasCaught()
@@ -16,7 +16,9 @@ module V8
     end
     
     def call(*args)
-      self.methodcall(@portal.context.native.Global(), *args)
+      @portal.open do
+        self.methodcall(@portal.context.native.Global(), *args)
+      end
     end
     
     def new(*args)

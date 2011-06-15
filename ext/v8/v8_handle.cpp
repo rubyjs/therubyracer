@@ -10,13 +10,11 @@ v8_handle::v8_handle(Handle<void> handle) : handle(Persistent<void>::New(handle)
   this->dead = false;
 }
 
-v8_handle::~v8_handle() {
-  handle.Dispose();
-  handle.Clear();
-  dead = true;
-}
+v8_handle::~v8_handle() {}
 
 namespace {
+  VALUE handle_queue;
+
   void v8_handle_mark(v8_handle* handle) {
     rb_gc_mark(handle->weakref_callback);
     rb_gc_mark(handle->weakref_callback_parameters);
@@ -24,6 +22,21 @@ namespace {
 
   void v8_handle_free(v8_handle* handle) {
     delete handle;
+  }
+
+  void v8_handle_enqueue(v8_handle* handle) {
+    handle->dead = true;
+    VALUE zombie = Data_Wrap_Struct(rr_v8_handle_class(), 0, v8_handle_free, handle);
+    rb_ary_unshift(handle_queue, zombie);
+  }
+
+  void v8_handle_dequeue(GCType type, GCCallbackFlags flags) {
+    for (VALUE handle = rb_ary_pop(handle_queue); RTEST(handle); handle = rb_ary_pop(handle_queue)) {
+      v8_handle* dead = NULL;
+      Data_Get_Struct(handle, struct v8_handle, dead);
+      dead->handle.Dispose();
+      dead->handle.Clear();
+    }
   }
 
   VALUE New(VALUE self, VALUE handle) {
@@ -101,11 +114,15 @@ void rr_init_handle() {
   rr_define_method(HandleClass, "ClearWeak", ClearWeak, 0);
   rr_define_method(HandleClass, "IsNearDeath", IsNearDeath, 0);
   rr_define_method(HandleClass, "IsWeak", IsWeak, 0);
+
+  handle_queue = rb_ary_new();
+  rb_gc_register_address(&handle_queue);
+  V8::AddGCPrologueCallback(v8_handle_dequeue);
 }
 
 VALUE rr_v8_handle_new(VALUE klass, v8::Handle<void> handle) {
   v8_handle* new_handle = new v8_handle(handle);
-  return Data_Wrap_Struct(klass, v8_handle_mark, v8_handle_free, new_handle);
+  return Data_Wrap_Struct(klass, v8_handle_mark, v8_handle_enqueue, new_handle);
 }
 
 VALUE rr_v8_handle_class() {
