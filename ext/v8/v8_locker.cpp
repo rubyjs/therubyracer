@@ -66,8 +66,8 @@ namespace {
     * For details on V8 locking semantics, see the locking {API http://izs.me/v8-docs/classv8_1_1Unlocker.html}
     * @return [V8::C::Unocker] the new locker
     */
-    VALUE New(VALUE UnockerClass) {
-      Unlocker unlocker = new Unlocker();
+    VALUE New(VALUE UnlockerClass) {
+      Unlocker* unlocker = new Unlocker();
       return Data_Wrap_Struct(UnlockerClass, 0, 0, (void*)unlocker);
     }
 
@@ -80,7 +80,7 @@ namespace {
     */
     VALUE Delete(VALUE self) {
       Unlocker* unlocker;
-      Data_Get_Struct(self, class Locker, locker);
+      Data_Get_Struct(self, class Unlocker, unlocker);
       delete unlocker;
     }
   }
@@ -126,7 +126,6 @@ namespace {
 }
 
 void rr_init_v8_locker() {
-  VALUE V8 = rb_define_module("V8");
   VALUE LockerClass = rr_define_class("Locker");
   VALUE UnlockerClass = rr_define_class("Unlocker");
   rr_define_singleton_method(LockerClass, "new", Lock::New, 0);

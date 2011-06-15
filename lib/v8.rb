@@ -4,6 +4,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 module V8
   require 'v8/version'
   require 'v8/v8' #native glue
+  require 'v8/c/locker'
   require 'v8/portal'
   require 'v8/portal/caller'
   require 'v8/portal/proxies'
