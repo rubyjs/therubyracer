@@ -1,5 +1,11 @@
 # Changelog  
 
+## 0.9.1 - 2011/06/17
+
+* never perform V8 operations inside Ruby GC
+* refactor locking interface
+* add documentation for v8_handle
+
 ## 0.9.0 - 2011/06/10
 
 * extract libv8 into installable binary for most platforms
