@@ -18,13 +18,22 @@ v8_handle::v8_handle(Handle<void> object) {
 v8_handle::~v8_handle() {}
 
 v8_handle::Payload::Payload(Handle<void> object) {
+  rb_gc_register_address(&wrapper);
   handle = Persistent<void>::New(object);
+  wrapper = Data_Wrap_Struct(rb_cObject, 0, destroy, this);
 }
 
-v8_handle::Payload::~Payload() {}
+v8_handle::Payload::~Payload() {
+  rb_gc_unregister_address(&wrapper);
+}
+
 void v8_handle::Payload::release() {
   handle.Dispose();
   handle.Clear();
+}
+
+void v8_handle::Payload::destroy(v8_handle::Payload* payload) {
+  delete payload;
 }
 
 namespace {
@@ -45,14 +54,6 @@ namespace {
   }
 
   /**
-  * Deallocates this handle. This function is invoked on Zombie handles after they have
-  * been released from V8 and finally
-  */
-  void v8_handle_free(v8_handle::Payload* payload) {
-    delete payload;
-  }
-
-  /**
   * Whenver a V8::C::Handle becomes garbage collected, we do not free it immediately.
   * instead, we put them into a "zombie" queue, where its corresponding V8 storage cell
   * can be released safely while the V8 engine is running. A zombie Ruby object is 
@@ -60,8 +61,7 @@ namespace {
   */
   void v8_handle_enqueue(v8_handle* handle) {
     handle->dead = true;
-    VALUE payload = Data_Wrap_Struct(rb_cObject, 0, v8_handle_free, handle->payload);
-    rb_ary_unshift(handle_queue, payload);
+    rb_ary_unshift(handle_queue, handle->payload->wrapper);
   }
 
   /**
@@ -113,8 +113,6 @@ namespace {
     }
     value.Dispose();
     handle->payload->release();
-    // handle->handle.Dispose();
-    // handle->handle.Clear();
     handle->dead = true;
 
   }

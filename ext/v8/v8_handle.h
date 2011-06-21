@@ -14,7 +14,9 @@ struct v8_handle  {
     Payload(v8::Handle<void> object);
     virtual ~Payload();
     void release();
+    static void destroy(v8_handle::Payload* payload);
     v8::Persistent<void> handle;
+    VALUE wrapper;
   };
 
   v8_handle(v8::Handle<void> object);
