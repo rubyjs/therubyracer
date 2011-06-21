@@ -155,8 +155,8 @@ void rr_init_handle() {
   rr_define_method(HandleClass, "IsNearDeath", IsNearDeath, 0);
   rr_define_method(HandleClass, "IsWeak", IsWeak, 0);
 
-  handle_queue = rb_ary_new();
   rb_gc_register_address(&handle_queue);
+  handle_queue = rb_ary_new();
   V8::AddGCPrologueCallback(v8_handle_dequeue);
 }
 
