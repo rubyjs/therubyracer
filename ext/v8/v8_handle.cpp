@@ -8,13 +8,24 @@ using namespace v8;
 * Creates a new Persistent storage cell for `handle`
 * so that we can reference it from Ruby.
 */
-v8_handle::v8_handle(Handle<void> handle) : handle(Persistent<void>::New(handle)) {
+v8_handle::v8_handle(Handle<void> object) {
   this->weakref_callback = Qnil;
   this->weakref_callback_parameters = Qnil;
   this->dead = false;
+  this->payload = new Payload(object);
 }
 
 v8_handle::~v8_handle() {}
+
+v8_handle::Payload::Payload(Handle<void> object) {
+  handle = Persistent<void>::New(object);
+}
+
+v8_handle::Payload::~Payload() {}
+void v8_handle::Payload::release() {
+  handle.Dispose();
+  handle.Clear();
+}
 
 namespace {
   /**
@@ -37,8 +48,8 @@ namespace {
   * Deallocates this handle. This function is invoked on Zombie handles after they have
   * been released from V8 and finally
   */
-  void v8_handle_free(v8_handle* handle) {
-    delete handle;
+  void v8_handle_free(v8_handle::Payload* payload) {
+    delete payload;
   }
 
   /**
@@ -49,8 +60,8 @@ namespace {
   */
   void v8_handle_enqueue(v8_handle* handle) {
     handle->dead = true;
-    VALUE zombie = Data_Wrap_Struct(rr_v8_handle_class(), 0, v8_handle_free, handle);
-    rb_ary_unshift(handle_queue, zombie);
+    VALUE payload = Data_Wrap_Struct(rb_cObject, 0, v8_handle_free, handle->payload);
+    rb_ary_unshift(handle_queue, payload);
   }
 
   /**
@@ -63,10 +74,9 @@ namespace {
   */
   void v8_handle_dequeue(GCType type, GCCallbackFlags flags) {
     for (VALUE handle = rb_ary_pop(handle_queue); RTEST(handle); handle = rb_ary_pop(handle_queue)) {
-      v8_handle* dead = NULL;
-      Data_Get_Struct(handle, struct v8_handle, dead);
-      dead->handle.Dispose();
-      dead->handle.Clear();
+      v8_handle::Payload* payload = NULL;
+      Data_Get_Struct(handle, struct v8_handle::Payload, payload);
+      payload->release();
     }
   }
 
@@ -102,8 +112,9 @@ namespace {
       rb_funcall(callback, rb_intern("call"), 2, self, parameters);
     }
     value.Dispose();
-    handle->handle.Dispose();
-    handle->handle.Clear();
+    handle->payload->release();
+    // handle->handle.Dispose();
+    // handle->handle.Clear();
     handle->dead = true;
 
   }
