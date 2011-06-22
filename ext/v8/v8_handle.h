@@ -6,9 +6,17 @@
 
 /**
 * Holds a reference to a V8 heap object. This serves as the base
-* class for all of the low-level proxies that reference into V8
+* class for all of the low-level proxies that reference into V8.
+*
 */
 struct v8_handle  {
+
+  /**
+  * Contains the *actual* V8 references. This object is kept
+  * separate so that it can be "detached" from the handle when
+  * it is garbage collected, and enqueued separately and
+  * collected in the context of a V8 thread.
+  */
 
   struct Payload {
     Payload(v8::Handle<void> object);
