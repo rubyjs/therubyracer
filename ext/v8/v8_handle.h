@@ -7,7 +7,6 @@
 /**
 * Holds a reference to a V8 heap object. This serves as the base
 * class for all of the low-level proxies that reference into V8.
-*
 */
 struct v8_handle  {
 

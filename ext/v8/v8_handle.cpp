@@ -6,7 +6,9 @@ using namespace v8;
 
 /**
 * Creates a new Persistent storage cell for `handle`
-* so that we can reference it from Ruby.
+* so that we can reference it from Ruby. Ruby metadat
+* is contained on the handle object, and then the actual
+* v8 references are contain in an instance of `Payload`
 */
 v8_handle::v8_handle(Handle<void> object) {
   this->weakref_callback = Qnil;
@@ -17,6 +19,14 @@ v8_handle::v8_handle(Handle<void> object) {
 
 v8_handle::~v8_handle() {}
 
+/**
+* Construct a new handle payload.
+*
+* Each payload contains a Ruby object wrapper so that it
+* can be enqueued for V8 GC (the GC queue is a ruby Array)
+* the wrapper is pre-allocated at payload creation time
+* so that no Ruby objects are allocated during Ruby GC.
+*/
 v8_handle::Payload::Payload(Handle<void> object) {
   rb_gc_register_address(&wrapper);
   handle = Persistent<void>::New(object);
@@ -56,7 +66,7 @@ namespace {
   /**
   * Whenver a V8::C::Handle becomes garbage collected, we do not free it immediately.
   * instead, we put them into a "zombie" queue, where its corresponding V8 storage cell
-  * can be released safely while the V8 engine is running. A zombie Ruby object is 
+  * can be released safely while the V8 engine is running. A zombie Ruby object is
   * created to wrap it so that it can be stored in the queue.
   */
   void v8_handle_enqueue(v8_handle* handle) {
