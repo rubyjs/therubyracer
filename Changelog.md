@@ -1,4 +1,8 @@
-# Changelog  
+# Changelog
+
+## 0.9.2 - 2001/06/23
+
+* fix issue with 1.8.7 where object allocation inside of GC was segfaulting
 
 ## 0.9.1 - 2011/06/17
 
