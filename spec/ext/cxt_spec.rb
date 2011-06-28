@@ -9,6 +9,13 @@ describe C::Context do
     C::Context::GetEntered().should be_nil
   end
 
+  it "can javascript properties on the global scope via ruby when the default scope is a ruby object" do
+    V8::Context.new(:with => Object.new) do |cxt|
+      cxt['foo'] = 'bar'
+      cxt.eval('foo').should eql('bar')
+    end
+  end
+
   it "can get the current javascript execution stack" do
     V8::Context.new do |cxt|
       trace = nil

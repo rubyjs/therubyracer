@@ -59,11 +59,16 @@ module V8
     end
 
     def [](key)
-      @scope[key]
+      @to.open do
+        @to.rb @global.Get(@to.v8(key))
+      end
     end
 
     def []=(key, value)
-      @scope[key] = value
+      @to.open do
+        @global.Set(@to.v8(key), @to.v8(value))
+      end
+      return value
     end
 
     def self.stack(limit = 99)
