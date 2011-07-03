@@ -3,7 +3,10 @@ require "#{File.dirname(__FILE__)}/../spec_helper.rb"
 
 include V8
 
-describe C::Context do  
+describe C::Context do
+
+  before {@lock = C::Locker.new}
+  after {@lock.delete}
 
   it "should not have a current context if no context is open" do
     C::Context::GetEntered().should be_nil
@@ -26,11 +29,11 @@ describe C::Context do
       function one() {
         return two();
       }
-      
+
       function two() {
         return three();
       }
-      
+
       function three() {
         return getTrace()
       }

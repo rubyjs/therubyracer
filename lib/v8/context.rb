@@ -7,24 +7,26 @@ module V8
     def initialize(opts = {})
       @access = Access.new
       @to = Portal.new(self, @access)
-      with = opts[:with]
-      constructor = nil
-      template = if with
-        constructor = @to.templates.to_constructor(with.class)
-        constructor.disable()
-        constructor.template.InstanceTemplate()
-      else
-        C::ObjectTemplate::New()
+      @to.lock do
+        with = opts[:with]
+        constructor = nil
+        template = if with
+          constructor = @to.templates.to_constructor(with.class)
+          constructor.disable()
+          constructor.template.InstanceTemplate()
+        else
+          C::ObjectTemplate::New()
+        end
+        @native = opts[:with] ? C::Context::New(template) : C::Context::New()
+        @native.enter do
+          @global = @native.Global()
+          @to.proxies.register_javascript_proxy @global, :for => with if with
+          constructor.enable() if constructor
+          @scope = @to.rb(@global)
+          @global.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyContext"), C::External::New(self))
+        end
+        yield(self) if block_given?
       end
-      @native = opts[:with] ? C::Context::New(template) : C::Context::New()
-      @native.enter do
-        @global = @native.Global()
-        @to.proxies.register_javascript_proxy @global, :for => with if with
-        constructor.enable() if constructor
-        @scope = @to.rb(@global)
-        @global.SetHiddenValue(C::String::NewSymbol("TheRubyRacer::RubyContext"), C::External::New(self))
-      end
-      yield(self) if block_given?
     end
 
     def eval(javascript, filename = "<eval>", line = 1)
@@ -33,17 +35,19 @@ module V8
       end
       err = nil
       value = nil
-      C::TryCatch.try do |try|
-        @native.enter do
-          script = C::Script::Compile(@to.v8(javascript.to_s), @to.v8(filename.to_s))
-          if try.HasCaught()
-            err = JSError.new(try, @to)
-          else
-            result = script.Run()
+      @to.lock do
+        C::TryCatch.try do |try|
+          @native.enter do
+            script = C::Script::Compile(@to.v8(javascript.to_s), @to.v8(filename.to_s))
             if try.HasCaught()
               err = JSError.new(try, @to)
             else
-              value = @to.rb(result)
+              result = script.Run()
+              if try.HasCaught()
+                err = JSError.new(try, @to)
+              else
+                value = @to.rb(result)
+              end
             end
           end
         end

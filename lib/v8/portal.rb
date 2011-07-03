@@ -11,10 +11,19 @@ module V8
       @caller = Caller.new(self)
     end
 
+    def lock
+      lock = V8::C::Locker.new
+      yield
+    ensure
+      lock.delete
+    end
+
     def open
-      @context.native.enter do
-        yield(self)
-      end if block_given?
+      lock do
+        @context.native.enter do
+          yield(self)
+        end if block_given?
+      end
     end
 
     def rb(value)
