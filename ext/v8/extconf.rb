@@ -7,11 +7,13 @@ rescue LoadError
   require 'libv8'
 end
 
-puts "Compiling The Ruby Racer..."
-
-find_header('v8.h', Libv8.include_path)
 have_library('pthread')
 have_library('objc') if RUBY_PLATFORM =~ /darwin/
+
+#we have to manually prepend the libv8 include path to INCFLAGS
+#since find_header() does not actually work as advertized.
+#see https://github.com/cowboyd/therubyracer/issues/91
+$INCFLAGS.insert 0, "-I#{Libv8.include_path} "
 
 $CPPFLAGS += " -Wall" unless $CPPFLAGS.split.include? "-Wall"
 $CPPFLAGS += " -g" unless $CPPFLAGS.split.include? "-g"
