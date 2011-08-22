@@ -1,13 +1,16 @@
 # Changelog
 
+## 0.9.4 - 2011/08/22
 
-## 0.9.3 - 20011/08/11
+* Fix an issue with the compilation include paths which allowed compilation against conflicting libv8's
+
+## 0.9.3 - 2011/08/11
 
 * Better documentation for the C extension memory management
 * Always lock V8 operations, always.
 * GH-86 Context#[], Context#[]= always looks up values from the JavaScript scope, even when it's a Ruby object
 
-## 0.9.2 - 20011/06/23
+## 0.9.2 - 2011/06/23
 
 * fix issue with 1.8.7 where object allocation inside of GC was segfaulting
 
