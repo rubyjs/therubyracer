@@ -1,8 +1,8 @@
 #include "v8_exception.h"
 #include "rr.h"
 #include "v8_handle.h"
-#include "execinfo.h"
-#include "signal.h"
+// #include "execinfo.h"
+// #include "signal.h"
 
 using namespace v8;
 namespace {
@@ -10,14 +10,14 @@ namespace {
   static void* stack[20];
 
   void fatal(const char* location, const char* message) {
-    rb_raise(rb_eFatal, "%s: %s", location, message);    
+    rb_raise(rb_eFatal, "%s: %s", location, message);
   }
-  void segfault(int sig) {
-    fprintf(stderr, "segfault: game over.\n");
-    int size = backtrace(stack, 20);
-    backtrace_symbols_fd(stack, size, 2);
-    exit(1);
-  }
+  // void segfault(int sig) {
+  //   fprintf(stderr, "segfault: game over.\n");
+  //   int size = backtrace(stack, 20);
+  //   backtrace_symbols_fd(stack, size, 2);
+  //   exit(1);
+  // }
   VALUE _ThrowException(VALUE rbmod, VALUE value) {
     HandleScope scope;
     Handle<Value> err = rr_rb2v8(value);
