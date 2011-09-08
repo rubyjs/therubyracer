@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.description = "Call javascript code and manipulate javascript objects from ruby. Call ruby code and manipulate ruby objects from javascript."
   s.homepage = "http://github.com/cowboyd/therubyracer"
   s.email = "cowboyd@thefrontside.net"
-  
+
   root = Pathname(__FILE__).dirname
   s.files = `git ls-files`.split("\n")
   s.files += Dir.chdir(root.join("spec/redjs")) do
@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "libv8", "~> 3.3.10"
 
-  s.add_development_dependency "rake", "~> 0.9.1"
+  s.add_development_dependency "rake"
   s.add_development_dependency "rspec", "~> 2.0"
   s.add_development_dependency "rake-compiler"
 end
