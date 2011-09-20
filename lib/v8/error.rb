@@ -5,16 +5,14 @@ module V8
 
     def initialize(try, to)
       @to = to
-      begin
-        super(initialize_unsafe(try))
-      rescue Exception => e
-        @boundaries = [Boundary.new(:rbframes => e.backtrace)]
-        @value = e
-        super(<<-EOMSG)
+      super(initialize_unsafe(try))
+    rescue Exception => e
+      @boundaries = [Boundary.new(:rbframes => e.backtrace)]
+      @value = e
+      super(<<-EOMSG)
 You have uncovered what is probably a BUG in therubyracer exception code. An error report would be very helpful.
 JSError#initialize failed!: #{e.message}"
 EOMSG
-      end
     end
 
     def initialize_unsafe(try)
