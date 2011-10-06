@@ -19,7 +19,8 @@ $CPPFLAGS += " -g" unless $CPPFLAGS.split.include? "-g"
 $CPPFLAGS += " -rdynamic" unless $CPPFLAGS.split.include? "-rdynamic"
 
 $DEFLIBPATH.unshift(Libv8.library_path)
-$LIBS << ' -lv8 -lpthread'
+$LIBS << ' -lv8'
+$LIBS << ' -lpthread' unless $LIBS =~ /-lpthread/
 
 CONFIG['LDSHARED'] = '$(CXX) -shared' unless RUBY_PLATFORM =~ /darwin/
 
