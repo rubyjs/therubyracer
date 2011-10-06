@@ -6,7 +6,11 @@ module V8
 
       def initialize(portal, code)
         @portal = portal
-        @caller = code.respond_to?(:call) ? Call.new(portal) : BindAndCall.new(portal)
+        @caller = case code
+        when Method then BoundCall.new(portal)
+        when UnboundMethod then BindAndCall.new(portal)
+        else Call.new(portal)
+        end
         @code = code
         @template = V8::C::FunctionTemplate::New(@caller, @code)
       end
@@ -14,12 +18,23 @@ module V8
       def function
         @template.GetFunction()
       end
-      
+
       class Call
         def initialize(portal)
           @portal = portal
         end
 
+        def call(arguments)
+          proc = arguments.Data()
+          rbargs = [@portal.rb(arguments.This())]
+          for i in 0..arguments.Length() - 1
+            rbargs << @portal.rb(arguments[i])
+          end
+          @portal.caller.invoke(proc, *rbargs)
+        end
+      end
+
+      class BoundCall < Call
         def call(arguments)
           proc = arguments.Data()
           rbargs = []
@@ -29,7 +44,7 @@ module V8
           @portal.caller.invoke(proc, *rbargs)
         end
       end
-      
+
       class BindAndCall < Call
         def call(arguments)
           method = arguments.Data()
