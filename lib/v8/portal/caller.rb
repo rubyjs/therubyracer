@@ -2,11 +2,11 @@
 module V8
   class Portal
     class Caller
-      
+
       def initialize(portal)
         @portal = portal
       end
-      
+
       def raw
         yield
       rescue Exception => e
@@ -28,6 +28,7 @@ module V8
 
       def invoke(code, *args, &block)
         protect do
+          args = args.slice(0, code.arity) if code.arity >= 0
           code.call(*args, &block)
         end
       end
