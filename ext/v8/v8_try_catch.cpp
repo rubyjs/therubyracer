@@ -17,7 +17,7 @@ namespace {
       return tc;
     }
   }
-  
+
   VALUE Try(int argc, VALUE *argv, VALUE self) {
     if (rb_block_given_p()) {
       HandleScope scope;
@@ -32,30 +32,30 @@ namespace {
       return Qnil;
     }
   }
-  
+
   VALUE HasCaught(VALUE self) {
     TryCatch *tc = unwrap(self);
     return tc ? rr_v82rb(tc->HasCaught()) : Qnil;
   }
-  
+
   VALUE _Exception(VALUE self) {
     TryCatch *tc = unwrap(self);
     return tc ? rr_v82rb(tc->Exception()) : Qnil;
   }
-  
+
   VALUE _StackTrace(VALUE self) {
     TryCatch *tc = unwrap(self);
     return tc ? rr_v82rb(tc->StackTrace()) : Qnil;
-  }    
-  
+  }
+
   VALUE _Message(VALUE self) {
     TryCatch *tc = unwrap(self);
     return tc ? rr_v82rb(tc->Message()) : Qnil;
   }
-  
+
   VALUE CanContinue(VALUE self) {
     TryCatch *tc = unwrap(self);
-    return tc ? rr_v82rb(tc->CanContinue()) : Qnil;    
+    return tc ? rr_v82rb(tc->CanContinue()) : Qnil;
   }
 }
 

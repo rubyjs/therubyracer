@@ -1,5 +1,5 @@
 #ifndef _RR_V8_VALUE_
-#define _RR_V8_VALUE_ 
+#define _RR_V8_VALUE_
 
 #include "rr.h"
 

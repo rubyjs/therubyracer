@@ -2,11 +2,11 @@
 module V8
   class Portal
     class Caller
-      
+
       def initialize(portal)
         @portal = portal
       end
-      
+
       def raw
         yield
       rescue Exception => e

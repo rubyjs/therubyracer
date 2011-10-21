@@ -68,7 +68,7 @@ VALUE rr_v82rb(Handle<Value> value) {
   }
   if (value->IsNumber()) {
     return rb_float_new(value->NumberValue());
-  }  
+  }
   if (value->IsString()) {
     return rr_reflect_v8_string(value);
   }
@@ -84,7 +84,7 @@ VALUE rr_v82rb(Handle<Value> value) {
   if (value->IsObject()) {
     return rr_reflect_v8_object(value);
   }
-  return rr_wrap_v8_value(value);  
+  return rr_wrap_v8_value(value);
 }
 
 VALUE rr_v82rb(Handle<Message> value) {
@@ -146,7 +146,7 @@ Handle<Value> rr_rb2v8(VALUE value) {
     // TODO: use this conversion if value will fit in 32 bits.
     // return Integer::New(FIX2LONG(value));
   case T_FLOAT:
-    return Number::New(NUM2DBL(value));    
+    return Number::New(NUM2DBL(value));
   case T_STRING:
     return String::New(RSTRING_PTR(value), RSTRING_LEN(value));
   case T_NIL:
@@ -173,7 +173,7 @@ Handle<Value> rr_rb2v8(VALUE value) {
   case T_UNDEF:
 //  case T_VARMAP: (not in 1.9)
 //  case T_SCOPE: (not in 1.9)
-  case T_NODE:  
+  case T_NODE:
   default:
     rb_warn("unknown conversion to V8 for: %s", RSTRING_PTR(rb_inspect(value)));
     return String::New("Undefined Conversion");

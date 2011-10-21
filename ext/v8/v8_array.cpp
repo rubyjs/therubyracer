@@ -6,13 +6,13 @@ using namespace v8;
 
 
 namespace {
-  
+
   VALUE ArrayClass;
-  
+
   Persistent<Array>& unwrap(VALUE self) {
     return rr_v8_handle<Array>(self);
   }
-  
+
   VALUE New(int argc, VALUE *argv, VALUE self) {
     if (!Context::InContext()) {
       rb_raise(rb_eScriptError, "must be in a context to call Array::New()");
@@ -26,11 +26,11 @@ namespace {
     HandleScope scope;
     return rr_v8_handle_new(self, Array::New(NUM2INT(length)));
   }
-  
+
   VALUE Length(VALUE self) {
     return rr_v82rb(unwrap(self)->Length());
   }
-  
+
   VALUE CloneElementAt(VALUE self, VALUE index) {
     return rr_v82rb(unwrap(self)->CloneElementAt(NUM2UINT(index)));
   }

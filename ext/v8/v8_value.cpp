@@ -123,7 +123,7 @@ namespace {
   VALUE NumberValue(VALUE self) {
     HandleScope scope;
     return rr_v82rb(unwrap(self)->NumberValue());
-  }  
+  }
 }
 
 VALUE rr_v8_value_class() {

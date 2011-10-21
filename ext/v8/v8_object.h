@@ -1,5 +1,5 @@
 #ifndef _RUBY_V8_OBJECT_
-#define _RUBY_V8_OBJECT_ 
+#define _RUBY_V8_OBJECT_
 
 #include "rr.h"
 

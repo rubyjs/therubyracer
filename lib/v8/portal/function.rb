@@ -14,7 +14,7 @@ module V8
       def function
         @template.GetFunction()
       end
-      
+
       class Call
         def initialize(portal)
           @portal = portal
@@ -29,7 +29,7 @@ module V8
           @portal.caller.invoke(proc, *rbargs)
         end
       end
-      
+
       class BindAndCall < Call
         def call(arguments)
           method = arguments.Data()

@@ -1,5 +1,5 @@
 #ifndef _RR_V8_WEAKREF_
-#define _RR_V8_WEAKREF_ 
+#define _RR_V8_WEAKREF_
 
 #include <v8.h>
 #include "ruby.h"

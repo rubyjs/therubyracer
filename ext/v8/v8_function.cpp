@@ -7,10 +7,10 @@ using namespace v8;
 
 namespace {
   VALUE FunctionClass;
-  
+
   Persistent<Function>& unwrap(VALUE value) {
     return rr_v8_handle<Function>(value);
-  }  
+  }
   VALUE Call(VALUE self, VALUE recv, VALUE arguments) {
     HandleScope handles;
     if (!Context::InContext()) {
@@ -27,7 +27,7 @@ namespace {
     }
     return rr_v82rb(function->Call(thisObj, argc, argv));
   }
-  
+
   VALUE NewInstance(VALUE self, VALUE arguments) {
     HandleScope scope;
     Handle<Function> function = unwrap(self);
@@ -48,7 +48,7 @@ namespace {
     Handle<String> str = rr_v8_handle<String>(name);
     unwrap(self)->SetName(str);
     return Qnil;
-  }  
+  }
   // VALUE GetScriptOrigin(VALUE self) {
   //   return rr_v82rb(unwrap(self)->GetScriptOrigin());
   // }

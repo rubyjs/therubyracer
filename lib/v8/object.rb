@@ -62,7 +62,7 @@ module V8
   end
 end
 
-class Object  
+class Object
   def eval_js(javascript)
     V8::Context.new(:with => self).eval(javascript)
   end
