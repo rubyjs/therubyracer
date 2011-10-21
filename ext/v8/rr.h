@@ -1,5 +1,5 @@
 #ifndef _THE_RUBY_RACER_
-#define _THE_RUBY_RACER_ 
+#define _THE_RUBY_RACER_
 
 #include <ruby.h>
 #include <v8.h>

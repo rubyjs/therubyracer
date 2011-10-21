@@ -124,7 +124,7 @@ module V8
       # native JavaScript object.
       #
       # It is important to do this as soon as is reasonably possible
-      # so that the native JavaScript object can itself be garbage 
+      # so that the native JavaScript object can itself be garbage
       # collected (provided there are no other references to it)
       class ClearRubyProxy
         def initialize(rb2js, js2rb)

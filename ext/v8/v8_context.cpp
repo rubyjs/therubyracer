@@ -28,14 +28,14 @@ namespace {
   }
 
   VALUE InContext(VALUE self) {
-    return Context::InContext() ? Qtrue : Qfalse;  
+    return Context::InContext() ? Qtrue : Qfalse;
   }
 
   VALUE GetEntered(VALUE self) {
     HandleScope handles;
     if (Context::InContext()) {
       Local<Context> current = Context::GetEntered();
-      return rr_v8_handle_new(self, current);    
+      return rr_v8_handle_new(self, current);
     } else {
       return Qnil;
     }
@@ -44,7 +44,7 @@ namespace {
   VALUE Global(VALUE self) {
     HandleScope handles;
     return rr_v82rb(unwrap(self)->Global());
-  }  
+  }
 
   VALUE Enter(VALUE self) {
     HandleScope handles;

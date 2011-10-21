@@ -7,7 +7,7 @@ using namespace v8;
 namespace {
   VALUE ArgumentsClass;
   VALUE AccessorInfoClass;
-  
+
   VALUE _Data(VALUE self) {
     return rb_iv_get(self, "data");
   }
@@ -25,7 +25,7 @@ namespace {
       return rr_v82rb(info(self)->Holder());
     }
   }
-  
+
   namespace Args {
     Arguments* args(VALUE value) {
       Arguments *arguments = 0;
@@ -33,7 +33,7 @@ namespace {
       return arguments;
     }
     VALUE This(VALUE self) {
-      return rr_v82rb(args(self)->This());    
+      return rr_v82rb(args(self)->This());
     }
 
     VALUE Holder(VALUE self) {
@@ -62,7 +62,7 @@ void rr_init_v8_callbacks() {
   rr_define_method(AccessorInfoClass, "This", Accessor::This, 0);
   rr_define_method(AccessorInfoClass, "Holder", Accessor::Holder, 0);
   rr_define_method(AccessorInfoClass, "Data", _Data, 0);
-  
+
   ArgumentsClass = rr_define_class("Arguments");
   rr_define_method(ArgumentsClass, "This", Args::This, 0);
   rr_define_method(ArgumentsClass, "Holder", Args::Holder, 0);

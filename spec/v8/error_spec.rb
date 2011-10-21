@@ -39,7 +39,7 @@ describe V8::JSError do
   it "has a reference to the root javascript cause" do
     throw!('"I am a String"') do |e|
       e.should_not be_in_ruby
-      e.should be_in_javascript 
+      e.should be_in_javascript
       e.value.should == "I am a String"
     end
   end
@@ -52,8 +52,8 @@ describe V8::JSError do
       lambda {
         @cxt.eval('boom()', 'boom.js')
       }.should(raise_error do |raised|
-        raised.should be_in_ruby 
-        raised.should_not be_in_javascript 
+        raised.should be_in_ruby
+        raised.should_not be_in_javascript
         raised.value.should be(bomb)
       end)
     end
@@ -70,7 +70,7 @@ describe V8::JSError do
         e.backtrace[4].should == "at one.js:1:1"
       end
     end
-    
+
     it "can be set to show only ruby frames" do
       throw! do |e|
         e.backtrace(:ruby).each do |frame|
@@ -78,7 +78,7 @@ describe V8::JSError do
         end
       end
     end
-    
+
     it "can be set to show only javascript frames" do
       throw! do |e|
         e.backtrace(:javascript).each do |frame|
@@ -86,13 +86,13 @@ describe V8::JSError do
         end
       end
     end
-    
+
     it "includes a mystery marker when the original frame is unavailable because what got thrown wasn't an error" do
       throw!("6") do |e|
         e.backtrace.first.should == 'at three.js:1:1'
       end
     end
-    
+
     it "has a source name and line number when there is a javascript SyntaxError" do
       lambda do
         @cxt.eval(<<-INVALID, 'source.js')
@@ -118,8 +118,8 @@ INVALID
       })
     end
   end
-  
-  
+
+
   def throw!(js = "new Error('BOOM!')", &block)
     @cxt['three'] = lambda do
       @cxt.eval("throw #{js}", 'three.js')

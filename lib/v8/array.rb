@@ -1,7 +1,7 @@
 
 module V8
   class Array < V8::Object
-    
+
     def each
       @portal.open do |to|
         for i in 0..(@native.Length() - 1)

@@ -5,11 +5,11 @@ using namespace v8;
 
 namespace {
   VALUE MessageClass;
-  
+
   Persistent<Message>& unwrap(VALUE self) {
     return rr_v8_handle<Message>(self);
   }
-  
+
   VALUE Get(VALUE self) {
     return rr_v82rb(unwrap(self)->Get());
   }
@@ -58,7 +58,7 @@ void rr_init_message() {
   rr_define_method(MessageClass, "GetStartPosition", GetStartPosition, 0);
   rr_define_method(MessageClass, "GetEndPosition", GetEndPosition, 0);
   rr_define_method(MessageClass, "GetStartColumn", GetStartColumn, 0);
-  rr_define_method(MessageClass, "GetEndColumn", GetEndColumn, 0);  
+  rr_define_method(MessageClass, "GetEndColumn", GetEndColumn, 0);
 }
 
 VALUE rr_reflect_v8_message(Handle<Message> value) {

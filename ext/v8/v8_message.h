@@ -1,5 +1,5 @@
 #ifndef _RUBY_V8_MESSAGE_
-#define _RUBY_V8_MESSAGE_ 
+#define _RUBY_V8_MESSAGE_
 
 #include "v8.h"
 #include "rr.h"

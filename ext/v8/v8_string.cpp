@@ -6,9 +6,9 @@
 
 using namespace v8;
 
-namespace {  
+namespace {
   VALUE StringClass;
-  
+
   Persistent<String>& unwrap(VALUE value) {
     return rr_v8_handle<String>(value);
   }

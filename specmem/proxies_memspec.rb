@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe V8::Portal::Proxies do
   include V8::MemSpec
-  
+
   context "A Ruby object embedded into JavaScript" do
     it "holds a hard reference to any ruby object which is linked to a javascript proxy" do
       subject.register_javascript_proxy c::Object::New(), :for => Object.new

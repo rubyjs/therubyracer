@@ -1,5 +1,5 @@
 #ifndef _RR_V8_ARRAY_
-#define _RR_V8_ARRAY_ 
+#define _RR_V8_ARRAY_
 
 #include "rr.h"
 
