@@ -1,4 +1,5 @@
 
+#include <vector>
 #include "v8_function.h"
 #include "v8_object.h"
 #include "v8_handle.h"
@@ -21,11 +22,11 @@ namespace {
     Local<Object> thisObj = rr_rb2v8(recv)->ToObject();
     Handle<Array> args = rr_v8_handle<Array>(arguments);
     int argc = args->Length();
-    Handle<Value> argv[argc];
+    std::vector< Handle<Value> > argv (argc);
     for (int i = 0; i < argc; i++) {
       argv[i] = args->Get(i);
     }
-    return rr_v82rb(function->Call(thisObj, argc, argv));
+    return rr_v82rb(function->Call(thisObj, argc, &argv[0]));
   }
   
   VALUE NewInstance(VALUE self, VALUE arguments) {
@@ -33,11 +34,11 @@ namespace {
     Handle<Function> function = unwrap(self);
     Handle<Array> args = rr_v8_handle<Array>(arguments);
     int argc = args->Length();
-    Handle<Value> argv[argc];
+    std::vector< Handle<Value> > argv (argc);
     for (int i = 0; i < argc; i++) {
       argv[i] = args->Get(i);
     }
-    return rr_v82rb(function->NewInstance(argc, argv));
+    return rr_v82rb(function->NewInstance(argc, &argv[0]));
   }
   VALUE GetName(VALUE self) {
     HandleScope scope;
