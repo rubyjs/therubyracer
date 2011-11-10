@@ -1,5 +1,4 @@
 require "v8/version"
 
-module V8
-
-end
+require 'v8/vm'
+require 'v8/context'
