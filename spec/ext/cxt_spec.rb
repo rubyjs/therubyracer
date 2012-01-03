@@ -13,19 +13,19 @@ describe C::Context do
   end
 
   it "can javascript properties on the global scope via ruby when the default scope is a ruby object" do
-    V8::Context.new(:with => Object.new) do |cxt|
-      cxt['foo'] = 'bar'
-      cxt.eval('foo').should eql('bar')
+    V8::Context.new(:with => Object.new) do |ctx|
+      ctx['foo'] = 'bar'
+      ctx.eval('foo').should eql('bar')
     end
   end
 
   it "can get the current javascript execution stack" do
-    V8::Context.new do |cxt|
+    V8::Context.new do |ctx|
       trace = nil
-      cxt['getTrace'] = lambda do
+      ctx['getTrace'] = lambda do
         trace = V8::Context.stack
       end
-      cxt.eval(<<-JS, 'trace.js')
+      ctx.eval(<<-JS, 'trace.js')
       function one() {
         return two();
       }

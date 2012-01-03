@@ -32,17 +32,17 @@ module V8
       elsif options.selftest
         self.test        
       end
-      Context.new(:with => Shell.new) do |cxt|
+      Context.new(:with => Shell.new) do |ctx|
         for libfile in options.libs do
-          load(cxt,libfile)
+          load(ctx,libfile)
         end        
         if options.interactive
-          repl(cxt, exename)
+          repl(ctx, exename)
         elsif options.execute
-          cxt.eval(options.execute, '<execute>')
+          ctx.eval(options.execute, '<execute>')
         else
           begin
-            cxt.eval($stdin, '<stdin>')
+            ctx.eval($stdin, '<stdin>')
           rescue Interrupt => e
             puts; exit
           end
@@ -50,9 +50,9 @@ module V8
       end
     end
 
-    def self.load(cxt, libfile)
+    def self.load(ctx, libfile)
       begin
-        cxt.load(libfile)
+        ctx.load(libfile)
       rescue V8::JSError => e
         puts e.message
         puts e.backtrace(:javascript)
@@ -76,7 +76,7 @@ module V8
       
     end
 
-    def self.repl(cxt, exename)
+    def self.repl(ctx, exename)
       require 'readline'
       puts "help() for help. quit() to quit."
       puts "The Ruby Racer #{V8::VERSION}"
@@ -87,7 +87,7 @@ module V8
       loop do
         line = Readline.readline("#{exename}> ", true)
         begin
-          result = cxt.eval(line, '<shell>')
+          result = ctx.eval(line, '<shell>')
           puts(result) unless result.nil?                
         rescue V8::JSError => e
           puts e.message

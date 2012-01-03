@@ -5,12 +5,12 @@ module V8::ExtSpec
     object.class_eval do
       before do
         @lock = c::Locker.new
-        @cxt = c::Context::New()
-        @cxt.Enter()
+        @ctx = c::Context::New()
+        @ctx.Enter()
       end
       after do
-        @cxt.Exit()
-        @cxt.Dispose()
+        @ctx.Exit()
+        @ctx.Dispose()
         @lock.delete
       end
     end

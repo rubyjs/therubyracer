@@ -21,9 +21,9 @@ namespace {
     rb_scan_args(argc,argv, "02", &global_template, &global_object);
     Handle<ObjectTemplate> v8_global_template(NIL_P(global_template) ? Handle<ObjectTemplate>() : rr_v8_handle<ObjectTemplate>(global_template));
     Handle<Value> v8_global_object(NIL_P(global_object) ? Handle<Value>() : rr_v8_handle<Value>(global_object));
-    Persistent<Context> cxt(Context::New(0, v8_global_template, v8_global_object));
-    VALUE ref = rr_v8_handle_new(self, cxt);
-    cxt.Dispose();
+    Persistent<Context> ctx(Context::New(0, v8_global_template, v8_global_object));
+    VALUE ref = rr_v8_handle_new(self, ctx);
+    ctx.Dispose();
     return ref;
   }
 

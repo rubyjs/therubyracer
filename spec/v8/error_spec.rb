@@ -3,12 +3,12 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 describe V8::JSError do
 
   before(:each) do
-    @cxt = V8::Context.new
-    @cxt['one'] = lambda do
-      @cxt.eval('two()', 'one.js')
+    @ctx = V8::Context.new
+    @ctx['one'] = lambda do
+      @ctx.eval('two()', 'one.js')
     end
-    @cxt['two'] = lambda do
-      @cxt.eval('three()', 'two.js')
+    @ctx['two'] = lambda do
+      @ctx.eval('three()', 'two.js')
     end
   end
 
@@ -46,11 +46,11 @@ describe V8::JSError do
 
   it "has a reference to the root ruby cause if one exists" do
     StandardError.new("BOOM!").tap do |bomb|
-      @cxt['boom'] = lambda do
+      @ctx['boom'] = lambda do
         raise bomb
       end
       lambda {
-        @cxt.eval('boom()', 'boom.js')
+        @ctx.eval('boom()', 'boom.js')
       }.should(raise_error do |raised|
         raised.should be_in_ruby 
         raised.should_not be_in_javascript 
@@ -95,7 +95,7 @@ describe V8::JSError do
     
     it "has a source name and line number when there is a javascript SyntaxError" do
       lambda do
-        @cxt.eval(<<-INVALID, 'source.js')
+        @ctx.eval(<<-INVALID, 'source.js')
 "this line is okay";
 "this line has a syntax error because it ends with a colon":
 "this line is also okay";
@@ -107,11 +107,11 @@ INVALID
     end
 
     it "can start with ruby at the bottom" do
-      @cxt['boom'] = lambda do
+      @ctx['boom'] = lambda do
         raise StandardError, "Bif!"
       end
       lambda {
-        @cxt.eval('boom()', "boom.js")
+        @ctx.eval('boom()', "boom.js")
       }.should(raise_error {|e|
         e.backtrace.first.should =~ /error_spec\.rb/
         e.backtrace[1].should =~ /boom.js/
@@ -121,11 +121,11 @@ INVALID
   
   
   def throw!(js = "new Error('BOOM!')", &block)
-    @cxt['three'] = lambda do
-      @cxt.eval("throw #{js}", 'three.js')
+    @ctx['three'] = lambda do
+      @ctx.eval("throw #{js}", 'three.js')
     end
     lambda do
-      @cxt['one'].call()
+      @ctx['one'].call()
     end.should(raise_error(V8::JSError, &block))
   end
 end
