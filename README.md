@@ -28,18 +28,18 @@ then in your ruby code
 
 evaluate some simple javascript
 
-    cxt = V8::Context.new
-    cxt.eval('7 * 6') #=> 42
+    ctx = V8::Context.new
+    ctx.eval('7 * 6') #=> 42
 
 embed values into the scope of your context
 
-    cxt['foo'] = "bar"
-    cxt.eval('foo') # => "bar"
+    ctx['foo'] = "bar"
+    ctx.eval('foo') # => "bar"
 
 embed ruby code into your scope and call it from javascript
 
-    cxt["say"] = lambda {|word, times| word * times}
-    cxt.eval("say('Hello', 3)") #=> HelloHelloHello
+    ctx["say"] = lambda {|word, times| word * times}
+    ctx.eval("say('Hello', 3)") #=> HelloHelloHello
 
 embed a ruby object into your scope and access its properties/methods from javascript
 
@@ -49,14 +49,14 @@ embed a ruby object into your scope and access its properties/methods from javas
       end
     end
     
-    cxt['math'] = MyMath.new
-    cxt.eval("math.plus(20,22)") #=> 42
+    ctx['math'] = MyMath.new
+    ctx.eval("math.plus(20,22)") #=> 42
 
 make a ruby object *be* your global javascript scope.
 
     math = MyMath.new
-    V8::Context.new(:with => math) do |cxt|
-      cxt.eval("plus(20,22)") #=> 42
+    V8::Context.new(:with => math) do |ctx|
+      ctx.eval("plus(20,22)") #=> 42
     end
 
 you can do the same thing with Object#eval_js 
@@ -70,12 +70,12 @@ In addition to just evaluating strings, you can also use streams such as files.
 evaluate bytes read from any File/IO object:
 
     File.open("mysource.js") do |file|
-      cxt.eval(file, "mysource.js")
+      ctx.eval(file, "mysource.js")
     end
 
 or load it by filename
 
-    cxt.load("mysource.js")
+    ctx.load("mysource.js")
 
 
 ## Safe by default, dangerous by demand
@@ -104,14 +104,14 @@ exposed by default. E.g.
     end
     
     
-    V8::Context.new do |cxt|
-      cxt['a'] = A.new
-      cxt['b'] = B.new
-      cxt.eval("a.a") # => 'a'
-      cxt.eval("b.b") # => 'b'
-      cxt.eval("b.a") # => 'a'
-      cxt.eval("b.to_s") # => #<B:0x101776be8> (because A explicitly defined it)
-      cxt.eval("b.object_id") #=> undefined, object_id is on Object
+    V8::Context.new do |ctx|
+      ctx['a'] = A.new
+      ctx['b'] = B.new
+      ctx.eval("a.a") # => 'a'
+      ctx.eval("b.b") # => 'b'
+      ctx.eval("b.a") # => 'a'
+      ctx.eval("b.to_s") # => #<B:0x101776be8> (because A explicitly defined it)
+      ctx.eval("b.object_id") #=> undefined, object_id is on Object
     end
 
 If needed, you can override the [Ruby Access](https://github.com/cowboyd/therubyracer/blob/master/lib/v8/access.rb)

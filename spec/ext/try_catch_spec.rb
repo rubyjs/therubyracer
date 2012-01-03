@@ -4,8 +4,8 @@ include V8
 
 describe C::TryCatch do
 
-  before {@lock = C::Locker.new;@cxt = C::Context::New();}
-  after {@cxt.Dispose(); @lock.delete}
+  before {@lock = C::Locker.new;@ctx = C::Context::New();}
+  after {@ctx.Dispose(); @lock.delete}
 
   it "does not allow instance creation by default" do
     lambda {
@@ -39,9 +39,9 @@ describe C::TryCatch do
           raise "BOOM!"
         end
       end
-      V8::Context.new do |cxt|
-        cxt['Boom'] = constructor
-        cxt['puts'] = method(:puts)
+      V8::Context.new do |ctx|
+        ctx['Boom'] = constructor
+        ctx['puts'] = method(:puts)
         danger = <<-JS
   Boom.prototype.boom = function() {
     this.detonate()
@@ -53,7 +53,7 @@ describe C::TryCatch do
   }
   go.boom()
   JS
-        expect {cxt.eval(danger, 'danger.js')}.should raise_error(V8::JSError)
+        expect {ctx.eval(danger, 'danger.js')}.should raise_error(V8::JSError)
       end
     end
 
