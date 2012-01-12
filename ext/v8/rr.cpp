@@ -141,6 +141,7 @@ VALUE rr_v82rb(int32_t value) {
 }
 
 Handle<Value> rr_rb2v8(VALUE value) {
+  VALUE asString;
   switch (TYPE(value)) {
   case T_FIXNUM:
     // TODO: use this conversion if value will fit in 32 bits.
@@ -157,6 +158,9 @@ Handle<Value> rr_rb2v8(VALUE value) {
     return False();
   case T_DATA:
     return rr_v8_handle<Value>(value);
+  case T_BIGNUM:
+    asString = rb_big2str(value, 10);
+    return String::New(RSTRING_PTR(asString), RSTRING_LEN(asString))->ToNumber();
   case T_OBJECT:
   case T_CLASS:
   case T_ICLASS:
@@ -166,7 +170,6 @@ Handle<Value> rr_rb2v8(VALUE value) {
   case T_ARRAY:
   case T_HASH:
   case T_STRUCT:
-  case T_BIGNUM:
   case T_FILE:
   case T_SYMBOL:
 //  case T_BLKTAG: (not in 1.9)
