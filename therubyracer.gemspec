@@ -12,10 +12,11 @@ Gem::Specification.new do |gem|
   gem.files         = `git ls-files`.split("\n")
   gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   gem.name          = "therubyracer"
-  gem.require_paths = ["lib"]
+  gem.extensions    = ["ext/v8/extconf.rb"]
+  gem.require_paths = ["lib", "ext"]
   gem.version       = V8::VERSION
 
-  gem.add_dependency "libv8", "~> 3.7.0"
+  gem.add_dependency "libv8", "~> 3.8.9"
 
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rake-compiler"
