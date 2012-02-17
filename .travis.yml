@@ -6,3 +6,4 @@ notifications:
   recipients:
     - cowboyd@thefrontside.net
 script: bundle exec rake compile spec
+before_install: git submodule update --init
