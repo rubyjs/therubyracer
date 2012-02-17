@@ -3,7 +3,7 @@ require 'ostruct'
 
 module V8
   module CLI
-    def self.run(exename = 'v8', args = [])      
+    def self.run(exename = 'v8', args = [])
       options = OpenStruct.new
       options.libs = []
       options.libdirs = []
@@ -30,12 +30,12 @@ module V8
         puts "V8 Version #{Libv8::V8_VERSION}"
         exit
       elsif options.selftest
-        self.test        
+        self.test
       end
       Context.new(:with => Shell.new) do |cxt|
         for libfile in options.libs do
           load(cxt,libfile)
-        end        
+        end
         if options.interactive
           repl(cxt, exename)
         elsif options.execute
@@ -60,35 +60,36 @@ module V8
         puts e
       end
     end
-    
+
     def self.test
       begin
-        require 'rubygems'
         require 'rspec'
+        specs = File.expand_path('../../../spec', __FILE__)
+        $:.unshift specs
         ARGV.clear
-        ARGV << File.dirname(__FILE__) + '/../../spec/'
+        ARGV << specs
         ::RSpec::Core::Runner.autorun
         exit(0)
       rescue LoadError => e
         puts "selftest requires rspec to be installed (gem install rspec)"
         exit(1)
       end
-      
+
     end
 
     def self.repl(cxt, exename)
       require 'readline'
       puts "help() for help. quit() to quit."
       puts "The Ruby Racer #{V8::VERSION}"
-      puts "Vroom Vroom!"      
+      puts "Vroom Vroom!"
       trap("SIGINT") do
         puts "^C"
-      end        
+      end
       loop do
         line = Readline.readline("#{exename}> ", true)
         begin
           result = cxt.eval(line, '<shell>')
-          puts(result) unless result.nil?                
+          puts(result) unless result.nil?
         rescue V8::JSError => e
           puts e.message
           puts e.backtrace(:javascript)
@@ -96,9 +97,9 @@ module V8
           puts e
           puts e.backtrace.join("\n")
         end
-      end          
-    end            
-    
+      end
+    end
+
     class Shell
       def to_s
         "[object Shell]"
@@ -111,18 +112,18 @@ module V8
       def exit(status = 0)
         Kernel.exit(status)
       end
-          
+
       alias_method :quit, :exit
-      
+
       def help(*args)
         <<-HELP
     print(msg)
-      print msg to STDOUT    
-        
+      print msg to STDOUT
+
     exit(status = 0)
       exit the shell
       also: quit()
-          
+
     evalrb(source)
       evaluate some ruby source
     HELP
