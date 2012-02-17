@@ -5,3 +5,4 @@ rvm:
 notifications:
   recipients:
     - cowboyd@thefrontside.net
+script: bundle exec rake compile spec
