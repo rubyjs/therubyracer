@@ -74,7 +74,7 @@ module V8
         if id = @rb_proxies_js2rb[object]
           ObjectSpace._id2ref id
         end
-      rescue RangeError => e
+      rescue RangeError
         # sometimes, the Ruby proxy has been garbage collected, but
         # the finalizer which runs has not been called. That's OK
         # we just clear out the entry, and return nil so that a new

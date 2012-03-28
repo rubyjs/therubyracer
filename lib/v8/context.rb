@@ -84,6 +84,10 @@ module V8
         []
       end
     end
+    
+    def self.passes_this_argument?
+      true
+    end
   end
 
   module C

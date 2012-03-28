@@ -48,7 +48,7 @@ embed a ruby object into your scope and access its properties/methods from javas
         lhs + rhs
       end
     end
-    
+
     cxt['math'] = MyMath.new
     cxt.eval("math.plus(20,22)") #=> 42
 
@@ -59,7 +59,7 @@ make a ruby object *be* your global javascript scope.
       cxt.eval("plus(20,22)") #=> 42
     end
 
-you can do the same thing with Object#eval_js 
+you can do the same thing with Object#eval_js
 
     math.eval_js("plus(20,22)")
 
@@ -96,14 +96,14 @@ exposed by default. E.g.
         super
       end
     end
-    
+
     class B < A
       def b
         "b"
       end
     end
-    
-    
+
+
     V8::Context.new do |cxt|
       cxt['a'] = A.new
       cxt['b'] = B.new
@@ -137,6 +137,9 @@ To use the ruby racer in rails, or any application using Bundler to manage gems,
     git submodule update --init
     bundle install
     rake compile
+
+## Sponsored by
+<a href="http://thefrontside.net">![The Frontside](http://github.com/cowboyd/therubyracer/raw/master/thefrontside.png)</a>
 
 ## LICENSE:
 

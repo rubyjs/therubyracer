@@ -1,0 +1,9 @@
+rvm:
+  - 1.9.2
+  - 1.9.3
+  - 1.8.7
+notifications:
+  recipients:
+    - cowboyd@thefrontside.net
+script: bundle exec rake compile spec
+before_install: git submodule update --init
