@@ -36,7 +36,7 @@ module V8
     end
 
     def respond_to?(method)
-      self[method] != nil
+      super or self[method] != nil
     end
 
     def method_missing(name, *args, &block)
