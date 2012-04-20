@@ -6,7 +6,7 @@ module V8
       if methods.include?(name)
         method = obj.method(name)
         method.arity == 0 ? method.call : method.unbind
-      elsif obj.respond_to?(:[])
+      elsif obj.respond_to?(:[]) && !special?(name)
         obj.send(:[], name, &dontintercept)
       else
         yield
@@ -26,7 +26,7 @@ module V8
       methods = accessible_methods(obj, true)
       if methods.include?(setter)
         obj.send(setter, value)
-      elsif obj.respond_to?(:[]=)
+      elsif obj.respond_to?(:[]=) && !special?(name)
         obj.send(:[]=, name, value, &dontintercept)
       else
         yield
@@ -80,8 +80,13 @@ module V8
           break if ancestor == ::Object
           methods.merge(ancestor.public_instance_methods(false).map {|m| m.to_s})
         end
-        methods.reject! {|m| m == "[]" || m == "[]=" || m =~ /=$/} unless special_methods
+        methods.reject!(&special?) unless special_methods
       end
     end
+
+    def special?(name = nil)
+      @special ||= lambda {|m| m == "[]" || m == "[]=" || m =~ /=$/}
+      name.nil? ? @special : @special[name]
+    end
   end
-end 
+end
