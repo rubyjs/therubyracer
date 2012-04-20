@@ -1,1 +1,2 @@
-source :rubygems;gemspec
+source 'http://rubygems.org'
+gemspec

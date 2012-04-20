@@ -14,9 +14,6 @@ Gem::Specification.new do |s|
 
   root = Pathname(__FILE__).dirname
   s.files = `git ls-files`.split("\n")
-  s.files += Dir.chdir(root.join("spec/redjs")) do
-    `git ls-files`.split("\n").map {|f| "spec/redjs/#{f}"}
-  end
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.extensions = ["ext/v8/extconf.rb"]
   s.require_paths = ["lib", "ext"]
