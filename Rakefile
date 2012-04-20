@@ -13,11 +13,14 @@ task :clean do
   sh "rm -rf lib/v8/*.bundle lib/v8/*.so"
 end
 
-Rake::ExtensionTask.new("v8", eval(File.read("therubyracer.gemspec"))) do |ext|    
+Rake::ExtensionTask.new("v8", eval(File.read("therubyracer.gemspec"))) do |ext|
   ext.lib_dir = "lib/v8"
   ext.source_pattern = "*.{cpp,h}"
 end
 
-RSpec::Core::RakeTask.new(:spec)
+RSpec::Core::RakeTask.new(:spec) do |spec|
+  spec.rspec_opts = ['--color', "--format documentation"]
+end
+
 
 
