@@ -1,4 +1,3 @@
-
 module V8
   class Object
     include Enumerable
@@ -34,6 +33,18 @@ module V8
         end
       end
     end
+    
+  	def to_hash
+			h = {}
+			self.each do |k, v|
+				if v.class == V8::Object
+					h[k.to_s] = v.to_hash
+				else
+					h[k.to_s] = v
+				end
+			end
+			h
+		end
 
     def respond_to?(method)
       super or self[method] != nil
