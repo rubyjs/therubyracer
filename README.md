@@ -38,7 +38,7 @@ embed values into the scope of your context
 
 embed ruby code into your scope and call it from javascript
 
-    cxt["say"] = lambda {|word, times| word * times}
+    cxt["say"] = lambda {|this, word, times| word * times}
     cxt.eval("say('Hello', 3)") #=> HelloHelloHello
 
 embed a ruby object into your scope and access its properties/methods from javascript
