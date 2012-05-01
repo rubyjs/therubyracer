@@ -1,13 +1,14 @@
 #!/usr/bin/env rake
+require 'bundler/setup'
 require "bundler/gem_tasks"
 
 task :clean do
-  sh "rm -rf lib/v8/vm.bundle lib/v8/vm.so"
+  sh "rm -rf lib/v8/init.bundle lib/v8/init.so"
   sh "rm -rf pkg"
 end
 
 require "rake/extensiontask"
-Rake::ExtensionTask.new("vm", eval(File.read("therubyracer.gemspec"))) do |ext|
+Rake::ExtensionTask.new("init", eval(File.read("therubyracer.gemspec"))) do |ext|
   ext.ext_dir = "ext/v8"
   ext.lib_dir = "lib/v8"
   ext.source_pattern = "*.{cc,h}"
