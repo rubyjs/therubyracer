@@ -1,7 +1,6 @@
 #include "rr.h"
 
 namespace rr {
-  VALUE ContextClass;
 
   VALUE New(VALUE ContextClass) {
     v8::Persistent<v8::Context> context = v8::Context::New();
@@ -21,7 +20,7 @@ namespace rr {
   }
 
   void Context::Init() {
-    ContextClass = defineClass("Context");
+    VALUE ContextClass = defineClass("Context");
     RR_DEFINE_SINGLETON_METHOD(ContextClass, "New", &New, 0);
     RR_DEFINE_METHOD(ContextClass, "Enter", &Enter, 0);
     RR_DEFINE_METHOD(ContextClass, "Exit", &Exit, 0);

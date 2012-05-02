@@ -13,7 +13,6 @@ have_library('objc') if RUBY_PLATFORM =~ /darwin/
 #since find_header() does not actually work as advertized.
 #see https://github.com/cowboyd/therubyracer/issues/91
 $INCFLAGS.insert 0, "#{libv8_include_flags} "
-
 $CPPFLAGS += " -Wall" unless $CPPFLAGS.split.include? "-Wall"
 $CPPFLAGS += " -g" unless $CPPFLAGS.split.include? "-g"
 $CPPFLAGS += " -rdynamic" unless $CPPFLAGS.split.include? "-rdynamic"
@@ -24,5 +23,7 @@ $LIBS << ' -lpthread '
 
 
 CONFIG['LDSHARED'] = '$(CXX) -shared' unless RUBY_PLATFORM =~ /darwin/
+CONFIG['warnflags'].gsub!('-Wdeclaration-after-statement', '')
+CONFIG['warnflags'].gsub!('-Wimplicit-function-declaration', '')
 
 create_makefile('init')

@@ -6,7 +6,11 @@ module V8
     end
 
     def eval(source, filename = '<eval>', line = 1)
-      nil
+      @native.Enter()
+      script = V8::C::Script::New(source.to_s, filename.to_s)
+      script.Run()
+    ensure
+      @native.Exit()
     end
   end
 end
