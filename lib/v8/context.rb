@@ -10,7 +10,8 @@ module V8
       source = V8::C::String::New(source.to_s)
       filename = V8::C::String::New(filename.to_s)
       script = V8::C::Script::New(source, filename)
-      script.Run()
+      result = script.Run()
+      result.kind_of?(V8::C::String) ? result.Utf8Value() : result
     ensure
       @native.Exit()
     end

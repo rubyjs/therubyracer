@@ -60,6 +60,7 @@ public:
     return Ref<T>(new Holder(handle, klass));
   }
   inline v8::Handle<T> operator->() const { return holder->handle; }
+  v8::Handle<T> GetHandle() {return holder->handle;}
 
   class Holder {
     friend class Ref;
@@ -112,8 +113,10 @@ public:
 class String: public Ref<v8::String> {
 public:
   inline String(VALUE value) : Ref<v8::String>(value) {}
+  virtual operator v8::Handle<v8::Value>();
   static VALUE ToRuby(v8::Handle<v8::String> value);
   static void Init();
+  static VALUE Class;
 };
 
 class V8 {
