@@ -1,25 +1,42 @@
 #include "rr.h"
 
 namespace rr {
-  VALUE queue;
+  GC::Queue* queue;
 
-  namespace gc {
-    VALUE dequeue(VALUE q) {
-      return rb_funcall(q, rb_intern("pop"), 1, Qtrue);
+  GC::Queue::Queue() : first(0), divider(0), last(0){
+    first = new GC::Queue::Node(NULL);
+    divider = first;
+    last = first;
+  }
+
+  void GC::Queue::Enqueue(void* reference) {
+    last->next = new Node(reference);
+    last = last->next;
+    while (first != divider) {
+      Node* tmp = first;
+      first = first->next;
+      delete tmp;
     }
   }
-  void GC::Push(VALUE phantom) {
-    rb_funcall(queue, rb_intern("<<"), 1, phantom);
+
+  void* GC::Queue::Dequeue() {
+    void* result = NULL;
+    if (divider != last) {
+      result = divider->next->value;
+      divider = divider->next;
+    }
+    return result;
   }
-  void GC::Pop(v8::GCType type, v8::GCCallbackFlags flags) {
-    VALUE next = rb_protect(&gc::dequeue, queue, NULL);
-    rb_set_errinfo(Qnil);
-    if (!NIL_P(next)) {
-      Phantom(next).destroy();
+
+  void GC::Finalize(void* phantom) {
+    queue->Enqueue(phantom);
+  }
+  void GC::Drain(v8::GCType type, v8::GCCallbackFlags flags) {
+    for(Phantom phantom = queue->Dequeue(); phantom.NotNull(); phantom = queue->Dequeue()) {
+      phantom.destroy();
     }
   }
   void GC::Init() {
-    rb_gc_register_address(&queue);
-    queue = rb_eval_string("require 'thread'; Queue.new");
+    queue = new GC::Queue();
   }
 }

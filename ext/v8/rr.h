@@ -20,8 +20,23 @@ protected:
 
 class GC {
 public:
-  static void Push(VALUE phantom);
-  static void Pop(v8::GCType type, v8::GCCallbackFlags flags);
+  class Queue {
+  public:
+    Queue();
+    void Enqueue(void* phantom);
+    void* Dequeue();
+    private:
+      struct Node {
+        Node(void* val ) : value(val), next(NULL) { }
+        void* value;
+        Node* next;
+      };
+      Node* first;      // for producer only
+      Node* divider;
+      Node* last;
+  };
+  static void Finalize(void* phantom);
+  static void Drain(v8::GCType type, v8::GCCallbackFlags flags);
   static void Init();
 };
 
@@ -52,21 +67,17 @@ public:
     Holder(v8::Handle<T> handle, VALUE klass) {
       this->handle = v8::Persistent<T>::New(handle);
       this->value = Data_Wrap_Struct(klass, 0, &Holder::enqueue, this);
-      this->phantom = Data_Wrap_Struct(rb_cObject, 0, 0, this);
-      rb_gc_register_address(&phantom);
     }
     virtual ~Holder() {
       handle.Dispose();
-      rb_gc_unregister_address(&phantom);
     }
   protected:
     VALUE value;
-    VALUE phantom;
     v8::Persistent<T> handle;
 
     static void enqueue(Holder* holder) {
       holder->value = Qnil;
-      GC::Push(holder->phantom);
+      GC::Finalize(holder);
     }
   };
   Ref(Holder* holder) {
@@ -77,7 +88,10 @@ public:
 
 class Phantom : public Ref<void> {
 public:
-  inline Phantom(VALUE value) : Ref<void>(value) {}
+  inline Phantom(void* reference) : Ref<void>((Ref<void>::Holder*)reference) {}
+  inline bool NotNull() {
+    return this->holder != NULL;
+  }
   inline void destroy() {
     delete holder;
   }
