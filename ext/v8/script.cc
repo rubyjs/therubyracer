@@ -5,7 +5,7 @@ namespace {
 
 VALUE New(VALUE klass, VALUE source, VALUE filename) {
   v8::HandleScope scope;
-  return Ref<v8::Script>::create(v8::Script::New(String(source), Value(filename)), klass);
+  return Script::create(v8::Script::New(String(source), Value(filename)), klass);
 }
 
 VALUE Run(VALUE self) {
