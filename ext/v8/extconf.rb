@@ -23,7 +23,9 @@ $LIBS << ' -lpthread '
 
 
 CONFIG['LDSHARED'] = '$(CXX) -shared' unless RUBY_PLATFORM =~ /darwin/
-CONFIG['warnflags'].gsub!('-Wdeclaration-after-statement', '')
-CONFIG['warnflags'].gsub!('-Wimplicit-function-declaration', '')
+if CONFIG['warnflags']
+  CONFIG['warnflags'].gsub!('-Wdeclaration-after-statement', '')
+  CONFIG['warnflags'].gsub!('-Wimplicit-function-declaration', '')
+end
 
 create_makefile('init')
