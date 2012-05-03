@@ -16,9 +16,9 @@ VALUE Run(VALUE self) {
 }
 
 void Script::Init() {
-  VALUE ScriptClass = defineClass("Script");
-  RR_DEFINE_SINGLETON_METHOD(ScriptClass, "New", &New, 2);
-  RR_DEFINE_METHOD(ScriptClass, "Run", &Run, 0);
+  ClassBuilder("Script").
+    defineSingletonMethod("New", &New).
+    defineMethod("Run", &Run);
 }
 
 }

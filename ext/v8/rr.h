@@ -129,18 +129,15 @@ public:
   ClassBuilder(const char* name, VALUE superclass = rb_cObject);
   ClassBuilder& defineMethod(const char* name, VALUE (*impl)(VALUE));
   ClassBuilder& defineMethod(const char* name, VALUE (*impl)(VALUE, VALUE));
+  ClassBuilder& defineMethod(const char* name, VALUE (*impl)(VALUE, VALUE, VALUE));
   ClassBuilder& defineSingletonMethod(const char* name, VALUE (*impl)(VALUE));
   ClassBuilder& defineSingletonMethod(const char* name, VALUE (*impl)(VALUE, VALUE));
+  ClassBuilder& defineSingletonMethod(const char* name, VALUE (*impl)(VALUE, VALUE, VALUE));
   inline operator VALUE() {return this->value;}
 private:
   VALUE value;
 };
 
-VALUE defineClass(const char *name, VALUE superclass = rb_cObject);
-VALUE defineModule(const char *name);
 }
-
-#define RR_DEFINE_METHOD(klass, name, impl, argc) rb_define_method(klass, name, (VALUE(*)(...))impl, argc)
-#define RR_DEFINE_SINGLETON_METHOD(object, name, impl, argc) rb_define_singleton_method(object, name, (VALUE(*)(...))impl, argc)
 
 #endif

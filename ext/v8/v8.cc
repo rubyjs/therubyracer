@@ -7,7 +7,7 @@ namespace {
   }
 }
 void V8::Init() {
-  VALUE V8Class = defineClass("V8");
-  RR_DEFINE_SINGLETON_METHOD(V8Class, "IdleNotification", &IdleNotification, 0);
+  ClassBuilder("V8").
+    defineSingletonMethod("IdleNotification", &IdleNotification);
 }
 }
