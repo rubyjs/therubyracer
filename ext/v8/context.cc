@@ -2,27 +2,28 @@
 
 namespace rr {
 
-  VALUE New(VALUE ContextClass) {
-    v8::Persistent<v8::Context> context = v8::Context::New();
-    Ref<v8::Context> ref = Context::create(context, ContextClass);
-    context.Dispose();
-    return ref;
-  }
+void Context::Init() {
+  ClassBuilder("Context").
+    defineSingletonMethod("New", &New).
+    defineMethod("Enter", &Enter).
+    defineMethod("Exit", &Exit);
+}
 
-  VALUE Enter(VALUE self) {
-    Context(self)->Enter();
-    return Qnil;
-  }
+VALUE Context::New(VALUE ContextClass) {
+  v8::Persistent<v8::Context> context = v8::Context::New();
+  Ref<v8::Context> ref = Context::create(context, ContextClass);
+  context.Dispose();
+  return ref;
+}
 
-  VALUE Exit(VALUE self) {
-    Context(self)->Exit();
-    return Qnil;
-  }
+VALUE Context::Enter(VALUE self) {
+  Context(self)->Enter();
+  return Qnil;
+}
 
-  void Context::Init() {
-    ClassBuilder("Context").
-      defineSingletonMethod("New", &New).
-      defineMethod("Enter", &Enter).
-      defineMethod("Exit", &Exit);
-  }
+VALUE Context::Exit(VALUE self) {
+  Context(self)->Exit();
+  return Qnil;
+}
+
 }

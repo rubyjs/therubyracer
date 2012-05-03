@@ -1,19 +1,6 @@
 #include "rr.h"
 
 namespace rr {
-namespace {
-
-VALUE New(VALUE klass, VALUE source, VALUE filename) {
-  v8::HandleScope scope;
-  return Script::create(v8::Script::New(String(source), Value(filename)), klass);
-}
-
-VALUE Run(VALUE self) {
-  v8::HandleScope scope;
-  return Value(Script(self)->Run());
-}
-
-}
 
 void Script::Init() {
   ClassBuilder("Script").
@@ -21,4 +8,14 @@ void Script::Init() {
     defineMethod("Run", &Run);
 }
 
+VALUE Script::New(VALUE klass, VALUE source, VALUE filename) {
+  v8::HandleScope scope;
+  return Script::create(v8::Script::New(String(source), Value(filename)), klass);
 }
+
+VALUE Script::Run(VALUE self) {
+  v8::HandleScope scope;
+  return Value(Script(self)->Run());
+}
+
+} //namespace rr

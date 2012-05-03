@@ -1,16 +1,25 @@
 #include "rr.h"
 
 namespace rr {
-namespace {
-  VALUE New(VALUE StringClass, VALUE string) {
-    v8::HandleScope h;
-    return String::ToRuby(v8::String::New(RSTRING_PTR(string), (int)RSTRING_LEN(string)));
-  }
-  VALUE Utf8Value(VALUE self) {
-    v8::HandleScope h;
-    String str(self);
-    return rb_str_new(*v8::String::Utf8Value(str), str->Utf8Length());
-  }
+
+VALUE String::Class;
+
+void String::Init() {
+  rb_gc_register_address(&Class);
+  Class = ClassBuilder("String").
+    defineSingletonMethod("New", &New).
+    defineMethod("Utf8Value", &Utf8Value);
+}
+
+VALUE String::New(VALUE StringClass, VALUE string) {
+  v8::HandleScope h;
+  return String::ToRuby(v8::String::New(RSTRING_PTR(string), (int)RSTRING_LEN(string)));
+}
+
+VALUE String::Utf8Value(VALUE self) {
+  v8::HandleScope h;
+  String str(self);
+  return rb_str_new(*v8::String::Utf8Value(str), str->Utf8Length());
 }
 
 VALUE String::ToRuby(v8::Handle<v8::String> string) {
@@ -21,12 +30,4 @@ String::operator v8::Handle<v8::Value>() {
   return this->GetHandle();
 }
 
-VALUE String::Class;
-
-void String::Init() {
-  rb_gc_register_address(&Class);
-  Class = ClassBuilder("String").
-    defineSingletonMethod("New", &New).
-    defineMethod("Utf8Value", &Utf8Value);
-}
 } //namespace rr

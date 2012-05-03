@@ -100,28 +100,42 @@ public:
 
 class Context : public Ref<v8::Context> {
 public:
-  inline Context(VALUE value) : Ref<v8::Context>(value) {}
   static void Init();
+  static VALUE New(VALUE self);
+  static VALUE Enter(VALUE self);
+  static VALUE Exit(VALUE self);
+
+private:
+  inline Context(VALUE value) : Ref<v8::Context>(value) {}
 };
 
 class Script : public Ref<v8::Script> {
 public:
-  inline Script(VALUE value) : Ref<v8::Script>(value) {}
   static void Init();
+  static VALUE New(VALUE klass, VALUE source, VALUE filename);
+  static VALUE Run(VALUE self);
+
+private:
+  inline Script(VALUE value) : Ref<v8::Script>(value) {}
 };
 
 class String: public Ref<v8::String> {
 public:
+  static void Init();
+  static VALUE New(VALUE self, VALUE value);
+  static VALUE Utf8Value(VALUE self);
+
   inline String(VALUE value) : Ref<v8::String>(value) {}
   virtual operator v8::Handle<v8::Value>();
   static VALUE ToRuby(v8::Handle<v8::String> value);
-  static void Init();
+private:
   static VALUE Class;
 };
 
 class V8 {
 public:
   static void Init();
+  static VALUE IdleNotification(VALUE self);
 };
 
 class ClassBuilder {
