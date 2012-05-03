@@ -38,5 +38,6 @@ namespace rr {
   }
   void GC::Init() {
     queue = new GC::Queue();
+    v8::V8::AddGCPrologueCallback(GC::Drain);
   }
 }

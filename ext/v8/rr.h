@@ -116,6 +116,10 @@ public:
   static void Init();
 };
 
+class V8 {
+public:
+  static void Init();
+};
 
 VALUE defineClass(const char *name, VALUE superclass = rb_cObject);
 VALUE defineModule(const char *name);

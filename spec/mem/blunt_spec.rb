@@ -2,6 +2,9 @@ require 'spec_helper'
 
 describe "A Very blunt test to make sure that we aren't doing stupid leaks" do
   before do
+    #allocate a single context to make sure that v8 loads its snapshot and
+    #we pay the overhead.
+    V8::Context.new
     @start_memory = process_memory
     GC.stress = true
   end
@@ -9,12 +12,12 @@ describe "A Very blunt test to make sure that we aren't doing stupid leaks" do
   after do
     GC.stress = false
   end
-  it "won't leak the context" do
-    500.times do
-      # V8::Context.new
+  it "won't increase process memory by more than 20% no matter how many contexts we create" do
+    5000.times do
+       V8::Context.new
+       gc_completely
     end
-    gc_completely
-    process_memory.should <= @start_memory * 1.05
+    process_memory.should <= @start_memory * 1.2
   end
 
   def process_memory
@@ -22,7 +25,7 @@ describe "A Very blunt test to make sure that we aren't doing stupid leaks" do
   end
 
   def gc_completely
-
+    loop while !V8::C::V8::IdleNotification()
   end
 
 end
