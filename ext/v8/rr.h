@@ -125,10 +125,11 @@ public:
   static VALUE New(VALUE self, VALUE value);
   static VALUE Utf8Value(VALUE self);
 
-  inline String(VALUE value) : Ref<v8::String>(value) {}
-  virtual operator v8::Handle<v8::Value>();
   static VALUE ToRuby(v8::Handle<v8::String> value);
+
+  inline String(VALUE value) : Ref<v8::String>(value) {}
 private:
+
   static VALUE Class;
 };
 

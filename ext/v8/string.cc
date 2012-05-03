@@ -19,15 +19,11 @@ VALUE String::New(VALUE StringClass, VALUE string) {
 VALUE String::Utf8Value(VALUE self) {
   v8::HandleScope h;
   String str(self);
-  return rb_str_new(*v8::String::Utf8Value(str), str->Utf8Length());
+  return rb_str_new(*v8::String::Utf8Value(str.GetHandle()), str->Utf8Length());
 }
 
 VALUE String::ToRuby(v8::Handle<v8::String> string) {
   return String::create(string, String::Class);
-}
-
-String::operator v8::Handle<v8::Value>() {
-  return this->GetHandle();
 }
 
 } //namespace rr
