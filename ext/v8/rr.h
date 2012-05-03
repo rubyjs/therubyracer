@@ -124,6 +124,18 @@ public:
   static void Init();
 };
 
+class ClassBuilder {
+public:
+  ClassBuilder(const char* name, VALUE superclass = rb_cObject);
+  ClassBuilder& defineMethod(const char* name, VALUE (*impl)(VALUE));
+  ClassBuilder& defineMethod(const char* name, VALUE (*impl)(VALUE, VALUE));
+  ClassBuilder& defineSingletonMethod(const char* name, VALUE (*impl)(VALUE));
+  ClassBuilder& defineSingletonMethod(const char* name, VALUE (*impl)(VALUE, VALUE));
+  inline operator VALUE() {return this->value;}
+private:
+  VALUE value;
+};
+
 VALUE defineClass(const char *name, VALUE superclass = rb_cObject);
 VALUE defineModule(const char *name);
 }

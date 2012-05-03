@@ -25,8 +25,8 @@ VALUE String::Class;
 
 void String::Init() {
   rb_gc_register_address(&Class);
-  Class = defineClass("String");
-  RR_DEFINE_SINGLETON_METHOD(Class, "New", &New, 1);
-  RR_DEFINE_METHOD(Class, "Utf8Value", &Utf8Value, 0);
+  Class = ClassBuilder("String").
+    defineSingletonMethod("New", &New).
+    defineMethod("Utf8Value", &Utf8Value);
 }
-}
+} //namespace rr
