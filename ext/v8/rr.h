@@ -10,18 +10,18 @@ class Value {
 public:
   Value(v8::Handle<v8::Value> handle);
   Value(VALUE value);
-  operator VALUE();
-  operator v8::Handle<v8::Value>();
+  virtual operator VALUE();
+  virtual operator v8::Handle<v8::Value>();
   static void Init();
 protected:
   v8::Handle<v8::Value> value;
   VALUE object;
 };
 
-class String : public Value {
+class GC {
 public:
-  String(VALUE value);
-  operator v8::Handle<v8::String>();
+  static void Push(VALUE phantom);
+  static void Pop(v8::GCType type, v8::GCCallbackFlags flags);
   static void Init();
 };
 
@@ -45,24 +45,28 @@ public:
     return Ref<T>(new Holder(handle, klass));
   }
   inline v8::Handle<T> operator->() const { return holder->handle; }
-private:
+
   class Holder {
     friend class Ref;
   public:
     Holder(v8::Handle<T> handle, VALUE klass) {
       this->handle = v8::Persistent<T>::New(handle);
       this->value = Data_Wrap_Struct(klass, 0, &Holder::enqueue, this);
+      this->phantom = Data_Wrap_Struct(rb_cObject, 0, 0, this);
+      rb_gc_register_address(&phantom);
     }
     virtual ~Holder() {
       handle.Dispose();
+      rb_gc_unregister_address(&phantom);
     }
   protected:
     VALUE value;
+    VALUE phantom;
     v8::Persistent<T> handle;
 
     static void enqueue(Holder* holder) {
       holder->value = Qnil;
-      printf("enqueuing a reference for garbage collection (should actually do something)\n");
+      GC::Push(holder->phantom);
     }
   };
   Ref(Holder* holder) {
@@ -71,17 +75,33 @@ private:
   Holder* holder;
 };
 
+class Phantom : public Ref<void> {
+public:
+  inline Phantom(VALUE value) : Ref<void>(value) {}
+  inline void destroy() {
+    delete holder;
+  }
+};
+
 class Context : public Ref<v8::Context> {
 public:
-  inline Context(VALUE value) : Ref<v8::Context>(value) {};
+  inline Context(VALUE value) : Ref<v8::Context>(value) {}
   static void Init();
 };
 
 class Script : public Ref<v8::Script> {
 public:
-  inline Script(VALUE value) : Ref<v8::Script>(value) {};
+  inline Script(VALUE value) : Ref<v8::Script>(value) {}
   static void Init();
 };
+
+class String: public Ref<v8::String> {
+public:
+  inline String(VALUE value) : Ref<v8::String>(value) {}
+  static VALUE ToRuby(v8::Handle<v8::String> value);
+  static void Init();
+};
+
 
 VALUE defineClass(const char *name, VALUE superclass = rb_cObject);
 VALUE defineModule(const char *name);

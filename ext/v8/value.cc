@@ -27,7 +27,7 @@ namespace rr {
       return rb_float_new(value->NumberValue());
     }
     if (value->IsString()) {
-      return String::Value(value);
+      return String::ToRuby(value->ToString());
     }
     if (value->IsFunction()) {
       // return Function(value);
@@ -51,7 +51,7 @@ namespace rr {
       case T_FLOAT:
         // return Number::New(NUM2DBL(value));
       case T_STRING:
-      return (v8::Handle<v8::String>)String(object);
+      return v8::String::New(RSTRING_PTR(object), (int)RSTRING_LEN(object));
       case T_NIL:
         return v8::Null();
       case T_TRUE:

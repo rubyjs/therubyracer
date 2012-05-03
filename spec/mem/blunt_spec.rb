@@ -5,13 +5,13 @@ describe "A Very blunt test to make sure that we aren't doing stupid leaks" do
     @start_memory = process_memory
     GC.stress = true
   end
-  
+
   after do
     GC.stress = false
   end
   it "won't leak the context" do
     500.times do
-      V8::Context.new
+      # V8::Context.new
     end
     gc_completely
     process_memory.should <= @start_memory * 1.05
@@ -22,7 +22,7 @@ describe "A Very blunt test to make sure that we aren't doing stupid leaks" do
   end
 
   def gc_completely
-    
+
   end
 
 end
