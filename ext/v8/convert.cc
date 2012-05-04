@@ -2,10 +2,10 @@
 
 namespace rr {
 
-Convert::Convert(v8::Handle<v8::Value> value) {
-  this->value = value;
+VALUE Convert(bool b) {
+  return b ? Qtrue : Qfalse;
 }
-Convert::operator VALUE() {
+VALUE Convert(v8::Handle<v8::Value> value) {
   if (value.IsEmpty() || value->IsUndefined() || value->IsNull()) {
     return Qnil;
   }

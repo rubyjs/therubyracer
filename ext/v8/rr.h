@@ -6,14 +6,8 @@
 
 namespace rr {
 
-class Convert {
-public:
-  Convert(v8::Handle<v8::Value> handle);
-  virtual operator VALUE();
-
-private:
-  v8::Handle<v8::Value> value;
-};
+VALUE Convert(bool);
+VALUE Convert(v8::Handle<v8::Value> handle);
 
 class GC {
 public:
@@ -119,7 +113,8 @@ private:
 class Value : public Ref<v8::Value> {
 public:
   static void Init();
-
+  static VALUE Equals(VALUE self, VALUE other);
+  static VALUE StrictEquals(VALUE self, VALUE other);
   inline Value(VALUE value) : Ref<v8::Value>(value) {}
 };
 
