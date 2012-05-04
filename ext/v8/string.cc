@@ -13,7 +13,7 @@ void String::Init() {
 
 VALUE String::New(VALUE StringClass, VALUE string) {
   v8::HandleScope h;
-  return String::ToRuby(v8::String::New(RSTRING_PTR(string), (int)RSTRING_LEN(string)));
+  return String::Convert(v8::String::New(RSTRING_PTR(string), (int)RSTRING_LEN(string)));
 }
 
 VALUE String::Utf8Value(VALUE self) {
@@ -22,7 +22,7 @@ VALUE String::Utf8Value(VALUE self) {
   return rb_str_new(*v8::String::Utf8Value(str.GetHandle()), str->Utf8Length());
 }
 
-VALUE String::ToRuby(v8::Handle<v8::String> string) {
+VALUE String::Convert(v8::Handle<v8::String> string) {
   return String::create(string, String::Class);
 }
 

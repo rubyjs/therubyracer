@@ -6,16 +6,13 @@
 
 namespace rr {
 
-class Value {
+class Convert {
 public:
-  Value(v8::Handle<v8::Value> handle);
-  Value(VALUE value);
+  Convert(v8::Handle<v8::Value> handle);
   virtual operator VALUE();
-  virtual operator v8::Handle<v8::Value>();
-  static void Init();
-protected:
+
+private:
   v8::Handle<v8::Value> value;
-  VALUE object;
 };
 
 class GC {
@@ -119,13 +116,20 @@ private:
   inline Script(VALUE value) : Ref<v8::Script>(value) {}
 };
 
+class Value : public Ref<v8::Value> {
+public:
+  static void Init();
+
+  inline Value(VALUE value) : Ref<v8::Value>(value) {}
+};
+
 class String: public Ref<v8::String> {
 public:
   static void Init();
   static VALUE New(VALUE self, VALUE value);
   static VALUE Utf8Value(VALUE self);
 
-  static VALUE ToRuby(v8::Handle<v8::String> value);
+  static VALUE Convert(v8::Handle<v8::String> value);
 
   inline String(VALUE value) : Ref<v8::String>(value) {}
 private:

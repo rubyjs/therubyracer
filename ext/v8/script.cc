@@ -15,7 +15,7 @@ VALUE Script::New(VALUE klass, VALUE source, VALUE filename) {
 
 VALUE Script::Run(VALUE self) {
   v8::HandleScope scope;
-  return Value(Script(self)->Run());
+  return Convert(Script(self)->Run());
 }
 
 } //namespace rr
