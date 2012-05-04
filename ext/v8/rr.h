@@ -141,6 +141,7 @@ public:
 class ClassBuilder {
 public:
   ClassBuilder(const char* name, VALUE superclass = rb_cObject);
+  ClassBuilder(const char* name, const char* supername);
   ClassBuilder& defineMethod(const char* name, VALUE (*impl)(VALUE));
   ClassBuilder& defineMethod(const char* name, VALUE (*impl)(VALUE, VALUE));
   ClassBuilder& defineMethod(const char* name, VALUE (*impl)(VALUE, VALUE, VALUE));

@@ -1,7 +1,7 @@
 #include "rr.h"
 
 namespace rr {
-  VALUE defineClass(const char *name, VALUE superclass) {
+  VALUE defineClass(const char *name, VALUE superclass = rb_cObject) {
     VALUE V8 = rb_define_module("V8");
     VALUE V8_C = rb_define_module_under(V8, "C");
     VALUE klass = rb_define_class_under(V8_C, name, superclass);
@@ -16,6 +16,11 @@ namespace rr {
   }
 
   ClassBuilder::ClassBuilder(const char* name, VALUE superclass) {
+    this->value = defineClass(name, superclass);
+  }
+
+  ClassBuilder::ClassBuilder(const char* name, const char* supername) {
+    VALUE superclass = defineClass(supername);
     this->value = defineClass(name, superclass);
   }
 

@@ -6,7 +6,7 @@ VALUE String::Class;
 
 void String::Init() {
   rb_gc_register_address(&Class);
-  Class = ClassBuilder("String").
+  Class = ClassBuilder("String", "Value").
     defineSingletonMethod("New", &New).
     defineMethod("Utf8Value", &Utf8Value);
 }
