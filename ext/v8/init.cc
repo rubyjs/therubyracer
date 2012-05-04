@@ -11,7 +11,9 @@ extern "C" {
     GC::Init();
     V8::Init();
     Context::Init();
+    Value::Init();
     String::Init();
+    Object::Init();
     Script::Init();
   }
 }

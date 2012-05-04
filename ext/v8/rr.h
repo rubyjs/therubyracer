@@ -128,8 +128,15 @@ public:
 
   inline String(VALUE value) : Ref<v8::String>(value) {}
 private:
-
   static VALUE Class;
+};
+
+class Object : public Ref<v8::Object> {
+public:
+  static void Init();
+  static VALUE New(VALUE self);
+
+  inline Object(VALUE value) : Ref<v8::Object>(value) {}
 };
 
 class V8 {
