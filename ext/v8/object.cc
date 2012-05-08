@@ -11,7 +11,8 @@ void Object::Init() {
     defineMethod("GetPropertyAttributes", &GetPropertyAttributes).
     defineMethod("Has", &Has).
     defineMethod("Delete", &Delete).
-    defineMethod("ForceDelete", &ForceDelete);
+    defineMethod("ForceDelete", &ForceDelete).
+    defineMethod("SetAccessor", &SetAccessor);
   ClassBuilder("PropertyAttribute").
     defineEnumConst("None", v8::None).
     defineEnumConst("ReadOnly", v8::ReadOnly).

@@ -23,7 +23,10 @@ namespace rr {
     VALUE superclass = defineClass(supername);
     this->value = defineClass(name, superclass);
   }
-
+  ClassBuilder& ClassBuilder::defineMethod(const char* name, VALUE (*impl)(int, VALUE*, VALUE)) {
+    rb_define_method(this->value, name, (VALUE (*)(...))impl, -1);
+    return *this;
+  }
   ClassBuilder& ClassBuilder::defineMethod(const char* name, VALUE (*impl)(VALUE)) {
     rb_define_method(this->value, name, (VALUE (*)(...))impl, 0);
     return *this;
@@ -34,6 +37,10 @@ namespace rr {
   }
   ClassBuilder& ClassBuilder::defineMethod(const char* name, VALUE (*impl)(VALUE, VALUE, VALUE)) {
     rb_define_method(this->value, name, (VALUE (*)(...))impl, 2);
+    return *this;
+  }
+  ClassBuilder& ClassBuilder::defineSingletonMethod(const char* name, VALUE (*impl)(int, VALUE*, VALUE)) {
+    rb_define_singleton_method(this->value, name, (VALUE (*)(...))impl, -1);
     return *this;
   }
   ClassBuilder& ClassBuilder::defineSingletonMethod(const char* name, VALUE (*impl)(VALUE)) {

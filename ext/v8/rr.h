@@ -161,6 +161,7 @@ public:
   static VALUE Has(VALUE self, VALUE key);
   static VALUE Delete(VALUE self, VALUE key);
   static VALUE ForceDelete(VALUE self, VALUE key);
+  static VALUE SetAccessor(int argc, VALUE* argv, VALUE self);
 
   inline Object(VALUE value) : Ref<v8::Object>(value) {}
 };
@@ -175,9 +176,11 @@ class ClassBuilder {
 public:
   ClassBuilder(const char* name, VALUE superclass = rb_cObject);
   ClassBuilder(const char* name, const char* supername);
+  ClassBuilder& defineMethod(const char* name, VALUE (*impl)(int, VALUE*, VALUE));
   ClassBuilder& defineMethod(const char* name, VALUE (*impl)(VALUE));
   ClassBuilder& defineMethod(const char* name, VALUE (*impl)(VALUE, VALUE));
   ClassBuilder& defineMethod(const char* name, VALUE (*impl)(VALUE, VALUE, VALUE));
+  ClassBuilder& defineSingletonMethod(const char* name, VALUE (*impl)(int, VALUE*, VALUE));
   ClassBuilder& defineSingletonMethod(const char* name, VALUE (*impl)(VALUE));
   ClassBuilder& defineSingletonMethod(const char* name, VALUE (*impl)(VALUE, VALUE));
   ClassBuilder& defineSingletonMethod(const char* name, VALUE (*impl)(VALUE, VALUE, VALUE));
