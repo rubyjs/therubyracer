@@ -17,6 +17,11 @@ void Object::Init() {
     defineEnumConst("ReadOnly", v8::ReadOnly).
     defineEnumConst("DontEnum", v8::DontEnum).
     defineEnumConst("DontDelete", v8::DontDelete);
+  ClassBuilder("AccessControl").
+    defineEnumConst("DEFAULT", v8::DEFAULT).
+    defineEnumConst("ALL_CAN_READ", v8::ALL_CAN_READ).
+    defineEnumConst("ALL_CAN_WRITE", v8::ALL_CAN_WRITE).
+    defineEnumConst("PROHIBITS_OVERWRITING", v8::PROHIBITS_OVERWRITING);
 }
 
 VALUE Object::New(VALUE self) {

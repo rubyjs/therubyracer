@@ -41,7 +41,7 @@ public:
     this->value = value;
   }
   inline operator T() {
-    return NUM2INT(value);
+    return NIL_P(value) ? 0 : NUM2INT(value);
   }
 private:
   VALUE value;
@@ -148,6 +148,7 @@ private:
 };
 
 class PropertyAttribute: public Enum<v8::PropertyAttribute> {};
+class AccessControl: public Enum<v8::AccessControl> {};
 
 class Object : public Ref<v8::Object> {
 public:
