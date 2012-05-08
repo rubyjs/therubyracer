@@ -179,8 +179,7 @@ public:
   static VALUE New(VALUE self, VALUE value);
   static VALUE Utf8Value(VALUE self);
 
-  static VALUE Convert(v8::Handle<v8::String> value);
-
+  static VALUE convert(v8::Handle<v8::String> value);
   inline String(VALUE value) : Ref<v8::String>(value) {}
 private:
   static VALUE Class;
@@ -202,6 +201,8 @@ public:
   static VALUE ForceDelete(VALUE self, VALUE key);
   static VALUE SetAccessor(int argc, VALUE* argv, VALUE self);
 
+  static VALUE Class;
+  static VALUE convert(v8::Handle<v8::Object> value);
   inline Object(VALUE value) : Ref<v8::Object>(value) {}
 };
 

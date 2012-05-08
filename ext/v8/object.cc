@@ -2,6 +2,8 @@
 
 namespace rr {
 
+VALUE Object::Class;
+
 void Object::Init() {
   ClassBuilder("Object", "Value").
     defineSingletonMethod("New", &New).
@@ -12,7 +14,8 @@ void Object::Init() {
     defineMethod("Has", &Has).
     defineMethod("Delete", &Delete).
     defineMethod("ForceDelete", &ForceDelete).
-    defineMethod("SetAccessor", &SetAccessor);
+    defineMethod("SetAccessor", &SetAccessor).
+    store(&Class);
   ClassBuilder("PropertyAttribute").
     defineEnumConst("None", v8::None).
     defineEnumConst("ReadOnly", v8::ReadOnly).
@@ -23,6 +26,10 @@ void Object::Init() {
     defineEnumConst("ALL_CAN_READ", v8::ALL_CAN_READ).
     defineEnumConst("ALL_CAN_WRITE", v8::ALL_CAN_WRITE).
     defineEnumConst("PROHIBITS_OVERWRITING", v8::PROHIBITS_OVERWRITING);
+}
+
+VALUE Object::convert(v8::Handle<v8::Object> object) {
+  return Object::create(object, Class);
 }
 
 VALUE Object::New(VALUE self) {
