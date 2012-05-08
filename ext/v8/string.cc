@@ -12,12 +12,10 @@ void String::Init() {
 }
 
 VALUE String::New(VALUE StringClass, VALUE string) {
-  v8::HandleScope h;
   return String::Convert(v8::String::New(RSTRING_PTR(string), (int)RSTRING_LEN(string)));
 }
 
 VALUE String::Utf8Value(VALUE self) {
-  v8::HandleScope h;
   String str(self);
   return rb_str_new(*v8::String::Utf8Value(str.GetHandle()), str->Utf8Length());
 }

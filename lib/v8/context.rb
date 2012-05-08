@@ -7,11 +7,13 @@ module V8
 
     def eval(source, filename = '<eval>', line = 1)
       @native.Enter()
-      source = V8::C::String::New(source.to_s)
-      filename = V8::C::String::New(filename.to_s)
-      script = V8::C::Script::New(source, filename)
-      result = script.Run()
-      result.kind_of?(V8::C::String) ? result.Utf8Value() : result
+      V8::C::HandleScope() do
+        source = V8::C::String::New(source.to_s)
+        filename = V8::C::String::New(filename.to_s)
+        script = V8::C::Script::New(source, filename)
+        result = script.Run()
+        result.kind_of?(V8::C::String) ? result.Utf8Value() : result
+      end
     ensure
       @native.Exit()
     end

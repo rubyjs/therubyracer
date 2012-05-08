@@ -10,10 +10,12 @@ extern "C" {
   void Init_init() {
     GC::Init();
     V8::Init();
+    Handles::Init();
     Context::Init();
     Value::Init();
     String::Init();
     Object::Init();
+    External::Init();
     Script::Init();
   }
 }

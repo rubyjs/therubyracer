@@ -94,6 +94,15 @@ public:
   Holder* holder;
 };
 
+class Handles {
+public:
+  static void Init();
+  static VALUE HandleScope(int argc, VALUE* argv, VALUE self);
+private:
+  static VALUE SetupAndCall(int* state, VALUE code);
+  static VALUE DoCall(VALUE code);
+};
+
 class Phantom : public Ref<void> {
 public:
   inline Phantom(void* reference) : Ref<void>((Ref<void>::Holder*)reference) {}
@@ -114,6 +123,21 @@ public:
 
 private:
   inline Context(VALUE value) : Ref<v8::Context>(value) {}
+};
+
+class External: public Ref<v8::External> {
+public:
+  inline External(VALUE value) : Ref<v8::External>(value) {}
+  static void Init();
+  static VALUE New(VALUE self, VALUE data);
+  static VALUE Value(VALUE self);
+private:
+  static void release(v8::Persistent<v8::Value> object, void* parameter);
+  struct Data {
+    Data(VALUE data);
+    ~Data();
+    VALUE value;
+  };
 };
 
 class Script : public Ref<v8::Script> {

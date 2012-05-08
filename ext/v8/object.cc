@@ -78,16 +78,17 @@ VALUE Object::ForceDelete(VALUE self, VALUE key) {
 }
 
 
-// VALUE Object::SetAccessor(int argc, VALUE* argv, VALUE self) {
-//   VALUE name; VALUE getter; VALUE setter; VALUE data; VALUE settings, VALUE attribs;
-//   rb_scan_args(argc, argv, "24", name, getter, setter, data, settings, attribs);
-//   return Convert(Object(self)->SetAccessor(String(name),
-//                                            AccessorGetter(getter),
-//                                            AccessorSetter(setter),
-//                                            Value(data),
-//                                            AccessControl(settings),
-//                                            PropertyAttribute(attribs)));
-// }
+VALUE Object::SetAccessor(int argc, VALUE* argv, VALUE self) {
+  VALUE name; VALUE getter; VALUE setter; VALUE data; VALUE settings; VALUE attribs;
+  rb_scan_args(argc, argv, "24", name, getter, setter, data, settings, attribs);
+  return Qfalse;
+  // return Convert(Object(self)->SetAccessor(String(name),
+  //                                          AccessorGetter(getter),
+  //                                          AccessorSetter(setter),
+  //                                          Value(data),
+  //                                          AccessControl(settings),
+  //                                          PropertyAttribute(attribs)));
+}
 // V8EXPORT bool SetAccessor(Handle<String> name,
 //                           AccessorGetter getter,
 //                           AccessorSetter setter = 0,
