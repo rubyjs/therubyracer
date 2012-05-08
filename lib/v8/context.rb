@@ -17,5 +17,16 @@ module V8
     ensure
       @native.Exit()
     end
+
+    def []=(key, value)
+      V8::C::HandleScope() do
+        @native.Global().Set(key, value)
+      end
+    end
+    def [](key)
+      V8::C::HandleScope() do
+        @native.Global().Get(key)
+      end
+    end
   end
 end

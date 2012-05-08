@@ -120,8 +120,23 @@ public:
   static VALUE New(VALUE self);
   static VALUE Enter(VALUE self);
   static VALUE Exit(VALUE self);
+  static VALUE Global(VALUE self);
+  static VALUE DetachGlobal(VALUE self);
+  static VALUE ReattachGlobal(VALUE self, VALUE global);
+  static VALUE GetEntered(VALUE self);
+  static VALUE GetCurrent(VALUE self);
+  static VALUE GetCalling(VALUE self);
+  static VALUE SetSecurityToken(VALUE self, VALUE token);
+  static VALUE UseDefaultSecurityToken(VALUE self);
+  static VALUE GetSecurityToken(VALUE self);
+  static VALUE HasOutOfMemoryException(VALUE self);
+  static VALUE InContext(VALUE self);
+  static VALUE SetData(VALUE self, VALUE data);
+  static VALUE GetData(VALUE self);
+  static VALUE AllowCodeGenerationFromStrings(VALUE self, VALUE allow);
+  static VALUE IsCodeGenerationFromStringsAllowed(VALUE self);
 
-private:
+  static VALUE Class;
   inline Context(VALUE value) : Ref<v8::Context>(value) {}
 };
 
@@ -209,6 +224,7 @@ public:
   ClassBuilder& defineSingletonMethod(const char* name, VALUE (*impl)(VALUE, VALUE));
   ClassBuilder& defineSingletonMethod(const char* name, VALUE (*impl)(VALUE, VALUE, VALUE));
   ClassBuilder& defineEnumConst(const char* name, int value);
+  ClassBuilder& store(VALUE* storage);
   inline operator VALUE() {return this->value;}
 private:
   VALUE value;

@@ -59,4 +59,9 @@ namespace rr {
     rb_define_const(this->value, name, INT2FIX(value));
     return *this;
   }
+  ClassBuilder& ClassBuilder::store(VALUE* storage) {
+    rb_gc_register_address(storage);
+    *storage = this->value;
+    return *this;
+  }
 }

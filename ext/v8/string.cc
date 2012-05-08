@@ -5,10 +5,10 @@ namespace rr {
 VALUE String::Class;
 
 void String::Init() {
-  rb_gc_register_address(&Class);
-  Class = ClassBuilder("String", "Value").
+  ClassBuilder("String", "Value").
     defineSingletonMethod("New", &New).
-    defineMethod("Utf8Value", &Utf8Value);
+    defineMethod("Utf8Value", &Utf8Value).
+    store(&Class);
 }
 
 VALUE String::New(VALUE StringClass, VALUE string) {
