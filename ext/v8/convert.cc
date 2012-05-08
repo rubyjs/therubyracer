@@ -5,6 +5,9 @@ namespace rr {
 VALUE Convert(bool b) {
   return b ? Qtrue : Qfalse;
 }
+VALUE Convert(int i) {
+  return INT2FIX(i);
+}
 VALUE Convert(v8::Handle<v8::Value> value) {
   if (value.IsEmpty() || value->IsUndefined() || value->IsNull()) {
     return Qnil;

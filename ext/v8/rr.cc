@@ -48,5 +48,8 @@ namespace rr {
     rb_define_singleton_method(this->value, name, (VALUE (*)(...))impl, 2);
     return *this;
   }
-
+  ClassBuilder& ClassBuilder::defineEnumConst(const char* name, int value) {
+    rb_define_const(this->value, name, INT2FIX(value));
+    return *this;
+  }
 }

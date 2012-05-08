@@ -32,6 +32,22 @@ public:
 };
 
 /**
+* A V8 Enum
+*/
+
+template <class T> class Enum {
+public:
+  Enum<T>(VALUE value) {
+    this->value = value;
+  }
+  inline operator T() {
+    return NUM2INT(value);
+  }
+private:
+  VALUE value;
+};
+
+/**
 * A Reference to a V8 managed object
 */
 template <class T> class Ref {
@@ -131,10 +147,19 @@ private:
   static VALUE Class;
 };
 
+class PropertyAttribute: public Enum<v8::PropertyAttribute> {};
+
 class Object : public Ref<v8::Object> {
 public:
   static void Init();
   static VALUE New(VALUE self);
+  static VALUE Set(VALUE self, VALUE key, VALUE value);
+  static VALUE ForceSet(VALUE self, VALUE key, VALUE value);
+  static VALUE Get(VALUE self, VALUE key);
+  static VALUE GetPropertyAttributes(VALUE self, VALUE key);
+  static VALUE Has(VALUE self, VALUE key);
+  static VALUE Delete(VALUE self, VALUE key);
+  static VALUE ForceDelete(VALUE self, VALUE key);
 
   inline Object(VALUE value) : Ref<v8::Object>(value) {}
 };
@@ -155,6 +180,7 @@ public:
   ClassBuilder& defineSingletonMethod(const char* name, VALUE (*impl)(VALUE));
   ClassBuilder& defineSingletonMethod(const char* name, VALUE (*impl)(VALUE, VALUE));
   ClassBuilder& defineSingletonMethod(const char* name, VALUE (*impl)(VALUE, VALUE, VALUE));
+  ClassBuilder& defineEnumConst(const char* name, int value);
   inline operator VALUE() {return this->value;}
 private:
   VALUE value;
