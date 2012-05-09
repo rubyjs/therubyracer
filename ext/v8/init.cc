@@ -11,6 +11,7 @@ extern "C" {
     GC::Init();
     V8::Init();
     Handles::Init();
+    Accessor::Init();
     Context::Init();
     Value::Init();
     String::Init();

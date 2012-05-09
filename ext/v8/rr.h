@@ -41,7 +41,7 @@ public:
     this->value = value;
   }
   inline operator T() {
-    return NIL_P(value) ? 0 : NUM2INT(value);
+    return (T)(RTEST(value) ? NUM2INT(value) : 0);
   }
 private:
   VALUE value;
@@ -146,6 +146,10 @@ public:
   static void Init();
   static VALUE New(VALUE self, VALUE data);
   static VALUE Value(VALUE self);
+
+  static v8::Handle<v8::External> wrap(VALUE data);
+  static VALUE unwrap(v8::Handle<v8::External> external);
+  static VALUE Class;
 private:
   static void release(v8::Persistent<v8::Value> object, void* parameter);
   struct Data {
@@ -178,6 +182,7 @@ public:
   static void Init();
   static VALUE New(VALUE self, VALUE value);
   static VALUE Utf8Value(VALUE self);
+  static VALUE Concat(VALUE self, VALUE left, VALUE right);
 
   static VALUE convert(v8::Handle<v8::String> value);
   inline String(VALUE value) : Ref<v8::String>(value) {}
@@ -185,8 +190,54 @@ private:
   static VALUE Class;
 };
 
-class PropertyAttribute: public Enum<v8::PropertyAttribute> {};
-class AccessControl: public Enum<v8::AccessControl> {};
+class PropertyAttribute: public Enum<v8::PropertyAttribute> {
+public:
+  inline PropertyAttribute(VALUE value) : Enum<v8::PropertyAttribute>(value) {}
+};
+class AccessControl: public Enum<v8::AccessControl> {
+public:
+  inline AccessControl(VALUE value) : Enum<v8::AccessControl>(value) {}
+};
+
+class Accessor {
+public:
+  static void Init();
+  Accessor(const v8::AccessorInfo& info);
+  ~Accessor();
+  static VALUE This(VALUE self);
+  static VALUE Holder(VALUE self);
+  static VALUE Data(VALUE self);
+  operator VALUE();
+  v8::Handle<v8::Value> get(v8::Local<v8::String> property);
+  v8::Handle<v8::Value> set(v8::Local<v8::String> property, v8::Local<v8::Value> value);
+  static v8::Handle<v8::Value> AccessorGetter(v8::Local<v8::String> property, const v8::AccessorInfo& info);
+  static void AccessorSetter(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
+
+  class Info {
+  public:
+    Info(VALUE getter, VALUE setter, VALUE data);
+    Info(v8::Local<v8::Value> value);
+    operator v8::Handle<v8::Value>();
+    void mark();
+    v8::AccessorGetter Getter();
+    v8::AccessorSetter Setter();
+    VALUE getter;
+    VALUE setter;
+    VALUE data;
+  private:
+    void wrap(v8::Handle<v8::Object> wrapper, uint32_t index, VALUE value);
+    VALUE unwrap(v8::Handle<v8::Object> wrapper, uint32_t index);
+  };
+private:
+  VALUE thisObject;
+  VALUE holder;
+  VALUE value;
+  Info* info;
+  static void mark(Accessor* accessor);
+  static void sweep(Accessor* accessor);
+  static Accessor* accessor(VALUE self);
+  static VALUE Class;
+};
 
 class Object : public Ref<v8::Object> {
 public:
@@ -203,6 +254,9 @@ public:
 
   static VALUE Class;
   static VALUE convert(v8::Handle<v8::Object> value);
+  static VALUE wrap(v8::Handle<v8::Object> value);
+  static v8::Handle<v8::Value> getter(v8::Local<v8::String> property, const v8::AccessorInfo& info);
+  static void setter(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
   inline Object(VALUE value) : Ref<v8::Object>(value) {}
 };
 

@@ -31,6 +31,9 @@ void Object::Init() {
 VALUE Object::convert(v8::Handle<v8::Object> object) {
   return Object::create(object, Class);
 }
+VALUE Object::wrap(v8::Handle<v8::Object> object) {
+  return convert(object);
+}
 
 VALUE Object::New(VALUE self) {
   return Object::create(v8::Object::New(), self);
@@ -86,23 +89,19 @@ VALUE Object::ForceDelete(VALUE self, VALUE key) {
 
 
 VALUE Object::SetAccessor(int argc, VALUE* argv, VALUE self) {
-  VALUE name; VALUE getter; VALUE setter; VALUE data; VALUE settings; VALUE attribs;
-  rb_scan_args(argc, argv, "24", name, getter, setter, data, settings, attribs);
-  return Qfalse;
-  // return Convert(Object(self)->SetAccessor(String(name),
-  //                                          AccessorGetter(getter),
-  //                                          AccessorSetter(setter),
-  //                                          Value(data),
-  //                                          AccessControl(settings),
-  //                                          PropertyAttribute(attribs)));
+  VALUE name; VALUE get; VALUE set; VALUE data; VALUE settings; VALUE attribs;
+  rb_scan_args(argc, argv, "24", &name, &get, &set, &data, &settings, &attribs);
+  AccessControl ac = v8::DEFAULT;
+  PropertyAttribute attrs = v8::None;
+  if (RTEST(settings)) {
+    ac = AccessControl(settings);
+  }
+  if (RTEST(attribs)) {
+    attrs = PropertyAttribute(attribs);
+  }
+  Accessor::Info accessor(get, set, data);
+  return Convert(Object(self)->SetAccessor(String(name), accessor.Getter(), accessor.Setter(), accessor, ac, attrs));
 }
-// V8EXPORT bool SetAccessor(Handle<String> name,
-//                           AccessorGetter getter,
-//                           AccessorSetter setter = 0,
-//                           Handle<Value> data = Handle<Value>(),
-//                           AccessControl settings = DEFAULT,
-//                           PropertyAttribute attribute = None);
-
 
 //
 // /**
