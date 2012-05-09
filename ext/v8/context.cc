@@ -71,7 +71,6 @@ VALUE Context::HasOutOfMemoryException(VALUE self) {
   return Convert(Context(self)->HasOutOfMemoryException());
 }
 
-
 VALUE Context::InContext(VALUE self) {
   return Convert(v8::Context::InContext());
 }
