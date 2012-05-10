@@ -5,5 +5,6 @@ module RedJS
   # Error = V8::JSError
 end
 describe V8::Context do
-  it_behaves_like 'RedJS::Context'
+  pending
+  # it_behaves_like 'RedJS::Context'
 end
