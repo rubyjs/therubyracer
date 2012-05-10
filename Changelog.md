@@ -1,5 +1,40 @@
 # Changelog
 
+## 0.x
+
+* include redjs http://github.com/cowboyd/redjs as gem
+
+## 0.10.1 2012/04/05
+
+* [bugfix] V8::Object#respond_to? did not call super
+
+## 0.10.0 2012/03/28
+
+* [incompatible] embedded lambdas now take JS `this` object as first object
+* add sponsorship image to the README
+* enable Travis CI
+
+## 0.9.9 2012/11/08
+
+* remove GCC specific C++ extension to fix llvm build.
+
+## 0.9.8 2012/11/07
+
+* let Rake version float again.
+
+## 0.9.7 2012/10/06
+* build fixes
+* fix rake dependency at 0.8.7 while the Rake team sorts some shit out.
+
+## 0.9.6 2012/10/06
+
+* make build compatible with Gentoo
+
+## 0.9.5 - 2012/10/05
+
+* remove GCC specific code to enable build on BSD
+* let Rake dependency float
+
 ## 0.9.4 - 2011/08/22
 
 * Fix an issue with the compilation include paths which allowed compilation against conflicting libv8's
