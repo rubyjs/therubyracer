@@ -17,7 +17,7 @@ describe "A Very blunt test to make sure that we aren't doing stupid leaks" do
        V8::Context.new
        run_v8_gc
     end
-    process_memory.should <= @start_memory * 1.2
+    process_memory.should <= @start_memory * 1.5
   end
 
   def process_memory
