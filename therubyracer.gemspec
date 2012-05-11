@@ -16,7 +16,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib", "ext"]
   gem.version       = V8::VERSION
 
-  gem.add_dependency "libv8", "~> 3.10.7"
+  gem.add_dependency "libv8", "~> 3.10.8"
 
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rake-compiler"
