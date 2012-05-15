@@ -2,8 +2,6 @@
 
 namespace rr {
 
-VALUE Context::Class;
-
 void Context::Init() {
   ClassBuilder("Context").
     defineSingletonMethod("New", &New).
@@ -42,15 +40,15 @@ VALUE Context::ReattachGlobal(VALUE self, VALUE global) {
 }
 
 VALUE Context::GetEntered(VALUE self) {
-  return Context::create(v8::Context::GetEntered(), Class);
+  return Context::create(v8::Context::GetEntered());
 }
 
 VALUE Context::GetCurrent(VALUE self) {
-  return Context::create(v8::Context::GetCurrent(), Class);
+  return Context::create(v8::Context::GetCurrent());
 }
 
 VALUE Context::GetCalling(VALUE self) {
-  return Context::create(v8::Context::GetCalling(), Class);
+  return Context::create(v8::Context::GetCalling());
 }
 
 VALUE Context::SetSecurityToken(VALUE self, VALUE token) {
@@ -95,7 +93,7 @@ VALUE Context::IsCodeGenerationFromStringsAllowed(VALUE self) {
 
 VALUE Context::New(VALUE ContextClass) {
   v8::Persistent<v8::Context> context = v8::Context::New();
-  Ref<v8::Context> ref = Context::create(context, ContextClass);
+  Ref<v8::Context> ref = Context::create(context);
   context.Dispose();
   return ref;
 }

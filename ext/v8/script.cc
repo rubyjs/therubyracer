@@ -9,7 +9,7 @@ void Script::Init() {
 }
 
 VALUE Script::New(VALUE klass, VALUE source, VALUE filename) {
-  return Script::create(v8::Script::New(String(source), Value(filename)), klass);
+  return Script::create(v8::Script::New(String(source), Value(filename)));
 }
 
 VALUE Script::Run(VALUE self) {

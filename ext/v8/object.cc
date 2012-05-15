@@ -2,8 +2,6 @@
 
 namespace rr {
 
-VALUE Object::Class;
-
 void Object::Init() {
   ClassBuilder("Object", "Value").
     defineSingletonMethod("New", &New).
@@ -28,15 +26,9 @@ void Object::Init() {
     defineEnumConst("PROHIBITS_OVERWRITING", v8::PROHIBITS_OVERWRITING);
 }
 
-VALUE Object::convert(v8::Handle<v8::Object> object) {
-  return Object::create(object, Class);
-}
-VALUE Object::wrap(v8::Handle<v8::Object> object) {
-  return convert(object);
-}
 
 VALUE Object::New(VALUE self) {
-  return Object::create(v8::Object::New(), self);
+  return Object::create(v8::Object::New());
 }
 
 //TODO: Allow setting of property attributes

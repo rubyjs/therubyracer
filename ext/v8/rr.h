@@ -63,8 +63,8 @@ public:
   virtual operator v8::Handle<T>() {
     return holder->handle;
   }
-  static Ref<T> create(v8::Handle<T> handle, VALUE klass) {
-    return Ref<T>(new Holder(handle, klass));
+  static Ref<T> create(v8::Handle<T> handle) {
+    return Ref<T>(new Holder(handle, Class));
   }
   inline v8::Handle<T> operator->() const { return holder->handle; }
   v8::Handle<T> GetHandle() {return holder->handle;}
@@ -92,7 +92,9 @@ public:
     this->holder = holder;
   };
   Holder* holder;
+  static VALUE Class;
 };
+template <class T> VALUE Ref<T>::Class;
 
 class Handles {
 public:
@@ -136,7 +138,6 @@ public:
   static VALUE AllowCodeGenerationFromStrings(VALUE self, VALUE allow);
   static VALUE IsCodeGenerationFromStringsAllowed(VALUE self);
 
-  static VALUE Class;
   inline Context(VALUE value) : Ref<v8::Context>(value) {}
 };
 
@@ -149,7 +150,6 @@ public:
 
   static v8::Handle<v8::External> wrap(VALUE data);
   static VALUE unwrap(v8::Handle<v8::External> external);
-  static VALUE Class;
 private:
   static void release(v8::Persistent<v8::Value> object, void* parameter);
   struct Data {
@@ -184,10 +184,7 @@ public:
   static VALUE Utf8Value(VALUE self);
   static VALUE Concat(VALUE self, VALUE left, VALUE right);
 
-  static VALUE convert(v8::Handle<v8::String> value);
   inline String(VALUE value) : Ref<v8::String>(value) {}
-private:
-  static VALUE Class;
 };
 
 class PropertyAttribute: public Enum<v8::PropertyAttribute> {
@@ -252,11 +249,6 @@ public:
   static VALUE ForceDelete(VALUE self, VALUE key);
   static VALUE SetAccessor(int argc, VALUE* argv, VALUE self);
 
-  static VALUE Class;
-  static VALUE convert(v8::Handle<v8::Object> value);
-  static VALUE wrap(v8::Handle<v8::Object> value);
-  static v8::Handle<v8::Value> getter(v8::Local<v8::String> property, const v8::AccessorInfo& info);
-  static void setter(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
   inline Object(VALUE value) : Ref<v8::Object>(value) {}
 };
 

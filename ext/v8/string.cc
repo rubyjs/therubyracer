@@ -2,8 +2,6 @@
 
 namespace rr {
 
-VALUE String::Class;
-
 void String::Init() {
   ClassBuilder("String", "Value").
     defineSingletonMethod("New", &New).
@@ -13,7 +11,7 @@ void String::Init() {
 }
 
 VALUE String::New(VALUE StringClass, VALUE string) {
-  return String::convert(v8::String::New(RSTRING_PTR(string), (int)RSTRING_LEN(string)));
+  return String::create(v8::String::New(RSTRING_PTR(string), (int)RSTRING_LEN(string)));
 }
 
 VALUE String::Utf8Value(VALUE self) {
@@ -23,10 +21,6 @@ VALUE String::Utf8Value(VALUE self) {
 
 VALUE String::Concat(VALUE self, VALUE left, VALUE right) {
   return Convert(v8::String::Concat(String(left), String(right)));
-}
-
-VALUE String::convert(v8::Handle<v8::String> string) {
-  return String::create(string, Class);
 }
 
 } //namespace rr

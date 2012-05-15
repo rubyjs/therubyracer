@@ -2,8 +2,6 @@
 
 namespace rr {
 
-VALUE External::Class;
-
 void External::Init() {
   ClassBuilder("External", "Value").
     defineSingletonMethod("New", &New).
@@ -11,7 +9,7 @@ void External::Init() {
     store(&Class);
 }
 VALUE External::New(VALUE self, VALUE data) {
-  return External::create(wrap(data), self);
+  return External::create(wrap(data));
 }
 
 v8::Handle<v8::External> External::wrap(VALUE data) {
