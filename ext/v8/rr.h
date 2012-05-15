@@ -6,7 +6,7 @@
 
 namespace rr {
 
-VALUE Bool(bool);
+VALUE Bool(bool b);
 
 class GC {
 public:
