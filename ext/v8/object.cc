@@ -38,7 +38,6 @@ VALUE Object::Set(VALUE self, VALUE key, VALUE value) {
   } else {
     return Convert(Object(self)->Set((v8::Handle<v8::Value>)Value(key), Value(value)));
   }
-
 }
 
 VALUE Object::ForceSet(VALUE self, VALUE key, VALUE value) {
@@ -47,9 +46,9 @@ VALUE Object::ForceSet(VALUE self, VALUE key, VALUE value) {
 
 VALUE Object::Get(VALUE self, VALUE key) {
   if (rb_obj_is_kind_of(key, rb_cNumeric)) {
-    return Convert(Object(self)->Get(NUM2UINT(key)));
+    return Value(Object(self)->Get(NUM2UINT(key)));
   } else {
-    return Convert(Object(self)->Get((v8::Handle<v8::Value>)Value(key)));
+    return Value(Object(self)->Get((v8::Handle<v8::Value>)Value(key)));
   }
 }
 

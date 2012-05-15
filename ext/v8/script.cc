@@ -5,7 +5,8 @@ namespace rr {
 void Script::Init() {
   ClassBuilder("Script").
     defineSingletonMethod("New", &New).
-    defineMethod("Run", &Run);
+    defineMethod("Run", &Run).
+    store(&Class);
 }
 
 VALUE Script::New(VALUE klass, VALUE source, VALUE filename) {
@@ -13,7 +14,7 @@ VALUE Script::New(VALUE klass, VALUE source, VALUE filename) {
 }
 
 VALUE Script::Run(VALUE self) {
-  return Convert(Script(self)->Run());
+  return Value(Script(self)->Run());
 }
 
 } //namespace rr

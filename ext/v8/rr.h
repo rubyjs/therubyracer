@@ -52,22 +52,22 @@ private:
 */
 template <class T> class Ref {
 public:
-  Ref(VALUE wrapper) {
-    Holder* holder = NULL;
-    Data_Get_Struct(wrapper, class Holder, holder) ;
-    this->holder = holder;
+  Ref(VALUE value) {
+    this->value = value;
   }
   Ref(v8::Handle<T> handle) {
-    this->holder = new Holder(handle, Class);
+    this->handle = handle;
   }
-  virtual operator VALUE() {
-    return holder->value;
+  virtual operator VALUE() const {
+    return (new Holder(handle, Class))->value;
   }
-  virtual operator v8::Handle<T>() {
+  virtual operator v8::Handle<T>() const {
+    Holder* holder = NULL;
+    Data_Get_Struct(this->value, class Holder, holder);
     return holder->handle;
   }
-  inline v8::Handle<T> operator->() const { return holder->handle; }
-  v8::Handle<T> GetHandle() {return holder->handle;}
+  inline v8::Handle<T> operator->() const { return *this;}
+  inline v8::Handle<T> GetHandle()  const { return *this;}
 
   class Holder {
     friend class Ref;
@@ -88,10 +88,9 @@ public:
       GC::Finalize(holder);
     }
   };
-  Ref(Holder* holder) {
-    this->holder = holder;
-  };
-  Holder* holder;
+
+  VALUE value;
+  v8::Handle<T> handle;
   static VALUE Class;
 };
 template <class T> VALUE Ref<T>::Class;
@@ -105,15 +104,16 @@ private:
   static VALUE DoCall(VALUE code);
 };
 
-class Phantom : public Ref<void> {
+class Phantom {
 public:
-  inline Phantom(void* reference) : Ref<void>((Ref<void>::Holder*)reference) {}
+  inline Phantom(void* reference) : holder((Ref<void>::Holder*)reference) {}
   inline bool NotNull() {
     return this->holder != NULL;
   }
   inline void destroy() {
     delete holder;
   }
+  Ref<void>::Holder* holder;
 };
 
 class Context : public Ref<v8::Context> {
@@ -177,6 +177,8 @@ public:
   static VALUE Equals(VALUE self, VALUE other);
   static VALUE StrictEquals(VALUE self, VALUE other);
   inline Value(VALUE value) : Ref<v8::Value>(value) {}
+  inline Value(v8::Handle<v8::Value> value) : Ref<v8::Value>(value) {}
+  virtual operator VALUE();
 };
 
 class String: public Ref<v8::String> {
