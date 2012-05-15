@@ -52,12 +52,12 @@ private:
 */
 template <class T> class Ref {
 public:
-  Ref<T>(VALUE wrapper) {
+  Ref(VALUE wrapper) {
     Holder* holder = NULL;
     Data_Get_Struct(wrapper, class Holder, holder) ;
     this->holder = holder;
   }
-  Ref<T>(v8::Handle<T> handle) {
+  Ref(v8::Handle<T> handle) {
     this->holder = new Holder(handle, Class);
   }
   virtual operator VALUE() {
