@@ -13,8 +13,8 @@ namespace rr {
   }
 
   Accessor::Accessor(const v8::AccessorInfo& info) {
-    this->thisObject = Object::create(info.This());
-    this->holder = Object::create(info.Holder());
+    this->thisObject = Object(info.This());
+    this->holder = Object(info.Holder());
     this->value = Data_Wrap_Struct(Class, &mark, &sweep, this);
     this->info = new Info(info.Data());
   }

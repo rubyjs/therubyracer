@@ -57,14 +57,14 @@ public:
     Data_Get_Struct(wrapper, class Holder, holder) ;
     this->holder = holder;
   }
+  Ref<T>(v8::Handle<T> handle) {
+    this->holder = new Holder(handle, Class);
+  }
   virtual operator VALUE() {
     return holder->value;
   }
   virtual operator v8::Handle<T>() {
     return holder->handle;
-  }
-  static Ref<T> create(v8::Handle<T> handle) {
-    return Ref<T>(new Holder(handle, Class));
   }
   inline v8::Handle<T> operator->() const { return holder->handle; }
   v8::Handle<T> GetHandle() {return holder->handle;}
@@ -139,15 +139,17 @@ public:
   static VALUE IsCodeGenerationFromStringsAllowed(VALUE self);
 
   inline Context(VALUE value) : Ref<v8::Context>(value) {}
+  inline Context(v8::Handle<v8::Context> cxt) : Ref<v8::Context>(cxt) {}
 };
 
 class External: public Ref<v8::External> {
 public:
-  inline External(VALUE value) : Ref<v8::External>(value) {}
   static void Init();
   static VALUE New(VALUE self, VALUE data);
   static VALUE Value(VALUE self);
 
+  inline External(VALUE value) : Ref<v8::External>(value) {}
+  inline External(v8::Handle<v8::External> ext) : Ref<v8::External>(ext) {}
   static v8::Handle<v8::External> wrap(VALUE data);
   static VALUE unwrap(v8::Handle<v8::External> external);
 private:
@@ -165,8 +167,8 @@ public:
   static VALUE New(VALUE klass, VALUE source, VALUE filename);
   static VALUE Run(VALUE self);
 
-private:
   inline Script(VALUE value) : Ref<v8::Script>(value) {}
+  inline Script(v8::Handle<v8::Script> script) : Ref<v8::Script>(script) {}
 };
 
 class Value : public Ref<v8::Value> {
@@ -185,6 +187,7 @@ public:
   static VALUE Concat(VALUE self, VALUE left, VALUE right);
 
   inline String(VALUE value) : Ref<v8::String>(value) {}
+  inline String(v8::Handle<v8::String> string) : Ref<v8::String>(string) {}
 };
 
 class PropertyAttribute: public Enum<v8::PropertyAttribute> {
@@ -250,6 +253,7 @@ public:
   static VALUE SetAccessor(int argc, VALUE* argv, VALUE self);
 
   inline Object(VALUE value) : Ref<v8::Object>(value) {}
+  inline Object(v8::Handle<v8::Object> object) : Ref<v8::Object>(object) {}
 };
 
 class V8 {

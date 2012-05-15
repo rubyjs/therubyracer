@@ -9,7 +9,7 @@ void External::Init() {
     store(&Class);
 }
 VALUE External::New(VALUE self, VALUE data) {
-  return External::create(wrap(data));
+  return External(wrap(data));
 }
 
 v8::Handle<v8::External> External::wrap(VALUE data) {

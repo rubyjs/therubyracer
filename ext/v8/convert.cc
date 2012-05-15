@@ -28,7 +28,7 @@ VALUE Convert(v8::Handle<v8::Value> value) {
     return rb_float_new(value->NumberValue());
   }
   if (value->IsString()) {
-    return String::create(value->ToString());
+    return String(value->ToString());
   }
   if (value->IsFunction()) {
     // return Function(value);
@@ -40,7 +40,7 @@ VALUE Convert(v8::Handle<v8::Value> value) {
     // return rr_reflect_v8_date(value);
   }
   if (value->IsObject()) {
-    return Object::create(value->ToObject());
+    return Object(value->ToObject());
   }
   return Qnil;
 }

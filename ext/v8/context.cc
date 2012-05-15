@@ -40,15 +40,15 @@ VALUE Context::ReattachGlobal(VALUE self, VALUE global) {
 }
 
 VALUE Context::GetEntered(VALUE self) {
-  return Context::create(v8::Context::GetEntered());
+  return Context(v8::Context::GetEntered());
 }
 
 VALUE Context::GetCurrent(VALUE self) {
-  return Context::create(v8::Context::GetCurrent());
+  return Context(v8::Context::GetCurrent());
 }
 
 VALUE Context::GetCalling(VALUE self) {
-  return Context::create(v8::Context::GetCalling());
+  return Context(v8::Context::GetCalling());
 }
 
 VALUE Context::SetSecurityToken(VALUE self, VALUE token) {
@@ -93,9 +93,9 @@ VALUE Context::IsCodeGenerationFromStringsAllowed(VALUE self) {
 
 VALUE Context::New(VALUE ContextClass) {
   v8::Persistent<v8::Context> context = v8::Context::New();
-  Ref<v8::Context> ref = Context::create(context);
+  Context reference(context);
   context.Dispose();
-  return ref;
+  return reference;
 }
 
 VALUE Context::Enter(VALUE self) {

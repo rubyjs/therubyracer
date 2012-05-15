@@ -28,7 +28,7 @@ void Object::Init() {
 
 
 VALUE Object::New(VALUE self) {
-  return Object::create(v8::Object::New());
+  return Object(v8::Object::New());
 }
 
 //TODO: Allow setting of property attributes

@@ -11,7 +11,7 @@ void String::Init() {
 }
 
 VALUE String::New(VALUE StringClass, VALUE string) {
-  return String::create(v8::String::New(RSTRING_PTR(string), (int)RSTRING_LEN(string)));
+  return String(v8::String::New(RSTRING_PTR(string), (int)RSTRING_LEN(string)));
 }
 
 VALUE String::Utf8Value(VALUE self) {
