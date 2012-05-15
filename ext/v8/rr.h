@@ -256,6 +256,7 @@ public:
 
   inline Object(VALUE value) : Ref<v8::Object>(value) {}
   inline Object(v8::Handle<v8::Object> object) : Ref<v8::Object>(object) {}
+  virtual operator VALUE();
 };
 
 class V8 {

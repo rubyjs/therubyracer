@@ -21,6 +21,12 @@ Value::operator VALUE() {
   if (handle.IsEmpty() || handle->IsUndefined() || handle->IsNull()) {
     return Qnil;
   }
+  if (handle->IsTrue()) {
+    return Qtrue;
+  }
+  if (handle->IsFalse()) {
+    return Qfalse;
+  }
   if (handle->IsExternal()) {
     return External((v8::Handle<v8::External>)v8::External::Cast(*handle));
   }

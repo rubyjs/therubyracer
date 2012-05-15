@@ -279,5 +279,28 @@ VALUE Object::SetAccessor(int argc, VALUE* argv, VALUE self) {
 // V8EXPORT Local<Value> CallAsConstructor(int argc,
 //                                         Handle<Value> argv[]);
 
-
+Object::operator VALUE() {
+  if (handle->IsFunction()) {
+    // return Function(handle);
+  }
+  if (handle->IsArray()) {
+    // return Array(handle);
+  }
+  if (handle->IsDate()) {
+    // return Date(handle);
+  }
+  if (handle->IsBooleanObject()) {
+    // return BooleanObject(handle);
+  }
+  if (handle->IsNumberObject()) {
+    // return NumberObject(handle);
+  }
+  if (handle->IsStringObject()) {
+    // return StringObject(handle);
+  }
+  if (handle->IsRegExp()) {
+    // return RegExp(handle);
+  }
+  return Ref<v8::Object>::operator VALUE();
+}
 }
