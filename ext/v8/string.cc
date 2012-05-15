@@ -20,7 +20,7 @@ VALUE String::Utf8Value(VALUE self) {
 }
 
 VALUE String::Concat(VALUE self, VALUE left, VALUE right) {
-  return Convert(v8::String::Concat(String(left), String(right)));
+  return String(v8::String::Concat(String(left), String(right)));
 }
 
 } //namespace rr

@@ -26,7 +26,7 @@ void Context::Init() {
 }
 
 VALUE Context::Global(VALUE self) {
-  return Convert(Context(self)->Global());
+  return Object(Context(self)->Global());
 }
 
 VALUE Context::DetachGlobal(VALUE self) {
@@ -62,15 +62,15 @@ VALUE Context::UseDefaultSecurityToken(VALUE self) {
 }
 
 VALUE Context::GetSecurityToken(VALUE self) {
-  return Convert(Context(self)->GetSecurityToken());
+  return Value(Context(self)->GetSecurityToken());
 }
 
 VALUE Context::HasOutOfMemoryException(VALUE self) {
-  return Convert(Context(self)->HasOutOfMemoryException());
+  return Bool(Context(self)->HasOutOfMemoryException());
 }
 
 VALUE Context::InContext(VALUE self) {
-  return Convert(v8::Context::InContext());
+  return Bool(v8::Context::InContext());
 }
 
 VALUE Context::SetData(VALUE self, VALUE data) {
@@ -79,7 +79,7 @@ VALUE Context::SetData(VALUE self, VALUE data) {
 }
 
 VALUE Context::GetData(VALUE self) {
-  return Convert(Context(self)->GetData());
+  return Value(Context(self)->GetData());
 }
 
 VALUE Context::AllowCodeGenerationFromStrings(VALUE self, VALUE allow) {
@@ -88,7 +88,7 @@ VALUE Context::AllowCodeGenerationFromStrings(VALUE self, VALUE allow) {
 }
 
 VALUE Context::IsCodeGenerationFromStringsAllowed(VALUE self) {
-  return Convert(Context(self)->IsCodeGenerationFromStringsAllowed());
+  return Bool(Context(self)->IsCodeGenerationFromStringsAllowed());
 }
 
 VALUE Context::New(VALUE ContextClass) {

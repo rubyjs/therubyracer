@@ -6,8 +6,7 @@
 
 namespace rr {
 
-VALUE Convert(bool);
-VALUE Convert(v8::Handle<v8::Value> handle);
+VALUE Bool(bool);
 
 class GC {
 public:

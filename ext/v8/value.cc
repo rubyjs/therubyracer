@@ -10,11 +10,11 @@ void Value::Init() {
 }
 
 VALUE Value::Equals(VALUE self, VALUE other) {
-  return Convert(Value(self)->Equals(Value(other)));
+  return Bool(Value(self)->Equals(Value(other)));
 }
 
 VALUE Value::StrictEquals(VALUE self, VALUE other) {
-  return Convert(Value(self)->StrictEquals(Value(other)));
+  return Bool(Value(self)->StrictEquals(Value(other)));
 }
 
 Value::operator VALUE() {
@@ -45,15 +45,6 @@ Value::operator VALUE() {
   if (handle->IsString()) {
     return String(handle->ToString());
   }
-  // if (handle->IsFunction()) {
-  //   // return Function(handle);
-  // }
-  // if (handle->IsArray()) {
-  //   // return Array(handle);
-  // }
-  // if (handle->IsDate()) {
-  //   // return rr_reflect_v8_date(handle);
-  // }
   if (handle->IsObject()) {
     return Object(handle->ToObject());
   }

@@ -8,7 +8,7 @@ void V8::Init() {
 }
 
 VALUE V8::IdleNotification(VALUE self) {
-  return Convert(v8::V8::IdleNotification());
+  return Bool(v8::V8::IdleNotification());
 }
 
 }

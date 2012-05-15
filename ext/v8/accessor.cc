@@ -41,11 +41,11 @@ namespace rr {
   }
 
   v8::Handle<v8::Value> Accessor::get(v8::Local<v8::String> property) {
-    return Value(rb_funcall(info->getter, rb_intern("call"), 2, Convert(property), this->value));
+    return Value(rb_funcall(info->getter, rb_intern("call"), 2, (VALUE)String(property), this->value));
   }
 
   v8::Handle<v8::Value> Accessor::set(v8::Local<v8::String> property, v8::Local<v8::Value> value) {
-    return Value(rb_funcall(info->setter, rb_intern("call"), 3, Convert(property), Convert(value), this->value));
+    return Value(rb_funcall(info->setter, rb_intern("call"), 3, (VALUE)String(property), (VALUE)Value(value), this->value));
   }
   void Accessor::mark(Accessor* acc) {
     rb_gc_mark(acc->thisObject);

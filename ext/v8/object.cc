@@ -34,14 +34,14 @@ VALUE Object::New(VALUE self) {
 //TODO: Allow setting of property attributes
 VALUE Object::Set(VALUE self, VALUE key, VALUE value) {
   if (rb_obj_is_kind_of(key, rb_cNumeric)) {
-    return Convert(Object(self)->Set(NUM2UINT(key), Value(value)));
+    return Bool(Object(self)->Set(NUM2UINT(key), Value(value)));
   } else {
-    return Convert(Object(self)->Set((v8::Handle<v8::Value>)Value(key), Value(value)));
+    return Bool(Object(self)->Set((v8::Handle<v8::Value>)Value(key), Value(value)));
   }
 }
 
 VALUE Object::ForceSet(VALUE self, VALUE key, VALUE value) {
-  return Convert(Object(self)->ForceSet(Value(key), Value(value)));
+  return Bool(Object(self)->ForceSet(Value(key), Value(value)));
 }
 
 VALUE Object::Get(VALUE self, VALUE key) {
@@ -53,29 +53,29 @@ VALUE Object::Get(VALUE self, VALUE key) {
 }
 
 VALUE Object::GetPropertyAttributes(VALUE self, VALUE key) {
-  return Convert(Object(self)->GetPropertyAttributes(Value(key)));
+  return PropertyAttribute(Object(self)->GetPropertyAttributes(Value(key)));
 }
 
 VALUE Object::Has(VALUE self, VALUE key) {
   Object obj(self);
   if (rb_obj_is_kind_of(key, rb_cNumeric)) {
-    return Convert(obj->Has((uint32_t)NUM2UINT(key)));
+    return Bool(obj->Has((uint32_t)NUM2UINT(key)));
   } else {
-  return Convert(obj->Has((v8::Handle<v8::String>)String(key)));
+  return Bool(obj->Has((v8::Handle<v8::String>)String(key)));
   }
 }
 
 VALUE Object::Delete(VALUE self, VALUE key) {
   Object obj(self);
   if (rb_obj_is_kind_of(key, rb_cNumeric)) {
-    return Convert(obj->Delete((uint32_t)NUM2UINT(key)));
+    return Bool(obj->Delete((uint32_t)NUM2UINT(key)));
   } else {
-    return Convert(obj->Delete((v8::Handle<v8::String>)String(key)));
+    return Bool(obj->Delete((v8::Handle<v8::String>)String(key)));
   }
 }
 
 VALUE Object::ForceDelete(VALUE self, VALUE key) {
-  return Convert(Object(self)->ForceDelete(Value(key)));
+  return Bool(Object(self)->ForceDelete(Value(key)));
 }
 
 
@@ -91,7 +91,7 @@ VALUE Object::SetAccessor(int argc, VALUE* argv, VALUE self) {
     attrs = PropertyAttribute(attribs);
   }
   Accessor::Info accessor(get, set, data);
-  return Convert(Object(self)->SetAccessor(String(name), accessor.Getter(), accessor.Setter(), accessor, ac, attrs));
+  return Bool(Object(self)->SetAccessor(String(name), accessor.Getter(), accessor.Setter(), accessor, ac, attrs));
 }
 
 //
