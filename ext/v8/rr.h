@@ -38,14 +38,16 @@ public:
 
 template <class T> class Enum {
 public:
-  Enum<T>(VALUE value) {
+  Enum<T>(VALUE value, T defaultValue = 0) {
     this->value = value;
+    this->defaultValue = defaultValue;
   }
   inline operator T() {
-    return (T)(RTEST(value) ? NUM2INT(value) : 0);
+    return (T)(RTEST(value) ? NUM2INT(value) : defaultValue);
   }
 private:
   VALUE value;
+  T defaultValue;
 };
 
 /**
@@ -196,11 +198,11 @@ public:
 
 class PropertyAttribute: public Enum<v8::PropertyAttribute> {
 public:
-  inline PropertyAttribute(VALUE value) : Enum<v8::PropertyAttribute>(value) {}
+  inline PropertyAttribute(VALUE value) : Enum<v8::PropertyAttribute>(value, v8::None) {}
 };
 class AccessControl: public Enum<v8::AccessControl> {
 public:
-  inline AccessControl(VALUE value) : Enum<v8::AccessControl>(value) {}
+  inline AccessControl(VALUE value) : Enum<v8::AccessControl>(value, v8::DEFAULT) {}
 };
 
 class Accessor {
