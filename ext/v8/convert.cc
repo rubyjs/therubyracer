@@ -6,8 +6,8 @@ VALUE Bool(bool b) {
   return b ? Qtrue : Qfalse;
 }
 
-VALUE Int(int i) {
-  return INT2FIX(i);
+int Int(VALUE v) {
+  return RTEST(v) ? NUM2INT(v) : 0;
 }
 
 uint32_t UInt32(VALUE num) {
