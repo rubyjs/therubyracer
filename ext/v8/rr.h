@@ -3,12 +3,16 @@
 
 #include <v8.h>
 #include <ruby.h>
+#include <vector>
 
 namespace rr {
 
-VALUE Bool(bool b);
-uint32_t UInt32(VALUE num);
 #define Void(expr) expr; return Qnil;
+
+VALUE Bool(bool b);
+int Int(VALUE v);
+uint32_t UInt32(VALUE num);
+VALUE not_implemented(const char* message);
 
 class GC {
 public:
@@ -72,6 +76,13 @@ public:
   inline v8::Handle<T> operator->() const { return *this;}
   inline v8::Handle<T> GetHandle()  const { return *this;}
   inline v8::Handle<T> operator*() const {return *this;}
+
+  static v8::Handle<T> * array(VALUE argv, std::vector< v8::Handle<T> >& v) {
+    for (uint32_t i = 0; i < v.size(); i++) {
+      v[i] = Ref<T>(rb_ary_entry(argv, i));
+    }
+    return &v[0];
+  }
 
   class Holder {
     friend class Ref;
@@ -257,10 +268,65 @@ public:
   static VALUE Delete(VALUE self, VALUE key);
   static VALUE ForceDelete(VALUE self, VALUE key);
   static VALUE SetAccessor(int argc, VALUE* argv, VALUE self);
+  static VALUE GetPropertyNames(VALUE self);
+  static VALUE GetOwnPropertyNames(VALUE self);
+  static VALUE GetPrototype(VALUE self);
+  static VALUE SetPrototype(VALUE self, VALUE prototype);
+  static VALUE FindInstanceInPrototypeChain(VALUE self, VALUE impl);
+  static VALUE ObjectProtoToString(VALUE self);
+  static VALUE GetConstructorName(VALUE self);
+  static VALUE InternalFieldCount(VALUE self);
+  static VALUE GetInternalField(VALUE self, VALUE idx);
+  static VALUE SetInternalField(VALUE self, VALUE idx, VALUE value);
+  static VALUE HasOwnProperty(VALUE self, VALUE key);
+  static VALUE HasRealNamedProperty(VALUE self, VALUE key);
+  static VALUE HasRealIndexedProperty(VALUE self, VALUE idx);
+  static VALUE HasRealNamedCallbackProperty(VALUE self, VALUE key);
+  static VALUE GetRealNamedPropertyInPrototypeChain(VALUE self, VALUE key);
+  static VALUE GetRealNamedProperty(VALUE self, VALUE key);
+  static VALUE HasNamedLookupInterceptor(VALUE self);
+  static VALUE HasIndexedLookupInterceptor(VALUE self);
+  static VALUE TurnOnAccessCheck(VALUE self);
+  static VALUE GetIdentityHash(VALUE self);
+  static VALUE SetHiddenValue(VALUE self, VALUE key, VALUE value);
+  static VALUE GetHiddenValue(VALUE self, VALUE key);
+  static VALUE DeleteHiddenValue(VALUE self, VALUE key);
+  static VALUE IsDirty(VALUE self);
+  static VALUE Clone(VALUE self);
+  static VALUE CreationContext(VALUE self);
+  static VALUE SetIndexedPropertiesToPixelData(VALUE self, VALUE data, VALUE length);
+  static VALUE GetIndexedPropertiesPixelData(VALUE self);
+  static VALUE HasIndexedPropertiesInPixelData(VALUE self);
+  static VALUE GetIndexedPropertiesPixelDataLength(VALUE self);
+  static VALUE SetIndexedPropertiesToExternalArrayData(VALUE self);
+  static VALUE HasIndexedPropertiesInExternalArrayData(VALUE self);
+  static VALUE GetIndexedPropertiesExternalArrayData(VALUE self);
+  static VALUE GetIndexedPropertiesExternalArrayDataType(VALUE self);
+  static VALUE GetIndexedPropertiesExternalArrayDataLength(VALUE self);
+  static VALUE IsCallable(VALUE self);
+  static VALUE CallAsFunction(VALUE self, VALUE recv, VALUE argc, VALUE argv);
+  static VALUE CallAsConstructor(VALUE self, VALUE argc, VALUE argv);
 
   inline Object(VALUE value) : Ref<v8::Object>(value) {}
   inline Object(v8::Handle<v8::Object> object) : Ref<v8::Object>(object) {}
   virtual operator VALUE();
+};
+
+class Array : public Ref<v8::Array> {
+public:
+  static void Init();
+  inline Array(v8::Handle<v8::Array> array) : Ref<v8::Array>(array) {}
+};
+
+class Template {
+public:
+  static void Init();
+};
+
+class FunctionTemplate : public Ref<v8::FunctionTemplate> {
+public:
+  static void Init();
+  inline FunctionTemplate(VALUE value) : Ref<v8::FunctionTemplate>(value) {}
 };
 
 class V8 {
@@ -277,10 +343,12 @@ public:
   ClassBuilder& defineMethod(const char* name, VALUE (*impl)(VALUE));
   ClassBuilder& defineMethod(const char* name, VALUE (*impl)(VALUE, VALUE));
   ClassBuilder& defineMethod(const char* name, VALUE (*impl)(VALUE, VALUE, VALUE));
+  ClassBuilder& defineMethod(const char* name, VALUE (*impl)(VALUE, VALUE, VALUE, VALUE));
   ClassBuilder& defineSingletonMethod(const char* name, VALUE (*impl)(int, VALUE*, VALUE));
   ClassBuilder& defineSingletonMethod(const char* name, VALUE (*impl)(VALUE));
   ClassBuilder& defineSingletonMethod(const char* name, VALUE (*impl)(VALUE, VALUE));
   ClassBuilder& defineSingletonMethod(const char* name, VALUE (*impl)(VALUE, VALUE, VALUE));
+  ClassBuilder& defineSingletonMethod(const char* name, VALUE (*impl)(VALUE, VALUE, VALUE, VALUE));
   ClassBuilder& defineEnumConst(const char* name, int value);
   ClassBuilder& store(VALUE* storage);
   inline operator VALUE() {return this->value;}

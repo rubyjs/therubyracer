@@ -16,7 +16,9 @@ extern "C" {
     Value::Init();
     String::Init();
     Object::Init();
+    Array::Init();
     External::Init();
     Script::Init();
+    Template::Init();
   }
 }

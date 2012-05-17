@@ -15,6 +15,10 @@ namespace rr {
     return rb_define_module_under(V8_C, name);
   }
 
+  VALUE not_implemented(const char* message) {
+    Void(rb_raise(rb_eStandardError, "not yet implemented %s", message));
+  }
+
   ClassBuilder::ClassBuilder(const char* name, VALUE superclass) {
     this->value = defineClass(name, superclass);
   }
@@ -39,6 +43,10 @@ namespace rr {
     rb_define_method(this->value, name, (VALUE (*)(...))impl, 2);
     return *this;
   }
+  ClassBuilder& ClassBuilder::defineMethod(const char* name, VALUE (*impl)(VALUE, VALUE, VALUE, VALUE)) {
+    rb_define_method(this->value, name, (VALUE (*)(...))impl, 3);
+    return *this;
+  }
   ClassBuilder& ClassBuilder::defineSingletonMethod(const char* name, VALUE (*impl)(int, VALUE*, VALUE)) {
     rb_define_singleton_method(this->value, name, (VALUE (*)(...))impl, -1);
     return *this;
@@ -53,6 +61,10 @@ namespace rr {
   }
   ClassBuilder& ClassBuilder::defineSingletonMethod(const char* name, VALUE (*impl)(VALUE, VALUE, VALUE)) {
     rb_define_singleton_method(this->value, name, (VALUE (*)(...))impl, 2);
+    return *this;
+  }
+  ClassBuilder& ClassBuilder::defineSingletonMethod(const char* name, VALUE (*impl)(VALUE, VALUE, VALUE, VALUE)) {
+    rb_define_singleton_method(this->value, name, (VALUE (*)(...))impl, 3);
     return *this;
   }
   ClassBuilder& ClassBuilder::defineEnumConst(const char* name, int value) {
