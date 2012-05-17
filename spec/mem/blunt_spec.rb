@@ -13,8 +13,10 @@ describe "A Very blunt test to make sure that we aren't doing stupid leaks" do
     GC.stress = false
   end
   it "won't increase process memory by more than 50% no matter how many contexts we create" do
-    pending 'need to run this on rbx to make sure we are not leaking memory'
-    5000.times do
+    if Object.const_defined?(:RUBY_ENGINE) && RUBY_ENGINE == 'rbx'
+      pending 'need to figure out how to do memory sanity checks on rbx'
+    end
+    500.times do
        V8::Context.new
        run_v8_gc
     end
