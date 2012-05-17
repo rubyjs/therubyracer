@@ -7,6 +7,8 @@
 namespace rr {
 
 VALUE Bool(bool b);
+uint32_t UInt32(VALUE num);
+#define Void(expr) expr; return Qnil;
 
 class GC {
 public:
@@ -67,6 +69,7 @@ public:
   }
   inline v8::Handle<T> operator->() const { return *this;}
   inline v8::Handle<T> GetHandle()  const { return *this;}
+  inline v8::Handle<T> operator*() const {return *this;}
 
   class Holder {
     friend class Ref;

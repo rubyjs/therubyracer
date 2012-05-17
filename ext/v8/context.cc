@@ -30,13 +30,11 @@ VALUE Context::Global(VALUE self) {
 }
 
 VALUE Context::DetachGlobal(VALUE self) {
-  Context(self)->DetachGlobal();
-  return Qnil;
+  Void(Context(self)->DetachGlobal());
 }
 
 VALUE Context::ReattachGlobal(VALUE self, VALUE global) {
-  Context(self)->ReattachGlobal(Object(global));
-  return Qnil;
+  Void(Context(self)->ReattachGlobal(Object(global)));
 }
 
 VALUE Context::GetEntered(VALUE self) {
@@ -52,13 +50,11 @@ VALUE Context::GetCalling(VALUE self) {
 }
 
 VALUE Context::SetSecurityToken(VALUE self, VALUE token) {
-  Context(self)->SetSecurityToken(Value(token));
-  return Qnil;
+  Void(Context(self)->SetSecurityToken(Value(token)));
 }
 
 VALUE Context::UseDefaultSecurityToken(VALUE self) {
-  Context(self)->UseDefaultSecurityToken();
-  return Qnil;
+  Void(Context(self)->UseDefaultSecurityToken());
 }
 
 VALUE Context::GetSecurityToken(VALUE self) {
@@ -74,8 +70,7 @@ VALUE Context::InContext(VALUE self) {
 }
 
 VALUE Context::SetData(VALUE self, VALUE data) {
-  Context(self)->SetData(String(data));
-  return Qnil;
+  Void(Context(self)->SetData(String(data)));
 }
 
 VALUE Context::GetData(VALUE self) {
@@ -83,8 +78,7 @@ VALUE Context::GetData(VALUE self) {
 }
 
 VALUE Context::AllowCodeGenerationFromStrings(VALUE self, VALUE allow) {
-  Context(self)->AllowCodeGenerationFromStrings(RTEST(allow));
-  return Qnil;
+  Void(Context(self)->AllowCodeGenerationFromStrings(RTEST(allow)));
 }
 
 VALUE Context::IsCodeGenerationFromStringsAllowed(VALUE self) {
@@ -99,13 +93,11 @@ VALUE Context::New(VALUE ContextClass) {
 }
 
 VALUE Context::Enter(VALUE self) {
-  Context(self)->Enter();
-  return Qnil;
+  Void(Context(self)->Enter());
 }
 
 VALUE Context::Exit(VALUE self) {
-  Context(self)->Exit();
-  return Qnil;
+  Void(Context(self)->Exit());
 }
 
 }

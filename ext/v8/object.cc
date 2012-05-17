@@ -34,9 +34,9 @@ VALUE Object::New(VALUE self) {
 //TODO: Allow setting of property attributes
 VALUE Object::Set(VALUE self, VALUE key, VALUE value) {
   if (rb_obj_is_kind_of(key, rb_cNumeric)) {
-    return Bool(Object(self)->Set(NUM2UINT(key), Value(value)));
+    return Bool(Object(self)->Set(UInt32(key), Value(value)));
   } else {
-    return Bool(Object(self)->Set((v8::Handle<v8::Value>)Value(key), Value(value)));
+    return Bool(Object(self)->Set(*Value(key), Value(value)));
   }
 }
 
@@ -46,9 +46,9 @@ VALUE Object::ForceSet(VALUE self, VALUE key, VALUE value) {
 
 VALUE Object::Get(VALUE self, VALUE key) {
   if (rb_obj_is_kind_of(key, rb_cNumeric)) {
-    return Value(Object(self)->Get(NUM2UINT(key)));
+    return Value(Object(self)->Get(UInt32(key)));
   } else {
-    return Value(Object(self)->Get((v8::Handle<v8::Value>)Value(key)));
+    return Value(Object(self)->Get(*Value(key)));
   }
 }
 
@@ -59,18 +59,18 @@ VALUE Object::GetPropertyAttributes(VALUE self, VALUE key) {
 VALUE Object::Has(VALUE self, VALUE key) {
   Object obj(self);
   if (rb_obj_is_kind_of(key, rb_cNumeric)) {
-    return Bool(obj->Has((uint32_t)NUM2UINT(key)));
+    return Bool(obj->Has(UInt32(key)));
   } else {
-  return Bool(obj->Has((v8::Handle<v8::String>)String(key)));
+  return Bool(obj->Has(*String(key)));
   }
 }
 
 VALUE Object::Delete(VALUE self, VALUE key) {
   Object obj(self);
   if (rb_obj_is_kind_of(key, rb_cNumeric)) {
-    return Bool(obj->Delete((uint32_t)NUM2UINT(key)));
+    return Bool(obj->Delete(UInt32(key)));
   } else {
-    return Bool(obj->Delete((v8::Handle<v8::String>)String(key)));
+    return Bool(obj->Delete(*String(key)));
   }
 }
 
