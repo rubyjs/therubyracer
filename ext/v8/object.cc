@@ -134,7 +134,7 @@ Object::operator VALUE() {
     // return Function(handle);
   }
   if (handle->IsArray()) {
-    // return Array(handle);
+    return Array(handle);
   }
   if (handle->IsDate()) {
     // return Date(handle);
