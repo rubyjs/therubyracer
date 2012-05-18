@@ -1,5 +1,6 @@
 module V8
   class Context
+    attr_reader :native
 
     def initialize
       @native = V8::C::Context::New()
