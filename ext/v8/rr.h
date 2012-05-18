@@ -69,9 +69,13 @@ public:
     return (new Holder(handle, Class))->value;
   }
   virtual operator v8::Handle<T>() const {
-    Holder* holder = NULL;
-    Data_Get_Struct(this->value, class Holder, holder);
-    return holder->handle;
+    if (RTEST(this->value)) {
+      Holder* holder = NULL;
+      Data_Get_Struct(this->value, class Holder, holder);
+      return holder->handle;
+    } else {
+      return v8::Handle<T>();
+    }
   }
   inline v8::Handle<T> operator->() const { return *this;}
   inline v8::Handle<T> GetHandle()  const { return *this;}
@@ -323,7 +327,20 @@ public:
   inline Array(VALUE value) : Ref<v8::Array>(value) {}
 };
 
+class Signature : public Ref<v8::Signature> {
+  static void Init();
+  static VALUE New(int argc, VALUE argv[], VALUE self);
+
+  inline Signature(v8::Handle<v8::Signature> sig) : Ref<v8::Signature>(sig) {}
+  inline Signature(VALUE value) : Ref<v8::Signature>(value) {}
+};
+
 class Template {
+public:
+  static void Init();
+};
+
+class ObjectTemplate : public Ref<v8::ObjectTemplate> {
 public:
   static void Init();
 };
@@ -331,7 +348,10 @@ public:
 class FunctionTemplate : public Ref<v8::FunctionTemplate> {
 public:
   static void Init();
+  static VALUE New(int argc, VALUE argv[], VALUE self);
+
   inline FunctionTemplate(VALUE value) : Ref<v8::FunctionTemplate>(value) {}
+  inline FunctionTemplate(v8::Handle<v8::FunctionTemplate> t) : Ref<v8::FunctionTemplate>(t) {}
 };
 
 class V8 {
