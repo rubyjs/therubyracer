@@ -131,7 +131,7 @@ VALUE Object::SetAccessor(int argc, VALUE* argv, VALUE self) {
 
 Object::operator VALUE() {
   if (handle->IsFunction()) {
-    // return Function(handle);
+    return Function((v8::Handle<v8::Function>) v8::Function::Cast(*handle));
   }
   if (handle->IsArray()) {
     return Array((v8::Handle<v8::Array>)v8::Array::Cast(*handle));

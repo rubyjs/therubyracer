@@ -17,6 +17,7 @@ extern "C" {
     String::Init();
     Object::Init();
     Array::Init();
+    Function::Init();
     External::Init();
     Script::Init();
     Template::Init();
