@@ -134,7 +134,7 @@ Object::operator VALUE() {
     // return Function(handle);
   }
   if (handle->IsArray()) {
-    return Array(handle);
+    return Array((v8::Handle<v8::Array>)v8::Array::Cast(*handle));
   }
   if (handle->IsDate()) {
     // return Date(handle);
