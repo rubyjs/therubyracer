@@ -21,9 +21,8 @@ describe V8::C::Object do
   it "can retrieve all property names" do
     V8::C::HandleScope() do
       o = V8::C::Object::New()
-      {"foo" => "bar", "baz" => "bang"}.each do |key, value|
-        o.Set(V8::C::String::New(key), V8::C::String::New(value))
-      end
+      o.Set(V8::C::String::New("foo"), V8::C::String::New("bar"))
+      o.Set(V8::C::String::New("baz"), V8::C::String::New("bang"))
       names = o.GetPropertyNames()
       names.Length().should eql 2
       names.Get(0).Utf8Value().should eql "foo"
