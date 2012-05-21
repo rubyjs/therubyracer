@@ -223,41 +223,37 @@ public:
 class Accessor {
 public:
   static void Init();
-  Accessor(const v8::AccessorInfo& info);
-  ~Accessor();
-  static VALUE This(VALUE self);
-  static VALUE Holder(VALUE self);
-  static VALUE Data(VALUE self);
-  operator VALUE();
-  v8::Handle<v8::Value> get(v8::Local<v8::String> property);
-  v8::Handle<v8::Value> set(v8::Local<v8::String> property, v8::Local<v8::Value> value);
-  static v8::Handle<v8::Value> AccessorGetter(v8::Local<v8::String> property, const v8::AccessorInfo& info);
-  static void AccessorSetter(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
+  Accessor(VALUE get, VALUE set, VALUE data);
+  Accessor(v8::Handle<v8::Value> value);
+  operator v8::AccessorGetter();
+  operator v8::AccessorSetter();
+  operator v8::Handle<v8::Value>();
+  static v8::Handle<v8::Value> Getter(v8::Local<v8::String> property, const v8::AccessorInfo& info);
+  static void Setter(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
 
   class Info {
   public:
-    Info(VALUE getter, VALUE setter, VALUE data);
-    Info(v8::Local<v8::Value> value);
-    operator v8::Handle<v8::Value>();
-    void mark();
-    v8::AccessorGetter Getter();
-    v8::AccessorSetter Setter();
-    VALUE getter;
-    VALUE setter;
-    VALUE data;
+    Info(const v8::AccessorInfo& info);
+    Info(VALUE value);
+    static VALUE This(VALUE self);
+    static VALUE Holder(VALUE self);
+    static VALUE Data(VALUE self);
+    operator VALUE();
+    inline const v8::AccessorInfo* operator->() {return this->info;}
+    v8::Handle<v8::Value> get(v8::Local<v8::String> property);
+    void set(v8::Local<v8::String> property, v8::Local<v8::Value> value);
+
+    static VALUE Class;
   private:
-    void wrap(v8::Handle<v8::Object> wrapper, uint32_t index, VALUE value);
-    VALUE unwrap(v8::Handle<v8::Object> wrapper, uint32_t index);
+    const v8::AccessorInfo* info;
   };
+  friend class Info;
 private:
-  VALUE thisObject;
-  VALUE holder;
-  VALUE value;
-  Info* info;
-  static void mark(Accessor* accessor);
-  static void sweep(Accessor* accessor);
-  static Accessor* accessor(VALUE self);
-  static VALUE Class;
+  void wrap(v8::Handle<v8::Object> wrapper, int index, VALUE value);
+  VALUE unwrap(v8::Handle<v8::Object> wrapper, int index);
+  VALUE get;
+  VALUE set;
+  VALUE data;
 };
 
 class Invocation {

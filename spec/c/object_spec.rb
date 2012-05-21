@@ -36,6 +36,8 @@ describe V8::C::Object do
       callback_data = V8::C::String::New("I am Legend")
       left = V8::C::String::New("Yo! ")
       getter = proc do |name, info|
+        info.This().StrictEquals(o).should be_true
+        info.Holder().StrictEquals(o).should be_true
         V8::C::String::Concat(left, info.Data())
       end
       setter = proc do |name, value, info|

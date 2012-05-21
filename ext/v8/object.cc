@@ -120,13 +120,8 @@ VALUE Object::ForceDelete(VALUE self, VALUE key) {
 VALUE Object::SetAccessor(int argc, VALUE* argv, VALUE self) {
   VALUE name; VALUE get; VALUE set; VALUE data; VALUE settings; VALUE attribs;
   rb_scan_args(argc, argv, "24", &name, &get, &set, &data, &settings, &attribs);
-  Accessor::Info accessor(get, set, data);
-  return Bool(Object(self)->SetAccessor(String(name),
-                                        accessor.Getter(),
-                                        accessor.Setter(),
-                                        accessor,
-                                        AccessControl(settings),
-                                        PropertyAttribute(attribs)));
+  Accessor access(get, set, data);
+  return Bool(Object(self)->SetAccessor(String(name), access, access, access, AccessControl(settings), PropertyAttribute(attribs)));
 }
 
 Object::operator VALUE() {
