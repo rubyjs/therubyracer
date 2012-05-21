@@ -260,6 +260,41 @@ private:
   static VALUE Class;
 };
 
+class Invocation {
+public:
+  static void Init();
+  Invocation(VALUE code, VALUE data);
+  Invocation(v8::Handle<v8::Value> wrapper);
+  operator v8::InvocationCallback();
+  operator v8::Handle<v8::Value>();
+  static v8::Handle<v8::Value> Callback(const v8::Arguments& args);
+
+  class Arguments {
+  public:
+    static void Init();
+    Arguments(const v8::Arguments& args);
+    Arguments(VALUE value);
+    inline const v8::Arguments* operator->() {return this->args;}
+    inline const v8::Arguments operator*() {return *this->args;}
+    v8::Handle<v8::Value> Call();
+
+    static VALUE Length(VALUE self);
+    static VALUE Get(VALUE self, VALUE index);
+    static VALUE Callee(VALUE self);
+    static VALUE This(VALUE self);
+    static VALUE Holder(VALUE self);
+    static VALUE IsConstructCall(VALUE self);
+    static VALUE Data(VALUE self);
+  private:
+    const v8::Arguments* args;
+    static VALUE Class;
+  };
+private:
+  VALUE code;
+  VALUE data;
+  friend class Arguments;
+};
+
 class Object : public Ref<v8::Object> {
 public:
   static void Init();
@@ -345,6 +380,7 @@ public:
 };
 
 class Signature : public Ref<v8::Signature> {
+public:
   static void Init();
   static VALUE New(int argc, VALUE argv[], VALUE self);
 
@@ -360,12 +396,24 @@ public:
 class ObjectTemplate : public Ref<v8::ObjectTemplate> {
 public:
   static void Init();
+
+  inline ObjectTemplate(VALUE value) : Ref<v8::ObjectTemplate>(value) {}
+  inline ObjectTemplate(v8::Handle<v8::ObjectTemplate> t) : Ref<v8::ObjectTemplate>(t) {}
 };
 
 class FunctionTemplate : public Ref<v8::FunctionTemplate> {
 public:
   static void Init();
   static VALUE New(int argc, VALUE argv[], VALUE self);
+  static VALUE GetFunction(VALUE self);
+  static VALUE SetCallHandler(int argc, VALUE argv[], VALUE self);
+  static VALUE InstanceTemplate(VALUE self);
+  static VALUE Inherit(VALUE self, VALUE parent);
+  static VALUE PrototypeTemplate(VALUE self);
+  static VALUE SetClassName(VALUE self, VALUE name);
+  static VALUE SetHiddenPrototype(VALUE self, VALUE value);
+  static VALUE ReadOnlyPrototype(VALUE self);
+  static VALUE HasInstance(VALUE self, VALUE object);
 
   inline FunctionTemplate(VALUE value) : Ref<v8::FunctionTemplate>(value) {}
   inline FunctionTemplate(v8::Handle<v8::FunctionTemplate> t) : Ref<v8::FunctionTemplate>(t) {}

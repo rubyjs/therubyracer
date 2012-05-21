@@ -13,6 +13,8 @@ extern "C" {
     Handles::Init();
     Accessor::Init();
     Context::Init();
+    Invocation::Init();
+    Signature::Init();
     Value::Init();
     String::Init();
     Object::Init();
