@@ -16,7 +16,7 @@ VALUE Array::New(int argc, VALUE argv[], VALUE self) {
 }
 
 VALUE Array::Length(VALUE self) {
-  return UINT2NUM(Array(self)->Length());
+  return UInt32(Array(self)->Length());
 }
 
 VALUE Array::CloneElementAt(VALUE self, VALUE index) {

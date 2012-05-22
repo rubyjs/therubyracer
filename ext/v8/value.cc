@@ -31,10 +31,10 @@ Value::operator VALUE() {
     return External((v8::Handle<v8::External>)v8::External::Cast(*handle));
   }
   if (handle->IsUint32()) {
-    return UINT2NUM(handle->Uint32Value());
+    return UInt32(handle->Uint32Value());
   }
   if (handle->IsInt32()) {
-    return INT2FIX(handle->Int32Value());
+    return Int(handle->Int32Value());
   }
   if (handle->IsBoolean()) {
     return handle->BooleanValue() ? Qtrue : Qfalse;

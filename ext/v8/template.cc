@@ -94,7 +94,7 @@ namespace rr {
    }
 
    VALUE ObjectTemplate::InternalFieldCount(VALUE self) {
-     return INT2FIX(ObjectTemplate(self)->InternalFieldCount());
+     return Int(ObjectTemplate(self)->InternalFieldCount());
    }
 
    VALUE ObjectTemplate::SetInternalFieldCount(VALUE self, VALUE count) {

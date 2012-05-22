@@ -57,7 +57,7 @@ namespace rr {
   }
 
   VALUE Invocation::Arguments::Length(VALUE self) {
-    return INT2FIX(Arguments(self)->Length());
+    return Int(Arguments(self)->Length());
   }
 
   VALUE Invocation::Arguments::Get(VALUE self, VALUE index) {

@@ -43,11 +43,11 @@ namespace rr {
   }
 
   VALUE Function::GetScriptLineNumber(VALUE self) {
-    return INT2FIX(Function(self)->GetScriptLineNumber());
+    return Int(Function(self)->GetScriptLineNumber());
   }
 
   VALUE Function::GetScriptColumnNumber(VALUE self) {
-    return INT2FIX(Function(self)->GetScriptColumnNumber());
+    return Int(Function(self)->GetScriptColumnNumber());
   }
 
   VALUE Function::GetScriptId(VALUE self) {
