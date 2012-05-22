@@ -121,7 +121,14 @@ VALUE Object::SetAccessor(int argc, VALUE* argv, VALUE self) {
   VALUE name; VALUE get; VALUE set; VALUE data; VALUE settings; VALUE attribs;
   rb_scan_args(argc, argv, "24", &name, &get, &set, &data, &settings, &attribs);
   Accessor access(get, set, data);
-  return Bool(Object(self)->SetAccessor(String(name), access, access, access, AccessControl(settings), PropertyAttribute(attribs)));
+  return Bool(Object(self)->SetAccessor(
+    String(name),
+    access.accessorGetter(),
+    access.accessorSetter(),
+    access,
+    AccessControl(settings),
+    PropertyAttribute(attribs))
+  );
 }
 
 Object::operator VALUE() {

@@ -21,12 +21,12 @@ namespace rr {
     } else {
       VALUE argc; VALUE argv;
       rb_scan_args(i,v,"2", &argc, &argv);
-      std::vector< v8::Handle<v8::Value> > arguments(Int(argc));
+      std::vector< v8::Handle<v8::Value> > arguments(Int(argc).toInt());
       return Object(Function(self)->NewInstance(Int(argc), Value::array(argv, arguments)));
     }
   }
   VALUE Function::Call(VALUE self, VALUE receiver, VALUE argc, VALUE argv) {
-    std::vector< v8::Handle<v8::Value> > arguments(Int(argc));
+    std::vector< v8::Handle<v8::Value> > arguments(Int(argc).toInt());
     return Value(Function(self)->Call(Object(receiver), Int(argc), Value::array(argv, arguments)));
   }
 

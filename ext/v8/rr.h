@@ -8,11 +8,37 @@
 namespace rr {
 
 #define Void(expr) expr; return Qnil;
-
-VALUE Bool(bool b);
-int Int(VALUE v);
-uint32_t UInt32(VALUE num);
 VALUE not_implemented(const char* message);
+
+class Equiv {
+public:
+  Equiv(VALUE val) : value(val) {}
+  inline operator VALUE() {return value;}
+protected:
+  VALUE value;
+};
+
+class Bool : public Equiv {
+public:
+  Bool(VALUE val) : Equiv(val) {}
+  Bool(bool b) : Equiv(b ? Qtrue : Qfalse) {}
+  inline operator bool() {return RTEST(value);}
+};
+
+class Int : public Equiv {
+public:
+  Int(VALUE val) : Equiv(val) {}
+  Int(int i) : Equiv(INT2FIX(i)) {}
+  inline operator int() {return RTEST(value) ? NUM2INT(value) : 0;}
+  inline int toInt() {return (int)*this;}
+};
+
+class UInt32 : public Equiv {
+public:
+  UInt32(VALUE val) : Equiv(val) {}
+  UInt32(uint32_t ui) : Equiv(UINT2NUM(ui)) {}
+  inline operator uint32_t() {return RTEST(value) ? NUM2UINT(value) : 0;}
+};
 
 class GC {
 public:
@@ -224,12 +250,25 @@ class Accessor {
 public:
   static void Init();
   Accessor(VALUE get, VALUE set, VALUE data);
+  Accessor(VALUE get, VALUE set, VALUE query, VALUE deleter, VALUE enumerator, VALUE data);
   Accessor(v8::Handle<v8::Value> value);
-  operator v8::AccessorGetter();
-  operator v8::AccessorSetter();
+
+  inline v8::AccessorGetter accessorGetter() {return &AccessorGetter;}
+  inline v8::AccessorSetter accessorSetter() {return RTEST(set) ? &AccessorSetter : 0;}
+
+  inline v8::NamedPropertyGetter namedPropertyGetter() {return &NamedPropertyGetter;}
+  inline v8::NamedPropertySetter namedPropertySetter() {return RTEST(set) ? &NamedPropertySetter : 0;}
+  inline v8::NamedPropertyQuery namedPropertyQuery() {return RTEST(query) ? &NamedPropertyQuery : 0;}
+  inline v8::NamedPropertyDeleter namedPropertyDeleter() {return RTEST(deleter) ? &NamedPropertyDeleter : 0;}
+  inline v8::NamedPropertyEnumerator namedPropertyEnumerator() {return RTEST(enumerator) ? &NamedPropertyEnumerator : 0;}
+
+  inline v8::IndexedPropertyGetter indexedPropertyGetter() {return &IndexedPropertyGetter;}
+  inline v8::IndexedPropertySetter indexedPropertySetter() {return RTEST(set) ? &IndexedPropertySetter : 0;}
+  inline v8::IndexedPropertyQuery indexedPropertyQuery() {return RTEST(query) ? &IndexedPropertyQuery : 0;}
+  inline v8::IndexedPropertyDeleter indexedPropertyDeleter() {return RTEST(deleter) ? &IndexedPropertyDeleter : 0;}
+  inline v8::IndexedPropertyEnumerator indexedPropertyEnumerator() {return RTEST(enumerator) ? &IndexedPropertyEnumerator : 0;}
+
   operator v8::Handle<v8::Value>();
-  static v8::Handle<v8::Value> Getter(v8::Local<v8::String> property, const v8::AccessorInfo& info);
-  static void Setter(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
 
   class Info {
   public:
@@ -241,7 +280,15 @@ public:
     operator VALUE();
     inline const v8::AccessorInfo* operator->() {return this->info;}
     v8::Handle<v8::Value> get(v8::Local<v8::String> property);
-    void set(v8::Local<v8::String> property, v8::Local<v8::Value> value);
+    v8::Handle<v8::Value> set(v8::Local<v8::String> property, v8::Local<v8::Value> value);
+    v8::Handle<v8::Integer> query(v8::Local<v8::String> property);
+    v8::Handle<v8::Boolean> remove(v8::Local<v8::String> property);
+    v8::Handle<v8::Array> enumerateNames();
+    v8::Handle<v8::Value> get(uint32_t index);
+    v8::Handle<v8::Value> set(uint32_t index, v8::Local<v8::Value> value);
+    v8::Handle<v8::Integer> query(uint32_t index);
+    v8::Handle<v8::Boolean> remove(uint32_t index);
+    v8::Handle<v8::Array> enumerateIndices();
 
     static VALUE Class;
   private:
@@ -249,10 +296,28 @@ public:
   };
   friend class Info;
 private:
+  static v8::Handle<v8::Value> AccessorGetter(v8::Local<v8::String> property, const v8::AccessorInfo& info);
+  static void AccessorSetter(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
+
+  static v8::Handle<v8::Value> NamedPropertyGetter(v8::Local<v8::String> property, const v8::AccessorInfo& info);
+  static v8::Handle<v8::Value> NamedPropertySetter(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
+  static v8::Handle<v8::Integer> NamedPropertyQuery(v8::Local<v8::String> property, const v8::AccessorInfo& info);
+  static v8::Handle<v8::Boolean> NamedPropertyDeleter(v8::Local<v8::String> property, const v8::AccessorInfo& info);
+  static v8::Handle<v8::Array> NamedPropertyEnumerator(const v8::AccessorInfo& info);
+
+  static v8::Handle<v8::Value> IndexedPropertyGetter(uint32_t index, const v8::AccessorInfo& info);
+  static v8::Handle<v8::Value> IndexedPropertySetter(uint32_t index, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
+  static v8::Handle<v8::Integer> IndexedPropertyQuery(uint32_t index, const v8::AccessorInfo& info);
+  static v8::Handle<v8::Boolean> IndexedPropertyDeleter(uint32_t index, const v8::AccessorInfo& info);
+  static v8::Handle<v8::Array> IndexedPropertyEnumerator(const v8::AccessorInfo& info);
+
   void wrap(v8::Handle<v8::Object> wrapper, int index, VALUE value);
   VALUE unwrap(v8::Handle<v8::Object> wrapper, int index);
   VALUE get;
   VALUE set;
+  VALUE query;
+  VALUE deleter;
+  VALUE enumerator;
   VALUE data;
 };
 
@@ -392,6 +457,16 @@ public:
 class ObjectTemplate : public Ref<v8::ObjectTemplate> {
 public:
   static void Init();
+  static VALUE New(VALUE self);
+  static VALUE NewInstance(VALUE self);
+  static VALUE SetAccessor(int argc, VALUE argv[], VALUE self);
+  static VALUE SetNamedPropertyHandler(int argc, VALUE argv[], VALUE self);
+  static VALUE SetIndexedPropertyHandler(int argc, VALUE argv[], VALUE self);
+  static VALUE SetCallAsFunctionHandler(int argc, VALUE argv[], VALUE self);
+  static VALUE MarkAsUndetectable(VALUE self);
+  static VALUE SetAccessCheckCallbacks(int argc, VALUE argv[], VALUE self);
+  static VALUE InternalFieldCount(VALUE self);
+  static VALUE SetInternalFieldCount(VALUE self, VALUE count);
 
   inline ObjectTemplate(VALUE value) : Ref<v8::ObjectTemplate>(value) {}
   inline ObjectTemplate(v8::Handle<v8::ObjectTemplate> t) : Ref<v8::ObjectTemplate>(t) {}

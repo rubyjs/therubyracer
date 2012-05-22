@@ -9,8 +9,97 @@ namespace rr {
 
   void ObjectTemplate::Init() {
     ClassBuilder("ObjectTemplate", "Template").
+      defineSingletonMethod("New", &New).
+      defineMethod("NewInstance", &NewInstance).
+      defineMethod("SetAccessor", &SetAccessor).
+      defineMethod("SetNamedPropertyHandler", &SetNamedPropertyHandler).
+      defineMethod("SetIndexedPropertyHandler", &SetIndexedPropertyHandler).
+      defineMethod("SetCallAsFunctionHandler", &SetCallAsFunctionHandler).
+      defineMethod("MarkAsUndetectable", &MarkAsUndetectable).
+      defineMethod("SetAccessCheckCallbacks", &SetAccessCheckCallbacks).
+      defineMethod("InternalFieldCount", &InternalFieldCount).
+      defineMethod("SetInternalFieldCount", &SetInternalFieldCount).
       store(&Class);
   }
+
+  VALUE ObjectTemplate::New(VALUE self) {
+    return ObjectTemplate(v8::ObjectTemplate::New());
+  }
+
+  VALUE ObjectTemplate::NewInstance(VALUE self) {
+    return Object(ObjectTemplate(self)->NewInstance());
+  }
+
+  VALUE ObjectTemplate::SetAccessor(int argc, VALUE argv[], VALUE self) {
+    VALUE name; VALUE get; VALUE set; VALUE data; VALUE settings; VALUE attribs;
+    rb_scan_args(argc, argv, "24", &name, &get, &set, &data, &settings, &attribs);
+    Accessor accessor(get, set, data);
+    ObjectTemplate(self)->SetAccessor(
+      String(name),
+      accessor.accessorGetter(),
+      accessor.accessorSetter(),
+      accessor,
+      AccessControl(settings),
+      PropertyAttribute(attribs)
+    );
+    Void();
+  }
+
+  VALUE ObjectTemplate::SetNamedPropertyHandler(int argc, VALUE argv[], VALUE self) {
+    VALUE get; VALUE set; VALUE query; VALUE deleter; VALUE enumerator; VALUE data;
+    rb_scan_args(argc, argv, "15", &get, &set, &query, &deleter, &enumerator, &data);
+    Accessor accessor(get,set,query,deleter,enumerator,data);
+    ObjectTemplate(self)->SetNamedPropertyHandler(
+      accessor.namedPropertyGetter(),
+      accessor.namedPropertySetter(),
+      accessor.namedPropertyQuery(),
+      accessor.namedPropertyDeleter(),
+      accessor.namedPropertyEnumerator(),
+      accessor
+    );
+    Void();
+  }
+
+   VALUE ObjectTemplate::SetIndexedPropertyHandler(int argc, VALUE argv[], VALUE self) {
+     VALUE get; VALUE set; VALUE query; VALUE deleter; VALUE enumerator; VALUE data;
+     rb_scan_args(argc, argv, "15", &get, &set, &query, &deleter, &enumerator, &data);
+     Accessor accessor(get,set,query,deleter,enumerator,data);
+     ObjectTemplate(self)->SetIndexedPropertyHandler(
+       accessor.indexedPropertyGetter(),
+       accessor.indexedPropertySetter(),
+       accessor.indexedPropertyQuery(),
+       accessor.indexedPropertyDeleter(),
+       accessor.indexedPropertyEnumerator(),
+       accessor
+     );
+     Void();
+   }
+
+   VALUE ObjectTemplate::SetCallAsFunctionHandler(int argc, VALUE argv[], VALUE self) {
+     VALUE callback; VALUE data;
+     rb_scan_args(argc, argv, "11", &callback, &data);
+     Invocation invocation(callback, data);
+     Void(ObjectTemplate(self)->SetCallAsFunctionHandler(invocation, invocation));
+   }
+
+   VALUE ObjectTemplate::MarkAsUndetectable(VALUE self) {
+     Void(ObjectTemplate(self)->MarkAsUndetectable());
+   }
+
+
+   VALUE ObjectTemplate::SetAccessCheckCallbacks(int argc, VALUE argv[], VALUE self) {
+     VALUE named_handler; VALUE indexed_handler; VALUE data; VALUE turned_on_by_default;
+     rb_scan_args(argc, argv, "22", &named_handler, &indexed_handler, &data, &turned_on_by_default);
+     return not_implemented("ObjectTemplate::SetAccessCheckCallbacks");
+   }
+
+   VALUE ObjectTemplate::InternalFieldCount(VALUE self) {
+     return INT2FIX(ObjectTemplate(self)->InternalFieldCount());
+   }
+
+   VALUE ObjectTemplate::SetInternalFieldCount(VALUE self, VALUE count) {
+     Void(ObjectTemplate(self)->SetInternalFieldCount(Int(count)));
+   }
 
   void FunctionTemplate::Init() {
     ClassBuilder("FunctionTemplate", "Template").
