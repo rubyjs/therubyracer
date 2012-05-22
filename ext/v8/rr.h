@@ -66,17 +66,15 @@ public:
 * A V8 Enum
 */
 
-template <class T> class Enum {
+template <class T> class Enum : public Equiv {
 public:
-  Enum<T>(VALUE value, T defaultValue = 0) {
-    this->value = value;
+  Enum<T>(VALUE value, T defaultValue = 0) : Equiv(value) {
     this->defaultValue = defaultValue;
   }
   inline operator T() {
     return (T)(RTEST(value) ? NUM2INT(value) : defaultValue);
   }
 private:
-  VALUE value;
   T defaultValue;
 };
 
