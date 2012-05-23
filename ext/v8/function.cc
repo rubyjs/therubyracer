@@ -21,13 +21,13 @@ namespace rr {
     } else {
       VALUE argc; VALUE argv;
       rb_scan_args(i,v,"2", &argc, &argv);
-      std::vector< v8::Handle<v8::Value> > arguments(Int(argc).toInt());
-      return Object(Function(self)->NewInstance(Int(argc), Value::array(argv, arguments)));
+      std::vector< v8::Handle<v8::Value> > arguments(NUM2INT(argc));
+      return Object(Function(self)->NewInstance(NUM2INT(argc), Value::array(argv, arguments)));
     }
   }
   VALUE Function::Call(VALUE self, VALUE receiver, VALUE argc, VALUE argv) {
-    std::vector< v8::Handle<v8::Value> > arguments(Int(argc).toInt());
-    return Value(Function(self)->Call(Object(receiver), Int(argc), Value::array(argv, arguments)));
+    std::vector< v8::Handle<v8::Value> > arguments(NUM2INT(argc));
+    return Value(Function(self)->Call(Object(receiver), NUM2INT(argc), Value::array(argv, arguments)));
   }
 
   VALUE Function::SetName(VALUE self, VALUE name) {
@@ -43,11 +43,11 @@ namespace rr {
   }
 
   VALUE Function::GetScriptLineNumber(VALUE self) {
-    return Int(Function(self)->GetScriptLineNumber());
+    return INT2FIX(Function(self)->GetScriptLineNumber());
   }
 
   VALUE Function::GetScriptColumnNumber(VALUE self) {
-    return Int(Function(self)->GetScriptColumnNumber());
+    return INT2FIX(Function(self)->GetScriptColumnNumber());
   }
 
   VALUE Function::GetScriptId(VALUE self) {

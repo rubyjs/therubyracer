@@ -68,7 +68,7 @@ namespace rr {
     return *this;
   }
   ClassBuilder& ClassBuilder::defineEnumConst(const char* name, int value) {
-    rb_define_const(this->value, name, Int(value));
+    rb_define_const(this->value, name, INT2FIX(value));
     return *this;
   }
   ClassBuilder& ClassBuilder::store(VALUE* storage) {

@@ -12,7 +12,7 @@ void Array::Init() {
 
 VALUE Array::New(int argc, VALUE argv[], VALUE self) {
   VALUE length; rb_scan_args(argc, argv, "01", &length);
-  return Array(v8::Array::New(Int(length)));
+  return Array(v8::Array::New(RTEST(length) ? NUM2INT(length) : 0));
 }
 
 VALUE Array::Length(VALUE self) {

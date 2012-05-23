@@ -137,7 +137,7 @@ namespace rr {
 
   v8::Handle<v8::Integer> Accessor::Info::query(v8::Local<v8::String> property) {
     Accessor accessor(info->Data());
-    return v8::Integer::New(Int(rb_funcall(accessor.query, rb_intern("call"), 2, (VALUE)String(property), (VALUE)*this)));
+    return v8::Integer::New(NUM2INT(rb_funcall(accessor.query, rb_intern("call"), 2, (VALUE)String(property), (VALUE)*this)));
   }
 
   v8::Handle<v8::Boolean> Accessor::Info::remove(v8::Local<v8::String> property) {
@@ -162,7 +162,7 @@ namespace rr {
 
   v8::Handle<v8::Integer> Accessor::Info::query(uint32_t index) {
     Accessor accessor(info->Data());
-    return v8::Integer::New(Int(rb_funcall(accessor.query, rb_intern("call"), 2, UINT2NUM(index), (VALUE)*this)));
+    return v8::Integer::New(NUM2INT(rb_funcall(accessor.query, rb_intern("call"), 2, UINT2NUM(index), (VALUE)*this)));
   }
 
   v8::Handle<v8::Boolean> Accessor::Info::remove(uint32_t index) {

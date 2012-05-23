@@ -34,7 +34,7 @@ Value::operator VALUE() {
     return UInt32(handle->Uint32Value());
   }
   if (handle->IsInt32()) {
-    return Int(handle->Int32Value());
+    return INT2FIX(handle->Int32Value());
   }
   if (handle->IsBoolean()) {
     return handle->BooleanValue() ? Qtrue : Qfalse;

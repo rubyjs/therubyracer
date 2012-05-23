@@ -185,15 +185,15 @@ VALUE Object::GetConstructorName(VALUE self) {
 }
 
 VALUE Object::InternalFieldCount(VALUE self) {
-  return Int(Object(self)->InternalFieldCount());
+  return INT2FIX(Object(self)->InternalFieldCount());
 }
 
 VALUE Object::GetInternalField(VALUE self, VALUE idx) {
-  return Value(Object(self)->GetInternalField(Int(idx)));
+  return Value(Object(self)->GetInternalField(NUM2INT(idx)));
 }
 
 VALUE Object::SetInternalField(VALUE self, VALUE idx, VALUE value) {
-  Void(Object(self)->SetInternalField(Int(idx), Value(value)));
+  Void(Object(self)->SetInternalField(NUM2INT(idx), Value(value)));
 }
 
 VALUE Object::HasOwnProperty(VALUE self, VALUE key) {
@@ -233,7 +233,7 @@ VALUE Object::TurnOnAccessCheck(VALUE self) {
 }
 
 VALUE Object::GetIdentityHash(VALUE self) {
-  return Int(Object(self)->GetIdentityHash());
+  return INT2FIX(Object(self)->GetIdentityHash());
 }
 
 VALUE Object::SetHiddenValue(VALUE self, VALUE key, VALUE value) {
@@ -273,7 +273,7 @@ VALUE Object::HasIndexedPropertiesInPixelData(VALUE self) {
 }
 
 VALUE Object::GetIndexedPropertiesPixelDataLength(VALUE self) {
-  return Int(Object(self)->GetIndexedPropertiesPixelDataLength());
+  return INT2FIX(Object(self)->GetIndexedPropertiesPixelDataLength());
 }
 
 VALUE Object::SetIndexedPropertiesToExternalArrayData(VALUE self) {
@@ -293,7 +293,7 @@ VALUE Object::GetIndexedPropertiesExternalArrayDataType(VALUE self) {
 }
 
 VALUE Object::GetIndexedPropertiesExternalArrayDataLength(VALUE self) {
-  return Int(Object(self)->GetIndexedPropertiesExternalArrayDataLength());
+  return INT2FIX(Object(self)->GetIndexedPropertiesExternalArrayDataLength());
 }
 
 VALUE Object::IsCallable(VALUE self) {
@@ -302,12 +302,12 @@ VALUE Object::IsCallable(VALUE self) {
 
 VALUE Object::CallAsFunction(VALUE self, VALUE recv, VALUE argc, VALUE argv) {
   std::vector< v8::Handle<v8::Value> > v(NUM2INT(argc));
-  return Value(Object(self)->CallAsFunction(Object(recv), Int(argc), Value::array(argv, v)));
+  return Value(Object(self)->CallAsFunction(Object(recv), NUM2INT(argc), Value::array(argv, v)));
 }
 
 VALUE Object::CallAsConstructor(VALUE self, VALUE argc, VALUE argv) {
   std::vector< v8::Handle<v8::Value> > v(NUM2INT(argc));
-  return Value(Object(self)->CallAsConstructor(Int(argc), Value::array(argv, v)));
+  return Value(Object(self)->CallAsConstructor(NUM2INT(argc), Value::array(argv, v)));
 }
 
 }

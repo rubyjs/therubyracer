@@ -25,14 +25,6 @@ public:
   inline operator bool() {return RTEST(value);}
 };
 
-class Int : public Equiv {
-public:
-  Int(VALUE val) : Equiv(val) {}
-  Int(int i) : Equiv(INT2FIX(i)) {}
-  inline operator int() {return RTEST(value) ? NUM2INT(value) : 0;}
-  inline int toInt() {return (int)*this;}
-};
-
 class UInt32 : public Equiv {
 public:
   UInt32(VALUE val) : Equiv(val) {}

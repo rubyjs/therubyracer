@@ -94,11 +94,11 @@ namespace rr {
    }
 
    VALUE ObjectTemplate::InternalFieldCount(VALUE self) {
-     return Int(ObjectTemplate(self)->InternalFieldCount());
+     return INT2FIX(ObjectTemplate(self)->InternalFieldCount());
    }
 
    VALUE ObjectTemplate::SetInternalFieldCount(VALUE self, VALUE count) {
-     Void(ObjectTemplate(self)->SetInternalFieldCount(Int(count)));
+     Void(ObjectTemplate(self)->SetInternalFieldCount(NUM2INT(count)));
    }
 
   void FunctionTemplate::Init() {
