@@ -27,7 +27,10 @@ namespace rr {
     v8::Local<v8::Object> wrapper = value->ToObject();
     this->get = unwrap(wrapper, 0);
     this->set = unwrap(wrapper, 1);
-    v8::Handle<v8::Value> data = wrapper->Get(2);
+    this->query = unwrap(wrapper, 2);
+    this->deleter = unwrap(wrapper, 3);
+    this->enumerator = unwrap(wrapper, 4);
+    v8::Handle<v8::Value> data = wrapper->Get(5);
     if (!data.IsEmpty()) {
       this->data = Value(data);
     }
@@ -37,19 +40,29 @@ namespace rr {
     v8::Local<v8::Object> wrapper = v8::Object::New();
     wrap(wrapper, 0, this->get);
     wrap(wrapper, 1, this->set);
+    wrap(wrapper, 2, this->query);
+    wrap(wrapper, 3, this->deleter);
+    wrap(wrapper, 4, this->enumerator);
     if (RTEST(this->data)) {
-      wrapper->Set(2, Value(this->data));
+      wrapper->Set(5, Value(this->data));
     }
     return wrapper;
   }
 
   void Accessor::wrap(v8::Handle<v8::Object> wrapper, int index, VALUE value) {
-    wrapper->Set(index, External::wrap(value));
+    if (RTEST(value)) {
+      wrapper->Set(index, External::wrap(value));
+    }
   }
 
   VALUE Accessor::unwrap(v8::Handle<v8::Object> wrapper, int index) {
-    v8::Handle<v8::External> external(v8::External::Cast(*wrapper->Get(index)));
-    return External::unwrap(external);
+    v8::Handle<v8::Value> value = wrapper->Get(index);
+    if (value.IsEmpty()) {
+      return Qnil;
+    } else {
+      v8::Handle<v8::External> external(v8::External::Cast(*value));
+      return External::unwrap(external);
+    }
   }
 
 
