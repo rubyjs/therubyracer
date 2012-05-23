@@ -8,6 +8,7 @@ using namespace rr;
 
 extern "C" {
   void Init_init() {
+    v8::Locker lock();
     GC::Init();
     V8::Init();
     Handles::Init();
