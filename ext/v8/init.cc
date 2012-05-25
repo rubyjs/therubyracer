@@ -27,5 +27,6 @@ extern "C" {
     Stack::Init();
     Message::Init();
     TryCatch::Init();
+    Locker::Init();
   }
 }

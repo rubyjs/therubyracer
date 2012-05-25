@@ -602,6 +602,21 @@ private:
   bool allocated;
 };
 
+class Locker {
+public:
+  static void Init();
+  static VALUE StartPreemption(VALUE self, VALUE every_n_ms);
+  static VALUE StopPreemption(VALUE self);
+  static VALUE IsLocked(VALUE self);
+  static VALUE IsActive(VALUE self);
+  static VALUE doLock(int argc, VALUE* argv, VALUE self);
+  static VALUE setupLockAndCall(int* state, VALUE code);
+  static VALUE doLockCall(VALUE code);
+  static VALUE doUnlock(int argc, VALUE* argv, VALUE self);
+  static VALUE setupUnlockAndCall(int* state, VALUE code);
+  static VALUE doUnlockCall(VALUE code);
+};
+
 class V8 {
 public:
   static void Init();
