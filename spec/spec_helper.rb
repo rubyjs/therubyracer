@@ -1,4 +1,5 @@
 require 'v8'
+load File.expand_path '../c/context_helper.rb', __FILE__
 
 def run_v8_gc
   while !V8::C::V8::IdleNotification() do

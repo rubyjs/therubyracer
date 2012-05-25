@@ -1,13 +1,8 @@
 require 'spec_helper'
 
 describe V8::C::External do
-  before do
-    @cxt = V8::C::Context::New()
-    @cxt.Enter()
-  end
-  after do
-    @cxt.Exit()
-  end
+  include C::ContextHelper
+
   it "can catch javascript exceptions" do
     V8::C::V8::SetCaptureStackTraceForUncaughtExceptions(true, 99, V8::C::StackTrace::kDetailed)
     V8::C::TryCatch() do |trycatch|

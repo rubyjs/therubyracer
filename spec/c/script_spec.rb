@@ -1,13 +1,7 @@
 require 'spec_helper'
 
 describe V8::C::External do
-  before do
-    @cxt = V8::C::Context::New()
-    @cxt.Enter()
-  end
-  after do
-    @cxt.Exit()
-  end
+  include C::ContextHelper
   it "can run a script and return a polymorphic result" do
     V8::C::HandleScope() do
       source = V8::C::String::New("(new Array())")

@@ -1,13 +1,7 @@
 require 'spec_helper'
 
 describe V8::C::Template do
-  before do
-    @cxt = V8::C::Context::New()
-    @cxt.Enter()
-  end
-  after do
-    @cxt.Exit()
-  end
+  include C::ContextHelper
 
   describe V8::C::FunctionTemplate do
     it "can be created with no arguments" do

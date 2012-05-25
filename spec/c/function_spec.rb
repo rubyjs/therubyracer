@@ -1,13 +1,7 @@
 require 'spec_helper'
 
 describe V8::C::Function do
-  before do
-    @cxt = V8::C::Context::New()
-    @cxt.Enter()
-  end
-  after do
-    @cxt.Exit()
-  end
+  include C::ContextHelper
   it "can be called" do
     V8::C::HandleScope() do
       fn = run '(function() {return "foo"})'

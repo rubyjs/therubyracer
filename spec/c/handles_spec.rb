@@ -1,9 +1,7 @@
 require 'spec_helper'
 
 describe "setting up handles scopes" do
-  before {@cxt = V8::C::Context::New()}
-  before {@cxt.Enter()}
-  after {@cxt.Exit()}
+  include C::ContextHelper
   it "can allocate handle scopes" do
     V8::C::HandleScope() do
       V8::C::Object::New()
