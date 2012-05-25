@@ -24,11 +24,11 @@ describe V8::C::Template do
           arguments.Holder().StrictEquals(receiver).should be_true
           arguments.IsConstructCall().should be_false
           arguments.Data().Value().should be(42)
-          nil
+          V8::C::String::New("result")
         end
         t = V8::C::FunctionTemplate::New(callback, V8::C::External::New(42))
         f = t.GetFunction()
-        f.Call(receiver, 2, [V8::C::String::New('one'), V8::C::String::New('two')])
+        f.Call(receiver, 2, [V8::C::String::New('one'), V8::C::String::New('two')]).Utf8Value().should eql "result"
       end
     end
   end
