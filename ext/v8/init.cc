@@ -24,5 +24,8 @@ extern "C" {
     External::Init();
     Script::Init();
     Template::Init();
+    Stack::Init();
+    Message::Init();
+    TryCatch::Init();
   }
 }

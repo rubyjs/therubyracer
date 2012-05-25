@@ -209,6 +209,40 @@ public:
 class Value : public Ref<v8::Value> {
 public:
   static void Init();
+  static VALUE IsUndefined(VALUE self);
+  static VALUE IsNull(VALUE self);
+  static VALUE IsTrue(VALUE self);
+  static VALUE IsFalse(VALUE self);
+  static VALUE IsString(VALUE self);
+  static VALUE IsFunction(VALUE self);
+  static VALUE IsArray(VALUE self);
+  static VALUE IsObject(VALUE self);
+  static VALUE IsBoolean(VALUE self);
+  static VALUE IsNumber(VALUE self);
+  static VALUE IsExternal(VALUE self);
+  static VALUE IsInt32(VALUE self);
+  static VALUE IsUint32(VALUE self);
+  static VALUE IsDate(VALUE self);
+  static VALUE IsBooleanObject(VALUE self);
+  static VALUE IsNumberObject(VALUE self);
+  static VALUE IsStringObject(VALUE self);
+  static VALUE IsNativeError(VALUE self);
+  static VALUE IsRegExp(VALUE self);
+  // VALUE ToBoolean(VALUE self);
+  // VALUE ToNumber(VALUE self);
+  static VALUE ToString(VALUE self);
+  static VALUE ToDetailString(VALUE self);
+  static VALUE ToObject(VALUE self);
+  // static VALUE ToInteger(VALUE self);
+  // static VALUE ToUint32(VALUE self);
+  // static VALUE ToInt32(VALUE self);
+  // static VALUE ToArrayIndex(VALUE self);
+  static VALUE BooleanValue(VALUE self);
+  static VALUE NumberValue(VALUE self);
+  static VALUE IntegerValue(VALUE self);
+  static VALUE Uint32Value(VALUE self);
+  static VALUE Int32Value(VALUE self);
+
   static VALUE Equals(VALUE self, VALUE other);
   static VALUE StrictEquals(VALUE self, VALUE other);
   inline Value(VALUE value) : Ref<v8::Value>(value) {}
@@ -480,10 +514,99 @@ public:
   inline FunctionTemplate(v8::Handle<v8::FunctionTemplate> t) : Ref<v8::FunctionTemplate>(t) {}
 };
 
+class Message : public Ref<v8::Message> {
+public:
+  static void Init();
+  inline Message(v8::Handle<v8::Message> message) : Ref<v8::Message>(message) {}
+  inline Message(VALUE value) : Ref<v8::Message>(value) {}
+
+  static VALUE Get(VALUE self);
+  static VALUE GetSourceLine(VALUE self);
+  static VALUE GetScriptResourceName(VALUE self);
+  static VALUE GetScriptData(VALUE self);
+  static VALUE GetStackTrace(VALUE self);
+  static VALUE GetLineNumber(VALUE self);
+  static VALUE GetStartPosition(VALUE self);
+  static VALUE GetEndPosition(VALUE self);
+  static VALUE GetStartColumn(VALUE self);
+  static VALUE GetEndColumn(VALUE self);
+  static inline VALUE kNoLineNumberInfo(VALUE self) {return INT2FIX(v8::Message::kNoLineNumberInfo);}
+  static inline VALUE kNoColumnInfo(VALUE self) {return INT2FIX(v8::Message::kNoColumnInfo);}
+};
+
+class Stack {
+public:
+  static void Init();
+
+  class Trace : public Ref<v8::StackTrace> {
+  public:
+    class StackTraceOptions : public Enum<v8::StackTrace::StackTraceOptions> {
+    public:
+      inline StackTraceOptions(VALUE value) : Enum<v8::StackTrace::StackTraceOptions>(value, v8::StackTrace::kOverview) {}
+    };
+  public:
+    inline Trace(v8::Handle<v8::StackTrace> trace) : Ref<v8::StackTrace>(trace) {}
+    inline Trace(VALUE value) : Ref<v8::StackTrace>(value) {}
+    static inline VALUE kLineNumber(VALUE self) {return INT2FIX(v8::StackTrace::kLineNumber);}
+    static inline VALUE kColumnOffset(VALUE self) {return INT2FIX(v8::StackTrace::kColumnOffset);}
+    static inline VALUE kScriptName(VALUE self) {return INT2FIX(v8::StackTrace::kScriptName);}
+    static inline VALUE kFunctionName(VALUE self) {return INT2FIX(v8::StackTrace::kFunctionName);}
+    static inline VALUE kIsEval(VALUE self) {return INT2FIX(v8::StackTrace::kIsEval);}
+    static inline VALUE kIsConstructor(VALUE self) {return INT2FIX(v8::StackTrace::kIsConstructor);}
+    static inline VALUE kScriptNameOrSourceURL(VALUE self) {return INT2FIX(v8::StackTrace::kScriptNameOrSourceURL);}
+    static inline VALUE kOverview(VALUE self) {return INT2FIX(v8::StackTrace::kOverview);}
+    static inline VALUE kDetailed(VALUE self) {return INT2FIX(v8::StackTrace::kDetailed);}
+
+    static VALUE GetFrame(VALUE self, VALUE index);
+    static VALUE GetFrameCount(VALUE self);
+    static VALUE AsArray(VALUE self);
+    static VALUE CurrentStackTrace(int argc, VALUE argv[], VALUE self);
+  };
+  class Frame : public Ref<v8::StackFrame> {
+  public:
+    inline Frame(v8::Handle<v8::StackFrame> frame) : Ref<v8::StackFrame>(frame) {}
+    inline Frame(VALUE value) : Ref<v8::StackFrame>(value) {}
+    static VALUE GetLineNumber(VALUE self);
+    static VALUE GetColumn(VALUE self);
+    static VALUE GetScriptName(VALUE self);
+    static VALUE GetScriptNameOrSourceURL(VALUE self);
+    static VALUE GetFunctionName(VALUE self);
+    static VALUE IsEval(VALUE self);
+    static VALUE IsConstructor(VALUE self);
+  };
+};
+
+class TryCatch {
+public:
+  static void Init();
+  TryCatch();
+  TryCatch(VALUE value);
+  ~TryCatch();
+  operator VALUE();
+  inline v8::TryCatch* operator->() {return this->impl;}
+  static VALUE HasCaught(VALUE self);
+  static VALUE CanContinue(VALUE self);
+  static VALUE ReThrow(VALUE self);
+  static VALUE Exception(VALUE self);
+  static VALUE StackTrace(VALUE self);
+  static VALUE Message(VALUE self);
+  static VALUE Reset(VALUE self);
+  static VALUE SetVerbose(VALUE self, VALUE value);
+  static VALUE SetCaptureMessage(VALUE self, VALUE value);
+private:
+  static VALUE doTryCatch(int argc, VALUE argv[], VALUE self);
+  static VALUE setupAndCall(int* state, VALUE code);
+  static VALUE doCall(VALUE code);
+  static VALUE Class;
+  v8::TryCatch* impl;
+  bool allocated;
+};
+
 class V8 {
 public:
   static void Init();
   static VALUE IdleNotification(VALUE self);
+  static VALUE SetCaptureStackTraceForUncaughtExceptions(int argc, VALUE argv[], VALUE self);
 };
 
 class ClassBuilder {
