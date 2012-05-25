@@ -82,7 +82,7 @@ public:
     this->handle = handle;
   }
   virtual operator VALUE() const {
-    return (new Holder(handle, Class))->value;
+    return handle.IsEmpty() ? Qnil : (new Holder(handle, Class))->value;
   }
   virtual operator v8::Handle<T>() const {
     if (RTEST(this->value)) {
