@@ -1,12 +1,9 @@
 require 'spec_helper'
 
 describe V8::C::External do
-  include C::ContextHelper
   it "can store and retrieve a value" do
-    V8::C::HandleScope() do
-      o = Object.new
-      external = V8::C::External::New(o)
-      external.Value().should be(o)
-    end
+    o = Object.new
+    external = V8::C::External::New(o)
+    external.Value().should be(o)
   end
 end

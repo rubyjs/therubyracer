@@ -1,5 +1,4 @@
 require 'v8'
-load File.expand_path '../c/context_helper.rb', __FILE__
 
 def run_v8_gc
   while !V8::C::V8::IdleNotification() do
@@ -9,4 +8,27 @@ end
 def rputs(msg)
   puts "<pre>#{ERB::Util.h(msg)}</pre>"
   $stdout.flush
+end
+
+module ExplicitScoper;end
+module Autoscope
+  def instance_eval(*args, &block)
+    V8::C::Locker() do
+      V8::C::HandleScope() do
+        @cxt = V8::C::Context::New()
+        begin
+          @cxt.Enter()
+          super(*args, &block)
+        ensure
+          @cxt.Exit()
+        end
+      end
+    end
+  end
+end
+
+RSpec.configure do |c|
+  c.before(:each) do
+    extend Autoscope unless is_a? ExplicitScoper
+  end
 end
