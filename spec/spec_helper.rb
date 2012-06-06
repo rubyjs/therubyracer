@@ -13,6 +13,7 @@ end
 module ExplicitScoper;end
 module Autoscope
   def instance_eval(*args, &block)
+    return super unless low_level_c_spec? && !explicitly_defines_scope?
     V8::C::Locker() do
       V8::C::HandleScope() do
         @cxt = V8::C::Context::New()
@@ -25,10 +26,19 @@ module Autoscope
       end
     end
   end
+
+  def low_level_c_spec?
+    name = described_class.name.split('::').last
+    return V8::C.const_defined?(name) && V8::C.const_get(name) == described_class
+  end
+
+  def explicitly_defines_scope?
+    is_a?(ExplicitScoper)
+  end
 end
 
 RSpec.configure do |c|
   c.before(:each) do
-    extend Autoscope unless is_a? ExplicitScoper
+    extend Autoscope
   end
 end
