@@ -1,4 +1,7 @@
 #include "rr.h"
+#ifdef HAVE_RUBY_ENCODING_H
+#include "ruby/encoding.h"
+#endif
 
 namespace rr {
 
@@ -16,7 +19,11 @@ VALUE String::New(VALUE StringClass, VALUE string) {
 
 VALUE String::Utf8Value(VALUE self) {
   String str(self);
-  return rb_str_new(*v8::String::Utf8Value(str.GetHandle()), str->Utf8Length());
+  #ifdef HAVE_RUBY_ENCODING_H
+  return rb_enc_str_new(*v8::String::Utf8Value(*str), str->Utf8Length(), rb_enc_find("utf-8"));
+  #else
+  return rb_str_new(*v8::String::Utf8Value(*str), str->Utf8Length());
+  #endif
 }
 
 VALUE String::Concat(VALUE self, VALUE left, VALUE right) {
