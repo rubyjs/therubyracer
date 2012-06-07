@@ -24,12 +24,14 @@ describe "A Very blunt test to make sure that we aren't doing stupid leaks" do
   end
 
   it "can eval simple value passing statements repeatedly without significantly increasing memory" do
-    cxt = V8::Context.new
-    500.times do
-      cxt.eval('7 * 6')
-      run_v8_gc
+    V8::C::Locker() do
+      cxt = V8::Context.new
+      500.times do
+        cxt.eval('7 * 6')
+        run_v8_gc
+      end
     end
-    process_memory.should <= @start_memory * 1.1
+      process_memory.should <= @start_memory * 1.1
   end
 
   def process_memory
