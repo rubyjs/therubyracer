@@ -21,6 +21,7 @@ extern "C" {
     Object::Init();
     Array::Init();
     Function::Init();
+    Date::Init();
     External::Init();
     Script::Init();
     Template::Init();

@@ -182,6 +182,9 @@ Value::operator VALUE() {
   if (handle->IsString()) {
     return String(handle->ToString());
   }
+  if (handle->IsDate()) {
+    return Date((v8::Handle<v8::Date>)v8::Date::Cast(*handle));
+  }
   if (handle->IsObject()) {
     return Object(handle->ToObject());
   }

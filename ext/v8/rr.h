@@ -513,6 +513,16 @@ public:
   inline Function(v8::Handle<v8::Function> function) : Ref<v8::Function>(function) {}
 };
 
+class Date : public Ref<v8::Date> {
+public:
+  static void Init();
+  static VALUE New(VALUE self, VALUE time);
+  static VALUE NumberValue(VALUE self);
+
+  inline Date(VALUE value) : Ref<v8::Date>(value) {}
+  inline Date(v8::Handle<v8::Date> date) : Ref<v8::Date>(date) {}
+};
+
 class Signature : public Ref<v8::Signature> {
 public:
   static void Init();
