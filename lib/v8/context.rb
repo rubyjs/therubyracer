@@ -1,5 +1,7 @@
 module V8
   class Context
+    include Conversion
+
     attr_reader :native
     def initialize
       @native = V8::C::Context::New()
@@ -47,8 +49,7 @@ module V8
         source = V8::C::String::New(source.to_s)
         filename = V8::C::String::New(filename.to_s)
         script = V8::C::Script::New(source, filename)
-        result = script.Run()
-        result.kind_of?(V8::C::String) ? result.Utf8Value() : result
+        to_ruby script.Run()
       end
     end
 
@@ -62,25 +63,6 @@ module V8
     def [](key)
       enter do
         to_ruby(@native.Global().Get(to_v8(key)))
-      end
-    end
-
-    def to_ruby(v8_object)
-      case v8_object
-      when V8::C::String then v8_object.Utf8Value()
-      when V8::C::Value then v8_object.ToString().Utf8Value()
-      else
-        v8_object
-      end
-    end
-
-    def to_v8(ruby_object)
-      # ruby_object.respond_to?(:to_v8) ? ruby_object.to_v8 : V8::C::Object::New()
-      case ruby_object
-      when Numeric then ruby_object
-      when String then V8::C::String::New(ruby_object)
-      else
-        V8::C::Object::New()
       end
     end
   end
