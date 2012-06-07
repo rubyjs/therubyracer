@@ -4,6 +4,9 @@
 #include <v8.h>
 #include <ruby.h>
 #include <vector>
+#ifdef HAVE_RUBY_ENCODING_H
+#include "ruby/encoding.h"
+#endif
 
 namespace rr {
 
@@ -69,6 +72,28 @@ public:
 private:
   T defaultValue;
 };
+
+/**
+* A pointer to V8 object managed by Ruby
+*/
+
+template <class T> class Pointer {
+public:
+  inline Pointer(T* t) : pointer(t) {};
+  inline Pointer() {};
+  inline operator T*() {return pointer;}
+  inline T* operator ->() {return pointer;}
+  inline operator VALUE() {
+    return Data_Wrap_Struct(Class, 0, &release, pointer);
+  }
+  static void release(T* pointer) {
+    delete pointer;
+  }
+  static VALUE Class;
+protected:
+  T* pointer;
+};
+template <class T> VALUE Pointer<T>::Class;
 
 /**
 * A Reference to a V8 managed object
@@ -196,10 +221,34 @@ private:
   };
 };
 
+class ScriptOrigin : public Pointer<v8::ScriptOrigin> {
+public:
+  inline ScriptOrigin(v8::ScriptOrigin* o) : Pointer<v8::ScriptOrigin>(o) {};
+  inline ScriptOrigin(VALUE value) {
+    Data_Get_Struct(value, class v8::ScriptOrigin, pointer);
+  }
+
+  static VALUE initialize(int argc, VALUE argv[], VALUE self);
+};
+
+class ScriptData : public Pointer<v8::ScriptData> {
+public:
+  inline ScriptData(v8::ScriptData* d) : Pointer<v8::ScriptData>(d) {};
+  inline ScriptData(VALUE value) {
+    Data_Get_Struct(value, class v8::ScriptData, pointer);
+  }
+
+  static VALUE PreCompile(VALUE self, VALUE input, VALUE length);
+  static VALUE New(VALUE self, VALUE data, VALUE length);
+  static VALUE Length(VALUE self);
+  static VALUE Data(VALUE self);
+  static VALUE HasError(VALUE self);
+};
+
 class Script : public Ref<v8::Script> {
 public:
   static void Init();
-  static VALUE New(VALUE klass, VALUE source, VALUE filename);
+  static VALUE New(int argc, VALUE argv[], VALUE self);
   static VALUE Run(VALUE self);
 
   inline Script(VALUE value) : Ref<v8::Script>(value) {}
