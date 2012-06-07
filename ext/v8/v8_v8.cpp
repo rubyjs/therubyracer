@@ -19,10 +19,9 @@ namespace {
    }
 
   VALUE SetFlagsFromString(VALUE self, VALUE string) {
-    V8::SetFlagsFromString(RSTRING_PTR(string), RSTRING_LEN(string));
+    V8::SetFlagsFromString(RSTRING_PTR(string), (int)RSTRING_LEN(string));
     return Qnil;
   }
-
 }
 
 
