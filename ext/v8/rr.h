@@ -119,7 +119,6 @@ public:
     }
   }
   inline v8::Handle<T> operator->() const { return *this;}
-  inline v8::Handle<T> GetHandle()  const { return *this;}
   inline v8::Handle<T> operator*() const {return *this;}
 
   static v8::Handle<T> * array(VALUE argv, std::vector< v8::Handle<T> >& v) {
