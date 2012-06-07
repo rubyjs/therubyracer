@@ -69,7 +69,7 @@ end
 
 class Hash
   def to_v8
-    object = V8::Object.new(V8::C::Object::New())
+    object = V8::Object.new
     each do |key, value|
       object[key] = value
     end

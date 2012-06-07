@@ -2,9 +2,9 @@ class V8::Object
   include Enumerable
   attr_reader :native
 
-  def initialize(native)
-    @native = native
-    @context = V8::Context.current
+  def initialize(native = nil)
+    @context = V8::Context.current or fail "tried to initialize a #{self.class} without being in an entered V8::Context"
+    @native = native || V8::C::Object::New()
   end
 
   def [](key)
