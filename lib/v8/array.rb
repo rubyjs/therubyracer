@@ -1,7 +1,7 @@
 class V8::Array < V8::Object
   def each
     @context.enter do
-      for i in 0..(@native.Length() - 1)
+      0.upto(@native.Length() - 1) do |i|
         yield @context.to_ruby(@native.Get(i))
       end
     end

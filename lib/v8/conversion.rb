@@ -4,11 +4,7 @@ module V8::Conversion
   end
 
   def to_v8(ruby_object)
-    if ruby_object.respond_to?(:to_v8)
-      ruby_object.method(:to_v8).arity == 1 ? ruby_object.to_v8(self) : ruby_object.to_v8
-    else
-      V8::C::Object::New()
-    end
+    ruby_object.respond_to?(:to_v8) ? ruby_object.to_v8 : V8::C::Object::New()
   end
 end
 
@@ -61,12 +57,22 @@ class V8::C::Array
 end
 
 class Array
-  def to_v8(context)
+  def to_v8
+    context = V8::Context.current
     array = V8::C::Array::New(length)
     each_with_index do |item, i|
-      rputs "i: #{item}"
       array.Set(i, context.to_v8(item))
     end
     return array
+  end
+end
+
+class Hash
+  def to_v8
+    object = V8::Object.new(V8::C::Object::New())
+    each do |key, value|
+      object[key] = value
+    end
+    return object.to_v8
   end
 end
