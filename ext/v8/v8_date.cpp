@@ -21,11 +21,17 @@ namespace {
     Persistent<Date> date = rr_v8_handle<Date>(self);
     return rr_v82rb(date->NumberValue());
   }
+
+  VALUE DateTimeConfigurationChangeNotification(VALUE self) {
+    Date::DateTimeConfigurationChangeNotification();
+    return Qnil;
+  }
 }
 
 void rr_init_v8_date() {
   DateClass = rr_define_class("Date", rr_v8_value_class());
   rr_define_singleton_method(DateClass, "New", New, 1);
+  rr_define_singleton_method(DateClass, "DateTimeConfigurationChangeNotification", DateTimeConfigurationChangeNotification, 0);
   rr_define_method(DateClass, "NumberValue", NumberValue, 0);
 }
 
