@@ -4,11 +4,17 @@ module V8::Conversion
   end
 
   def to_v8(ruby_object)
-    ruby_object.respond_to?(:to_v8) ? ruby_object.to_v8 : case ruby_object
-    when Numeric then ruby_object
+    if ruby_object.respond_to?(:to_v8)
+      ruby_object.method(:to_v8).arity == 1 ? ruby_object.to_v8(self) : ruby_object.to_v8
     else
       V8::C::Object::New()
     end
+  end
+end
+
+class Numeric
+  def to_v8
+    self
   end
 end
 
@@ -36,3 +42,31 @@ class Time
   end
 end
 
+class V8::C::Object
+  def to_ruby
+    V8::Object.new(self)
+  end
+end
+
+class V8::Object
+  def to_v8
+    self.native
+  end
+end
+
+class V8::C::Array
+  def to_ruby
+    V8::Array.new(self)
+  end
+end
+
+class Array
+  def to_v8(context)
+    array = V8::C::Array::New(length)
+    each_with_index do |item, i|
+      rputs "i: #{item}"
+      array.Set(i, context.to_v8(item))
+    end
+    return array
+  end
+end
