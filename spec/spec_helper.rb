@@ -29,7 +29,7 @@ module Autoscope
 
   def low_level_c_spec?
     return false unless described_class
-    return described_class.name =~ /^V8::C/
+    described_class.name =~ /^V8::C::/
   end
 
   def explicitly_defines_scope?
