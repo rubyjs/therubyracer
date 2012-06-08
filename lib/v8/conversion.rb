@@ -64,12 +64,11 @@ end
 
 class Array
   def to_v8
-    context = V8::Context.current
-    array = V8::C::Array::New(length)
+    array = V8::Array.new(length)
     each_with_index do |item, i|
-      array.Set(i, context.to_v8(item))
+      array[i] = item
     end
-    return array
+    return array.to_v8
   end
 end
 
