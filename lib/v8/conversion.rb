@@ -1,10 +1,36 @@
 module V8::Conversion
   def to_ruby(v8_object)
-    v8_object.respond_to?(:to_ruby) ? v8_object.to_ruby : v8_object
+    v8_cache.get(v8_object) do
+      v8_object.respond_to?(:to_ruby) ? v8_object.to_ruby : v8_object
+    end
   end
 
   def to_v8(ruby_object)
     ruby_object.respond_to?(:to_v8) ? ruby_object.to_v8 : V8::C::Object::New()
+  end
+
+  def v8_cache
+    @v8_cache ||= Cache.new
+  end
+
+
+  class Cache
+    def initialize
+      @storage = {}
+    end
+
+    def get(v8_object)
+      if v8_object.is_a?(V8::C::Object)
+        weakref = @storage[v8_object.GetIdentityHash()]
+        if weakref && weakref.weakref_alive?
+          weakref.__getobj__
+        else
+          @storage[v8_object.GetIdentityHash()] = WeakRef.new(yield)
+        end
+      else
+        yield
+      end
+    end
   end
 end
 
