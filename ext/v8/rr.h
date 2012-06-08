@@ -297,6 +297,7 @@ public:
   inline Value(VALUE value) : Ref<v8::Value>(value) {}
   inline Value(v8::Handle<v8::Value> value) : Ref<v8::Value>(value) {}
   virtual operator VALUE();
+  virtual operator v8::Handle<v8::Value>() const;
 };
 
 class Primitive: public Ref<v8::Primitive> {

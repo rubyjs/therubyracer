@@ -190,4 +190,42 @@ Value::operator VALUE() {
   }
   return Ref<v8::Value>::operator VALUE();
 }
+
+Value::operator v8::Handle<v8::Value>() const {
+    switch (TYPE(value)) {
+    case T_FIXNUM:
+      return v8::Integer::New(NUM2INT(value));
+    case T_FLOAT:
+      return v8::Number::New(NUM2DBL(value));
+    case T_STRING:
+      return v8::String::New(RSTRING_PTR(value), (int)RSTRING_LEN(value));
+    case T_NIL:
+      return v8::Null();
+    case T_TRUE:
+      return v8::True();
+    case T_FALSE:
+      return v8::False();
+    case T_DATA:
+      return Ref<v8::Value>::operator v8::Handle<v8::Value>();
+    case T_OBJECT:
+    case T_CLASS:
+    case T_ICLASS:
+    case T_MODULE:
+    case T_REGEXP:
+    case T_MATCH:
+    case T_ARRAY:
+    case T_HASH:
+    case T_STRUCT:
+    case T_BIGNUM:
+    case T_FILE:
+    case T_SYMBOL:
+    case T_UNDEF:
+    case T_NODE:
+    default:
+      rb_warn("unknown conversion to V8 for: %s", RSTRING_PTR(rb_inspect(value)));
+      return v8::String::New("Undefined Conversion");
+    }
+
+    return v8::Undefined();
+}
 }
