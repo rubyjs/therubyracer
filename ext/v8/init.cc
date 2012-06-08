@@ -33,5 +33,6 @@ extern "C" {
     Locker::Init();
     ResourceConstraints::Init();
     HeapStatistics::Init();
+    Backref::Init();
   }
 }

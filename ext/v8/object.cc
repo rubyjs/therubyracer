@@ -132,6 +132,27 @@ VALUE Object::SetAccessor(int argc, VALUE* argv, VALUE self) {
 }
 
 Object::operator VALUE() {
+  VALUE value;
+  Backref* backref;
+  v8::Local<v8::String> key(v8::String::NewSymbol("rr::Backref"));
+  v8::Local<v8::Value> holder = handle->GetHiddenValue(key);
+  if (holder.IsEmpty()) {
+    value = downcast();
+    backref = new Backref(value);
+    handle->SetHiddenValue(key, backref->to_external());
+  } else {
+    backref = (Backref*)v8::External::Unwrap(holder);
+    if (backref->alive_p()) {
+      value = backref->get();
+    } else {
+      value = downcast();
+      backref->set(value);
+    }
+  }
+  return value;
+}
+
+VALUE Object::downcast() {
   if (handle->IsFunction()) {
     return Function((v8::Handle<v8::Function>) v8::Function::Cast(*handle));
   }

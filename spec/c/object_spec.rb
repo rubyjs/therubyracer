@@ -37,4 +37,10 @@ describe V8::C::Object do
     o.Set(property, V8::C::String::New("Bro! "))
     o.Get(property).Utf8Value().should eql "Bro! I am Legend"
   end
+  it "always returns the same ruby object for the same V8 object" do
+    one = V8::C::Object::New()
+    two = V8::C::Object::New()
+    one.Set("two", two)
+    one.Get("two").should be two
+  end
 end
