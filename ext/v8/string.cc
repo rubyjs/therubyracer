@@ -5,6 +5,7 @@ namespace rr {
 void String::Init() {
   ClassBuilder("String", Primitive::Class).
     defineSingletonMethod("New", &New).
+    defineSingletonMethod("NewSymbol", &NewSymbol).
     defineSingletonMethod("Concat", &Concat).
     defineMethod("Utf8Value", &Utf8Value).
     store(&Class);
@@ -12,6 +13,10 @@ void String::Init() {
 
 VALUE String::New(VALUE StringClass, VALUE string) {
   return String(v8::String::New(RSTRING_PTR(string), (int)RSTRING_LEN(string)));
+}
+
+VALUE String::NewSymbol(VALUE self, VALUE string) {
+  return String(v8::String::NewSymbol(RSTRING_PTR(string), (int)RSTRING_LEN(string)));
 }
 
 VALUE String::Utf8Value(VALUE self) {

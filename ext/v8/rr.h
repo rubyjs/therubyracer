@@ -310,6 +310,7 @@ class String: public Ref<v8::String> {
 public:
   static void Init();
   static VALUE New(VALUE self, VALUE value);
+  static VALUE NewSymbol(VALUE self, VALUE string);
   static VALUE Utf8Value(VALUE self);
   static VALUE Concat(VALUE self, VALUE left, VALUE right);
 

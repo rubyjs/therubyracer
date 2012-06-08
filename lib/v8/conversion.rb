@@ -26,6 +26,12 @@ class String
   end
 end
 
+class Symbol
+  def to_v8
+    V8::C::String::NewSymbol(to_s)
+  end
+end
+
 class V8::C::Date
   def to_ruby
     Time.at(self.NumberValue() / 1000)
