@@ -678,7 +678,7 @@ public:
 class V8 {
 public:
   static void Init();
-  static VALUE IdleNotification(VALUE self);
+  static VALUE IdleNotification(int argc, VALUE argv[], VALUE self);
   static VALUE SetCaptureStackTraceForUncaughtExceptions(int argc, VALUE argv[], VALUE self);
 };
 

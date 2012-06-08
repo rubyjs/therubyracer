@@ -8,8 +8,14 @@ void V8::Init() {
     defineSingletonMethod("SetCaptureStackTraceForUncaughtExceptions", &SetCaptureStackTraceForUncaughtExceptions);
 }
 
-VALUE V8::IdleNotification(VALUE self) {
-  return Bool(v8::V8::IdleNotification());
+VALUE V8::IdleNotification(int argc, VALUE argv[], VALUE self) {
+  VALUE hint;
+  rb_scan_args(argc, argv, "01", &hint);
+  if (RTEST(hint)) {
+    return Bool(v8::V8::IdleNotification(NUM2INT(hint)));
+  } else {
+    return Bool(v8::V8::IdleNotification());
+  }
 }
 
 VALUE V8::SetCaptureStackTraceForUncaughtExceptions(int argc, VALUE argv[], VALUE self) {
