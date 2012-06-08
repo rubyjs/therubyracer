@@ -25,6 +25,7 @@ class Bool : public Equiv {
 public:
   Bool(VALUE val) : Equiv(val) {}
   Bool(bool b) : Equiv(b ? Qtrue : Qfalse) {}
+  Bool(v8::Handle<v8::Boolean> b) : Equiv(b->Value() ? Qtrue : Qfalse) {}
   inline operator bool() {return RTEST(value);}
 };
 
@@ -103,7 +104,7 @@ public:
   Ref(VALUE value) {
     this->value = value;
   }
-  Ref(v8::Handle<T> handle) {
+  Ref(v8::Handle<T> handle, const char* label = "v8::Handle<void>") {
     this->handle = handle;
   }
   virtual operator VALUE() const {
@@ -296,6 +297,13 @@ public:
   inline Value(VALUE value) : Ref<v8::Value>(value) {}
   inline Value(v8::Handle<v8::Value> value) : Ref<v8::Value>(value) {}
   virtual operator VALUE();
+};
+
+class Primitive: public Ref<v8::Primitive> {
+public:
+  static void Init();
+  inline Primitive(VALUE value) : Ref<v8::Primitive>(value) {}
+  inline Primitive(v8::Handle<v8::Primitive> primitive) : Ref<v8::Primitive>(primitive) {}
 };
 
 class String: public Ref<v8::String> {
@@ -675,6 +683,27 @@ public:
   static VALUE doUnlockCall(VALUE code);
 };
 
+class Constants {
+public:
+  static void Init();
+  static VALUE Undefined(VALUE self);
+  static VALUE Null(VALUE self);
+  static VALUE True(VALUE self);
+  static VALUE False(VALUE self);
+
+private:
+  template <class R, class V> static VALUE cached(VALUE* storage, v8::Handle<V> value) {
+    if (!RTEST(*storage)) {
+      *storage = R(value);
+    }
+    return *storage;
+  }
+  static VALUE _Undefined;
+  static VALUE _Null;
+  static VALUE _True;
+  static VALUE _False;
+};
+
 class V8 {
 public:
   static void Init();
@@ -684,6 +713,7 @@ public:
 
 class ClassBuilder {
 public:
+  ClassBuilder() {};
   ClassBuilder(const char* name, VALUE superclass = rb_cObject);
   ClassBuilder(const char* name, const char* supername);
   ClassBuilder& defineMethod(const char* name, VALUE (*impl)(int, VALUE*, VALUE));
@@ -699,8 +729,15 @@ public:
   ClassBuilder& defineEnumConst(const char* name, int value);
   ClassBuilder& store(VALUE* storage);
   inline operator VALUE() {return this->value;}
-private:
+protected:
   VALUE value;
+};
+
+class ModuleBuilder : public ClassBuilder {
+public:
+  inline ModuleBuilder(const char* name) {
+    this->value = rb_eval_string(name);
+  }
 };
 
 }

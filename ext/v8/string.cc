@@ -3,7 +3,7 @@
 namespace rr {
 
 void String::Init() {
-  ClassBuilder("String", Value::Class).
+  ClassBuilder("String", Primitive::Class).
     defineSingletonMethod("New", &New).
     defineSingletonMethod("Concat", &Concat).
     defineMethod("Utf8Value", &Utf8Value).
