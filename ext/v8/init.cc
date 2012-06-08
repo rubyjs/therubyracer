@@ -31,5 +31,7 @@ extern "C" {
     Message::Init();
     TryCatch::Init();
     Locker::Init();
+    ResourceConstraints::Init();
+    HeapStatistics::Init();
   }
 }

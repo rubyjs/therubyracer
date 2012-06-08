@@ -5,7 +5,8 @@ namespace rr {
 void V8::Init() {
   ClassBuilder("V8").
     defineSingletonMethod("IdleNotification", &IdleNotification).
-    defineSingletonMethod("SetCaptureStackTraceForUncaughtExceptions", &SetCaptureStackTraceForUncaughtExceptions);
+    defineSingletonMethod("SetCaptureStackTraceForUncaughtExceptions", &SetCaptureStackTraceForUncaughtExceptions).
+    defineSingletonMethod("GetHeapStatistics", &GetHeapStatistics);
 }
 
 VALUE V8::IdleNotification(int argc, VALUE argv[], VALUE self) {
@@ -23,6 +24,10 @@ VALUE V8::SetCaptureStackTraceForUncaughtExceptions(int argc, VALUE argv[], VALU
   rb_scan_args(argc, argv, "12", &should_capture, &frame_limit, &options);
   int limit = RTEST(frame_limit) ? NUM2INT(frame_limit) : 10;
   Void(v8::V8::SetCaptureStackTraceForUncaughtExceptions(Bool(should_capture), limit, Stack::Trace::StackTraceOptions(options)));
+}
+
+VALUE V8::GetHeapStatistics(VALUE self, VALUE statistics_ptr) {
+  Void(v8::V8::GetHeapStatistics(HeapStatistics(statistics_ptr)));
 }
 
 }

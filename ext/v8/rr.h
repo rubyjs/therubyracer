@@ -683,6 +683,40 @@ public:
   static VALUE doUnlockCall(VALUE code);
 };
 
+class HeapStatistics : public Pointer<v8::HeapStatistics> {
+public:
+  static void Init();
+  static VALUE initialize(VALUE self);
+  static VALUE total_heap_size(VALUE self);
+  static VALUE total_heap_size_executable(VALUE self);
+  static VALUE used_heap_size(VALUE self);
+  static VALUE heap_size_limit(VALUE self);
+
+  inline HeapStatistics(v8::HeapStatistics* stats) : Pointer<v8::HeapStatistics>(stats) {}
+  inline HeapStatistics(VALUE value) {
+    Data_Get_Struct(value, class v8::HeapStatistics, pointer);
+  }
+};
+
+class ResourceConstraints : Pointer<v8::ResourceConstraints> {
+public:
+  static void Init();
+  static VALUE initialize(VALUE self);
+  static VALUE max_young_space_size(VALUE self);
+  static VALUE set_max_young_space_size(VALUE self, VALUE value);
+  static VALUE max_old_space_size(VALUE self);
+  static VALUE set_max_old_space_size(VALUE self, VALUE value);
+  static VALUE max_executable_size(VALUE self);
+  static VALUE set_max_executable_size(VALUE self, VALUE value);
+
+  static VALUE SetResourceConstraints(VALUE self, VALUE constraints);
+
+  inline ResourceConstraints(v8::ResourceConstraints* o) : Pointer<v8::ResourceConstraints>(o) {};
+  inline ResourceConstraints(VALUE value) {
+    Data_Get_Struct(value, class v8::ResourceConstraints, pointer);
+  }
+};
+
 class Constants {
 public:
   static void Init();
@@ -709,6 +743,7 @@ public:
   static void Init();
   static VALUE IdleNotification(int argc, VALUE argv[], VALUE self);
   static VALUE SetCaptureStackTraceForUncaughtExceptions(int argc, VALUE argv[], VALUE self);
+  static VALUE GetHeapStatistics(VALUE self, VALUE statistics_ptr);
 };
 
 class ClassBuilder {
