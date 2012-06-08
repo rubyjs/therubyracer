@@ -133,7 +133,7 @@ public:
   public:
     Holder(v8::Handle<T> handle, VALUE klass) {
       this->handle = v8::Persistent<T>::New(handle);
-      this->value = Data_Wrap_Struct(klass, 0, &Holder::enqueue, this);
+      this->value = Data_Wrap_Struct(klass, 0, &enqueue, this);
     }
     virtual ~Holder() {
       handle.Dispose();
