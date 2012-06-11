@@ -1,9 +1,16 @@
 class V8::Conversion
   module Proc
+
     def to_v8
-      template = V8::C::FunctionTemplate::New()
-      template.SetCallHandler(InvocationHandler.new, V8::C::External::New(self))
-      return template.GetFunction()
+      return v8_template.GetFunction()
+    end
+
+    def v8_template
+      unless @v8_template
+        @v8_template = V8::C::FunctionTemplate::New()
+        @v8_template.SetCallHandler(InvocationHandler.new, V8::C::External::New(self))
+      end
+      return @v8_template
     end
 
     class InvocationHandler
