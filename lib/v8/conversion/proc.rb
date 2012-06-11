@@ -6,11 +6,12 @@ class V8::Conversion
     end
 
     def v8_template
-      unless @v8_template
-        @v8_template = V8::C::FunctionTemplate::New()
-        @v8_template.SetCallHandler(InvocationHandler.new, V8::C::External::New(self))
+      unless @v8_template && @v8_template.weakref_alive?
+        template = V8::C::FunctionTemplate::New()
+        template.SetCallHandler(InvocationHandler.new, V8::C::External::New(self))
+        @v8_template = WeakRef.new(template)
       end
-      return @v8_template
+      return @v8_template.__getobj__
     end
 
     class InvocationHandler

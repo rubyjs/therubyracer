@@ -1,7 +1,7 @@
 class V8::Conversion
-  module Numeric
+  module Primitive
     def to_v8
-      self
+      return self
     end
   end
 end

@@ -17,8 +17,12 @@ class V8::Conversion
         context = V8::Context.current
         object = info.Data().Value()
         name = property.Utf8Value()
-        if object.respond_to?(name) && object.method(name).arity <= 0
-          context.to_v8 object.send(name)
+        if object.respond_to?(name)
+          if object.method(name).arity == 0
+            context.to_v8 object.send(name)
+          else
+            context.to_v8 object.method(name)
+          end
         else
           V8::C::Value::Empty
         end
