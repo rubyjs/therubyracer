@@ -19,10 +19,13 @@ class V8::Conversion
         context = V8::Context.current
         proc = arguments.Data().Value()
         length_of_given_args = arguments.Length()
-        args = ::Array.new(proc.arity < 0 ? length_of_given_args : [length_of_given_args, proc.arity].min)
+        args = ::Array.new(proc.arity < 0 ? length_of_given_args : proc.arity)
         0.upto(args.length - 1) do |i|
-          args[i] = context.to_ruby arguments[i]
+          if i < length_of_given_args
+            args[i] = context.to_ruby arguments[i]
+          end
         end
+        puts
         context.to_v8 proc.call(*args)
       rescue Exception => e
         warn "unhandled exception in ruby #{e.class}: #{e.message}"
