@@ -1,10 +1,18 @@
 module V8
   class Context
-    include Conversion
-
     attr_reader :native
+
     def initialize
       @native = V8::C::Context::New()
+      @conversion = Conversion.new
+    end
+
+    def to_ruby(v8_object)
+      @conversion.to_ruby(v8_object)
+    end
+
+    def to_v8(ruby_object)
+      @conversion.to_v8(ruby_object)
     end
 
     def enter(&block)
@@ -46,10 +54,22 @@ module V8
 
     def eval(source, filename = '<eval>', line = 1)
       enter do
-        source = V8::C::String::New(source.to_s)
-        filename = V8::C::String::New(filename.to_s)
-        script = V8::C::Script::New(source, filename)
-        to_ruby script.Run()
+        V8::C::TryCatch() do |trycatch|
+          source = V8::C::String::New(source.to_s)
+          filename = V8::C::String::New(filename.to_s)
+          script = V8::C::Script::New(source, filename)
+          result = script.Run()
+          if trycatch.HasCaught()
+            exception = trycatch.Exception()
+            if exception.IsNativeError()
+              raise to_ruby exception.Get("message")
+            else
+              raise to_ruby exception.ToString()
+            end
+          else
+            to_ruby result
+          end
+        end
       end
     end
 

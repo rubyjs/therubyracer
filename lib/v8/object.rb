@@ -1,6 +1,7 @@
 class V8::Object
   include Enumerable
   attr_reader :native
+  alias_method :to_v8, :native
 
   def initialize(native = nil)
     @context = V8::Context.current or fail "tried to initialize a #{self.class} without being in an entered V8::Context"
@@ -23,10 +24,16 @@ class V8::Object
   def each
     @context.enter do
       names = @native.GetPropertyNames()
-      0.upto(@native.Length() - 1) do |i|
+      0.upto(names.Length() - 1) do |i|
         name = names.Get(i)
         yield @context.to_ruby(name), @context.to_ruby(@native.Get(name))
       end
+    end
+  end
+
+  def to_s
+    @context.enter do
+      "#{self.class}#{@native.ToString().Utf8Value()}"
     end
   end
 end

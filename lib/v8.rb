@@ -1,6 +1,16 @@
 require "v8/version"
 
 require 'v8/init'
+require 'v8/conversion/fundamental'
+require 'v8/conversion/indentity'
+require 'v8/conversion/numeric'
+require 'v8/conversion/object'
+require 'v8/conversion/time'
+require 'v8/conversion/hash'
+require 'v8/conversion/array'
+require 'v8/conversion/proc'
+require 'v8/conversion/symbol'
+require 'v8/conversion/string'
 require 'v8/conversion'
 require 'v8/context'
 require 'v8/object'
