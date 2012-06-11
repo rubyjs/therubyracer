@@ -18,7 +18,7 @@ for type in [TrueClass, FalseClass, NilClass, Numeric] do
   end
 end
 
-for type in [Object, Array, Hash, String, Symbol, Time, Proc, Method] do
+for type in [Class, Object, Array, Hash, String, Symbol, Time, Proc, Method] do
   type.class_eval do
     include V8::Conversion.const_get(name)
   end

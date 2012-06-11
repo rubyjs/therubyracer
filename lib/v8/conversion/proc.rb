@@ -18,7 +18,8 @@ class V8::Conversion
       def call(arguments)
         context = V8::Context.current
         proc = arguments.Data().Value()
-        args = ::Array.new(arguments.Length())
+        length_of_given_args = arguments.Length()
+        args = ::Array.new(proc.arity < 0 ? length_of_given_args : [length_of_given_args, proc.arity].min)
         0.upto(args.length - 1) do |i|
           args[i] = context.to_ruby arguments[i]
         end
