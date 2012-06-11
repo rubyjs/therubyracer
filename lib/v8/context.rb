@@ -1,10 +1,11 @@
 module V8
   class Context
-    attr_reader :native, :conversion
+    attr_reader :native, :conversion, :access
 
     def initialize
       @native = V8::C::Context::New()
       @conversion = Conversion.new
+      @access = Access.new
     end
 
     def to_ruby(v8_object)

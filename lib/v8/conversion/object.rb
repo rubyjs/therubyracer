@@ -15,17 +15,13 @@ class V8::Conversion
     class Get
       def self.call(property, info)
         context = V8::Context.current
+        access = context.access
         object = info.Data().Value()
         name = property.Utf8Value()
-        if object.respond_to?(name)
-          if object.method(name).arity == 0
-            context.to_v8 object.send(name)
-          else
-            context.to_v8 object.method(name)
-          end
-        else
-          V8::C::Value::Empty
+        dontintercept = proc do
+          return V8::C::Empty
         end
+        context.to_v8 access.get(object, name, &dontintercept)
       rescue Exception => e
         warn "uncaught exception: #{e.class}: #{e.message} while accessing object property: #{e.backtrace.join('\n')}"
       end
