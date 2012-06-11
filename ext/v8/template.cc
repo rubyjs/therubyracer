@@ -2,9 +2,16 @@
 
 namespace rr {
   void Template::Init() {
-    ClassBuilder("Template");
+    ClassBuilder("Template").
+      defineMethod("Set", &Set);
     ObjectTemplate::Init();
     FunctionTemplate::Init();
+  }
+
+  VALUE Template::Set(int argc, VALUE argv[], VALUE self) {
+    VALUE name; VALUE value; VALUE attributes;
+    rb_scan_args(argc, argv, "21", &name, &value, &attributes);
+    Void(Template(self)->Set(*String(name), *Value(value), PropertyAttribute(attributes)));
   }
 
   void ObjectTemplate::Init() {

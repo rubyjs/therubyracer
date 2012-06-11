@@ -1,6 +1,6 @@
 module V8
   class Context
-    attr_reader :native
+    attr_reader :native, :conversion
 
     def initialize
       @native = V8::C::Context::New()
@@ -13,6 +13,14 @@ module V8
 
     def to_v8(ruby_object)
       @conversion.to_v8(ruby_object)
+    end
+
+    def link(ruby_object, v8_object)
+      @conversion.equate ruby_object, v8_object
+    end
+
+    def self.link(*args)
+      current.link *args
     end
 
     def enter(&block)

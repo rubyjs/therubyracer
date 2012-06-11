@@ -1,11 +1,30 @@
 class V8::Conversion
   module Object
     def to_v8
-      V8::C::Object::New()
+      template = V8::C::ObjectTemplate::New()
+      template.SetNamedPropertyHandler(Get, nil, nil, nil, nil, V8::C::External::New(self))
+      instance = template.NewInstance()
+      V8::Context.link self, instance
+      return instance
     end
 
     def to_ruby
       self
+    end
+
+    class Get
+      def self.call(property, info)
+        context = V8::Context.current
+        object = info.Data().Value()
+        name = property.Utf8Value()
+        if object.respond_to?(name) && object.method(name).arity <= 0
+          context.to_v8 object.send(name)
+        else
+          V8::C::Value::Empty
+        end
+      rescue Exception => e
+        warn "uncaught exception: #{e.class}: #{e.message} while accessing object property: #{e.backtrace.join('\n')}"
+      end
     end
   end
 
