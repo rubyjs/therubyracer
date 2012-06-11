@@ -8,4 +8,9 @@ describe V8::C do
       V8::C.send(name).should be constant
     end
   end
+
+  it "has a value for the Empty handle" do
+    V8::C::Value::Empty.should_not be_nil
+    V8::C::Value::Empty.should be V8::C::Value::Empty
+  end
 end

@@ -2,8 +2,12 @@
 
 namespace rr {
 
+VALUE Value::Empty;
+
 void Value::Init() {
+  Empty = rb_eval_string("Object.new");
   ClassBuilder("Value").
+    defineConst("Empty", Empty).
     defineMethod("IsUndefined", &IsUndefined).
     defineMethod("IsNull", &IsNull).
     defineMethod("IsTrue", &IsTrue).
@@ -34,6 +38,7 @@ void Value::Init() {
     defineMethod("Equals", &Equals).
     defineMethod("StrictEquals", &StrictEquals)
     .store(&Class);
+    rb_gc_register_address(&Empty);
 }
 
  VALUE Value::IsUndefined(VALUE self) {
@@ -192,6 +197,9 @@ Value::operator VALUE() {
 }
 
 Value::operator v8::Handle<v8::Value>() const {
+    if (rb_equal(value,Empty)) {
+      return v8::Handle<v8::Value>();
+    }
     switch (TYPE(value)) {
     case T_FIXNUM:
       return v8::Integer::New(NUM2INT(value));

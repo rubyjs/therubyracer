@@ -316,6 +316,7 @@ public:
   inline Value(v8::Handle<v8::Value> value) : Ref<v8::Value>(value) {}
   virtual operator VALUE();
   virtual operator v8::Handle<v8::Value>() const;
+  static VALUE Empty;
 };
 
 class Primitive: public Ref<v8::Primitive> {
@@ -562,9 +563,12 @@ public:
   inline Signature(VALUE value) : Ref<v8::Signature>(value) {}
 };
 
-class Template {
+class Template : public Ref<v8::Template> {
 public:
   static void Init();
+  static VALUE Set(int argc, VALUE argv[], VALUE self);
+  inline Template(v8::Handle<v8::Template> t) : Ref<v8::Template>(t) {}
+  inline Template(VALUE value) : Ref<v8::Template>(value) {}
 };
 
 class ObjectTemplate : public Ref<v8::ObjectTemplate> {
@@ -774,6 +778,7 @@ public:
   ClassBuilder() {};
   ClassBuilder(const char* name, VALUE superclass = rb_cObject);
   ClassBuilder(const char* name, const char* supername);
+  ClassBuilder& defineConst(const char* name, VALUE value);
   ClassBuilder& defineMethod(const char* name, VALUE (*impl)(int, VALUE*, VALUE));
   ClassBuilder& defineMethod(const char* name, VALUE (*impl)(VALUE));
   ClassBuilder& defineMethod(const char* name, VALUE (*impl)(VALUE, VALUE));
