@@ -2,10 +2,24 @@ module V8
   class Context
     attr_reader :native, :conversion, :access
 
-    def initialize
-      @native = V8::C::Context::New()
+    def initialize(options = {})
       @conversion = Conversion.new
       @access = Access.new
+      if global = options[:with]
+        V8::C::Locker() do
+          V8::C::HandleScope() do
+            tmp = V8::C::Context::New()
+            tmp.Enter()
+            global_template = global.to_v8_template
+            tmp.Exit()
+            @native = V8::C::Context::New(nil, global_template)
+            enter { link global, @native.Global() }
+          end
+        end
+      else
+        @native = V8::C::Context::New()
+      end
+      yield self if block_given?
     end
 
     def to_ruby(v8_object)

@@ -1,11 +1,15 @@
 class V8::Conversion
   module Object
     def to_v8
-      template = V8::C::ObjectTemplate::New()
-      template.SetNamedPropertyHandler(Get, Set, nil, nil, nil, V8::C::External::New(self))
-      instance = template.NewInstance()
-      V8::Context.link self, instance
-      return instance
+      object = to_v8_template.NewInstance()
+      V8::Context.link self, object
+      return object
+    end
+
+    def to_v8_template
+      V8::C::ObjectTemplate::New().tap do |template|
+        template.SetNamedPropertyHandler(Get, Set, nil, nil, nil, V8::C::External::New(self))
+      end
     end
 
     def to_ruby
