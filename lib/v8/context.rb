@@ -76,6 +76,9 @@ module V8
     end
 
     def eval(source, filename = '<eval>', line = 1)
+      if IO === source || StringIO === source
+        source = source.read
+      end
       enter do
         V8::C::TryCatch() do |trycatch|
           source = V8::C::String::New(source.to_s)
