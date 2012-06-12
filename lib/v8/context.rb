@@ -22,6 +22,10 @@ module V8
       yield self if block_given?
     end
 
+    def scope
+      enter { to_ruby @native.Global() }
+    end
+
     def to_ruby(v8_object)
       @conversion.to_ruby(v8_object)
     end
