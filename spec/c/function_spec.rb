@@ -3,7 +3,17 @@ require 'spec_helper'
 describe V8::C::Function do
   it "can be called" do
     fn = run '(function() {return "foo"})'
-    fn.Call(@cxt.Global(), 0, []).Utf8Value().should eql "foo"
+    fn.Call(@cxt.Global(), []).Utf8Value().should eql "foo"
+  end
+
+  it "can be called with arguments and context" do
+    fn = run '(function(one, two, three) {this.one = one; this.two = two; this.three = three})'
+    one = V8::C::Object::New()
+    two = V8::C::Object::New()
+    fn.Call(@cxt.Global(), [one, two, 3])
+    @cxt.Global().Get("one").should eql one
+    @cxt.Global().Get("two").should eql two
+    @cxt.Global().Get("three").should eql 3
   end
 
   it "can be called as a constructor" do
@@ -13,7 +23,7 @@ describe V8::C::Function do
 
   it "can be called as a constructor with arguments" do
     fn = run '(function(foo) {this.foo = foo})'
-    object = fn.NewInstance(1, [V8::C::String::New("bar")])
+    object = fn.NewInstance([V8::C::String::New("bar")])
     object.Get(V8::C::String::New('foo')).Utf8Value().should eql "bar"
   end
 

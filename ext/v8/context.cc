@@ -89,7 +89,7 @@ VALUE Context::IsCodeGenerationFromStringsAllowed(VALUE self) {
 }
 
 VALUE ExtensionConfiguration::initialize(VALUE self, VALUE names) {
-  int length = (int)RARRAY_LEN(names);
+  int length = RARRAY_LENINT(names);
   const char* array[length];
   for (int i = 0; i < length; i++) {
     array[i] = RSTRING_PTR(rb_ary_entry(names, i));

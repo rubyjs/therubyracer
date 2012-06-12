@@ -1,14 +1,15 @@
 class V8::Array < V8::Object
 
   def initialize(native_or_length = nil)
-    native = if native_or_length.is_a?(Numeric)
-      V8::C::Array::New(native_or_length)
-    elsif native_or_length.is_a?(V8::C::Array)
-      native_or_length
-    else
-      V8::C::Array::New()
+    super do
+      if native_or_length.is_a?(Numeric)
+        V8::C::Array::New(native_or_length)
+      elsif native_or_length.is_a?(V8::C::Array)
+        native_or_length
+      else
+        V8::C::Array::New()
+      end
     end
-    super native
   end
 
   def each

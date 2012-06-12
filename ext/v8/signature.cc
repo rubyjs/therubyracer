@@ -7,10 +7,12 @@ namespace rr {
       store(&Class);
   }
 
-  VALUE Signature::New(int length, VALUE args[], VALUE self) {
-    VALUE receiver; VALUE argc; VALUE argv;
-    rb_scan_args(length, args, "03", &receiver, &argc, &argv);
-    std::vector< v8::Handle<v8::FunctionTemplate> > parameters(NUM2INT(argc));
-    return Signature(v8::Signature::New(FunctionTemplate(receiver), NUM2INT(argc), FunctionTemplate::array(argv, parameters)));
+  VALUE Signature::New(int argc, VALUE args[], VALUE self) {
+    VALUE receiver; VALUE argv;
+    rb_scan_args(argc, args, "02", &receiver, &argv);
+    FunctionTemplate recv(receiver);
+    int length = RARRAY_LENINT(argv);
+    FunctionTemplate::array<FunctionTemplate> types(argv);
+    return Signature(v8::Signature::New(recv, length, types));
   }
 }

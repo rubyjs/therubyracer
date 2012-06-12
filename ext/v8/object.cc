@@ -321,14 +321,12 @@ VALUE Object::IsCallable(VALUE self) {
   return Bool(Object(self)->IsCallable());
 }
 
-VALUE Object::CallAsFunction(VALUE self, VALUE recv, VALUE argc, VALUE argv) {
-  std::vector< v8::Handle<v8::Value> > v(NUM2INT(argc));
-  return Value(Object(self)->CallAsFunction(Object(recv), NUM2INT(argc), Value::array(argv, v)));
+VALUE Object::CallAsFunction(VALUE self, VALUE recv, VALUE argv) {
+  return Value(Object(self)->CallAsFunction(Object(recv), RARRAY_LENINT(argv), Value::array<Value>(argv)));
 }
 
-VALUE Object::CallAsConstructor(VALUE self, VALUE argc, VALUE argv) {
-  std::vector< v8::Handle<v8::Value> > v(NUM2INT(argc));
-  return Value(Object(self)->CallAsConstructor(NUM2INT(argc), Value::array(argv, v)));
+VALUE Object::CallAsConstructor(VALUE self, VALUE argv) {
+  return Value(Object(self)->CallAsConstructor(RARRAY_LENINT(argv), Value::array<Value>(argv)));
 }
 
 }

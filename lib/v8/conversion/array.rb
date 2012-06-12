@@ -8,10 +8,4 @@ class V8::Conversion
       return array.to_v8
     end
   end
-
-  module NativeArray
-    def to_ruby
-      V8::Array.new(self)
-    end
-  end
 end

@@ -8,6 +8,11 @@
 #include "ruby/encoding.h"
 #endif
 
+#if !defined(RARRAY_LENINT)
+# define RARRAY_LENINT(v) (int)RARRAY_LEN(v)
+#endif /* ! defined(RARRAY_LENINT) */
+
+
 namespace rr {
 
 #define Void(expr) expr; return Qnil;
@@ -127,15 +132,23 @@ public:
       return v8::Handle<T>();
     }
   }
+
   inline v8::Handle<T> operator->() const { return *this;}
   inline v8::Handle<T> operator*() const {return *this;}
 
-  static v8::Handle<T> * array(VALUE argv, std::vector< v8::Handle<T> >& v) {
-    for (uint32_t i = 0; i < v.size(); i++) {
-      v[i] = Ref<T>(rb_ary_entry(argv, i));
+  template <class C> class array {
+  public:
+    inline array(VALUE ary) : argv(ary), vector(RARRAY_LENINT(argv)) {}
+    inline operator v8::Handle<T>*() {
+      for (uint32_t i = 0; i < vector.size(); i++) {
+        vector[i] = C(rb_ary_entry(argv, i));
+      }
+      return &vector[0];
     }
-    return &v[0];
-  }
+  private:
+    VALUE argv;
+    std::vector< v8::Handle<T> > vector;
+  };
 
   class Holder {
     friend class Ref;
@@ -525,8 +538,8 @@ public:
   static VALUE GetIndexedPropertiesExternalArrayDataType(VALUE self);
   static VALUE GetIndexedPropertiesExternalArrayDataLength(VALUE self);
   static VALUE IsCallable(VALUE self);
-  static VALUE CallAsFunction(VALUE self, VALUE recv, VALUE argc, VALUE argv);
-  static VALUE CallAsConstructor(VALUE self, VALUE argc, VALUE argv);
+  static VALUE CallAsFunction(VALUE self, VALUE recv, VALUE argv);
+  static VALUE CallAsConstructor(VALUE self, VALUE argv);
 
   inline Object(VALUE value) : Ref<v8::Object>(value) {}
   inline Object(v8::Handle<v8::Object> object) : Ref<v8::Object>(object) {}
@@ -550,8 +563,8 @@ public:
 class Function : public Ref<v8::Function> {
 public:
   static void Init();
-  static VALUE NewInstance(int i, VALUE v[], VALUE self);
-  static VALUE Call(VALUE self, VALUE receiver, VALUE argc, VALUE argv);
+  static VALUE NewInstance(int argc, VALUE argv[], VALUE self);
+  static VALUE Call(VALUE self, VALUE receiver, VALUE argv);
   static VALUE SetName(VALUE self, VALUE name);
   static VALUE GetName(VALUE self);
   static VALUE GetInferredName(VALUE self);

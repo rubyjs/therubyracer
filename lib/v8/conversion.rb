@@ -24,7 +24,7 @@ for type in [Class, Object, Array, Hash, String, Symbol, Time, Proc, Method] do
   end
 end
 
-for type in [:Object, :Array, :String, :Date] do
+for type in [:Object, :String, :Date] do
   V8::C::const_get(type).class_eval do
     include V8::Conversion::const_get("Native#{type}")
   end

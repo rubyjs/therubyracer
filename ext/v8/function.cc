@@ -15,19 +15,17 @@ namespace rr {
       store(&Class);
   }
 
-  VALUE Function::NewInstance(int i, VALUE v[], VALUE self) {
-    if (i == 0) {
-      return Object(Function(self)->NewInstance());
+  VALUE Function::NewInstance(int argc, VALUE argv[], VALUE self) {
+    VALUE args;
+    rb_scan_args(argc,argv,"01", &args);
+    if (RTEST(args)) {
+      return Object(Function(self)->NewInstance(RARRAY_LENINT(args), Value::array<Value>(args)));
     } else {
-      VALUE argc; VALUE argv;
-      rb_scan_args(i,v,"2", &argc, &argv);
-      std::vector< v8::Handle<v8::Value> > arguments(NUM2INT(argc));
-      return Object(Function(self)->NewInstance(NUM2INT(argc), Value::array(argv, arguments)));
+      return Object(Function(self)->NewInstance());
     }
   }
-  VALUE Function::Call(VALUE self, VALUE receiver, VALUE argc, VALUE argv) {
-    std::vector< v8::Handle<v8::Value> > arguments(NUM2INT(argc));
-    return Value(Function(self)->Call(Object(receiver), NUM2INT(argc), Value::array(argv, arguments)));
+  VALUE Function::Call(VALUE self, VALUE receiver, VALUE argv) {
+    return Value(Function(self)->Call(Object(receiver), RARRAY_LENINT(argv), Value::array<Value>(argv)));
   }
 
   VALUE Function::SetName(VALUE self, VALUE name) {

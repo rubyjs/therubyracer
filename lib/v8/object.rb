@@ -5,7 +5,7 @@ class V8::Object
 
   def initialize(native = nil)
     @context = V8::Context.current or fail "tried to initialize a #{self.class} without being in an entered V8::Context"
-    @native = native || V8::C::Object::New()
+    @native = block_given? ? yield : native || V8::C::Object::New()
     @context.link self, @native
   end
 
@@ -34,7 +34,32 @@ class V8::Object
 
   def to_s
     @context.enter do
-      "#{self.class}#{@native.ToString().Utf8Value()}"
+      @context.to_ruby @native.ToString()
+    end
+  end
+
+  def respond_to?(method)
+    super or self[method] != nil
+  end
+
+  def method_missing(name, *args, &block)
+    if name.to_s =~ /(.*)=$/
+      if args.length > 1
+        self[$1] = args
+        return args
+      else
+        self[$1] = args.first
+        return args
+      end
+    end
+    return super(name, *args, &block) unless self.respond_to?(name)
+    property = self[name]
+    if property.kind_of?(V8::Function)
+      property.methodcall(self, *args)
+    elsif args.empty?
+      property
+    else
+      raise ArgumentError, "wrong number of arguments (#{args.length} for 0)" unless args.empty?
     end
   end
 end
