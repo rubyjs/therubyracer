@@ -5,7 +5,7 @@ describe V8::C::Template do
   describe V8::C::FunctionTemplate do
     it "can be created with no arguments" do
       t = V8::C::FunctionTemplate::New()
-      t.GetFunction().Call(@cxt.Global(),0, []).StrictEquals(@cxt.Global()).should be_true
+      t.GetFunction().Call(@cxt.Global(),[]).StrictEquals(@cxt.Global()).should be_true
     end
 
     it "can be created with a callback" do
@@ -24,7 +24,7 @@ describe V8::C::Template do
       end
       t = V8::C::FunctionTemplate::New(callback, V8::C::External::New(42))
       f = t.GetFunction()
-      f.Call(receiver, 2, [V8::C::String::New('one'), V8::C::String::New('two')]).Utf8Value().should eql "result"
+      f.Call(receiver, [V8::C::String::New('one'), V8::C::String::New('two')]).Utf8Value().should eql "result"
     end
   end
 end
