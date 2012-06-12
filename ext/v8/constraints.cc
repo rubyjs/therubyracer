@@ -46,4 +46,7 @@ namespace rr {
   // // Sets an address beyond which the VM's stack may not grow.
   // void set_stack_limit(uint32_t* value) { stack_limit_ = value; }
 
+  template <> void Pointer<v8::ResourceConstraints>::unwrap(VALUE value) {
+    Data_Get_Struct(value, class v8::ResourceConstraints, pointer);
+  }
 }

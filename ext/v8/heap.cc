@@ -18,7 +18,6 @@ namespace rr {
       defineMethod("heap_size_limit", &heap_size_limit).
       store(&Class);
   }
-
   VALUE HeapStatistics::initialize(VALUE self) {
     return HeapStatistics(new v8::HeapStatistics());
   }
@@ -33,5 +32,8 @@ namespace rr {
   }
   VALUE HeapStatistics::heap_size_limit(VALUE self) {
     return SIZET2NUM(HeapStatistics(self)->heap_size_limit());
+  }
+  template <> void Pointer<v8::HeapStatistics>::unwrap(VALUE value) {
+    Data_Get_Struct(value, class v8::HeapStatistics, pointer);
   }
 }

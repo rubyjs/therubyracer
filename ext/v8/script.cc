@@ -69,4 +69,12 @@ VALUE Script::Run(VALUE self) {
   return Value(Script(self)->Run());
 }
 
+template <> void Pointer<v8::ScriptData>::unwrap(VALUE value) {
+  Data_Get_Struct(value, class v8::ScriptData, pointer);
+}
+
+template <> void Pointer<v8::ScriptOrigin>::unwrap(VALUE value) {
+  Data_Get_Struct(value, class v8::ScriptOrigin, pointer);
+}
+
 } //namespace rr

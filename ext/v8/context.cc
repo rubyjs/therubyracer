@@ -118,4 +118,8 @@ VALUE Context::Exit(VALUE self) {
   Void(Context(self)->Exit());
 }
 
+template <> void Pointer<v8::ExtensionConfiguration>::unwrap(VALUE value) {
+  Data_Get_Struct(value, class v8::ExtensionConfiguration, pointer);
+}
+
 }

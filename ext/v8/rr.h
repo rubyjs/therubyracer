@@ -93,16 +93,15 @@ public:
       this->pointer = NULL;
     }
   };
-  inline Pointer() {};
   inline operator T*() {return pointer;}
   inline T* operator ->() {return pointer;}
   inline operator VALUE() {
     return Data_Wrap_Struct(Class, 0, &release, pointer);
   }
+  void unwrap(VALUE value);
   static void release(T* pointer) {
     delete pointer;
   }
-  virtual void unwrap(VALUE v) = 0;
   static VALUE Class;
 protected:
   T* pointer;
@@ -220,9 +219,6 @@ public:
   static VALUE initialize(VALUE self, VALUE names);
   inline ExtensionConfiguration(v8::ExtensionConfiguration* config) : Pointer<v8::ExtensionConfiguration>(config) {}
   inline ExtensionConfiguration(VALUE value) : Pointer<v8::ExtensionConfiguration>(value) {}
-  virtual void unwrap(VALUE value) {
-    Data_Get_Struct(value, class v8::ExtensionConfiguration, pointer);
-  }
 };
 
 class Context : public Ref<v8::Context> {
@@ -274,9 +270,6 @@ class ScriptOrigin : public Pointer<v8::ScriptOrigin> {
 public:
   inline ScriptOrigin(v8::ScriptOrigin* o) : Pointer<v8::ScriptOrigin>(o) {};
   inline ScriptOrigin(VALUE value) : Pointer<v8::ScriptOrigin>(value) {}
-  virtual void unwrap(VALUE value) {
-    Data_Get_Struct(value, class v8::ScriptOrigin, pointer);
-  }
 
   static VALUE initialize(int argc, VALUE argv[], VALUE self);
 };
@@ -285,9 +278,6 @@ class ScriptData : public Pointer<v8::ScriptData> {
 public:
   inline ScriptData(v8::ScriptData* d) : Pointer<v8::ScriptData>(d) {};
   inline ScriptData(VALUE value) : Pointer<v8::ScriptData>(value) {}
-  virtual void unwrap(VALUE value) {
-    Data_Get_Struct(value, class v8::ScriptData, pointer);
-  }
 
   static VALUE PreCompile(VALUE self, VALUE input, VALUE length);
   static VALUE New(VALUE self, VALUE data, VALUE length);
@@ -754,9 +744,6 @@ public:
 
   inline HeapStatistics(v8::HeapStatistics* stats) : Pointer<v8::HeapStatistics>(stats) {}
   inline HeapStatistics(VALUE value) : Pointer<v8::HeapStatistics>(value) {}
-  virtual void unwrap(VALUE value) {
-    Data_Get_Struct(value, class v8::HeapStatistics, pointer);
-  }
 };
 
 class ResourceConstraints : Pointer<v8::ResourceConstraints> {
@@ -774,9 +761,6 @@ public:
 
   inline ResourceConstraints(v8::ResourceConstraints* o) : Pointer<v8::ResourceConstraints>(o) {};
   inline ResourceConstraints(VALUE value) : Pointer<v8::ResourceConstraints>(value) {}
-  virtual void unwrap(VALUE value) {
-    Data_Get_Struct(value, class v8::ResourceConstraints, pointer);
-  }
 };
 
 class Constants {
