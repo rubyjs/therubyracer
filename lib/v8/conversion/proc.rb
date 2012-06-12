@@ -3,7 +3,9 @@ class V8::Conversion
     include V8::Util::Weakcell
 
     def to_v8
-      return to_v8_template.GetFunction()
+      fn = to_v8_template.GetFunction()
+      V8::Context.link self, fn
+      return fn
     end
 
     def to_v8_template
