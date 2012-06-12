@@ -15,7 +15,7 @@ module V8
           else
             populate(block)
           end
-        rescue RefError
+        rescue WeakRef::RefError
           populate(block)
         end
 
