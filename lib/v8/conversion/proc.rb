@@ -1,17 +1,17 @@
 class V8::Conversion
   module Proc
+    include V8::Util::Weakcell
 
     def to_v8
-      return v8_template.GetFunction()
+      return to_v8_template.GetFunction()
     end
 
-    def v8_template
-      unless @v8_template && @v8_template.weakref_alive?
+    def to_v8_template
+      weakcell(:v8_template) do
         template = V8::C::FunctionTemplate::New()
         template.SetCallHandler(InvocationHandler.new, V8::C::External::New(self))
-        @v8_template = WeakRef.new(template)
+        template
       end
-      return @v8_template.__getobj__
     end
 
     class InvocationHandler

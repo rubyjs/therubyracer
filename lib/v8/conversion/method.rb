@@ -3,7 +3,7 @@ class V8::Conversion
     include V8::Conversion::Proc
 
     def to_v8
-      (@@method_cache[self] ||= v8_template).GetFunction()
+      (@@method_cache[self] ||= to_v8_template).GetFunction()
     end
 
 

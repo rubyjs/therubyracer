@@ -1,6 +1,7 @@
 require "v8/version"
 
 require 'v8/init'
+require 'v8/util/weakcell'
 require 'v8/conversion/fundamental'
 require 'v8/conversion/indentity'
 require 'v8/conversion/primitive'
@@ -20,4 +21,3 @@ require 'v8/access'
 require 'v8/context'
 require 'v8/object'
 require 'v8/array'
-require 'v8/util/weakcell'
