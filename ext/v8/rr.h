@@ -81,6 +81,13 @@ private:
 template <class T> class Pointer {
 public:
   inline Pointer(T* t) : pointer(t) {};
+  inline Pointer(VALUE v) {
+    if (RTEST(v)) {
+      this->unwrap(v);
+    } else {
+      this->pointer = NULL;
+    }
+  };
   inline Pointer() {};
   inline operator T*() {return pointer;}
   inline T* operator ->() {return pointer;}
@@ -90,6 +97,7 @@ public:
   static void release(T* pointer) {
     delete pointer;
   }
+  virtual void unwrap(VALUE v) = 0;
   static VALUE Class;
 protected:
   T* pointer;
@@ -194,10 +202,20 @@ public:
   Ref<void>::Holder* holder;
 };
 
+class ExtensionConfiguration : public Pointer<v8::ExtensionConfiguration> {
+public:
+  static VALUE initialize(VALUE self, VALUE names);
+  inline ExtensionConfiguration(v8::ExtensionConfiguration* config) : Pointer<v8::ExtensionConfiguration>(config) {}
+  inline ExtensionConfiguration(VALUE value) : Pointer<v8::ExtensionConfiguration>(value) {}
+  virtual void unwrap(VALUE value) {
+    Data_Get_Struct(value, class v8::ExtensionConfiguration, pointer);
+  }
+};
+
 class Context : public Ref<v8::Context> {
 public:
   static void Init();
-  static VALUE New(VALUE self);
+  static VALUE New(int argc, VALUE argv[], VALUE self);
   static VALUE Enter(VALUE self);
   static VALUE Exit(VALUE self);
   static VALUE Global(VALUE self);
@@ -242,7 +260,8 @@ private:
 class ScriptOrigin : public Pointer<v8::ScriptOrigin> {
 public:
   inline ScriptOrigin(v8::ScriptOrigin* o) : Pointer<v8::ScriptOrigin>(o) {};
-  inline ScriptOrigin(VALUE value) {
+  inline ScriptOrigin(VALUE value) : Pointer<v8::ScriptOrigin>(value) {}
+  virtual void unwrap(VALUE value) {
     Data_Get_Struct(value, class v8::ScriptOrigin, pointer);
   }
 
@@ -252,7 +271,8 @@ public:
 class ScriptData : public Pointer<v8::ScriptData> {
 public:
   inline ScriptData(v8::ScriptData* d) : Pointer<v8::ScriptData>(d) {};
-  inline ScriptData(VALUE value) {
+  inline ScriptData(VALUE value) : Pointer<v8::ScriptData>(value) {}
+  virtual void unwrap(VALUE value) {
     Data_Get_Struct(value, class v8::ScriptData, pointer);
   }
 
@@ -720,7 +740,8 @@ public:
   static VALUE heap_size_limit(VALUE self);
 
   inline HeapStatistics(v8::HeapStatistics* stats) : Pointer<v8::HeapStatistics>(stats) {}
-  inline HeapStatistics(VALUE value) {
+  inline HeapStatistics(VALUE value) : Pointer<v8::HeapStatistics>(value) {}
+  virtual void unwrap(VALUE value) {
     Data_Get_Struct(value, class v8::HeapStatistics, pointer);
   }
 };
@@ -739,7 +760,8 @@ public:
   static VALUE SetResourceConstraints(VALUE self, VALUE constraints);
 
   inline ResourceConstraints(v8::ResourceConstraints* o) : Pointer<v8::ResourceConstraints>(o) {};
-  inline ResourceConstraints(VALUE value) {
+  inline ResourceConstraints(VALUE value) : Pointer<v8::ResourceConstraints>(value) {}
+  virtual void unwrap(VALUE value) {
     Data_Get_Struct(value, class v8::ResourceConstraints, pointer);
   }
 };

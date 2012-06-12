@@ -23,6 +23,9 @@ void Context::Init() {
     defineMethod("Enter", &Enter).
     defineMethod("Exit", &Exit).
     store(&Class);
+  ClassBuilder("ExtensionConfiguration").
+    defineSingletonMethod("new", &ExtensionConfiguration::initialize).
+    store(&ExtensionConfiguration::Class);
 }
 
 VALUE Context::Global(VALUE self) {
@@ -85,8 +88,23 @@ VALUE Context::IsCodeGenerationFromStringsAllowed(VALUE self) {
   return Bool(Context(self)->IsCodeGenerationFromStringsAllowed());
 }
 
-VALUE Context::New(VALUE ContextClass) {
-  v8::Persistent<v8::Context> context = v8::Context::New();
+VALUE ExtensionConfiguration::initialize(VALUE self, VALUE names) {
+  int length = (int)RARRAY_LEN(names);
+  const char* array[length];
+  for (int i = 0; i < length; i++) {
+    array[i] = RSTRING_PTR(rb_ary_entry(names, i));
+  }
+  return ExtensionConfiguration(new v8::ExtensionConfiguration(length, array));
+}
+
+VALUE Context::New(int argc, VALUE argv[], VALUE self) {
+  VALUE extension_configuration; VALUE global_template; VALUE global_object;
+  rb_scan_args(argc, argv, "03", &extension_configuration, &global_template, &global_object);
+  v8::Persistent<v8::Context> context(v8::Context::New(
+    ExtensionConfiguration(extension_configuration),
+    *ObjectTemplate(global_template),
+    *Object(global_object)
+  ));
   Context reference(context);
   context.Dispose();
   return reference;
