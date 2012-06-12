@@ -152,7 +152,7 @@ namespace rr {
 
   v8::Handle<v8::Value> Accessor::Info::get(uint32_t index) {
     Accessor accessor(info->Data());
-    return Value(rb_funcall(accessor.get, rb_intern("call"), 2, (VALUE)String(index), (VALUE)*this));
+    return Value(rb_funcall(accessor.get, rb_intern("call"), 2, UINT2NUM(index), (VALUE)*this));
   }
 
   v8::Handle<v8::Value> Accessor::Info::set(uint32_t index, v8::Local<v8::Value> value) {
