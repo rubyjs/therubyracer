@@ -4,3 +4,4 @@ source 'http://rubygems.org'
 gemspec
 
 gem 'redjs', :git => 'https://github.com/cowboyd/redjs.git', :tag => 'v0.6.1'
+gem 'libv8', "~> 3.10.8"
