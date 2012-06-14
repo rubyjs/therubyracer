@@ -6,7 +6,8 @@ void V8::Init() {
   ClassBuilder("V8").
     defineSingletonMethod("IdleNotification", &IdleNotification).
     defineSingletonMethod("SetCaptureStackTraceForUncaughtExceptions", &SetCaptureStackTraceForUncaughtExceptions).
-    defineSingletonMethod("GetHeapStatistics", &GetHeapStatistics);
+    defineSingletonMethod("GetHeapStatistics", &GetHeapStatistics).
+    defineSingletonMethod("GetVersion", &GetVersion);
 }
 
 VALUE V8::IdleNotification(int argc, VALUE argv[], VALUE self) {
@@ -30,4 +31,7 @@ VALUE V8::GetHeapStatistics(VALUE self, VALUE statistics_ptr) {
   Void(v8::V8::GetHeapStatistics(HeapStatistics(statistics_ptr)));
 }
 
+VALUE V8::GetVersion(VALUE self) {
+  return rb_str_new2(v8::V8::GetVersion());
+}
 }

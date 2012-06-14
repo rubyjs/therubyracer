@@ -13,4 +13,8 @@ describe V8::C do
     V8::C::Value::Empty.should_not be_nil
     V8::C::Value::Empty.should be V8::C::Value::Empty
   end
+
+  it "can access the V8 version" do
+    V8::C::V8::GetVersion().should match /^3\.10/
+  end
 end

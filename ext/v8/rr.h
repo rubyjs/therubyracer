@@ -790,6 +790,7 @@ public:
   static VALUE IdleNotification(int argc, VALUE argv[], VALUE self);
   static VALUE SetCaptureStackTraceForUncaughtExceptions(int argc, VALUE argv[], VALUE self);
   static VALUE GetHeapStatistics(VALUE self, VALUE statistics_ptr);
+  static VALUE GetVersion(VALUE self);
 };
 
 class ClassBuilder {
