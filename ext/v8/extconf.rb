@@ -28,4 +28,4 @@ if CONFIG['warnflags']
   CONFIG['warnflags'].gsub!('-Wimplicit-function-declaration', '')
 end
 
-create_makefile('init')
+create_makefile('v8/init')
