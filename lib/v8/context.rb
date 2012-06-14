@@ -79,6 +79,12 @@ module V8
       Context.current = current
     end
 
+    def load(filename)
+      File.open(filename) do |file|
+        self.eval file, filename
+      end
+    end
+
     def eval(source, filename = '<eval>', line = 1)
       if IO === source || StringIO === source
         source = source.read
