@@ -37,7 +37,7 @@ def build_with_system_libv8
     EOS
     raise "unable to locate libv8. Please see output for details"
   end
-  $LDFLAGS << " -lv8_base -lv8_snapshot "
+  $LDFLAGS << " -lv8 "
 end
 
 def build_with_rubygem_libv8
