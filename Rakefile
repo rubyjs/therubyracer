@@ -21,5 +21,12 @@ task :sanity => [:clean, :compile] do
   sh %q{ruby -Ilib -e "require 'v8'"}
 end
 
+desc "Build therubyracer-#{V8::VERSION}-#{Gem::Platform.new(RUBY_PLATFORM)}.gem into the pkg directory"
+task "build:native" => :build do
+  require "rubygems/compiler"
+  compiler = Gem::Compiler.new("pkg/therubyracer-#{V8::VERSION}.gem", File.expand_path('../pkg', __FILE__))
+  compiler.compile
+end
+
 task :default => :spec
 

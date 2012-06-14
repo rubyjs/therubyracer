@@ -20,5 +20,6 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rake-compiler"
+  gem.add_development_dependency "gem-compiler"
   gem.add_development_dependency "rspec", "~> 2.0"
 end
