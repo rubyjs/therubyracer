@@ -3,10 +3,10 @@ require File.expand_path('../lib/v8/version', __FILE__)
 
 Gem::Specification.new do |gem|
   gem.authors       = ["Charles Lowell"]
-  gem.email         = ["cowboyd@thefrontside.net"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
-  gem.homepage      = ""
+  gem.email         = ["javascript-and-friends@googlegroups.com"]
+  gem.summary       = "Embed the V8 Javascript interpreter into Ruby"
+  gem.description   = "Call javascript code and manipulate javascript objects from ruby. Call ruby code and manipulate ruby objects from javascript."
+  gem.homepage      = "http://github.com/cowboyd/therubyracer"
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.files         = `git ls-files`.split("\n")
