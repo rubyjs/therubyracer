@@ -1,7 +1,7 @@
 class V8::Function < V8::Object
   def initialize(native = nil)
     super do
-      native || V8::C::Function::New()
+      native || V8::C::FunctionTemplate::New().GetFunction()
     end
   end
 
