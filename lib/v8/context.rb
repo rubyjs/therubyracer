@@ -1,3 +1,4 @@
+require 'stringio'
 module V8
   class Context
     attr_reader :native, :conversion, :access
