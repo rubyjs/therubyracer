@@ -27,7 +27,6 @@ class V8::Conversion
             args[i] = context.to_ruby arguments[i]
           end
         end
-        puts
         context.to_v8 proc.call(*args)
       rescue Exception => e
         warn "unhandled exception in ruby #{e.class}: #{e.message}"
