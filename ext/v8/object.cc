@@ -132,6 +132,9 @@ VALUE Object::SetAccessor(int argc, VALUE* argv, VALUE self) {
 }
 
 Object::operator VALUE() {
+  if (handle.IsEmpty()) {
+    return Qnil;
+  }
   VALUE value;
   Backref* backref;
   v8::Local<v8::String> key(v8::String::NewSymbol("rr::Backref"));

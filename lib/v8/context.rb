@@ -1,6 +1,7 @@
 require 'stringio'
 module V8
   class Context
+    include V8::Error::Try
     attr_reader :native, :conversion, :access
 
     def initialize(options = {})
@@ -91,22 +92,10 @@ module V8
         source = source.read
       end
       enter do
-        V8::C::TryCatch() do |trycatch|
-          source = V8::C::String::New(source.to_s)
-          filename = V8::C::String::New(filename.to_s)
-          script = V8::C::Script::New(source, filename)
-          result = script.Run()
-          if trycatch.HasCaught()
-            exception = trycatch.Exception()
-            if exception.IsNativeError()
-              raise to_ruby exception.Get("message")
-            else
-              raise to_ruby exception.ToString()
-            end
-          else
-            to_ruby result
-          end
-        end
+        source = V8::C::String::New(source.to_s)
+        filename = V8::C::String::New(filename.to_s)
+        script = try { V8::C::Script::New(source, filename) }
+        to_ruby try {script.Run()}
       end
     end
 

@@ -27,6 +27,15 @@ describe V8::C::Function do
     object.Get(V8::C::String::New('foo')).Utf8Value().should eql "bar"
   end
 
+  it "doesn't kill the world if invoking it throws a javascript exception" do
+    V8::C::TryCatch() do
+      fn = run '(function() { throw new Error("boom!")})'
+      fn.Call(@cxt.Global(), [])
+      fn.NewInstance([])
+    end
+  end
+
+
   def run(source)
     source = V8::C::String::New(source.to_s)
     filename = V8::C::String::New("<eval>")

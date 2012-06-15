@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'redjs/load_specs'
 module RedJS
   Context = V8::Context
-  #Error = V8::JSError
+  Error = V8::Error
 end
 describe V8::Context do
   pending "not ready for prime-time"

@@ -23,60 +23,64 @@ class V8::Conversion
     end
 
     class Get
+      extend V8::Error::Protect
       def self.call(property, info)
-        context = V8::Context.current
-        access = context.access
-        object = info.Data().Value()
-        name = property.Utf8Value()
-        dontintercept = proc do
-          return V8::C::Value::Empty
+        protect do
+          context = V8::Context.current
+          access = context.access
+          object = info.Data().Value()
+          name = property.Utf8Value()
+          dontintercept = proc do
+            return V8::C::Value::Empty
+          end
+          context.to_v8 access.get(object, name, &dontintercept)
         end
-        context.to_v8 access.get(object, name, &dontintercept)
-      rescue Exception => e
-        warn "uncaught exception: #{e.class}: #{e.message} while accessing object property: #{e.backtrace.join('\n')}"
       end
     end
 
     class Set
+      extend V8::Error::Protect
       def self.call(property, value, info)
-        context = V8::Context.current
-        access = context.access
-        object = info.Data().Value()
-        name = property.Utf8Value()
-        dontintercept = proc do
-          return V8::C::Value::Empty
+        protect do
+          context = V8::Context.current
+          access = context.access
+          object = info.Data().Value()
+          name = property.Utf8Value()
+          dontintercept = proc do
+            return V8::C::Value::Empty
+          end
+          access.set(object, name, context.to_ruby(value), &dontintercept)
         end
-        access.set(object, name, context.to_ruby(value), &dontintercept)
-      rescue Exception => e
-        warn "uncaught exception: #{e.class}: #{e.message} while accessing object property: #{e.backtrace.join('\n')}"
       end
     end
 
     class IGet
+      extend V8::Error::Protect
       def self.call(index, info)
-        context = V8::Context.current
-        access = context.access
-        object = info.Data().Value()
-        dontintercept = proc do
-          return V8::C::Value::Empty
+        protect do
+          context = V8::Context.current
+          access = context.access
+          object = info.Data().Value()
+          dontintercept = proc do
+            return V8::C::Value::Empty
+          end
+          context.to_v8 access.iget(object, index, &dontintercept)
         end
-        context.to_v8 access.iget(object, index, &dontintercept)
-      rescue Exception => e
-        warn "uncaught exception: #{e.class}: #{e.message} while accessing object property: #{e.backtrace.join('\n')}"
       end
     end
 
     class ISet
+      extend V8::Error::Protect
       def self.call(index, value, info)
-        context = V8::Context.current
-        access = context.access
-        object = info.Data().Value()
-        dontintercept = proc do
-          return V8::C::Value::Empty
+        protect do
+          context = V8::Context.current
+          access = context.access
+          object = info.Data().Value()
+          dontintercept = proc do
+            return V8::C::Value::Empty
+          end
+          access.iset(object, index, context.to_ruby(value), &dontintercept)
         end
-        access.iset(object, index, context.to_ruby(value), &dontintercept)
-      rescue Exception => e
-        warn "uncaught exception: #{e.class}: #{e.message} while accessing object property: #{e.backtrace.join('\n')}"
       end
     end
   end

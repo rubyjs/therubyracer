@@ -17,20 +17,20 @@ class V8::Conversion
     end
 
     class InvocationHandler
+      include V8::Error::Protect
       def call(arguments)
-        context = V8::Context.current
-        proc = arguments.Data().Value()
-        length_of_given_args = arguments.Length()
-        args = ::Array.new(proc.arity < 0 ? length_of_given_args : proc.arity)
-        0.upto(args.length - 1) do |i|
-          if i < length_of_given_args
-            args[i] = context.to_ruby arguments[i]
+        protect do
+          context = V8::Context.current
+          proc = arguments.Data().Value()
+          length_of_given_args = arguments.Length()
+          args = ::Array.new(proc.arity < 0 ? length_of_given_args : proc.arity)
+          0.upto(args.length - 1) do |i|
+            if i < length_of_given_args
+              args[i] = context.to_ruby arguments[i]
+            end
           end
+          context.to_v8 proc.call(*args)
         end
-        context.to_v8 proc.call(*args)
-      rescue Exception => e
-        warn "unhandled exception in ruby #{e.class}: #{e.message}"
-        nil
       end
     end
   end

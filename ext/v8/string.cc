@@ -32,4 +32,16 @@ VALUE String::Concat(VALUE self, VALUE left, VALUE right) {
   return String(v8::String::Concat(String(left), String(right)));
 }
 
+String::operator v8::Handle<v8::String>() const {
+  switch (TYPE(value)) {
+  case T_STRING:
+    return v8::String::New(RSTRING_PTR(value), (int)RSTRING_LEN(value));
+  case T_DATA:
+    return Ref<v8::String>::operator v8::Handle<v8::String>();
+  default:
+    VALUE string = rb_funcall(value, rb_intern("to_s"), 0);
+    return v8::String::New(RSTRING_PTR(string), (int)RSTRING_LEN(string));
+  }
+}
+
 } //namespace rr

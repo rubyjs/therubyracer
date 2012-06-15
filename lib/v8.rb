@@ -2,6 +2,9 @@ require "v8/version"
 
 require 'v8/init'
 require 'v8/util/weakcell'
+require 'v8/error'
+require 'v8/error/protect'
+require 'v8/error/try'
 require 'v8/conversion/fundamental'
 require 'v8/conversion/indentity'
 require 'v8/conversion/primitive'

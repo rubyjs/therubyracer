@@ -1,4 +1,5 @@
 class V8::Function < V8::Object
+  include V8::Error::Try
   def initialize(native = nil)
     super do
       native || V8::C::FunctionTemplate::New().GetFunction()
@@ -7,7 +8,7 @@ class V8::Function < V8::Object
 
   def methodcall(this, *args)
     @context.enter do
-      @context.to_ruby native.Call(@context.to_v8(this), args.map {|a| @context.to_v8 a})
+      @context.to_ruby try {native.Call(@context.to_v8(this), args.map {|a| @context.to_v8 a})}
     end
   end
 
@@ -19,7 +20,7 @@ class V8::Function < V8::Object
 
   def new(*args)
     @context.enter do
-      @context.to_ruby native.NewInstance(args.map {|a| @context.to_v8 a})
+      @context.to_ruby try {native.NewInstance(args.map {|a| @context.to_v8 a})}
     end
   end
 end

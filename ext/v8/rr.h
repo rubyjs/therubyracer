@@ -359,6 +359,7 @@ public:
 
   inline String(VALUE value) : Ref<v8::String>(value) {}
   inline String(v8::Handle<v8::String> string) : Ref<v8::String>(string) {}
+  virtual operator v8::Handle<v8::String>() const;
 };
 
 class PropertyAttribute: public Enum<v8::PropertyAttribute> {
@@ -761,6 +762,17 @@ public:
 
   inline ResourceConstraints(v8::ResourceConstraints* o) : Pointer<v8::ResourceConstraints>(o) {};
   inline ResourceConstraints(VALUE value) : Pointer<v8::ResourceConstraints>(value) {}
+};
+
+class Exception {
+public:
+  static void Init();
+  static VALUE ThrowException(VALUE self, VALUE exception);
+  static VALUE RangeError(VALUE self, VALUE message);
+  static VALUE ReferenceError(VALUE self, VALUE message);
+  static VALUE SyntaxError(VALUE self, VALUE message);
+  static VALUE TypeError(VALUE self, VALUE message);
+  static VALUE Error(VALUE self, VALUE message);
 };
 
 class Constants {

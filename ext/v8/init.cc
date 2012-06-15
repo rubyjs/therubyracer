@@ -30,6 +30,7 @@ extern "C" {
     Stack::Init();
     Message::Init();
     TryCatch::Init();
+    Exception::Init();
     Locker::Init();
     ResourceConstraints::Init();
     HeapStatistics::Init();
