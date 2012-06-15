@@ -1,8 +1,8 @@
 #ifndef _THE_RUBY_RACER_
 #define _THE_RUBY_RACER_ 
 
-#include <ruby.h>
 #include <v8.h>
+#include <ruby.h>
 
 #define rr_define_method(klass, name, impl, argc) rb_define_method(klass, name, (VALUE(*)(...))impl, argc)
 #define rr_define_singleton_method(object, name, impl, argc) rb_define_singleton_method(object, name, (VALUE(*)(...))impl, argc)
