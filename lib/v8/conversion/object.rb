@@ -3,8 +3,9 @@ class V8::Conversion
     include V8::Util::Weakcell
 
     def to_v8
-      object = to_v8_template.NewInstance()
-      V8::Context.link self, object
+      context = V8::Context.current
+      constructor = context.to_v8(self.class)
+      object = constructor.NewInstance([V8::C::External::New(self)])
       return object
     end
 
