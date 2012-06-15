@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "A Very blunt test to make sure that we aren't doing stupid leaks" do
+describe "A Very blunt test to make sure that we aren't doing stupid leaks", :memory => true do
   before do
     if Object.const_defined?(:RUBY_ENGINE) && RUBY_ENGINE == 'rbx'
       pending 'need to figure out how to do memory sanity checks on rbx'
