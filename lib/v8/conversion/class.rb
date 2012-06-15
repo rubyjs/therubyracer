@@ -26,13 +26,39 @@ class V8::Conversion
       end
 
       def call(arguments)
+        arguments.extend Args
         protect do
-          context = V8::Context.current
-          args = ::Array.new(arguments.Length())
-          0.upto(args.length - 1) do |i|
-            args[i] = context.to_ruby arguments[i]
+          if arguments.linkage_call?
+            arguments.link
+          else
+            arguments.construct @class
           end
-          context.to_v8 @class.new(*args)
+        end
+      end
+
+      module Args
+        def linkage_call?
+          self.Length() == 1 && self[0].IsExternal()
+        end
+
+        def link
+          context.link self[0].Value(), This()
+        end
+
+        def construct(cls)
+          context.link cls.new(*to_args), This()
+        end
+
+        def context
+          V8::Context.current
+        end
+
+        def to_args
+          args = ::Array.new(Length())
+          0.upto(args.length - 1) do |i|
+            args[i] = self[i]
+          end
+          return args
         end
       end
     end
@@ -42,7 +68,7 @@ class V8::Conversion
       def intercept(info, key, &block)
         context = V8::Context.current
         access = context.access
-        object = info.Data().Value()
+        object = context.to_ruby(info.This())
         handles_property = true
         dontintercept = proc do
           handles_property = false
