@@ -14,6 +14,9 @@ class V8::Conversion
         prototype = template.InstanceTemplate()
         prototype.SetNamedPropertyHandler(Get, Set)
         prototype.SetIndexedPropertyHandler(IGet, ISet)
+        if self != ::Object && superclass != ::Object && superclass != ::Class
+          template.Inherit(superclass.to_v8_template)
+        end
         template
       end
     end
