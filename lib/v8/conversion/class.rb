@@ -34,6 +34,7 @@ class V8::Conversion
             arguments.construct @class
           end
         end
+        return arguments.This()
       end
 
       module Args

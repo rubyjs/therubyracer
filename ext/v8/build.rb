@@ -1,5 +1,5 @@
 
-LIBV8_COMPATIBILITY = '~> 3.10.8'
+LIBV8_COMPATIBILITY = '~> 3.11.8'
 
 def have_rubygem_libv8?
   gem 'libv8', LIBV8_COMPATIBILITY

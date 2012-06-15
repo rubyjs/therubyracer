@@ -8,16 +8,11 @@ module V8
       @conversion = Conversion.new
       @access = Access.new
       if global = options[:with]
-        V8::C::Locker() do
-          V8::C::HandleScope() do
-            tmp = V8::C::Context::New()
-            tmp.Enter()
-            global_template = global.to_v8_template
-            tmp.Exit()
-            @native = V8::C::Context::New(nil, global_template)
-            enter { link global, @native.Global() }
-          end
+        Context.new.enter do
+          global_template = global.class.to_v8_template.InstanceTemplate()
+          @native = V8::C::Context::New(nil, global_template)
         end
+        enter {link global, @native.Global()}
       else
         @native = V8::C::Context::New()
       end
