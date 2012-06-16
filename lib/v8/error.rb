@@ -6,6 +6,7 @@ module V8
       @value = value
     end
   end
+  const_set :JSError, Error
 
   def self.Error(exception)
     value = exception.to_ruby
