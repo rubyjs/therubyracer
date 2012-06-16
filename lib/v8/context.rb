@@ -19,6 +19,29 @@ module V8
       yield self if block_given?
     end
 
+    def eval(source, filename = '<eval>', line = 1)
+      if IO === source || StringIO === source
+        source = source.read
+      end
+      enter do
+        script = try { V8::C::Script::New(source.to_s, filename.to_s) }
+        to_ruby try {script.Run()}
+      end
+    end
+
+    def [](key)
+      enter do
+        to_ruby(@native.Global().Get(to_v8(key)))
+      end
+    end
+
+    def []=(key, value)
+      enter do
+        @native.Global().Set(to_v8(key), to_v8(value))
+      end
+      return value
+    end
+
     def scope
       enter { to_ruby @native.Global() }
     end
@@ -79,31 +102,6 @@ module V8
     def load(filename)
       File.open(filename) do |file|
         self.eval file, filename
-      end
-    end
-
-    def eval(source, filename = '<eval>', line = 1)
-      if IO === source || StringIO === source
-        source = source.read
-      end
-      enter do
-        source = V8::C::String::New(source.to_s)
-        filename = V8::C::String::New(filename.to_s)
-        script = try { V8::C::Script::New(source, filename) }
-        to_ruby try {script.Run()}
-      end
-    end
-
-    def []=(key, value)
-      enter do
-        @native.Global().Set(to_v8(key), to_v8(value))
-      end
-      return value
-    end
-
-    def [](key)
-      enter do
-        to_ruby(@native.Global().Get(to_v8(key)))
       end
     end
   end
