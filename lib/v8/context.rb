@@ -9,7 +9,7 @@ module V8
       @access = Access.new
       if global = options[:with]
         Context.new.enter do
-          global_template = global.class.to_v8_template.InstanceTemplate()
+          global_template = global.class.to_template.InstanceTemplate()
           @native = V8::C::Context::New(nil, global_template)
         end
         enter {link global, @native.Global()}

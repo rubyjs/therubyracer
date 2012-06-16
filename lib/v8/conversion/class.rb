@@ -1,21 +1,15 @@
 class V8::Conversion
   module Class
-    include V8::Util::Weakcell
+    include V8::Conversion::Code
 
-    def to_v8
-      fn = to_v8_template.GetFunction()
-      V8::Context.current.link self, fn
-      return fn
-    end
-
-    def to_v8_template
-      weakcell(:v8_constructor) do
+    def to_template
+      weakcell(:constructor) do
         template = V8::C::FunctionTemplate::New(Constructor.new(self))
         prototype = template.InstanceTemplate()
         prototype.SetNamedPropertyHandler(Get, Set)
         prototype.SetIndexedPropertyHandler(IGet, ISet)
         if self != ::Object && superclass != ::Object && superclass != ::Class
-          template.Inherit(superclass.to_v8_template)
+          template.Inherit(superclass.to_template)
         end
         template
       end

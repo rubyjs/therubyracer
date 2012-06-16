@@ -1,11 +1,11 @@
 class V8::Conversion
   module Method
-    include V8::Conversion::Proc
+    include V8::Conversion::Code
 
     def to_v8
-      (@@method_cache[self] ||= to_v8_template).GetFunction()
+      template = @@method_cache[self] ||= to_template
+      template.GetFunction()
     end
-
 
     class MethodCache
       def initialize
