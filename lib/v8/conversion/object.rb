@@ -1,7 +1,5 @@
 class V8::Conversion
   module Object
-    include V8::Util::Weakcell
-
     def to_v8
       context = V8::Context.current
       constructor = context.to_v8(self.class)
