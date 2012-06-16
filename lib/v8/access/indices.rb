@@ -2,7 +2,7 @@ class V8::Access
   module Indices
 
     def indices(obj)
-      obj.respond_to?(:length) ? (0..obj.length).to_a : yield
+      obj.respond_to?(:length) ? (0..obj.length).to_a : []
     end
 
     def iget(obj, index, &dontintercept)
