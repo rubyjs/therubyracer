@@ -10,10 +10,6 @@ class V8::Conversion
     def to_ruby
       self
     end
-
-    def eval_js(source, filename = '<eval>')
-      V8::Context.new(:with => self).eval(source, filename)
-    end
   end
 
   module NativeObject
