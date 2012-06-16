@@ -1,14 +1,18 @@
 # Changelog
 
-## 0.x
+## 0.11
 
-* codebase completely re-written from scratch
-* upgrade to v8 3.11.8
-* remove dependency on gem version of libv8. enable compile against system v8
-* ease the building of binary versions of
-* more faithful coverage of the low-level API
-* re-writter memory management to remove MRI
-* support for rubinius
+* upgrade V8 version to 3.11.8
+* remove dependency on libv8. enable compilation against system v8
+* complete re-write of low-level C layer for dramatically increased stability and performance
+* more faithful and complete coverage of the low-level C API
+* ease the building of binary gems
+* official support for Rubinius
+* ability to query V8 for memory usage and set resource constraints
+* extensible conversion framework for thunking Ruby values to V8 and vice-versa
+* extensible invocation framework for calling Ruby code (Proc, Method, etc...) from JavaScript
+* extensible access framework for interacting with Ruby properties from JavaScript
+* provide explicit context teardown for distributed cycles of garbage.
 
 
 ## 0.10.1 2012/04/05
