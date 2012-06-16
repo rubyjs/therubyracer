@@ -1,44 +1,26 @@
-module V8
-  class Function < V8::Object
-
-    def methodcall(thisObject, *args)
-      err = nil
-      return_value = nil
-      @portal.open do |to|
-        C::TryCatch.try do |try|
-          this = to.v8(thisObject)
-          return_value = to.rb(@native.Call(this, to.v8(args)))
-          err = JSError.new(try, to) if try.HasCaught()
-        end
-      end
-      raise err if err
-      return return_value
+class V8::Function < V8::Object
+  include V8::Error::Try
+  def initialize(native = nil)
+    super do
+      native || V8::C::FunctionTemplate::New().GetFunction()
     end
+  end
 
-    def call(*args)
-      @portal.open do
-        self.methodcall(@portal.context.native.Global(), *args)
-      end
+  def methodcall(this, *args)
+    @context.enter do
+      @context.to_ruby try {native.Call(@context.to_v8(this), args.map {|a| @context.to_v8 a})}
     end
+  end
 
-    def new(*args)
-      @portal.open do |to|
-        to.rb(@native.NewInstance(to.v8(args)))
-      end
+  def call(*args)
+    @context.enter do
+      methodcall @context.native.Global(), *args
     end
+  end
 
-    def name
-      @portal.open do |to|
-        to.rb(@native.GetName())
-      end
-    end
-
-    def name=(name)
-      name.tap do
-        @portal.open do |to|
-          @native.SetName(to.v8(name))
-        end
-      end
+  def new(*args)
+    @context.enter do
+      @context.to_ruby try {native.NewInstance(args.map {|a| @context.to_v8 a})}
     end
   end
 end
