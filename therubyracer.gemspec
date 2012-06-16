@@ -15,9 +15,4 @@ Gem::Specification.new do |gem|
   gem.extensions    = ["ext/v8/extconf.rb"]
   gem.require_paths = ["lib", "ext"]
   gem.version       = V8::VERSION
-
-  gem.add_development_dependency "rake"
-  gem.add_development_dependency "rake-compiler"
-  gem.add_development_dependency "gem-compiler"
-  gem.add_development_dependency "rspec", "~> 2.0"
 end

@@ -1,7 +1,11 @@
 source 'http://rubygems.org'
 
-# Specify your gem's dependencies in therubyracer.gemspec
 gemspec
 
 gem 'redjs', :git => 'https://github.com/cowboyd/redjs.git'
 gem 'libv8', "~> 3.11.8"
+gem "rake"
+gem "rspec", "~> 2.0"
+gem "rake-compiler"
+gem 'gem-compiler' unless Object.const_defined?(:RUBY_ENGINE) && RUBY_ENGINE == 'rbx'
+
