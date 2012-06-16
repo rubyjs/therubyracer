@@ -9,7 +9,7 @@ class V8::Access
       methods = accessible_names(obj)
       if methods.include?(name)
         method = obj.method(name)
-        method.arity == 0 ? method.call : method
+        method.arity == 0 ? method.call : method.unbind
       elsif obj.respond_to?(:[]) && !special?(name)
         obj.send(:[], name, &dontintercept)
       else

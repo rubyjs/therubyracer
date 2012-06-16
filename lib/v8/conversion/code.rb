@@ -22,14 +22,15 @@ class V8::Conversion
       def call(arguments)
         protect do
           context = V8::Context.current
-          length_of_given_args = arguments.Length()
-          args = ::Array.new(@code.arity < 0 ? length_of_given_args : @code.arity)
+          access = context.access
+          args = ::Array.new(arguments.Length())
           0.upto(args.length - 1) do |i|
-            if i < length_of_given_args
+            if i < args.length
               args[i] = context.to_ruby arguments[i]
             end
           end
-          context.to_v8 @code.call(*args)
+          this = context.to_ruby arguments.This()
+          context.to_v8 access.methodcall(@code, this, args)
         end
       end
     end

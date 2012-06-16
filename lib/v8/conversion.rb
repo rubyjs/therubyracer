@@ -23,6 +23,9 @@ for type in [Class, Object, Array, Hash, String, Symbol, Time, Proc, Method] do
     include V8::Conversion.const_get(name)
   end
 end
+class UnboundMethod
+  include V8::Conversion::Method
+end
 
 for type in [:Object, :String, :Date] do
   V8::C::const_get(type).class_eval do
