@@ -2,7 +2,14 @@
 
 ## 0.x
 
-* include redjs http://github.com/cowboyd/redjs as gem
+* codebase completely re-written from scratch
+* upgrade to v8 3.11.8
+* remove dependency on gem version of libv8. enable compile against system v8
+* ease the building of binary versions of
+* more faithful coverage of the low-level API
+* re-writter memory management to remove MRI
+* support for rubinius
+
 
 ## 0.10.1 2012/04/05
 
