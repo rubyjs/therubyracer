@@ -12,13 +12,13 @@ class V8::Conversion
   end
 end
 
-for type in [TrueClass, FalseClass, NilClass, Numeric] do
+for type in [TrueClass, FalseClass, NilClass, Float, Fixnum] do
   type.class_eval do
     include V8::Conversion::Primitive
   end
 end
 
-for type in [Class, Object, Array, Hash, String, Symbol, Time, BigDecimal, Proc, Method] do
+for type in [Class, Object, Array, Hash, String, Symbol, Time, Proc, Method] do
   type.class_eval do
     include V8::Conversion.const_get(name)
   end

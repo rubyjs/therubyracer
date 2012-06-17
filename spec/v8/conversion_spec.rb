@@ -1,5 +1,5 @@
 require 'spec_helper'
-
+require 'bigdecimal'
 describe V8::Conversion do
   it "can embed BigDecimal values" do
     cxt = V8::Context.new
