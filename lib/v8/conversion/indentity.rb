@@ -28,9 +28,9 @@ class V8::Conversion
 
       def [](object)
         weakref = @map[to_key(object)]
-        if weakref && weakref.weakref_alive?
-          weakref.__getobj__
-        end
+        weakref.__getobj__ if weakref
+      rescue WeakRef::RefError
+        nil #peer was garbage collected, so no current mapping.
       end
 
       def equate(key_object, value_object)

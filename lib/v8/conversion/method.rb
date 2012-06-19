@@ -14,10 +14,11 @@ class V8::Conversion
 
       def [](method)
         weakref = @map[method.to_s]
-        if weakref && weakref.weakref_alive?
-          weakref.__getobj__
-        end
+        weakref.__getobj__ if weakref
+      rescue WeakRef::RefError
+        nil #template was garbage collected, so no mapping
       end
+
       def []=(method, template)
         @map[method.to_s] = WeakRef.new(template)
       end
