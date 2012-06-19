@@ -19,12 +19,13 @@ Embed the V8 Javascript interpreter into Ruby.
 
 ## SYNOPSIS
 
-    gem install therubyracer         ;: stable
-    gem install therubyracer --pre   ;: bleeding edge
+    gem install therubyracer
 
 then in your ruby code
 
     require 'v8'
+    # or if using bundler (as with Rails), add the following to your Gemfile
+    gem "therubyracer", :require => 'v8'
 
 evaluate some simple javascript
 
@@ -119,22 +120,36 @@ to allow whatever behavior you'd like
 
 More documentation can be found on the [github wiki](https://github.com/cowboyd/therubyracer/wiki)
 
-## REQUIREMENTS:
+## PREREQUISITES
 
-* python >= 2.5 (required to compile v8)
-* C++ compiler
+For platforms for which there is a binary version of therubyracer gem available, there are no
+dependencies other than ruby and rubygems.
 
-## Rails/Bundler
+If there is not a binary version for your system, then you will need to compile it from source.
+To do this, you must have v8 >= 3.11.8 installed somewhere on your system. There are several
+ways of doing this. For both you will need a C++ compiler.
 
-To use the ruby racer in rails, or any application using Bundler to manage gems, add the following to your Gemfile
+The first method involves using a version of the v8 source which is maintained
+[as a rubygem called libv8][1]. To use it, all you have to do is
+add the following to your Gemfile:
 
-    gem "therubyracer", :require => 'v8'
-    gem "therubyracer", "~> 0.8.2.pre" #bleeding edge.
+    gem 'libv8', '~> 3.11.8'
+
+This will download and build v8 from source for you as part of the gem installation
+process. When therubyracer is installed, it will find this gem if it is present and
+link against the v8 binaries contained therein.
+
+If you cannot, or do not wish to use the libv8 rubygem, then you can either install
+libv8 with you operating system's packaging system or you can [build it from source][2].
+If you build from source, be sure to set the library=shared option. Also, if you install
+this shared library into a place that is not on your standard lib and include paths, then
+you can pass your non-standard locations to therubyracer using the
+`--with-v8-include` and `--with-v8-lib` configuration options.
+
 
 ## DEVELOP
     git clone git://github.com/cowboyd/therubyracer.git
     cd therubyracer
-    git submodule update --init
     bundle install
     rake compile
 
@@ -145,7 +160,7 @@ To use the ruby racer in rails, or any application using Bundler to manage gems,
 
 (The MIT License)
 
-Copyright (c) 2009,2010,2011 Charles Lowell
+Copyright (c) 2009,2010,2011,2012 Charles Lowell
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -165,3 +180,6 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+[1]: https://github.com/cowboyd/libv8
+[2]: http://code.google.com/p/v8/wiki/BuildingWithGYP
