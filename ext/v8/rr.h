@@ -131,6 +131,11 @@ public:
       return v8::Handle<T>();
     }
   }
+  void dispose() {
+    Holder* holder = NULL;
+    Data_Get_Struct(this->value, class Holder, holder);
+    holder->dispose();
+  }
 
   inline v8::Handle<T> operator->() const { return *this;}
   inline v8::Handle<T> operator*() const {return *this;}
@@ -153,15 +158,23 @@ public:
     friend class Ref;
   public:
     Holder(v8::Handle<T> handle, VALUE klass) {
+      this->disposed_p = false;
       this->handle = v8::Persistent<T>::New(handle);
       this->value = Data_Wrap_Struct(klass, 0, &enqueue, this);
     }
     virtual ~Holder() {
-      handle.Dispose();
+      this->dispose();
+    }
+    void dispose() {
+      if (!this->disposed_p) {
+        handle.Dispose();
+        this->disposed_p = true;
+      }
     }
   protected:
     VALUE value;
     v8::Persistent<T> handle;
+    bool disposed_p;
 
     static void enqueue(Holder* holder) {
       holder->value = Qnil;
@@ -225,6 +238,7 @@ class Context : public Ref<v8::Context> {
 public:
   static void Init();
   static VALUE New(int argc, VALUE argv[], VALUE self);
+  static VALUE Dispose(VALUE self);
   static VALUE Enter(VALUE self);
   static VALUE Exit(VALUE self);
   static VALUE Global(VALUE self);
@@ -800,6 +814,19 @@ class V8 {
 public:
   static void Init();
   static VALUE IdleNotification(int argc, VALUE argv[], VALUE self);
+  static VALUE SetFlagsFromString(VALUE self, VALUE string);
+  static VALUE SetFlagsFromCommandLine(VALUE self, VALUE args, VALUE remove_flags);
+  static VALUE AdjustAmountOfExternalAllocatedMemory(VALUE self, VALUE change_in_bytes);
+  static VALUE PauseProfiler(VALUE self);
+  static VALUE ResumeProfiler(VALUE self);
+  static VALUE IsProfilerPaused(VALUE self);
+  static VALUE GetCurrentThreadId(VALUE self);
+  static VALUE TerminateExecution(VALUE self, VALUE thread_id);
+  static VALUE IsExecutionTerminating(VALUE self);
+  static VALUE Dispose(VALUE self);
+  static VALUE LowMemoryNotification(VALUE self);
+  static VALUE ContextDisposedNotification(VALUE self);
+
   static VALUE SetCaptureStackTraceForUncaughtExceptions(int argc, VALUE argv[], VALUE self);
   static VALUE GetHeapStatistics(VALUE self, VALUE statistics_ptr);
   static VALUE GetVersion(VALUE self);

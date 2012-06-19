@@ -9,6 +9,7 @@ void Context::Init() {
     defineSingletonMethod("GetEntered", &GetEntered).
     defineSingletonMethod("GetCalling", &GetCalling).
     defineSingletonMethod("InContext", &InContext).
+    defineMethod("Dispose", &Dispose).
     defineMethod("Global", &Global).
     defineMethod("DetachGlobal", &Global).
     defineMethod("ReattachGlobal", &ReattachGlobal).
@@ -26,6 +27,10 @@ void Context::Init() {
   ClassBuilder("ExtensionConfiguration").
     defineSingletonMethod("new", &ExtensionConfiguration::initialize).
     store(&ExtensionConfiguration::Class);
+}
+
+VALUE Context::Dispose(VALUE self) {
+  Void(Context(self).dispose())
 }
 
 VALUE Context::Global(VALUE self) {

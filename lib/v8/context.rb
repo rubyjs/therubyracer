@@ -42,6 +42,16 @@ module V8
       return value
     end
 
+    def dispose
+      return unless @native
+      @native.Dispose()
+      @native = nil
+      V8::C::V8::ContextDisposedNotification()
+      def self.enter
+        fail "cannot enter a context which has already been disposed"
+      end
+    end
+
     def scope
       enter { to_ruby @native.Global() }
     end

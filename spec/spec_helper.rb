@@ -1,6 +1,7 @@
 require 'v8'
 
 def run_v8_gc
+  V8::C::V8::LowMemoryNotification()
   while !V8::C::V8::IdleNotification() do
   end
 end
