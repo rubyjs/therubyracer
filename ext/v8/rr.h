@@ -12,6 +12,21 @@
 # define RARRAY_LENINT(v) (int)RARRAY_LEN(v)
 #endif /* ! defined(RARRAY_LENINT) */
 
+#if !defined(SIZET2NUM)
+#  if SIZEOF_SIZE_T == SIZEOF_LONG
+#    define SIZET2NUM(n) ULONG2NUM(n)
+#  else
+#    define SIZET2NUM(n) ULL2NUM(n)
+#  endif
+#endif /* ! defined(SIZET2NUM) */
+
+#if !defined(NUM2SIZET)
+#  if SIZEOF_SIZE_T == SIZEOF_LONG
+#    define NUM2SIZET(n) ((size_t)NUM2ULONG(n))
+#  else
+#    define NUM2SIZET(n) ((size_t)NUM2ULL(n))
+#  endif
+#endif /* ! defined(NUM2SIZET) */
 
 namespace rr {
 

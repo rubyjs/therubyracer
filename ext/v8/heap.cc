@@ -1,13 +1,5 @@
 #include "rr.h"
 
-#if !defined(SIZET2NUM)
-#  if SIZEOF_SIZE_T == SIZEOF_LONG
-#    define SIZET2NUM(n) ULONG2NUM(n)
-#  else
-#    define SIZET2NUM(n) ULL2NUM(n)
-#  endif
-#endif /* ! defined(SIZET2NUM) */
-
 namespace rr {
   void HeapStatistics::Init() {
     ClassBuilder("HeapStatistics").
