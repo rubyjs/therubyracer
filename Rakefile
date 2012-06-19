@@ -16,7 +16,7 @@ end
 
 require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new(:spec) do |task|
-  task.rspec_opts = '--tag ~memory'
+  task.rspec_opts = '--tag ~memory --tag ~threads'
 end
 
 task :sanity => [:clean, :compile] do
