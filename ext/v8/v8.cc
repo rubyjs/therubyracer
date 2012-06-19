@@ -17,6 +17,7 @@ void V8::Init() {
     defineSingletonMethod("LowMemoryNotification", &LowMemoryNotification).
     defineSingletonMethod("AdjustAmountOfExternalAllocatedMemory", &AdjustAmountOfExternalAllocatedMemory).
     defineSingletonMethod("ContextDisposedNotification", &ContextDisposedNotification).
+    defineSingletonMethod("SetCaptureStackTraceForUncaughtExceptions", &SetCaptureStackTraceForUncaughtExceptions).
     defineSingletonMethod("GetHeapStatistics", &GetHeapStatistics).
     defineSingletonMethod("GetVersion", &GetVersion);
 }
