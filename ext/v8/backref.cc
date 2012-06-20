@@ -4,27 +4,42 @@ namespace rr {
 
   VALUE Backref::Storage;
   ID Backref::_new;
-  ID Backref::access;
+  ID Backref::object;
 
   void Backref::Init() {
-    Storage = rb_eval_string("require 'v8/util/weakcell'; V8::Util::Weakcell::Storage");
+    Storage = rb_eval_string("Ref::WeakReference");
     rb_gc_register_address(&Storage);
     _new = rb_intern("new");
-    access = rb_intern("access");
+    object = rb_intern("object");
   }
 
-  Backref::Backref() {
-    this->storage = rb_funcall(Storage, _new, 0);
+  Backref::Backref(VALUE initial) {
+    allocate(initial);
+    this->storage = rb_funcall(Storage, _new, 1, initial);
     rb_gc_register_address(&storage);
   }
 
   Backref::~Backref() {
+    deallocate();
+  }
+
+  void Backref::allocate(VALUE data) {
+    this->storage = rb_funcall(Storage, _new, 1, data);
+    rb_gc_register_address(&storage);
+  }
+
+  void Backref::deallocate() {
     rb_gc_unregister_address(&storage);
   }
 
-  VALUE Backref::get(VALUE (*populate)(ANYARGS), VALUE data) {
-    VALUE args[0];
-    return rb_block_call(storage, access, 0, args, populate, data);
+  VALUE Backref::get() {
+    return rb_funcall(storage, object, 0);
+  }
+
+  VALUE Backref::set(VALUE data) {
+    deallocate();
+    allocate(data);
+    return data;
   }
 
   v8::Handle<v8::Value> Backref::toExternal() {

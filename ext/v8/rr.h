@@ -206,16 +206,19 @@ template <class T> VALUE Ref<T>::Class;
 class Backref {
 public:
   static void Init();
-  Backref();
+  Backref(VALUE value);
   virtual ~Backref();
-  VALUE get(VALUE (*populate)(ANYARGS), VALUE data);
+  VALUE get();
+  VALUE set(VALUE value);
   v8::Handle<v8::Value> toExternal();
   static void release(v8::Persistent<v8::Value> handle, void* data);
 private:
+  void allocate(VALUE data);
+  void deallocate();
   VALUE storage;
   static VALUE Storage;
   static ID _new;
-  static ID access;
+  static ID object;
 };
 class Handles {
 public:
