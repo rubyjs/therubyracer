@@ -9,18 +9,15 @@ class V8::Conversion
 
     class MethodCache
       def initialize
-        @map = {}
+        @map = Ref::WeakValueMap.new
       end
 
       def [](method)
-        weakref = @map[method.to_s]
-        weakref.__getobj__ if weakref
-      rescue WeakRef::RefError
-        nil #template was garbage collected, so no mapping
+        @map[method.to_s]
       end
 
       def []=(method, template)
-        @map[method.to_s] = WeakRef.new(template)
+        @map[method.to_s] = template
       end
     end
 

@@ -1,57 +1,30 @@
+require 'ref'
+
 class V8::Conversion
   module Identity
     def to_ruby(v8_object)
-      v8_idmap[v8_object] || super
+      if v8_object.class <= V8::C::Object
+        v8_idmap[v8_object.GetIdentityHash()] || super(v8_object)
+      else
+        super(v8_object)
+      end
     end
 
     def to_v8(ruby_object)
-      rb_idmap[ruby_object] || super
+      rb_idmap[ruby_object.object_id] || super(ruby_object)
     end
 
     def equate(ruby_object, v8_object)
-      v8_idmap.equate(v8_object, ruby_object)
-      rb_idmap.equate(ruby_object, v8_object)
+      v8_idmap[v8_object.GetIdentityHash()] = ruby_object
+      rb_idmap[ruby_object.object_id] = v8_object
     end
 
     def v8_idmap
-      @v8_idmap ||= V8IDMap.new
+      @v8_idmap ||= Ref::WeakValueMap.new
     end
 
     def rb_idmap
-      @ruby_idmap ||= RubyIDMap.new
-    end
-
-    class IDMap
-      def initialize
-        @map = {}
-      end
-
-      def [](object)
-        weakref = @map[to_key(object)]
-        weakref.__getobj__ if weakref
-      rescue WeakRef::RefError
-        nil #peer was garbage collected, so no current mapping.
-      end
-
-      def equate(key_object, value_object)
-        @map[to_key(key_object)] = WeakRef.new(value_object)
-      end
-    end
-
-    class RubyIDMap < IDMap
-      def to_key(object)
-        object.object_id
-      end
-    end
-
-    class V8IDMap < IDMap
-      def to_key(object)
-        object.GetIdentityHash()
-      end
-
-      def [](v8_object)
-        super if v8_object.is_a?(V8::C::Object)
-      end
+      @ruby_idmap ||= Ref::WeakValueMap.new
     end
   end
 end

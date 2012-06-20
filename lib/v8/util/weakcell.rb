@@ -1,4 +1,3 @@
-require 'weakref'
 module V8
   module Util
     module Weakcell
@@ -11,19 +10,17 @@ module V8
       class Storage
         def access(&block)
           if @ref
-            @ref.__getobj__
+            @ref.object || populate(block)
           else
             populate(block)
           end
-        rescue WeakRef::RefError
-          populate(block)
         end
 
         private
 
         def populate(block)
           occupant = block.call()
-          @ref = WeakRef.new(occupant)
+          @ref = Ref::WeakReference.new(occupant)
           return occupant
         end
       end
