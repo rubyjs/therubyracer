@@ -2,47 +2,32 @@
 
 namespace rr {
 
-  VALUE Backref::WeakRef;
+  VALUE Backref::Storage;
   ID Backref::_new;
-  ID Backref::__getobj__;
-  ID Backref::__setobj__;
-  ID Backref::__weakref_alive;
+  ID Backref::access;
 
   void Backref::Init() {
-    WeakRef = rb_eval_string("require 'weakref'; WeakRef");
-    rb_gc_register_address(&WeakRef);
+    Storage = rb_eval_string("require 'v8/util/weakcell'; V8::Util::Weakcell::Storage");
+    rb_gc_register_address(&Storage);
     _new = rb_intern("new");
-    __getobj__ = rb_intern("__getobj__");
-    __setobj__ = rb_intern("__setobj__");
-    __weakref_alive = rb_intern("weakref_alive?");
+    access = rb_intern("access");
   }
 
-  Backref::Backref(VALUE initial) {
-    this->ref = rb_funcall(WeakRef, _new, 1, initial);
-    rb_gc_register_address(&ref);
+  Backref::Backref() {
+    this->storage = rb_funcall(Storage, _new, 0);
+    rb_gc_register_address(&storage);
   }
 
   Backref::~Backref() {
-    rb_gc_unregister_address(&ref);
+    rb_gc_unregister_address(&storage);
   }
 
-  VALUE Backref::get() {
-    if (alive_p()) {
-      return rb_funcall(ref, __getobj__, 0);
-    } else {
-      return Qnil;
-    }
+  VALUE Backref::get(VALUE (*populate)(ANYARGS), VALUE data) {
+    VALUE args[0];
+    return rb_block_call(storage, access, 0, args, populate, data);
   }
 
-  void Backref::set(VALUE value) {
-    rb_funcall(ref, __setobj__, 1, value);
-  }
-
-  bool Backref::alive_p() {
-    return RTEST(rb_funcall(ref, __weakref_alive, 0));
-  }
-
-  v8::Handle<v8::Value> Backref::to_external() {
+  v8::Handle<v8::Value> Backref::toExternal() {
     v8::Local<v8::Value> wrapper = v8::External::Wrap(this);
     v8::Persistent<v8::Value>::New(wrapper).MakeWeak(this, &release);
     return wrapper;

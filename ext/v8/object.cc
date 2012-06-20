@@ -138,21 +138,24 @@ Object::operator VALUE() {
   VALUE value;
   Backref* backref;
   v8::Local<v8::String> key(v8::String::NewSymbol("rr::Backref"));
-  v8::Local<v8::Value> holder = handle->GetHiddenValue(key);
-  if (holder.IsEmpty()) {
-    value = downcast();
-    backref = new Backref(value);
-    handle->SetHiddenValue(key, backref->to_external());
+  v8::Local<v8::Value> external = handle->GetHiddenValue(key);
+  if (external.IsEmpty()) {
+    backref = new Backref();
+    handle->SetHiddenValue(key, backref->toExternal());
   } else {
-    backref = (Backref*)v8::External::Unwrap(holder);
-    if (backref->alive_p()) {
-      value = backref->get();
-    } else {
-      value = downcast();
-      backref->set(value);
-    }
+    backref = (Backref*)v8::External::Unwrap(external);
   }
+  return backref->get((VALUE (*)(...))&toVALUE, Data_Wrap_Struct(rb_cObject, 0, 0, this));
   return value;
+}
+
+VALUE Object::toVALUE(VALUE yield, VALUE wrapper) {
+  if (!RTEST(wrapper)) {
+    fprintf(stderr, "WTF?");
+  }
+  Object* object(NULL);
+  Data_Get_Struct(wrapper, class Object, object);
+  return object->downcast();
 }
 
 VALUE Object::downcast() {

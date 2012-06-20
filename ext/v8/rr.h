@@ -206,20 +206,16 @@ template <class T> VALUE Ref<T>::Class;
 class Backref {
 public:
   static void Init();
-  Backref(VALUE initial);
+  Backref();
   virtual ~Backref();
-  VALUE get();
-  void set(VALUE);
-  bool alive_p();
-  v8::Handle<v8::Value> to_external();
+  VALUE get(VALUE (*populate)(ANYARGS), VALUE data);
+  v8::Handle<v8::Value> toExternal();
   static void release(v8::Persistent<v8::Value> handle, void* data);
 private:
-  VALUE ref;
-  static VALUE WeakRef;
+  VALUE storage;
+  static VALUE Storage;
   static ID _new;
-  static ID __getobj__;
-  static ID __setobj__;
-  static ID __weakref_alive;
+  static ID access;
 };
 class Handles {
 public:
@@ -564,6 +560,7 @@ public:
   inline Object(VALUE value) : Ref<v8::Object>(value) {}
   inline Object(v8::Handle<v8::Object> object) : Ref<v8::Object>(object) {}
   virtual operator VALUE();
+  static VALUE toVALUE(VALUE yield, VALUE wrapper);
 
 protected:
   VALUE downcast();
