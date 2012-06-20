@@ -1,10 +1,56 @@
 require 'bundler/setup'
 require 'v8'
 require 'benchmark'
+require 'optparse'
 
-TIMES=10
-OBJECTS = (ARGV.first).to_i || 100
+OPTIONS = {
+  :times => 5,
+  :mode => :object,
+  :objects => 500
+}
 
+parser = OptionParser.new do |opts|
+  opts.on("-t", "--times [T]", Integer, "run benchmark N times") do |t|
+    OPTIONS[:times] = t
+  end
+
+  opts.on("-m", "--mode [MODE]", [:object, :function, :eval], "select the type of object access to stress test") do |mode|
+    mode = mode.to_sym
+    raise "unsupported mode #{mode}" unless [:object,:function,:eval].include?(mode)
+    OPTIONS[:mode] = mode
+  end
+
+  opts.on("-o", "--objects [N]", Integer, "create N objects for each iteration") do |n|
+    OPTIONS[:objects] = n
+  end
+  opts
+end
+
+parser.parse! ARGV
+
+MODE = OPTIONS[:mode]
+TIMES = OPTIONS[:times]
+OBJECTS = OPTIONS[:objects]
+
+puts "using #{OPTIONS[:mode]}"
+if MODE==:object
+    def get(i)
+      @cxt["test"]["objects"][i]
+    end
+elsif  MODE==:function
+    def get(i)
+      test = @cxt['test']
+      unless test
+        $stderr.puts "wtf? #{test.inspect} -> #{@cxt.eval('test')}"
+        $stderr.puts "wff2? #{test.inspect} -> #{@cxt['test']}"
+      end
+      @cxt["test"].getObject(i)
+    end
+elsif  MODE==:eval
+    def get(i)
+      @cxt.eval "test.getObject(#{i})"
+    end
+end
 
 js= <<JS
 
@@ -82,7 +128,7 @@ function createTest()
                 }
             }
         }
-        return summ == -test.summ;
+        return summ ;
     };
 
     test.getObject = function(index)
@@ -103,15 +149,15 @@ JS
 
 
 
+
+
 def profile
- # RubyProf.profile  do
  Benchmark.realtime do
     yield
    end
 end
 
 def get_res result
-  #result.threads[0].top_method.total_time
   result.to_f
 end
 
@@ -119,9 +165,9 @@ end
 
 
 
-#RubyProf.measure_mode = RubyProf::CPU_TIME
 puts "init js context..."
 cxt = V8::Context.new
+@cxt=cxt
 cxt.eval(js)
 
 cxt.eval('var test = createTest()')
@@ -134,53 +180,43 @@ result =profile do
 end
 
 puts "init time: #{get_res(result) / TIMES} sec."
-
+sum1=sum2=0
 puts "run findSum test"
-cxt['test'].init()
+
 result =profile do
   TIMES.times do
-     cxt['test'].findSum
+      sum1= cxt['test'].findSum
   end
 end
 
 puts "findSum time: #{get_res(result) / TIMES} sec."
 
 
-puts "run Objects iversion in ruby test"
-
-cxt['test'].init()
+puts "run Objects inversion in ruby test"
 result =profile do
   TIMES.times do |j|
     puts j
     for i in 0..(OBJECTS-1) do
-
-      obj = cxt["test"]["objects"][i]
-      begin
+      obj = get(i)
       obj.each do |key, value|
         if value.instance_of? Float
-          value = value * (-1)
+          obj[key] = value * (-1)
         end
       end
-
-      cxt["test"]["objects"][i] = obj
-      rescue
-        puts "ex!"
-      end
-
     end
-
   end
 end
 
 puts "Objects time: #{get_res(result) / TIMES} sec."
 
 puts "run finalCheck test"
-cxt['test'].init()
+
 
 result =profile do
   TIMES.times do
-    cxt['test'].finalCheck
+    sum2= cxt['test'].findSum
   end
 end
 
 puts "final check time: #{get_res(result) / TIMES} sec."
+puts "#{sum1==sum2*(TIMES%2==0?1:-1) ? 'TEST PASS': 'TEST FAIL'}:  Sum before inversions: #{sum1} / Sum after inversions: #{sum2}"
