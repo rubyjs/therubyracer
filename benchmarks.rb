@@ -1,8 +1,9 @@
-require "v8"
-require "Benchmark"
+require 'bundler/setup'
+require 'v8'
+require 'benchmark'
 
 TIMES=10
-OBJECTS=100
+OBJECTS = (ARGV.first).to_i || 100
 
 
 js= <<JS
