@@ -2,9 +2,12 @@
 LIBV8_COMPATIBILITY = '~> 3.11.8'
 
 def have_rubygem_libv8?
+  require 'rubygems'
   gem 'libv8', LIBV8_COMPATIBILITY
   return true
 rescue Gem::LoadError
+  return false
+rescue LoadError
   return false
 end
 
