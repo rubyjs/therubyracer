@@ -40,7 +40,9 @@ class V8::Conversion
         end
 
         def link
-          context.link self[0].Value(), This()
+          external = self[0]
+          This().SetHiddenValue("rr::implementation", external)
+          context.link external.Value(), This()
         end
 
         def construct(cls)
