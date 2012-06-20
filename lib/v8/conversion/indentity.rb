@@ -11,6 +11,7 @@ class V8::Conversion
     end
 
     def to_v8(ruby_object)
+      return super(ruby_object) if ruby_object.is_a?(String) || ruby_object.is_a?(Primitive)
       rb_idmap[ruby_object.object_id] || super(ruby_object)
     end
 

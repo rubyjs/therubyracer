@@ -39,11 +39,6 @@ if MODE==:object
     end
 elsif  MODE==:function
     def get(i)
-      test = @cxt['test']
-      unless test
-        $stderr.puts "wtf? #{test.inspect} -> #{@cxt.eval('test')}"
-        $stderr.puts "wff2? #{test.inspect} -> #{@cxt['test']}"
-      end
       @cxt["test"].getObject(i)
     end
 elsif  MODE==:eval
