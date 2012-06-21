@@ -134,6 +134,7 @@ public:
   Ref(v8::Handle<T> handle, const char* label = "v8::Handle<void>") {
     this->handle = handle;
   }
+  virtual ~Ref() {}
   virtual operator VALUE() const {
     return handle.IsEmpty() ? Qnil : (new Holder(handle, Class))->value;
   }
