@@ -27,15 +27,16 @@ module V8
   class Context
     include V8::Error::Try
 
-    # defines conversion behavior for this context
-    # @see V8::Conversion
+    # @!attribute [r] conversion
+    #   @return [V8::Conversion] conversion behavior for this context
     attr_reader :conversion
 
-    # defines access to Ruby objects for this context
-    # @see V8::Access
+    # @!attrribute [r] access
+    #   @return [V8::Access] Ruby access behavior for this context
     attr_reader :access
 
-    # a reference to the underlying C++ object
+    # @!attribute [r] native
+    #   @return [V8::C::Context] the underlying C++ object
     attr_reader :native
 
     # Creates a new context.
@@ -49,8 +50,9 @@ module V8
     #       cxt['hello'] #=> 'Hi'
     #     end
     #
-    # @param Hash options initial context configuration
-    #  * :with => Object scope serves as the global scope of the new context
+    # @param [Hash<Symbol, Object>] options initial context configuration
+    #  * :with scope serves as the global scope of the new context
+    # @yield [V8::Context] the newly created context
     def initialize(options = {})
       @conversion = Conversion.new
       @access = Access.new
@@ -70,10 +72,10 @@ module V8
     #
     # If `source` is an IO object it will be read fully before being evaluated
     #
-    # @param Object source the source code to compile and execute
-    # @param String filename the name to use for this code when generating stack traces
-    # @param Integer line the line number to start with
-    # @return Object the result of the evaluation
+    # @param [String,IO] source the source code to compile and execute
+    # @param [String] filename the name to use for this code when generating stack traces
+    # @param [Integer] line the line number to start with
+    # @return [Object] the result of the evaluation
     def eval(source, filename = '<eval>', line = 1)
       if IO === source || StringIO === source
         source = source.read
@@ -86,8 +88,8 @@ module V8
 
     # Read a value from the global scope of this context
     #
-    # @param Object key the name of the value to read
-    # @return Object value the value at `key`
+    # @param [Object] key the name of the value to read
+    # @return [Object] value the value at `key`
     def [](key)
       enter do
         to_ruby(@native.Global().Get(to_v8(key)))
@@ -96,8 +98,8 @@ module V8
 
     # Binds `value` to the name `key` in the global scope of this context.
     #
-    # @param key the name to bind to
-    # @param value the value to bind
+    # @param [Object] key the name to bind to
+    # @param [Object] value the value to bind
     def []=(key, value)
       enter do
         @native.Global().Set(to_v8(key), to_v8(value))
@@ -124,7 +126,7 @@ module V8
     # if no scope was provided or just an `Object` if a Ruby object
     # is serving as the global scope.
     #
-    # @return Object scope the context's global scope.
+    # @return [Object] scope the context's global scope.
     def scope
       enter { to_ruby @native.Global() }
     end
@@ -133,8 +135,8 @@ module V8
     # is used to translate all values passed to Ruby from JavaScript, either
     # as return values or as callback parameters.
     #
-    # @param V8::C::Object v8_object the native c++ object to convert.
-    # @return Object to pass to Ruby
+    # @param [V8::C::Object] v8_object the native c++ object to convert.
+    # @return [Object] to pass to Ruby
     # @see V8::Conversion for how to customize and extend this mechanism
     def to_ruby(v8_object)
       @conversion.to_ruby(v8_object)
@@ -144,8 +146,8 @@ module V8
     # used to translate all values passed to JavaScript from Ruby, either
     # as return value or as callback parameters.
     #
-    # @param Object ruby_object the Ruby object to convert
-    # @return V8::C::Object to pass to V8
+    # @param [Object] ruby_object the Ruby object to convert
+    # @return [V8::C::Object] to pass to V8
     # @see V8::Conversion for customizing and extending this mechanism
     def to_v8(ruby_object)
       @conversion.to_v8(ruby_object)
@@ -158,8 +160,8 @@ module V8
     # The Ruby Racer uses this mechanism to maintain referential integrity
     # between Ruby and JavaScript peers
     #
-    # @param Object ruby_object the Ruby half of the object identity
-    # @param V8::C::Object v8_object the V8 half of the object identity.
+    # @param [Object] ruby_object the Ruby half of the object identity
+    # @param [V8::C::Object] v8_object the V8 half of the object identity.
     # @see V8::Conversion::Identity
     def link(ruby_object, v8_object)
       @conversion.equate ruby_object, v8_object
@@ -168,8 +170,8 @@ module V8
     # Links `ruby_object` and `v8_object` inside the currently entered
     # context. This is an error if no context has been entered.
     #
-    # @param Object ruby_object the Ruby half of the object identity
-    # @param V8::C::Object v8_object the V8 half of the object identity.
+    # @param [Object] ruby_object the Ruby half of the object identity
+    # @param [V8::C::Object] v8_object the V8 half of the object identity.
     def self.link(ruby_object, v8_object)
       current.link ruby_object, v8_object
     end
@@ -181,7 +183,7 @@ module V8
     #
     # Only one context may be running at a time per thread.
     #
-    # @return Object the result of executing `block`
+    # @return [Object] the result of executing `block`
     def enter(&block)
       if !entered?
         lock_scope_and_enter(&block)
@@ -199,7 +201,7 @@ module V8
 
     # Get the currently entered context.
     #
-    # @return V8::Context currently entered context, nil if none entered.
+    # @return [V8::Context] currently entered context, nil if none entered.
     def self.current
       Thread.current[:v8_context]
     end
@@ -207,8 +209,8 @@ module V8
     # Compile and execute the contents of the file with path `filename`
     # as JavaScript code.
     #
-    # @param String filename path to the file to execute.
-    # @return Object the result of the evaluation.
+    # @param [String] filename path to the file to execute.
+    # @return [Object] the result of the evaluation.
     def load(filename)
       File.open(filename) do |file|
         self.eval file, filename
