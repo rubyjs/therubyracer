@@ -22,6 +22,20 @@ class V8::Object
     return value
   end
 
+  def keys
+    @context.enter do
+      names = @native.GetPropertyNames()
+      0.upto( names.Length() - 1).to_enum.map {|i| @context.to_ruby names.Get(i)}
+    end
+  end
+
+  def values
+    @context.enter do
+      names = @native.GetPropertyNames()
+      0.upto( names.Length() - 1).to_enum.map {|i| @context.to_ruby @native.Get(names.Get(i))}
+    end
+  end
+
   def each
     @context.enter do
       names = @native.GetPropertyNames()
