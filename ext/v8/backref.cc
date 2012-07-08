@@ -15,8 +15,6 @@ namespace rr {
 
   Backref::Backref(VALUE initial) {
     allocate(initial);
-    this->storage = rb_funcall(Storage, _new, 1, initial);
-    rb_gc_register_address(&storage);
   }
 
   Backref::~Backref() {
