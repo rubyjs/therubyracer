@@ -1,3 +1,4 @@
+require File.expand_path('../../../lib/v8/helper', __FILE__)
 
 LIBV8_COMPATIBILITY = '~> 3.11.8'
 

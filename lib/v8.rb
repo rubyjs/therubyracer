@@ -1,4 +1,9 @@
 require "v8/version"
+require "v8/helper"
+
+if V8::mingw?
+  ENV['PATH'] += File::PATH_SEPARATOR + File.expand_path('../../vendor', __FILE__)
+end
 
 require 'ref'
 require 'v8/init'
