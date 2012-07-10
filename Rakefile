@@ -19,6 +19,8 @@ Rake::ExtensionTask.new("init", GEMSPEC) do |ext|
   ext.ext_dir = "ext/v8"
   ext.lib_dir = "lib/v8"
   ext.source_pattern = "*.{cc,h}"
+  ext.cross_compile = true
+  ext.cross_platform = 'i386-mingw32'
 end
 
 if V8::mingw?

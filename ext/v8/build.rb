@@ -14,8 +14,17 @@ rescue LoadError
 end
 
 def build_with_system_libv8
-  dir_config('v8')
-  find_header('v8.h') or begin
+  if V8::mingw?
+    v8_path = V8::v8_path
+    if v8_path
+      find_library('v8', nil, v8_path)
+      find_header('v8.h', "#{v8_path}/include")
+    end
+  else
+    dir_config('v8')
+    $LDFLAGS << " -lv8 " #find_library('v8', nil)
+    find_header('v8.h') 
+  end or begin
     puts <<-EOS
     The Ruby Racer requires libv8 #{LIBV8_COMPATIBILITY}
     to be present on your system in order to compile
@@ -42,7 +51,7 @@ def build_with_system_libv8
     EOS
     raise "unable to locate libv8. Please see output for details"
   end
-  $LDFLAGS << " -lv8 "
+
 end
 
 def build_with_rubygem_libv8

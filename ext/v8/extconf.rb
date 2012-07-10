@@ -1,6 +1,7 @@
 require 'mkmf'
 require File.expand_path '../build', __FILE__
 
+have_library('winmm') if V8::mingw?
 have_library('pthread')
 have_library('objc') if V8::darwin?
 $CPPFLAGS += " -Wall" unless $CPPFLAGS.split.include? "-Wall"
