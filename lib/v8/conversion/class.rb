@@ -4,17 +4,19 @@ class V8::Conversion
 
     def to_template
       weakcell(:constructor) do
-        template = V8::C::FunctionTemplate::New(Constructor.new(self))
+        template = V8::C::FunctionTemplate::New(V8::Conversion::ClassActions::Constructor.new(self))
         prototype = template.InstanceTemplate()
-        prototype.SetNamedPropertyHandler(Get, Set)
-        prototype.SetIndexedPropertyHandler(IGet, ISet)
+        prototype.SetNamedPropertyHandler(V8::Conversion::ClassActions::Get, V8::Conversion::ClassActions::Set)
+        prototype.SetIndexedPropertyHandler(V8::Conversion::ClassActions::IGet, V8::Conversion::ClassActions::ISet)
         if self != ::Object && superclass != ::Object && superclass != ::Class
           template.Inherit(superclass.to_template)
         end
         template
       end
     end
+  end
 
+  module ClassActions
     class Constructor
       include V8::Error::Protect
 
@@ -115,6 +117,5 @@ class V8::Conversion
         end
       end
     end
-
   end
 end
