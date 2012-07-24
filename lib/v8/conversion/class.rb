@@ -13,7 +13,7 @@ class V8::Conversion
         end
         template
       end
-      end
+    end
   end
 
   class Constructor
