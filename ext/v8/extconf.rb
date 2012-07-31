@@ -13,7 +13,9 @@ if CONFIG['warnflags']
   CONFIG['warnflags'].gsub!('-Wdeclaration-after-statement', '')
   CONFIG['warnflags'].gsub!('-Wimplicit-function-declaration', '')
 end
-
+if enable_config('debug')
+  $CFLAGS += " -O0 -ggdb3"
+end
 if have_rubygem_libv8?
   build_with_rubygem_libv8
 else
