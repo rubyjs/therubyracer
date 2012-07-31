@@ -31,7 +31,7 @@ namespace rr {
     this->deleter = unwrap(wrapper, 3);
     this->enumerator = unwrap(wrapper, 4);
     v8::Handle<v8::Value> data = wrapper->Get(5);
-    if (!data.IsEmpty()) {
+    if (!data.IsEmpty() && !data->IsNull() && !data->IsUndefined()) {
       this->data = Value(data);
     }
   }
@@ -57,7 +57,7 @@ namespace rr {
 
   VALUE Accessor::unwrap(v8::Handle<v8::Object> wrapper, int index) {
     v8::Handle<v8::Value> value = wrapper->Get(index);
-    if (value.IsEmpty()) {
+    if (value.IsEmpty() || !value->IsExternal()) {
       return Qnil;
     } else {
       v8::Handle<v8::External> external(v8::External::Cast(*value));
