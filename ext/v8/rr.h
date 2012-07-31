@@ -726,9 +726,8 @@ public:
 class TryCatch {
 public:
   static void Init();
-  TryCatch();
+  TryCatch(v8::TryCatch*);
   TryCatch(VALUE value);
-  ~TryCatch();
   operator VALUE();
   inline v8::TryCatch* operator->() {return this->impl;}
   static VALUE HasCaught(VALUE self);
@@ -746,7 +745,6 @@ private:
   static VALUE doCall(VALUE code);
   static VALUE Class;
   v8::TryCatch* impl;
-  bool allocated;
 };
 
 class Locker {

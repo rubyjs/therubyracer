@@ -20,15 +20,13 @@ namespace rr {
     rb_define_singleton_method(c, "TryCatch", (VALUE (*)(...))&doTryCatch, -1);
   }
 
-  TryCatch::TryCatch() : impl(new v8::TryCatch()), allocated(true) {}
-  TryCatch::TryCatch(VALUE value) : allocated(false) {
+  TryCatch::TryCatch(v8::TryCatch* impl) {
+    this->impl = impl;
+  }
+  TryCatch::TryCatch(VALUE value) {
     Data_Get_Struct(value, class v8::TryCatch, impl);
   }
-  TryCatch::~TryCatch() {
-    if (this->allocated) {
-      delete this->impl;
-    }
-  }
+
   TryCatch::operator VALUE() {
     return Data_Wrap_Struct(Class, 0, 0, impl);
   }
@@ -80,7 +78,7 @@ namespace rr {
   }
 
   VALUE TryCatch::doCall(VALUE code) {
-    TryCatch trycatch;
-    return rb_funcall(code, rb_intern("call"), 1, (VALUE)trycatch);
+    v8::TryCatch trycatch;
+    return rb_funcall(code, rb_intern("call"), 1, (VALUE)TryCatch(&trycatch));
   }
 }
