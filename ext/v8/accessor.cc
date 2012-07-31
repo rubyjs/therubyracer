@@ -12,7 +12,7 @@ namespace rr {
       store(&Info::Class);
   }
 
-  Accessor::Accessor(VALUE getter, VALUE setter, VALUE data_) : get(getter), set(setter), data(data_) {}
+  Accessor::Accessor(VALUE getter, VALUE setter, VALUE data_) : get(getter), set(setter), query(Qnil), deleter(Qnil), enumerator(Qnil), data(data_) {}
 
   Accessor::Accessor(VALUE get, VALUE set, VALUE query, VALUE deleter, VALUE enumerator, VALUE data) {
     this->get = get;
