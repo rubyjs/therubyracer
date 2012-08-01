@@ -14,7 +14,7 @@ describe V8::Error do
         raise error
       end
       lambda {
-        cxt.eval('three()')
+        cxt.eval('one()')
       }.should raise_error {|e| e.should be error}
     end
   end

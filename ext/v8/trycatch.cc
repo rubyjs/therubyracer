@@ -74,11 +74,14 @@ namespace rr {
   }
 
   VALUE TryCatch::setupAndCall(int* state, VALUE code) {
-    return rb_protect(&doCall, code, state);
+    v8::TryCatch trycatch;
+    rb_iv_set(code, "_v8_trycatch", TryCatch(&trycatch));
+    VALUE result = rb_protect(&doCall, code, state);
+    rb_iv_set(code, "_v8_trycatch", Qnil);
+    return result;
   }
 
   VALUE TryCatch::doCall(VALUE code) {
-    v8::TryCatch trycatch;
-    return rb_funcall(code, rb_intern("call"), 1, (VALUE)TryCatch(&trycatch));
+    return rb_funcall(code, rb_intern("call"), 1, rb_iv_get(code, "_v8_trycatch"));
   }
 }
