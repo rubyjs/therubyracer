@@ -5,8 +5,41 @@ module V8
       super(message)
       @value = value
     end
+
+    module Try
+      def try
+        context = V8::Context.current
+        V8::C::TryCatch() do |trycatch|
+          result = yield
+          if trycatch.HasCaught()
+            V8::Error(trycatch.Exception())
+          else
+            result
+          end
+        end
+      end
+    end
+
+    module Protect
+      def protect
+        yield
+      rescue Football => e
+        e.kickoff!
+      rescue Exception => e
+        e.extend Football
+        e.kickoff!
+      end
+    end
+
+    module Football
+      def kickoff!
+        error = V8::C::Exception::Error(message)
+        error.SetHiddenValue("rr::Football", V8::C::External::New(self))
+        V8::C::ThrowException(error)
+      end
+    end
+
   end
-  const_set :JSError, Error
 
   def self.Error(exception)
     value = exception.to_ruby
@@ -22,4 +55,5 @@ module V8
       raise V8::Error.new(exception.ToString().to_ruby, value)
     end
   end
+  const_set :JSError, Error
 end
