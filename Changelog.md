@@ -25,23 +25,23 @@
 * add sponsorship image to the README
 * enable Travis CI
 
-## 0.9.9 2012/11/08
+## 0.9.9 2011/11/08
 
 * remove GCC specific C++ extension to fix llvm build.
 
-## 0.9.8 2012/11/07
+## 0.9.8 2011/11/07
 
 * let Rake version float again.
 
-## 0.9.7 2012/10/06
+## 0.9.7 2011/10/06
 * build fixes
 * fix rake dependency at 0.8.7 while the Rake team sorts some shit out.
 
-## 0.9.6 2012/10/06
+## 0.9.6 2011/10/06
 
 * make build compatible with Gentoo
 
-## 0.9.5 - 2012/10/05
+## 0.9.5 - 2011/10/05
 
 * remove GCC specific code to enable build on BSD
 * let Rake dependency float
