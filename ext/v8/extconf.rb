@@ -1,9 +1,10 @@
 require 'mkmf'
 require 'set'
 begin
-  require 'libv8'
-rescue LoadError
   require 'rubygems'
+  gem 'libv8', '~> 3.3.10'
+  require 'libv8'
+rescue LoadError, Gem::LoadError
   require 'libv8'
 end
 
