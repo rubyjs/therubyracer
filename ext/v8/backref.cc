@@ -7,7 +7,7 @@ namespace rr {
   ID Backref::object;
 
   void Backref::Init() {
-    Storage = rb_eval_string("Ref::WeakReference");
+    Storage = rb_eval_string("V8::Weak::Ref");
     rb_gc_register_address(&Storage);
     _new = rb_intern("new");
     object = rb_intern("object");

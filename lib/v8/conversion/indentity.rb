@@ -21,11 +21,11 @@ class V8::Conversion
     end
 
     def v8_idmap
-      @v8_idmap ||= Ref::WeakValueMap.new
+      @v8_idmap ||= V8::Weak::WeakValueMap.new
     end
 
     def rb_idmap
-      @ruby_idmap ||= Ref::WeakValueMap.new
+      @ruby_idmap ||= V8::Weak::WeakValueMap.new
     end
   end
 end

@@ -1,6 +1,6 @@
 class V8::Conversion
   module Code
-    include V8::Util::Weakcell
+    include V8::Weak::Cell
 
     def to_v8
       fn = to_template.GetFunction()

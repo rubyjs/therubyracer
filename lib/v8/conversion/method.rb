@@ -9,7 +9,7 @@ class V8::Conversion
 
     class MethodCache
       def initialize
-        @map = Ref::WeakValueMap.new
+        @map = V8::Weak::WeakValueMap.new
       end
 
       def [](method)
