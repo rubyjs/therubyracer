@@ -17,6 +17,8 @@ module V8
     # @return the complete JavaScript stack at the point this error was thrown
     attr_reader :javascript_backtrace
 
+    # keep an alias to the StandardError#backtrace method so that we can capture
+    # just ruby backtrace frames
     alias_method :standard_error_backtrace, :backtrace
 
     def initialize(message, value, javascript_backtrace, cause = nil)
@@ -42,7 +44,7 @@ module V8
       trace_ruby = modifiers.length == 0 || modifiers.include?(:ruby)
       trace_javascript = modifiers.length == 0 || modifiers.include?(:javascript)
       bilingual_backtrace(trace_ruby, trace_javascript).tap do |trace|
-        trace.reject! {|frame| frame =~  %r{lib/v8/.*\.rb}} unless modifiers.include?(:framework)
+        trace.reject! {|frame| frame =~  %r{(lib/v8/.*\.rb|ext/v8/.*\.cc)}} unless modifiers.include?(:framework)
       end
     end
 
