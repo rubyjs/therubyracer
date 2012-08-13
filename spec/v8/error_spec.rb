@@ -39,16 +39,14 @@ describe V8::Error do
   end
 
   it "has a reference to the root javascript cause" do
-    pending
     throw!('"I am a String"') do |e|
       e.should_not be_in_ruby
       e.should be_in_javascript
-      e.value.should == "I am a String"
+      e.value['message'].should == "I am a String"
     end
   end
 
   it "has a reference to the root ruby cause if one exists" do
-    pending
     StandardError.new("BOOM!").tap do |bomb|
       @cxt['boom'] = lambda do
         raise bomb
@@ -58,7 +56,7 @@ describe V8::Error do
       }.should(raise_error do |raised|
         raised.should be_in_ruby
         raised.should_not be_in_javascript
-        raised.value.should be(bomb)
+        raised.root_cause.should be(bomb)
       end)
     end
   end
