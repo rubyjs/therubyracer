@@ -13,8 +13,8 @@ module V8
     # @return [Exception] the underlying error (if any) that triggered this error to be raised
     attr_reader :cause
 
-    # @!attribute [V8::StackTrace] javascript_backtrace
-    # @return the complete JavaScript stack at the point this error was thrown
+    # @!attribute [r] javascript_backtrace
+    # @return [V8::StackTrace] the complete JavaScript stack at the point this error was thrown
     attr_reader :javascript_backtrace
 
     # keep an alias to the StandardError#backtrace method so that we can capture
