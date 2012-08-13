@@ -5,17 +5,22 @@ module V8
     include Enumerable
 
     def initialize(native)
+      @context = V8::Context.current
       @native = native
     end
 
     def length
-      @native ? @native.GetFrameCount() : 0
+      @context.enter do
+        @native ? @native.GetFrameCount() : 0
+      end
     end
 
     def each
       return unless @native
-      for i in 0..length - 1
-        yield V8::StackFrame.new(@native.GetFrame(i))
+      @context.enter do
+        for i in 0..length - 1
+          yield V8::StackFrame.new(@native.GetFrame(i), @context)
+        end
       end
     end
 
@@ -26,40 +31,54 @@ module V8
 
   class StackFrame
 
-    def initialize(native)
-      @context = V8::Context.current
+    def initialize(native, context)
+      @context = context
       @native = native
     end
 
     def script_name
-      @context.to_ruby(@native.GetScriptName())
+      @context.enter do
+        @context.to_ruby(@native.GetScriptName())
+      end
     end
 
     def function_name
-      @context.to_ruby(@native.GetFunctionName())
+      @context.enter do
+        @context.to_ruby(@native.GetFunctionName())
+      end
     end
 
     def line_number
-      @native.GetLineNumber()
+      @context.enter do
+        @native.GetLineNumber()
+      end
     end
 
     def column
-      @native.GetColumn()
+      @context.enter do
+        @native.GetColumn()
+      end
     end
 
     def eval?
-      @native.IsEval()
+      @context.enter do
+        @native.IsEval()
+      end
     end
 
     def constructor?
-      @native.IsConstructor()
+      @context.enter do
+        @native.IsConstructor()
+      end
     end
 
     def to_s
-      "at " + if !function_name.empty?
-        "#{function_name} (#{script_name}:#{line_number}:#{column})"
-      else
-        "#{script_name}:#{line_number}:#{column}"
+      @context.enter do
+        "at " + if !function_name.empty?
+          "#{function_name} (#{script_name}:#{line_number}:#{column})"
+        else
+          "#{script_name}:#{line_number}:#{column}"
+        end
       end
     end
   end

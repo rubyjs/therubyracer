@@ -62,7 +62,6 @@ describe V8::Error do
   end
 
   describe "backtrace" do
-    before {pending}
     it "is mixed with ruby and javascript" do
       throw! do |e|
         e.backtrace.first.should == "at three.js:1:7"
@@ -104,7 +103,7 @@ describe V8::Error do
 "how do I find out that line 2 has the syntax error?";
 INVALID
       end.should raise_error(V8::JSError) {|error|
-        error.backtrace.first.should == 'at source.js:2:60'
+        error.message.should eql 'Unexpected token : at source.js:2:61'
       }
     end
 
