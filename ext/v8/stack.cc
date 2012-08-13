@@ -22,6 +22,7 @@ namespace rr {
       defineMethod("GetColumn", &Frame::GetColumn).
       defineMethod("GetScriptName", &Frame::GetScriptName).
       defineMethod("GetScriptNameOrSourceURL", &Frame::GetScriptNameOrSourceURL).
+      defineMethod("GetFunctionName", &Frame::GetFunctionName).
       defineMethod("IsEval", &Frame::IsEval).
       defineMethod("IsConstructor", &Frame::IsConstructor).
       store(&Frame::Class);
