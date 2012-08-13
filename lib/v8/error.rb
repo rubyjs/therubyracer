@@ -1,5 +1,10 @@
 module V8
   class Error < StandardError
+
+  # capture 99 stack frames on exception with normal details.
+  # You can adjust these values for performance or turn of stack capture entirely
+  V8::C::V8::SetCaptureStackTraceForUncaughtExceptions(true, 99, V8::C::StackTrace::kOverview)
+
     attr_reader :value
     def initialize(message, value)
       super(message)
@@ -51,6 +56,8 @@ module V8
       else
         raise V8::Error.new(exception.Get("message").to_ruby, value)
       end
+    elsif exception.IsObject()
+      raise V8::Error.new(value['message'] || value.to_s, value)
     else
       raise V8::Error.new(exception.ToString().to_ruby, value)
     end
