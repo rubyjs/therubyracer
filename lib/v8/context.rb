@@ -63,7 +63,9 @@ module V8
         end
         enter {link global, @native.Global()}
       else
-        @native = V8::C::Context::New()
+        V8::C::Locker() do
+          @native = V8::C::Context::New()
+        end
       end
       yield self if block_given?
     end
