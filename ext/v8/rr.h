@@ -96,6 +96,28 @@ private:
 
 /**
 * A pointer to V8 object managed by Ruby
+*
+* You deal with V8 objects as either pointers or handles.
+* While handles are managed by the V8 garbage collector, pointers
+* must be explicitly created and destroyed by your code.
+*
+* The pointer class provides a handly way to wrap V8 pointers
+* into Ruby objects so that they will be deleted when the
+* Ruby object is garbage collected. Automatic type coercion is
+* used to make wrapping and unwrapping painless.
+*
+* To create Ruby VALUE:
+*
+*  Pointer<v8::ScriptOrigin> ptr(new v8::ScriptOrigin());
+*  VALUE value = ptr; //automatically wraps in Data_Wrap_Struct
+*
+* Conversely, the pointer can be unwrapped from a struct
+* created in this way and the underlying methods can be
+* invoked:
+*
+*     VALUE value = ...;
+*     Pointer<v8::ScriptOrigin> ptr(value);
+*     ptr->CallMethod();
 */
 
 template <class T> class Pointer {
@@ -125,6 +147,29 @@ template <class T> VALUE Pointer<T>::Class;
 
 /**
 * A Reference to a V8 managed object
+*
+* Uses type coercion to quickly convert from a v8 handle
+* to a ruby object and back again. Suppose we have a v8 handle
+* that we want to return to Ruby. We can put it into a Ref:
+*
+*     v8::Handle<v8::Object> object = v8::Object::New();
+*     VALUE val = Ref<v8::Object>(object);
+*
+* this will create a `v8::Persistent` handle for the object
+* so that it will not be garbage collected by v8. It then
+* stuffs this new persistent handle into a Data_Wrap_Struct
+* which can then be passed to Ruby code. When this struct
+* is garbage collected by Ruby, it enqueues the corresponding
+* v8 handle to be released during v8 gc.
+*
+* By the same token, you can use Refs to unwrap a Data_Wrap_Struct
+* which has been generated in this fashion and call through to
+* the underlying v8 methods. Suppose we are passed a VALUE `val`
+* wrapping a v8::Object:
+*
+*     Ref<v8::Object> object(val);
+*     object->Get(v8::String::New("foo"));
+*
 */
 template <class T> class Ref {
 public:
@@ -135,9 +180,15 @@ public:
     this->handle = handle;
   }
   virtual ~Ref() {}
+  /*
+  *  Coerce a Ref into a Ruby VALUE
+  */
   virtual operator VALUE() const {
     return handle.IsEmpty() ? Qnil : Data_Wrap_Struct(Class, 0, &Holder::enqueue, new Holder(handle));
   }
+  /*
+  * Coerce a Ref into a v8::Handle.
+  */
   virtual operator v8::Handle<T>() const {
     if (RTEST(this->value)) {
       Holder* holder = NULL;
@@ -153,6 +204,12 @@ public:
     holder->dispose();
   }
 
+  /*
+  * Pointer de-reference operators, this lets you use a ref to
+  * call through to underlying v8 methods. e.g
+  *
+  *     Ref<v8::Object>(value)->ToString();
+  */
   inline v8::Handle<T> operator->() const { return *this;}
   inline v8::Handle<T> operator*() const {return *this;}
 
