@@ -136,7 +136,7 @@ public:
   }
   virtual ~Ref() {}
   virtual operator VALUE() const {
-    return handle.IsEmpty() ? Qnil : (new Holder(handle, Class))->value;
+    return handle.IsEmpty() ? Qnil : Data_Wrap_Struct(Class, 0, &Holder::enqueue, new Holder(handle));
   }
   virtual operator v8::Handle<T>() const {
     if (RTEST(this->value)) {
@@ -173,10 +173,9 @@ public:
   class Holder {
     friend class Ref;
   public:
-    Holder(v8::Handle<T> handle, VALUE klass) {
+    Holder(v8::Handle<T> handle) {
       this->disposed_p = false;
       this->handle = v8::Persistent<T>::New(handle);
-      this->value = Data_Wrap_Struct(klass, 0, &enqueue, this);
     }
     virtual ~Holder() {
       this->dispose();
@@ -188,12 +187,10 @@ public:
       }
     }
   protected:
-    VALUE value;
     v8::Persistent<T> handle;
     bool disposed_p;
 
     static void enqueue(Holder* holder) {
-      holder->value = Qnil;
       GC::Finalize(holder);
     }
   };
