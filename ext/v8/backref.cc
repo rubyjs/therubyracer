@@ -14,30 +14,21 @@ namespace rr {
   }
 
   Backref::Backref(VALUE initial) {
-    allocate(initial);
-  }
-
-  Backref::~Backref() {
-    deallocate();
-  }
-
-  void Backref::allocate(VALUE data) {
-    this->storage = rb_funcall(Storage, _new, 1, data);
+    set(initial);
     rb_gc_register_address(&storage);
   }
 
-  void Backref::deallocate() {
+  Backref::~Backref() {
     rb_gc_unregister_address(&storage);
+  }
+
+  VALUE Backref::set(VALUE data) {
+    this->storage = rb_funcall(Storage, _new, 1, data);
+    return data;
   }
 
   VALUE Backref::get() {
     return rb_funcall(storage, object, 0);
-  }
-
-  VALUE Backref::set(VALUE data) {
-    deallocate();
-    allocate(data);
-    return data;
   }
 
   v8::Handle<v8::Value> Backref::toExternal() {

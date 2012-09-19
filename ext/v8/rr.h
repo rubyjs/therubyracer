@@ -268,8 +268,6 @@ public:
   v8::Handle<v8::Value> toExternal();
   static void release(v8::Persistent<v8::Value> handle, void* data);
 private:
-  void allocate(VALUE data);
-  void deallocate();
   VALUE storage;
   static VALUE Storage;
   static ID _new;
