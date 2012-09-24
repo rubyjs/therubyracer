@@ -91,7 +91,7 @@
 * upgrade to rspec 2
 * several bug fixes and stability fixes
 
-## 0.7.5 - 1010/08/03
+## 0.7.5 - 2010/08/03
 
 * upgrade to V8 2.3.3
 * property interceptors from ruby via [] and []=
