@@ -12,7 +12,7 @@ Embed the V8 Javascript interpreter into Ruby.
 
 ## FEATURES
 
-* Evaluate Javascript from with in Ruby
+* Evaluate Javascript from within Ruby
 * Embed your Ruby objects into the Javascript world
 * Manipulate JavaScript objects and call JavaScript functions from Ruby
 * API compatible with the The Ruby Rhino (for JRuby: http://github.com/cowboyd/therubyrhino)
