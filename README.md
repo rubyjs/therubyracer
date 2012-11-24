@@ -7,13 +7,13 @@
 
 ## DESCRIPTION
 
-Embed the V8 Javascript interpreter into Ruby.
+Embed the V8 JavaScript interpreter into Ruby.
 
 
 ## FEATURES
 
-* Evaluate Javascript from within Ruby
-* Embed your Ruby objects into the Javascript world
+* Evaluate JavaScript from within Ruby
+* Embed your Ruby objects into the JavaScript world
 * Manipulate JavaScript objects and call JavaScript functions from Ruby
 * API compatible with the The Ruby Rhino (for JRuby: http://github.com/cowboyd/therubyrhino)
 
@@ -21,13 +21,13 @@ Embed the V8 Javascript interpreter into Ruby.
 
     gem install therubyracer
 
-then in your ruby code
+then in your Ruby code
 
     require 'v8'
     # or if using bundler (as with Rails), add the following to your Gemfile
     gem "therubyracer", :require => 'v8'
 
-evaluate some simple javascript
+evaluate some simple JavaScript
 
     cxt = V8::Context.new
     cxt.eval('7 * 6') #=> 42
@@ -37,12 +37,12 @@ embed values into the scope of your context
     cxt['foo'] = "bar"
     cxt.eval('foo') # => "bar"
 
-embed ruby code into your scope and call it from javascript
+embed Ruby code into your scope and call it from JavaScript
 
     cxt["say"] = lambda {|this, word, times| word * times}
     cxt.eval("say('Hello', 3)") #=> HelloHelloHello
 
-embed a ruby object into your scope and access its properties/methods from javascript
+embed a Ruby object into your scope and access its properties/methods from JavaScript
 
     class MyMath
       def plus(lhs, rhs)
@@ -53,7 +53,7 @@ embed a ruby object into your scope and access its properties/methods from javas
     cxt['math'] = MyMath.new
     cxt.eval("math.plus(20,22)") #=> 42
 
-make a ruby object *be* your global javascript scope.
+make a Ruby object *be* your global JavaScript scope.
 
     math = MyMath.new
     V8::Context.new(:with => math) do |cxt|
@@ -64,7 +64,7 @@ you can do the same thing with Object#eval_js
 
     math.eval_js("plus(20,22)")
 
-## Different ways of loading javascript source
+## Different ways of loading JavaScript source
 
 In addition to just evaluating strings, you can also use streams such as files.
 
@@ -81,11 +81,11 @@ or load it by filename
 
 ## Safe by default, dangerous by demand
 
-The Ruby Racer is designed to let you evaluate javascript as safely as possible unless you tell it to do something more
-dangerous. The default context is a hermetically sealed javascript environment with only the standard javascript objects
-and functions. Nothing from the ruby world is accessible at all.
+The Ruby Racer is designed to let you evaluate JavaScript as safely as possible unless you tell it to do something more
+dangerous. The default context is a hermetically sealed JavaScript environment with only the standard JavaScript objects
+and functions. Nothing from the Ruby world is accessible at all.
 
-For ruby objects that you explicitly embed into javascript, by default only the _public_ methods _below_ `Object` are
+For Ruby objects that you explicitly embed into JavaScript, by default only the _public_ methods _below_ `Object` are
 exposed by default. E.g.
 
     class A
@@ -118,12 +118,12 @@ exposed by default. E.g.
 If needed, you can override the [Ruby Access](https://github.com/cowboyd/therubyracer/blob/master/lib/v8/access.rb)
 to allow whatever behavior you'd like
 
-More documentation can be found on the [github wiki](https://github.com/cowboyd/therubyracer/wiki)
+More documentation can be found on the [GitHub wiki](https://github.com/cowboyd/therubyracer/wiki)
 
 ## PREREQUISITES
 
 For platforms for which there is a binary version of therubyracer gem available, there are no
-dependencies other than ruby and rubygems.
+dependencies other than Ruby and rubygems.
 
 If there is not a binary version for your system, then you will need to compile it from source.
 To do this, you must have v8 >= 3.11.8 installed somewhere on your system. There are several
