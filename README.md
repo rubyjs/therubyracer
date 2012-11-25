@@ -85,7 +85,7 @@ The Ruby Racer is designed to let you evaluate javascript as safely as possible 
 dangerous. The default context is a hermetically sealed javascript environment with only the standard javascript objects
 and functions. Nothing from the ruby world is accessible at all.
 
-For ruby objects that you explicitly embed into javascript, by default, only the _public_ methods _below_ `Object` are
+For ruby objects that you explicitly embed into javascript, by default only the _public_ methods _below_ `Object` are
 exposed by default. E.g.
 
     class A
