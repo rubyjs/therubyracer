@@ -21,7 +21,7 @@ Embed the V8 Javascript interpreter into Ruby.
 
     gem install therubyracer
 
-then in your ruby code
+then in your Ruby code
 
     require 'v8'
     # or if using bundler (as with Rails), add the following to your Gemfile
@@ -37,12 +37,12 @@ embed values into the scope of your context
     cxt['foo'] = "bar"
     cxt.eval('foo') # => "bar"
 
-embed ruby code into your scope and call it from javascript
+embed Ruby code into your scope and call it from javascript
 
     cxt["say"] = lambda {|this, word, times| word * times}
     cxt.eval("say('Hello', 3)") #=> HelloHelloHello
 
-embed a ruby object into your scope and access its properties/methods from javascript
+embed a Ruby object into your scope and access its properties/methods from javascript
 
     class MyMath
       def plus(lhs, rhs)
@@ -53,7 +53,7 @@ embed a ruby object into your scope and access its properties/methods from javas
     cxt['math'] = MyMath.new
     cxt.eval("math.plus(20,22)") #=> 42
 
-make a ruby object *be* your global javascript scope.
+make a Ruby object *be* your global javascript scope.
 
     math = MyMath.new
     V8::Context.new(:with => math) do |cxt|
@@ -66,7 +66,7 @@ you can do the same thing with Object#eval_js
 
 ## Different ways of loading javascript source
 
-In addition to just evaluating strings, you can also use streams such as files.
+In addition to just evaluating strings, you can also use streams, such as files.
 
 evaluate bytes read from any File/IO object:
 
@@ -83,9 +83,9 @@ or load it by filename
 
 The Ruby Racer is designed to let you evaluate javascript as safely as possible unless you tell it to do something more
 dangerous. The default context is a hermetically sealed javascript environment with only the standard javascript objects
-and functions. Nothing from the ruby world is accessible at all.
+and functions. Nothing from the Ruby world is accessible at all.
 
-For ruby objects that you explicitly embed into javascript, by default only the _public_ methods _below_ `Object` are
+For Ruby objects that you explicitly embed into javascript, by default only the _public_ methods _below_ `Object` are
 exposed by default. E.g.
 
     class A
@@ -123,14 +123,14 @@ More documentation can be found on the [github wiki](https://github.com/cowboyd/
 ## PREREQUISITES
 
 For platforms for which there is a binary version of therubyracer gem available, there are no
-dependencies other than ruby and rubygems.
+dependencies other than Ruby and RubyGems.
 
 If there is not a binary version for your system, then you will need to compile it from source.
 To do this, you must have v8 >= 3.11.8 installed somewhere on your system. There are several
-ways of doing this. For both you will need a C++ compiler.
+ways of doing this. For both, you will need a C++ compiler.
 
-The first method involves using a version of the v8 source which is maintained
-[as a rubygem called libv8][1]. To use it, all you have to do is
+The first method involves using a version of the v8 source, which is maintained
+[as a RubyGem called libv8][1]. To use it, all you have to do is
 add the following to your Gemfile:
 
     gem 'libv8', '~> 3.11.8'
@@ -139,9 +139,9 @@ This will download and build v8 from source for you as part of the gem installat
 process. When therubyracer is installed, it will find this gem if it is present and
 link against the v8 binaries contained therein.
 
-If you cannot, or do not wish to use the libv8 rubygem, then you can either install
-libv8 with you operating system's packaging system or you can [build it from source][2].
-If you build from source, be sure to set the library=shared option. Also, if you install
+If you cannot, or do not wish to use the libv8 RubyGem, you can either install libv8
+with you operating system's packaging system or you can [build it from source][2]. If
+you build from source, be sure to set the library=shared option. Also, if you install
 this shared library into a place that is not on your standard lib and include paths, then
 you can pass your non-standard locations to therubyracer using the
 `--with-v8-include` and `--with-v8-lib` configuration options.
