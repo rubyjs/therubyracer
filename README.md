@@ -118,12 +118,13 @@ exposed by default. E.g.
 If needed, you can override the [Ruby Access](https://github.com/cowboyd/therubyracer/blob/master/lib/v8/access.rb)
 to allow whatever behavior you'd like
 
-More documentation can be found on the [github wiki](https://github.com/cowboyd/therubyracer/wiki)
+More documentation can be found on the [GitHub wiki](https://github.com/cowboyd/therubyracer/wiki)
 
 ## PREREQUISITES
 
 For platforms for which there is a binary version of therubyracer gem available, there are no
-dependencies other than Ruby and RubyGems.
+
+dependencies other than Ruby and rubygems.
 
 If there is not a binary version for your system, then you will need to compile it from source.
 To do this, you must have v8 >= 3.11.8 installed somewhere on your system. There are several
