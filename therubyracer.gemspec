@@ -4,8 +4,8 @@ require File.expand_path('../lib/v8/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Charles Lowell"]
   gem.email         = ["javascript-and-friends@googlegroups.com"]
-  gem.summary       = "Embed the V8 Javascript interpreter into Ruby"
-  gem.description   = "Call javascript code and manipulate javascript objects from ruby. Call ruby code and manipulate ruby objects from javascript."
+  gem.summary       = "Embed the V8 JavaScript interpreter into Ruby"
+  gem.description   = "Call JavaScript code and manipulate JavaScript objects from Ruby. Call Ruby code and manipulate Ruby objects from JavaScript."
   gem.homepage      = "http://github.com/cowboyd/therubyracer"
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
