@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.11
+## 0.11.0 2012/12/04
 
 * upgrade V8 version to 3.11.8
 * remove dependency on libv8. enable compilation against system v8
