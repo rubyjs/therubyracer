@@ -17,4 +17,10 @@ describe V8::C do
   it "can access the V8 version" do
     V8::C::V8::GetVersion().should match /^3\.11/
   end
+
+  it "can ignore OOM exceptions" do
+    V8::C::V8::IgnoreOutOfMemoryException()
+    V8::Context.new.eval('var a="0";while(true){a=a+a;}').should be_nil # This context should stop being evaluated at some point, and return nil
+    V8::Context.new.eval('3*4').should be 12 # Other contexts should work just fine
+  end
 end
