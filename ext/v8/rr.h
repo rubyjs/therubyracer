@@ -878,6 +878,7 @@ private:
 class V8 {
 public:
   static void Init();
+  static VALUE IgnoreOutOfMemoryException(VALUE self);
   static VALUE IdleNotification(int argc, VALUE argv[], VALUE self);
   static VALUE SetFlagsFromString(VALUE self, VALUE string);
   static VALUE SetFlagsFromCommandLine(VALUE self, VALUE args, VALUE remove_flags);

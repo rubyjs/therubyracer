@@ -4,6 +4,7 @@ namespace rr {
 
 void V8::Init() {
   ClassBuilder("V8").
+    defineSingletonMethod("IgnoreOutOfMemoryException", &IgnoreOutOfMemoryException).
     defineSingletonMethod("IdleNotification", &IdleNotification).
     defineSingletonMethod("SetFlagsFromString", &SetFlagsFromString).
     defineSingletonMethod("SetFlagsFromCommandLine", &SetFlagsFromCommandLine).
@@ -22,6 +23,9 @@ void V8::Init() {
     defineSingletonMethod("GetVersion", &GetVersion);
 }
 
+VALUE V8::IgnoreOutOfMemoryException(VALUE self) {
+  Void(v8::V8::IgnoreOutOfMemoryException());
+}
 VALUE V8::IdleNotification(int argc, VALUE argv[], VALUE self) {
   VALUE hint;
   rb_scan_args(argc, argv, "01", &hint);
