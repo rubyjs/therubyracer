@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.1 2013/01/04
+
+* reintroduce the dependency on libv8
+* libv8 can be disabled by installing it with the --with-system-v8 flag
+
 ## 0.11.0 2012/12/04
 
 * upgrade V8 version to 3.11.8
