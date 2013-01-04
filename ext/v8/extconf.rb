@@ -16,10 +16,14 @@ end
 if enable_config('debug')
   $CFLAGS += " -O0 -ggdb3"
 end
-if have_rubygem_libv8?
-  build_with_rubygem_libv8
-else
-  build_with_system_libv8
+
+begin
+require 'libv8'
+rescue LoadError
+require 'rubygems'
+gem 'libv8'
+require 'libv8'
 end
+Libv8.configure_makefile
 
 create_makefile('v8/init')
