@@ -319,8 +319,8 @@ public:
   static VALUE GetSecurityToken(VALUE self);
   static VALUE HasOutOfMemoryException(VALUE self);
   static VALUE InContext(VALUE self);
-  static VALUE SetData(VALUE self, VALUE data);
-  static VALUE GetData(VALUE self);
+  static VALUE SetEmbedderData(VALUE self, VALUE index, VALUE data);
+  static VALUE GetEmbedderData(VALUE self, VALUE index);
   static VALUE AllowCodeGenerationFromStrings(VALUE self, VALUE allow);
   static VALUE IsCodeGenerationFromStringsAllowed(VALUE self);
 

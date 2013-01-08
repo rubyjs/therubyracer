@@ -17,8 +17,8 @@ void Context::Init() {
     defineMethod("UseDefaultSecurityToken", &UseDefaultSecurityToken).
     defineMethod("GetSecurityToken", &GetSecurityToken).
     defineMethod("HasOutOfMemoryException", &HasOutOfMemoryException).
-    defineMethod("SetData", &SetData).
-    defineMethod("GetData", &GetData).
+    defineMethod("SetEmbedderData", &SetEmbedderData).
+    defineMethod("GetEmbedderData", &GetEmbedderData).
     defineMethod("AllowCodeGenerationFromStrings", &AllowCodeGenerationFromStrings).
     defineMethod("IsCodeGenerationFromStringsAllowed", &IsCodeGenerationFromStringsAllowed).
     defineMethod("Enter", &Enter).
@@ -77,12 +77,12 @@ VALUE Context::InContext(VALUE self) {
   return Bool(v8::Context::InContext());
 }
 
-VALUE Context::SetData(VALUE self, VALUE data) {
-  Void(Context(self)->SetData(String(data)));
+VALUE Context::SetEmbedderData(VALUE self, VALUE index, VALUE data) {
+  Void(Context(self)->SetEmbedderData(NUM2INT(index), Value(data)));
 }
 
-VALUE Context::GetData(VALUE self) {
-  return Value(Context(self)->GetData());
+VALUE Context::GetEmbedderData(VALUE self, VALUE index) {
+  Void(Context(self)->GetEmbedderData(NUM2INT(index)));
 }
 
 VALUE Context::AllowCodeGenerationFromStrings(VALUE self, VALUE allow) {

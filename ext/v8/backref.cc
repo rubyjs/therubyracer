@@ -32,7 +32,7 @@ namespace rr {
   }
 
   v8::Handle<v8::Value> Backref::toExternal() {
-    v8::Local<v8::Value> wrapper = v8::External::Wrap(this);
+    v8::Local<v8::Value> wrapper = v8::External::New(this);
     v8::Persistent<v8::Value>::New(wrapper).MakeWeak(this, &release);
     return wrapper;
   }

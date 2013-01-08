@@ -144,7 +144,8 @@ Object::operator VALUE() {
     backref = new Backref(value);
     handle->SetHiddenValue(key, backref->toExternal());
   } else {
-    backref = (Backref*)v8::External::Unwrap(external);
+    v8::Local<v8::External> wrapper = v8::External::Cast(*external);
+    backref = (Backref*)wrapper->Value();
     value = backref->get();
     if (!RTEST(value)) {
       value = downcast();
