@@ -15,6 +15,6 @@ describe V8::C do
   end
 
   it "can access the V8 version" do
-    V8::C::V8::GetVersion().should match /^3\.11/
+    V8::C::V8::GetVersion().should match /^3\.15/
   end
 end
