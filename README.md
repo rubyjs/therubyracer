@@ -122,31 +122,9 @@ More documentation can be found on the [GitHub wiki](https://github.com/cowboyd/
 
 ## PREREQUISITES
 
-For platforms for which there is a binary version of therubyracer gem available, there are no
+The Ruby Racer requires the V8 Javascript interpreter, but it offloads the handling of this dependency to the [libv8](https://github.com/cowboyd/libv8) gem. Because libv8 is now a gem dependency, you do not need a separate libv8 entry in your project's Gemfile.
 
-dependencies other than Ruby and rubygems.
-
-If there is not a binary version for your system, then you will need to compile it from source.
-To do this, you must have v8 >= 3.11.8 installed somewhere on your system. There are several
-ways of doing this. For both, you will need a C++ compiler.
-
-The first method involves using a version of the v8 source, which is maintained
-[as a RubyGem called libv8][1]. To use it, all you have to do is
-add the following to your Gemfile:
-
-    gem 'libv8', '~> 3.11.8'
-
-This will download and build v8 from source for you as part of the gem installation
-process. When therubyracer is installed, it will find this gem if it is present and
-link against the v8 binaries contained therein.
-
-If you cannot, or do not wish to use the libv8 RubyGem, you can either install libv8
-with you operating system's packaging system or you can [build it from source][2]. If
-you build from source, be sure to set the library=shared option. Also, if you install
-this shared library into a place that is not on your standard lib and include paths, then
-you can pass your non-standard locations to therubyracer using the
-`--with-v8-include` and `--with-v8-lib` configuration options.
-
+Please see [libv8](https://github.com/cowboyd/libv8) for V8 runtime installation options.
 
 ## DEVELOP
     git clone git://github.com/cowboyd/therubyracer.git
