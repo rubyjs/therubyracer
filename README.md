@@ -5,19 +5,18 @@
 * [irc://irc.freenode.net/therubyracer](http://groups.google.com/group/therubyracer)
 * [Documentation](https://github.com/cowboyd/therubyracer/wiki)
 
-## DESCRIPTION
+### DESCRIPTION
 
 Embed the V8 JavaScript interpreter into Ruby.
 
-
-## FEATURES
+### FEATURES
 
 * Evaluate JavaScript from within Ruby
 * Embed your Ruby objects into the JavaScript world
 * Manipulate JavaScript objects and call JavaScript functions from Ruby
 * API compatible with the The Ruby Rhino (for JRuby: http://github.com/cowboyd/therubyrhino)
 
-## SYNOPSIS
+### SYNOPSIS
 
     gem install therubyracer
 
@@ -42,7 +41,8 @@ embed Ruby code into your scope and call it from JavaScript
     cxt["say"] = lambda {|this, word, times| word * times}
     cxt.eval("say('Hello', 3)") #=> HelloHelloHello
 
-embed a Ruby object into your scope and access its properties/methods from JavaScript
+embed a Ruby object into your scope and access its properties/methods
+from JavaScript
 
     class MyMath
       def plus(lhs, rhs)
@@ -64,9 +64,10 @@ you can do the same thing with Object#eval_js
 
     math.eval_js("plus(20,22)")
 
-## Different ways of loading JavaScript source
+### Different ways of loading JavaScript source
 
-In addition to just evaluating strings, you can also use streams, such as files.
+In addition to just evaluating strings, you can also use streams, such
+as files.
 
 evaluate bytes read from any File/IO object:
 
@@ -78,15 +79,17 @@ or load it by filename
 
     cxt.load("mysource.js")
 
+### Safe by default, dangerous by demand
 
-## Safe by default, dangerous by demand
+The Ruby Racer is designed to let you evaluate JavaScript as safely as
+possible unless you tell it to do something more dangerous. The
+default context is a hermetically sealed JavaScript environment with
+only the standard JavaScript objects and functions. Nothing from the
+Ruby world is accessible at all.
 
-The Ruby Racer is designed to let you evaluate JavaScript as safely as possible unless you tell it to do something more
-dangerous. The default context is a hermetically sealed JavaScript environment with only the standard JavaScript objects
-and functions. Nothing from the Ruby world is accessible at all.
-
-For Ruby objects that you explicitly embed into JavaScript, by default only the _public_ methods _below_ `Object` are
-exposed by default. E.g.
+For Ruby objects that you explicitly embed into JavaScript, by default
+only the _public_ methods _below_ `Object` are exposed by default.
+E.g.
 
     class A
       def a
@@ -115,49 +118,36 @@ exposed by default. E.g.
       cxt.eval("b.object_id") #=> undefined, object_id is on Object
     end
 
-If needed, you can override the [Ruby Access](https://github.com/cowboyd/therubyracer/blob/master/lib/v8/access.rb)
-to allow whatever behavior you'd like
+If needed, you can override the [Ruby Access][access] to allow whatever
+behavior you'd like.
+
+[access]:https://github.com/cowboyd/therubyracer/blob/master/lib/v8/access.rb
 
 More documentation can be found on the [GitHub wiki](https://github.com/cowboyd/therubyracer/wiki)
 
-## PREREQUISITES
+### PREREQUISITES
 
-For platforms for which there is a binary version of therubyracer gem available, there are no
+The Ruby Racer requires the V8 Javascript engine, but it offloads the
+handling of this dependency to the
+[libv8](https://github.com/cowboyd/libv8) gem. Because libv8 is now a
+gem dependency, you do not need a separate libv8 entry in your
+project's Gemfile.
 
-dependencies other than Ruby and rubygems.
+Please see [libv8](https://github.com/cowboyd/libv8) for V8 runtime
+installation options.
 
-If there is not a binary version for your system, then you will need to compile it from source.
-To do this, you must have v8 >= 3.11.8 installed somewhere on your system. There are several
-ways of doing this. For both, you will need a C++ compiler.
+### DEVELOP
 
-The first method involves using a version of the v8 source, which is maintained
-[as a RubyGem called libv8][1]. To use it, all you have to do is
-add the following to your Gemfile:
-
-    gem 'libv8', '~> 3.11.8'
-
-This will download and build v8 from source for you as part of the gem installation
-process. When therubyracer is installed, it will find this gem if it is present and
-link against the v8 binaries contained therein.
-
-If you cannot, or do not wish to use the libv8 RubyGem, you can either install libv8
-with you operating system's packaging system or you can [build it from source][2]. If
-you build from source, be sure to set the library=shared option. Also, if you install
-this shared library into a place that is not on your standard lib and include paths, then
-you can pass your non-standard locations to therubyracer using the
-`--with-v8-include` and `--with-v8-lib` configuration options.
-
-
-## DEVELOP
     git clone git://github.com/cowboyd/therubyracer.git
     cd therubyracer
     bundle install
     rake compile
 
-## Sponsored by
+### Sponsored by
+
 <a href="http://thefrontside.net">![The Frontside](http://github.com/cowboyd/therubyracer/raw/master/thefrontside.png)</a>
 
-## LICENSE:
+### LICENSE:
 
 (The MIT License)
 
