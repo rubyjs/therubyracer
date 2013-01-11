@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.2 2013/01/11
+
+* move dependency on libv8 pass corrupted versions (Workaround)
+
 ## 0.11.1 2013/01/04
 
 * reintroduce the dependency on libv8
