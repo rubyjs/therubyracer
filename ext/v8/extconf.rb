@@ -1,5 +1,4 @@
 require 'mkmf'
-require File.expand_path '../build', __FILE__
 
 have_library('pthread')
 have_library('objc') if RUBY_PLATFORM =~ /darwin/
@@ -17,13 +16,10 @@ if enable_config('debug')
   $CFLAGS += " -O0 -ggdb3"
 end
 
-begin
-require 'libv8'
-rescue LoadError
 require 'rubygems'
-gem 'libv8'
+gem 'libv8', '~> 3.15.11'
 require 'libv8'
-end
+
 Libv8.configure_makefile
 
 create_makefile('v8/init')
