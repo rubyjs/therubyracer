@@ -1,5 +1,4 @@
 require 'mkmf'
-require File.expand_path '../build', __FILE__
 
 have_library('pthread')
 have_library('objc') if RUBY_PLATFORM =~ /darwin/
@@ -17,13 +16,19 @@ if enable_config('debug')
   $CFLAGS += " -O0 -ggdb3"
 end
 
+LIBV8_COMPATIBILITY = '~> 3.15.11'
+
 begin
-require 'libv8'
+  require 'rubygems'
+  gem 'libv8', LIBV8_COMPATIBILITY
+rescue Gem::LoadError
+  warn "Warning! Selecting libv8 #{LIBV8_COMPATIBILITY} failed. Has it been added to the gemspec?"
 rescue LoadError
-require 'rubygems'
-gem 'libv8'
-require 'libv8'
+  warn "Warning! Could not load rubygems. Please make sure you have libv8 #{LIBV8_COMPATIBILITY} installed."
+ensure
+  require 'libv8'
 end
+
 Libv8.configure_makefile
 
 create_makefile('v8/init')
