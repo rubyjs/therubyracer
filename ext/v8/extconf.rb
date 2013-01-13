@@ -16,7 +16,7 @@ if enable_config('debug')
   $CFLAGS += " -O0 -ggdb3"
 end
 
-LIBV8_COMPATIBILITY = '~> 3.15.11'
+LIBV8_COMPATIBILITY = '~> 3.11.8'
 
 begin
   require 'rubygems'
