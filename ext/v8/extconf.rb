@@ -22,7 +22,7 @@ begin
   require 'rubygems'
   gem 'libv8', LIBV8_COMPATIBILITY
 rescue Gem::LoadError
-  warn "Warning! Selecting libv8 #{LIBV8_COMPATIBILITY} failed. Has it been added to the gemspec?"
+  warn "Warning! Unable to load libv8 #{LIBV8_COMPATIBILITY}."
 rescue LoadError
   warn "Warning! Could not load rubygems. Please make sure you have libv8 #{LIBV8_COMPATIBILITY} installed."
 ensure
