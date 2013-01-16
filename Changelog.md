@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.3 2013/01/16
+
+* ensure that libv8 is required from rubygems where possible.
+
 ## 0.11.2 2013/01/11
 
 * move dependency on libv8 pass corrupted versions (Workaround)
