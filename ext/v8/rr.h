@@ -819,6 +819,7 @@ public:
   static VALUE initialize(VALUE self);
   static VALUE total_heap_size(VALUE self);
   static VALUE total_heap_size_executable(VALUE self);
+  static VALUE total_physical_size(VALUE self);
   static VALUE used_heap_size(VALUE self);
   static VALUE heap_size_limit(VALUE self);
 
