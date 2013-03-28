@@ -17,5 +17,5 @@ Gem::Specification.new do |gem|
   gem.version       = V8::VERSION
 
   gem.add_dependency 'ref'
-  gem.add_dependency 'libv8', '~> 3.15.11.0'
+  gem.add_dependency 'libv8', '~> 3.16.14.0'
 end

@@ -22,7 +22,7 @@ namespace rr {
    }
 
    VALUE Locker::IsLocked(VALUE self) {
-     return Bool(v8::Locker::IsLocked());
+     return Bool(v8::Locker::IsLocked(v8::Isolate::GetCurrent()));
    }
 
    VALUE Locker::IsActive(VALUE self) {
