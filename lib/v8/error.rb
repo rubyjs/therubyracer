@@ -66,12 +66,12 @@ module V8
           if trace_ruby
             backtrace_selector = cause.respond_to?(:standard_error_backtrace) ? :standard_error_backtrace : :backtrace
             ruby_frames = cause.send(backtrace_selector)[0..accumulator[:ruby]]
-            accumulator[:backtrace].unshift *ruby_frames
+            accumulator[:backtrace].unshift(*ruby_frames)
             accumulator[:ruby] -= ruby_frames.length
           end
           if trace_javascript && cause.respond_to?(:javascript_backtrace)
             javascript_frames = cause.javascript_backtrace.to_a[0..accumulator[:javascript]].map(&:to_s)
-            accumulator[:backtrace].unshift *javascript_frames
+            accumulator[:backtrace].unshift(*javascript_frames)
             accumulator[:javascript] -= javascript_frames.length
           end
         end
