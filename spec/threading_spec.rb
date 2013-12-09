@@ -1,5 +1,17 @@
 require 'spec_helper'
 
+describe "Timeouts" do
+  it "allows for timeout on context" do
+    ctx = V8::Context.new(:timeout => 10)
+    lambda {ctx.eval("while(true){}")}.should(raise_error)
+
+    # context should not be bust after it exploded once
+    ctx["x"] = 1;
+    ctx.eval("x=2;")
+    ctx["x"].should == 2
+  end
+end
+
 describe "using v8 from multiple threads", :threads => true do
 
   it "creates contexts from within threads" do

@@ -1,4 +1,6 @@
 #include "rr.h"
+#include "pthread.h"
+#include "unistd.h"
 
 namespace rr {
 
@@ -6,6 +8,7 @@ void Script::Init() {
   ClassBuilder("Script").
     defineSingletonMethod("New", &New).
     defineMethod("Run", &Run).
+    defineMethod("RunWithTimeout", &RunWithTimeout).
     store(&Class);
   ClassBuilder("ScriptOrigin").
     defineSingletonMethod("new", &ScriptOrigin::initialize).
@@ -67,6 +70,37 @@ VALUE Script::New(int argc, VALUE argv[], VALUE self) {
 
 VALUE Script::Run(VALUE self) {
   return Value(Script(self)->Run());
+}
+
+typedef struct {
+    v8::Isolate *isolate;
+    long timeout;
+} timeout_data;
+
+void* breaker(void *d) {
+  timeout_data* data = (timeout_data*)d;
+  usleep(data->timeout*1000);
+  v8::V8::TerminateExecution(data->isolate);
+  return NULL;
+}
+
+VALUE Script::RunWithTimeout(VALUE self, VALUE timeout) {
+  pthread_t breaker_thread;
+  timeout_data data;
+  VALUE rval;
+  void *res;
+
+  data.isolate = v8::Isolate::GetCurrent();
+  data.timeout = NUM2LONG(timeout);
+
+  pthread_create(&breaker_thread, NULL, breaker, &data);
+
+  rval = Value(Script(self)->Run());
+
+  pthread_cancel(breaker_thread);
+  pthread_join(breaker_thread, &res);
+
+  return rval;
 }
 
 template <> void Pointer<v8::ScriptData>::unwrap(VALUE value) {
