@@ -80,6 +80,7 @@ typedef struct {
 void* breaker(void *d) {
   timeout_data* data = (timeout_data*)d;
   usleep(data->timeout*1000);
+  pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
   v8::V8::TerminateExecution(data->isolate);
   return NULL;
 }
