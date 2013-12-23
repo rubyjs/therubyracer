@@ -31,6 +31,11 @@ evaluate some simple JavaScript
     cxt = V8::Context.new
     cxt.eval('7 * 6') #=> 42
 
+call JavaScript functions
+
+    cxt.eval "function isTruthy(arg) { return !!arg }"
+    cxt.scope.isTruthy(0) #=> false
+
 embed values into the scope of your context
 
     cxt['foo'] = "bar"
