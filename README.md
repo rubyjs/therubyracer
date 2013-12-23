@@ -34,7 +34,8 @@ evaluate some simple JavaScript
 call JavaScript functions
 
     cxt.eval "function isTruthy(arg) { return !!arg }"
-    cxt.scope.isTruthy(0) #=> false
+    cxt[:isTruthy].call(' ') #=> true
+    cxt.scope.isTruthy(0)    #=> false
 
 embed values into the scope of your context
 
