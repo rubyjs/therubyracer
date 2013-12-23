@@ -1,9 +1,9 @@
 # therubyracer
 
-* [http://github.com/cowboyd/therubyracer](http://github.com/cowboyd/therubyracer)
-* [http://groups.google.com/group/therubyracer](http://groups.google.com/group/therubyracer)
-* [irc://irc.freenode.net/therubyracer](http://groups.google.com/group/therubyracer)
-* [Documentation](https://github.com/cowboyd/therubyracer/wiki)
+* GitHub Project: [http://github.com/cowboyd/therubyracer](http://github.com/cowboyd/therubyracer)
+* Mailing List: [http://groups.google.com/group/therubyracer](http://groups.google.com/group/therubyracer)
+* IRC / Chat: [irc://irc.freenode.net/therubyracer](http://groups.google.com/group/therubyracer)
+* Documentation: [GitHub Wiki](https://github.com/cowboyd/therubyracer/wiki) and [RubyDoc](http://rubydoc.info/gems/therubyracer)
 
 ### DESCRIPTION
 
