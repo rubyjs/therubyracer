@@ -64,11 +64,12 @@ describe V8::Error do
   describe "backtrace" do
     it "is mixed with ruby and javascript" do
       throw! do |e|
-        e.backtrace.first.should == "at three.js:1:7"
-        e.backtrace[1].should =~ /error_spec.rb/
-        e.backtrace[2].should == "at two.js:1:1"
-        e.backtrace[3].should =~ /error_spec.rb/
-        e.backtrace[4].should == "at one.js:1:1"
+        backtrace = e.backtrace.reject { |l| /kernel\// =~ l }
+        backtrace.first.should eql  "at three.js:1:7"
+        backtrace[1].should  match(/error_spec.rb/)
+        backtrace[2].should eql "at two.js:1:1"
+        backtrace[3].should match(/error_spec.rb/)
+        backtrace[4].should eql "at one.js:1:1"
       end
     end
 
@@ -114,8 +115,9 @@ INVALID
       lambda {
         @cxt.eval('boom()', "boom.js")
       }.should(raise_error {|e|
-        e.backtrace.first.should =~ /error_spec\.rb/
-        e.backtrace[1].should =~ /boom.js/
+        backtrace = e.backtrace.reject { |l| /kernel\// =~ l }
+        backtrace.first.should =~ /error_spec\.rb/
+        backtrace[1].should =~ /boom.js/
       })
     end
   end
