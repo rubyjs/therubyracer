@@ -8,4 +8,6 @@ rvm:
 notifications:
   recipients:
     - cowboyd@thefrontside.net
+before_install:
+  - gem update --system 2.1.11
 script: bundle exec rake compile spec
