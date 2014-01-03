@@ -1,5 +1,16 @@
 # Changelog
 
+## Current
+
+* add `timeout` option to `V8::Context` to forcibly abort long running scripts (thanks to @SamSaffron)
+* allow canonical require via  `require "therubyracer"` instead of oddball `require "v8"`(thanks @gaffneyc)
+
+## 0.12.0 2013/08/20
+
+* upgrade v8 to 3.16.4 (thanks to @ignisf)
+* enable native (and functional) weakref implementation for MRI > 2.0
+* expose low level interface for `V8::C::HeapStatistics#total_physical_size`
+
 ## 0.11.1 2013/01/04
 
 * reintroduce the dependency on libv8

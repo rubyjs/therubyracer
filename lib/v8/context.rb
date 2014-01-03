@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'stringio'
 module V8
   # All JavaScript must be executed in a context. This context consists of a global scope containing the
@@ -39,6 +40,10 @@ module V8
     #   @return [V8::C::Context] the underlying C++ object
     attr_reader :native
 
+    # @!attribute [r] timeout
+    #   @return [Number] maximum execution time in milliseconds for scripts executed in this context
+    attr_reader :timeout
+
     # Creates a new context.
     #
     # If passed the `:with` option, that object will be used as
@@ -50,12 +55,16 @@ module V8
     #       cxt['hello'] #=> 'Hi'
     #     end
     #
+    # If passed the `:timeout` option, every eval will timeout once
+    #   N milliseconds elapse
+    #
     # @param [Hash<Symbol, Object>] options initial context configuration
     #  * :with scope serves as the global scope of the new context
     # @yield [V8::Context] the newly created context
     def initialize(options = {})
       @conversion = Conversion.new
       @access = Access.new
+      @timeout = options[:timeout]
       if global = options[:with]
         Context.new.enter do
           global_template = global.class.to_template.InstanceTemplate()
@@ -84,7 +93,11 @@ module V8
       end
       enter do
         script = try { V8::C::Script::New(source.to_s, filename.to_s) }
-        to_ruby try {script.Run()}
+        if @timeout
+          to_ruby try {script.RunWithTimeout(@timeout)}
+        else
+          to_ruby try {script.Run()}
+        end
       end
     end
 

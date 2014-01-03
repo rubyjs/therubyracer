@@ -1,9 +1,14 @@
 # therubyracer
 
-* [http://github.com/cowboyd/therubyracer](http://github.com/cowboyd/therubyracer)
-* [http://groups.google.com/group/therubyracer](http://groups.google.com/group/therubyracer)
-* [irc://irc.freenode.net/therubyracer](http://groups.google.com/group/therubyracer)
-* [Documentation](https://github.com/cowboyd/therubyracer/wiki)
+[![Gem Version](https://badge.fury.io/rb/therubyracer.png)](http://badge.fury.io/rb/therubyracer)
+[![Build Status](https://travis-ci.org/cowboyd/therubyracer.png?branch=master)](https://travis-ci.org/cowboyd/therubyracer)
+[![Dependency Status](https://gemnasium.com/cowboyd/therubyracer.png)](https://gemnasium.com/cowboyd/therubyracer)
+
+
+* GitHub Project: [http://github.com/cowboyd/therubyracer](http://github.com/cowboyd/therubyracer)
+* Mailing List: [http://groups.google.com/group/therubyracer](http://groups.google.com/group/therubyracer)
+* IRC / Chat: [irc://irc.freenode.net/therubyracer](http://groups.google.com/group/therubyracer)
+* Documentation: [GitHub Wiki](https://github.com/cowboyd/therubyracer/wiki) and [RubyDoc](http://rubydoc.info/gems/therubyracer)
 
 ### DESCRIPTION
 
@@ -24,12 +29,27 @@ then in your Ruby code
 
     require 'v8'
     # or if using bundler (as with Rails), add the following to your Gemfile
-    gem "therubyracer", :require => 'v8'
+    gem "therubyracer"
 
 evaluate some simple JavaScript
 
     cxt = V8::Context.new
     cxt.eval('7 * 6') #=> 42
+
+access values inside your JavaScript context from Ruby
+
+    cxt.eval 'var val = {num: 5, fun: function isTruthy(arg) { return !!arg }}'
+    val = cxt[:val] #=> V8::Object
+    cxt[:val] == cxt.scope.val #=> true
+    val.num #=> 5
+    val.isTruthy(1) #=> true
+
+this includes references to JavaScript functions
+
+    truthy = val[:isTruthy] #=> V8::Function
+    truthy.call(' ') #=> true
+    truthy.call(0) #=> false
+
 
 embed values into the scope of your context
 
@@ -124,6 +144,32 @@ behavior you'd like.
 [access]:https://github.com/cowboyd/therubyracer/blob/master/lib/v8/access.rb
 
 More documentation can be found on the [GitHub wiki](https://github.com/cowboyd/therubyracer/wiki)
+
+### Protecting Your CPU cycles
+
+When running untrusted JavaScript code, you not only have to protect
+which functions it has access to, but also how much of your CPU it can
+consume. Take this simple, yet thoroughly malicious script:
+
+```javascript
+while (true) {}
+```
+
+It will loop forever and never return control to the calling Ruby
+thread. To protect against such JavaScript code that either
+deliberately or accidentally runs longer that it should, you can
+set an explicit timeout on your context. If the code runs longer that
+the allowed timeout, then it will throw an exception. Note that this
+exception could be raised at any point in the execution of the
+JavaScript.
+
+To specify the timeout (in milliseconds), pass in the `timeout` option
+to the constructor.
+
+```ruby
+cxt = V8::Context.new timeout: 700
+cxt.eval "while (true);" #= exception after 700ms!
+```
 
 ### PREREQUISITES
 
