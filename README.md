@@ -125,6 +125,32 @@ behavior you'd like.
 
 More documentation can be found on the [GitHub wiki](https://github.com/cowboyd/therubyracer/wiki)
 
+### Protecting Your CPU cycles
+
+When running untrusted JavaScript code, you not only have to protect
+which functions it has access to, but also how much of your CPU it can
+consume. Take this simple, yet thoroughly malicious script:
+
+```javascript
+while (true) {}
+```
+
+It will loop forever and never return control to the calling Ruby
+thread. To protect against such JavaScript code that either
+deliberately or accidentally runs longer that it should, you can
+set an explicit timeout on your context. If the code runs longer that
+the allowed timeout, then it will throw an exception. Note that this
+exception could be raised at any point in the execution of the
+JavaScript.
+
+To specify the timeout (in milliseconds), pass in the `timeout` option
+to the constructor.
+
+```ruby
+cxt = V8::Context.new timeout: 700
+cxt.eval "while (true);" #= exception after 700ms!
+```
+
 ### PREREQUISITES
 
 The Ruby Racer requires the V8 Javascript engine, but it offloads the

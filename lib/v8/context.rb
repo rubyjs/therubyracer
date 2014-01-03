@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'stringio'
 module V8
   # All JavaScript must be executed in a context. This context consists of a global scope containing the
@@ -39,7 +40,8 @@ module V8
     #   @return [V8::C::Context] the underlying C++ object
     attr_reader :native
 
-    # maximum execution time for script in milliseconds
+    # @!attribute [r] timeout
+    #   @return [Number] maximum execution time in milliseconds for scripts executed in this context
     attr_reader :timeout
 
     # Creates a new context.
