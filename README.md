@@ -1,5 +1,10 @@
 # therubyracer
 
+[![Gem Version](https://badge.fury.io/rb/therubyracer.png)](http://badge.fury.io/rb/therubyracer)
+[![Build Status](https://travis-ci.org/cowboyd/therubyracer.png?branch=master)](https://travis-ci.org/cowboyd/therubyracer)
+[![Dependency Status](https://gemnasium.com/cowboyd/therubyracer.png)](https://gemnasium.com/cowboyd/therubyracer)
+
+
 * GitHub Project: [http://github.com/cowboyd/therubyracer](http://github.com/cowboyd/therubyracer)
 * Mailing List: [http://groups.google.com/group/therubyracer](http://groups.google.com/group/therubyracer)
 * IRC / Chat: [irc://irc.freenode.net/therubyracer](http://groups.google.com/group/therubyracer)
