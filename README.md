@@ -31,11 +31,20 @@ evaluate some simple JavaScript
     cxt = V8::Context.new
     cxt.eval('7 * 6') #=> 42
 
-call JavaScript functions
+access values inside your JavaScript context from Ruby
 
-    cxt.eval "function isTruthy(arg) { return !!arg }"
-    cxt[:isTruthy].call(' ') #=> true
-    cxt.scope.isTruthy(0)    #=> false
+    cxt.eval 'var val = {num: 5, fun: function isTruthy(arg) { return !!arg }}'
+    val = cxt[:val] #=> V8::Object
+    cxt[:val] == cxt.scope.val #=> true
+    val.num #=> 5
+    val.isTruthy(1) #=> true
+
+this includes references to JavaScript functions
+
+    truthy = val[:isTruthy] #=> V8::Function
+    truthy.call(' ') #=> true
+    truthy.call(0) #=> false
+
 
 embed values into the scope of your context
 
