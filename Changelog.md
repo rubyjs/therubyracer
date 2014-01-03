@@ -3,6 +3,7 @@
 ## Current
 
 * add `timeout` option to `V8::Context` to forcibly abort long running scripts (thanks to @SamSaffron)
+* allow canonical require via  `require "therubyracer"` instead of oddball `require "v8"`(thanks @gaffneyc)
 
 ## 0.12.0 2013/08/20
 
