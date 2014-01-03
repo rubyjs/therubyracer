@@ -372,6 +372,7 @@ public:
   static void Init();
   static VALUE New(int argc, VALUE argv[], VALUE self);
   static VALUE Run(VALUE self);
+  static VALUE RunWithTimeout(VALUE self, VALUE timeout);
 
   inline Script(VALUE value) : Ref<v8::Script>(value) {}
   inline Script(v8::Handle<v8::Script> script) : Ref<v8::Script>(script) {}
