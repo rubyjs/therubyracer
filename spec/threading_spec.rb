@@ -10,6 +10,17 @@ describe "Timeouts" do
     ctx.eval("x=2;")
     ctx["x"].should == 2
   end
+
+  it "respects the timeout for function calls" do
+    ctx = V8::Context.new(:timeout => 10)
+    ctx.eval("var dos = function() { while(true){} };")
+    lambda { ctx['dos'].call }.should(raise_error)
+
+    # context should not be bust after it exploded once
+    ctx["x"] = 1;
+    ctx.eval("x=2;")
+    ctx["x"].should == 2
+  end
 end
 
 describe "using v8 from multiple threads", :threads => true do

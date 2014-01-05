@@ -638,6 +638,7 @@ public:
   static void Init();
   static VALUE NewInstance(int argc, VALUE argv[], VALUE self);
   static VALUE Call(VALUE self, VALUE receiver, VALUE argv);
+  static VALUE CallWithTimeout(VALUE self, VALUE receiver, VALUE argv, VALUE timeout);
   static VALUE SetName(VALUE self, VALUE name);
   static VALUE GetName(VALUE self);
   static VALUE GetInferredName(VALUE self);
