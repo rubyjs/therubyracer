@@ -33,6 +33,12 @@ namespace rr {
 #define Void(expr) expr; return Qnil;
 VALUE not_implemented(const char* message);
 
+void* breaker(void *d);
+typedef struct {
+    v8::Isolate *isolate;
+    long timeout;
+} timeout_data;
+
 class Equiv {
 public:
   Equiv(VALUE val) : value(val) {}

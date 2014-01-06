@@ -3,6 +3,15 @@
 #include "unistd.h"
 
 namespace rr {
+
+  void* breaker(void *d) {
+    timeout_data* data = (timeout_data*)d;
+    usleep(data->timeout*1000);
+    pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
+    v8::V8::TerminateExecution(data->isolate);
+    return NULL;
+  }
+
   void Function::Init() {
     ClassBuilder("Function", Object::Class).
       defineMethod("NewInstance", &NewInstance).
@@ -31,34 +40,21 @@ namespace rr {
     return Value(Function(self)->Call(Object(receiver), RARRAY_LENINT(argv), Value::array<Value>(argv)));
   }
 
-  typedef struct {
-      v8::Isolate *isolate;
-      long timeout;
-  } fct_timeout_data;
-
-  void* fct_breaker(void *d) {
-    fct_timeout_data* data = (fct_timeout_data*)d;
-    usleep(data->timeout*1000);
-    pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
-    v8::V8::TerminateExecution(data->isolate);
-    return NULL;
-  }
-
   VALUE Function::CallWithTimeout(VALUE self, VALUE receiver, VALUE argv, VALUE timeout) {
-    pthread_t fct_breaker_thread;
-    fct_timeout_data data;
+    pthread_t breaker_thread;
+    timeout_data data;
     VALUE rval;
     void *res;
 
     data.isolate = v8::Isolate::GetCurrent();
     data.timeout = NUM2LONG(timeout);
 
-    pthread_create(&fct_breaker_thread, NULL, fct_breaker, &data);
+    pthread_create(&breaker_thread, NULL, rr::breaker, &data);
 
     rval = Value(Function(self)->Call(Object(receiver), RARRAY_LENINT(argv), Value::array<Value>(argv)));
 
-    pthread_cancel(fct_breaker_thread);
-    pthread_join(fct_breaker_thread, &res);
+    pthread_cancel(breaker_thread);
+    pthread_join(breaker_thread, &res);
 
     return rval;
   }
