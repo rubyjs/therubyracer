@@ -15,6 +15,7 @@ Gem::Specification.new do |gem|
   gem.extensions    = ["ext/v8/extconf.rb"]
   gem.require_paths = ["lib", "ext"]
   gem.version       = V8::VERSION
+  gem.license       = 'MIT'
 
   gem.add_dependency 'ref'
   gem.add_dependency 'libv8', '~> 3.16.14.0'
