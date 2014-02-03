@@ -1,6 +1,6 @@
 # Changelog
 
-## Current
+## 0.12.1 2014/02/03
 
 * add `timeout` option to `V8::Context` to forcibly abort long running scripts (thanks to @SamSaffron)
 * allow canonical require via  `require "therubyracer"` instead of oddball `require "v8"`(thanks @gaffneyc)
