@@ -28,7 +28,9 @@ Embed the V8 JavaScript interpreter into Ruby.
 then in your Ruby code
 
     require 'v8'
-    # or if using bundler (as with Rails), add the following to your Gemfile
+
+or if using bundler (as with Rails), add the following to your Gemfile
+
     gem "therubyracer"
 
 evaluate some simple JavaScript
