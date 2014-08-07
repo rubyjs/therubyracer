@@ -221,7 +221,7 @@ Content-Length: 0
 When scripts are executed, you should see some JSON output scrolling by.  Read about the 
 [V8 Debugger Protocol here](http://code.google.com/p/v8/wiki/DebuggerProtocol).  You can
 also attempt to install the [Eclipse Plugin](http://code.google.com/p/chromedevtools/wiki/DebuggerTutorial).  
-(Instead of choosing the WebKit Protocol option in the instructions, choose *Standalone V8 VM*)
+(Instead of choosing the WebKit Protocol option in the instructions, choose **Standalone V8 VM**)
 Your mileage may vary, Eclipse is a little buggy.
 
 ### Sponsored by
