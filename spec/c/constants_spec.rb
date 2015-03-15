@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe V8::C do
+  requires_v8_context
+
   it "has constant methods for Undefined, Null, True and False" do
     [:Undefined, :Null, :True, :False].each do |name|
       constant = V8::C.send(name)

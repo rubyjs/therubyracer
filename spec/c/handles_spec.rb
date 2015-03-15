@@ -1,18 +1,14 @@
 require 'spec_helper'
 
 describe "setting up handles scopes" do
-  include ExplicitScoper
-
-  before do
-    def self.instance_eval(*args, &block)
-      V8::C::Locker() do
-        cxt = V8::C::Context::New()
-        begin
-          cxt.Enter()
-          super(*args, &block)
-        ensure
-          cxt.Exit()
-        end
+  around(:each) do |example|
+    V8::C::Locker() do
+      cxt = V8::C::Context::New()
+      begin
+        cxt.Enter()
+        example.run
+      ensure
+        cxt.Exit()
       end
     end
   end

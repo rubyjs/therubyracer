@@ -2,6 +2,8 @@
 require 'spec_helper'
 
 describe V8::C::Script do
+  requires_v8_context
+
   it "can run a script and return a polymorphic result" do
     source = V8::C::String::New("(new Array())")
     filename = V8::C::String::New("<eval>")

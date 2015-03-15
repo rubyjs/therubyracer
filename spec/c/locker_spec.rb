@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe V8::C::Locker do
-  include ExplicitScoper
-
   it "can lock and unlock the VM" do
     V8::C::Locker::IsLocked().should be_false
     V8::C::Locker() do

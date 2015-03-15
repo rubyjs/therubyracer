@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe V8::C::External do
+  requires_v8_context
 
   it "can catch javascript exceptions" do
     V8::C::V8::SetCaptureStackTraceForUncaughtExceptions(true, 99, V8::C::StackTrace::kDetailed)
