@@ -10,9 +10,9 @@ extern "C" {
   void Init_init() {
     V8::Init();
     Isolate::Init();
+    Handles::Init();
     // v8::Locker lock();
     // GC::Init();
-    // Handles::Init();
     // Accessor::Init();
     // Context::Init();
     // Invocation::Init();
