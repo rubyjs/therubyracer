@@ -41,8 +41,7 @@ namespace rr {
   }
 
   void Backref::release(const v8::WeakCallbackData<v8::External, Backref>& data) {
-    // TODO: Since data.GetValue() is Local<v8::External> make sure
-    // the Persistent is disposed of (or will be) at this point.
+    // The Persistent handle is disposed of automatically.
 
     delete data.GetParameter();
   }
