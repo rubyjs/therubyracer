@@ -7,6 +7,9 @@ namespace rr {
   public:
     static void Init();
     static VALUE New(VALUE self);
+    static VALUE Enter(VALUE self);
+    static VALUE Exit(VALUE self);
+    static VALUE GetCurrent(VALUE self);
 
     inline Isolate(v8::Isolate* isolate) : Pointer<v8::Isolate>(isolate) {}
     inline Isolate(VALUE value) : Pointer<v8::Isolate>(value) {}
@@ -22,7 +25,7 @@ namespace rr {
       // TODO: Do we want to dispose of the isolate when the object itself
       // is garbage-collected?
       // Can the isolate be used without it having a reference in ruby world?
-      isolate->Dispose();
+      // isolate->Dispose();
     }
   };
 

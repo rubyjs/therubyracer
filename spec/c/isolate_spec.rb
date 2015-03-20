@@ -1,4 +1,4 @@
-require 'v8/init'
+require 'c_spec_helper'
 
 describe V8::C::Isolate do
   it 'can create a new isolate' do

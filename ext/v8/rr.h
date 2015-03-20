@@ -12,10 +12,19 @@
 
 #include "class_builder.h"
 #include "pointer.h"
+#include "ref.h"
 
 #include "v8.h"
 #include "isolate.h"
 #include "handles.h"
+#include "context.h"
+
+#include "equiv.h"
+#include "bool.h"
+#include "uint32.h"
+#include "value.h"
+#include "backref.h"
+
+#include "object.h"
 
 #endif
-

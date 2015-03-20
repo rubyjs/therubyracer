@@ -1,4 +1,4 @@
-require 'v8/init'
+require 'c_spec_helper'
 
 describe 'handles' do
   describe '#HandleScope' do

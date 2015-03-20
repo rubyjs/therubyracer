@@ -1,4 +1,4 @@
-require 'v8/init'
+require 'c_spec_helper'
 
 describe V8::C::V8 do
   it 'can say its version' do

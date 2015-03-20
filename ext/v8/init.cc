@@ -11,13 +11,15 @@ extern "C" {
     V8::Init();
     Isolate::Init();
     Handles::Init();
+    Context::Init();
+    Backref::Init();
+    Value::Init();
+    Object::Init();
     // v8::Locker lock();
     // GC::Init();
     // Accessor::Init();
-    // Context::Init();
     // Invocation::Init();
     // Signature::Init();
-    // Value::Init();
     // Primitive::Init();
     // String::Init();
     // Object::Init();
@@ -35,6 +37,5 @@ extern "C" {
     // Locker::Init();
     // ResourceConstraints::Init();
     // HeapStatistics::Init();
-    // Backref::Init();
   }
 }
