@@ -22,23 +22,14 @@ namespace rr {
     VALUE isolate, extension_configuration, global_template, global_object;
     rb_scan_args(argc, argv, "13", &isolate, &extension_configuration, &global_template, &global_object);
 
-    // TODO: Is this needed?
-    // v8::Persistent<v8::Context> context(
-      return Context(v8::Context::New(
-        Isolate(isolate)
-        // TODO
-        // ,
-        // ExtensionConfiguration(extension_configuration),
-        // *ObjectTemplate(global_template),
-        // *Object(global_object)
-      ));
-    //);
-
-    // TODO: Is this needed?
-    // Context reference(context);
-    // context.Reset();
-    //
-    // return reference;
+    return Context(v8::Context::New(
+      Isolate(isolate)
+      // TODO
+      // ,
+      // ExtensionConfiguration(extension_configuration),
+      // *ObjectTemplate(global_template),
+      // *Object(global_object)
+    ));
   }
 
   VALUE Context::Dispose(VALUE self) {

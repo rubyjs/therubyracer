@@ -60,6 +60,10 @@ namespace rr {
 
     static VALUE Class;
 
+    static inline VALUE PointerEquals(VALUE self, VALUE other) {
+      return Bool(Pointer<T>(self).pointer == Pointer<T>(other).pointer);
+    }
+
   protected:
     T* pointer;
   };

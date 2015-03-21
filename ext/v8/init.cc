@@ -15,13 +15,13 @@ extern "C" {
     Backref::Init();
     Value::Init();
     Object::Init();
+    Primitive::Init();
+    String::Init();
     // v8::Locker lock();
     // GC::Init();
     // Accessor::Init();
     // Invocation::Init();
     // Signature::Init();
-    // Primitive::Init();
-    // String::Init();
     // Object::Init();
     // Array::Init();
     // Function::Init();

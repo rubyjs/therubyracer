@@ -14,22 +14,22 @@ namespace rr {
       defineMethod("IsNull", &IsNull).
       defineMethod("IsTrue", &IsTrue).
       defineMethod("IsFalse", &IsFalse).
-      // defineMethod("IsString", &IsString).
+      defineMethod("IsString", &IsString).
       // defineMethod("IsFunction", &IsFunction).
       // defineMethod("IsArray", &IsArray).
       defineMethod("IsObject", &IsObject).
       // defineMethod("IsBoolean", &IsBoolean).
       // defineMethod("IsNumber", &IsNumber).
-      // defineMethod("IsExternal", &IsExternal).
-      // defineMethod("IsInt32", &IsInt32).
-      // defineMethod("IsUint32", &IsUint32).
+      defineMethod("IsExternal", &IsExternal).
+      defineMethod("IsInt32", &IsInt32).
+      defineMethod("IsUint32", &IsUint32).
       // defineMethod("IsDate", &IsDate).
       // defineMethod("IsBooleanObject", &IsBooleanObject).
       // defineMethod("IsNumberObject", &IsNumberObject).
       // defineMethod("IsStringObject", &IsStringObject).
       // defineMethod("IsNativeError", &IsNativeError).
       // defineMethod("IsRegExp", &IsRegExp).
-      // defineMethod("ToString", &ToString).
+      defineMethod("ToString", &ToString).
       // defineMethod("ToDetailString", &ToDetailString).
       // defineMethod("ToObject", &ToObject).
       // defineMethod("BooleanValue", &BooleanValue).
@@ -61,8 +61,28 @@ namespace rr {
     return Bool(Value(self)->IsFalse());
   }
 
+  VALUE Value::IsString(VALUE self) {
+    return Bool(Value(self)->IsString());
+  }
+
   VALUE Value::IsObject(VALUE self) {
     return Bool(Value(self)->IsObject());
+  }
+
+  VALUE Value::IsExternal(VALUE self) {
+    return Bool(Value(self)->IsExternal());
+  }
+
+  VALUE Value::IsInt32(VALUE self) {
+    return Bool(Value(self)->IsInt32());
+  }
+
+  VALUE Value::IsUint32(VALUE self) {
+    return Bool(Value(self)->IsUint32());
+  }
+
+  VALUE Value::ToString(VALUE self) {
+    return String(Value(self)->ToString());
   }
 
   VALUE Value::Equals(VALUE self, VALUE other) {
@@ -91,14 +111,13 @@ namespace rr {
     //   return External((v8::Handle<v8::External>)v8::External::Cast(*handle));
     // }
 
-    // TODO
-    // if (handle->IsUint32()) {
-    //   return UInt32(handle->Uint32Value());
-    // }
-    //
-    // if (handle->IsInt32()) {
-    //   return INT2FIX(handle->Int32Value());
-    // }
+    if (handle->IsUint32()) {
+      return UInt32(handle->Uint32Value());
+    }
+
+    if (handle->IsInt32()) {
+      return INT2FIX(handle->Int32Value());
+    }
 
     if (handle->IsBoolean()) {
       return handle->BooleanValue() ? Qtrue : Qfalse;
@@ -109,11 +128,11 @@ namespace rr {
     //   return rb_float_new(handle->NumberValue());
     // }
 
+    if (handle->IsString()) {
+      return String(handle->ToString());
+    }
+
     // TODO
-    // if (handle->IsString()) {
-    //   return String(handle->ToString());
-    // }
-    //
     // if (handle->IsDate()) {
     //   return Date((v8::Handle<v8::Date>)v8::Date::Cast(*handle));
     // }

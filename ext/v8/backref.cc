@@ -35,7 +35,7 @@ namespace rr {
     v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
     v8::Local<v8::External> wrapper = v8::External::New(isolate, this);
-    (new v8::Persistent<v8::External>(isolate, wrapper))->SetWeak(this, &release);
+    v8::Persistent<v8::External>(isolate, wrapper).SetWeak(this, &release);
 
     return wrapper;
   }

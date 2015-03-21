@@ -14,6 +14,7 @@ module V8ContextHelpers
     isolate = V8::C::Isolate.New
 
     begin
+      cleanup_isolates
       isolate.Enter
 
       # V8::C::Locker() do
@@ -30,6 +31,10 @@ module V8ContextHelpers
     ensure
       isolate.Exit
     end
+  end
+
+  def cleanup_isolates
+    V8::C::Isolate.GetCurrent.Exit while V8::C::Isolate.GetCurrent
   end
 end
 

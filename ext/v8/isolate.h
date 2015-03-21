@@ -6,10 +6,13 @@ namespace rr {
   class Isolate : public Pointer<v8::Isolate> {
   public:
     static void Init();
+
     static VALUE New(VALUE self);
     static VALUE Enter(VALUE self);
     static VALUE Exit(VALUE self);
     static VALUE GetCurrent(VALUE self);
+
+    // TODO: Add a Dispose method
 
     inline Isolate(v8::Isolate* isolate) : Pointer<v8::Isolate>(isolate) {}
     inline Isolate(VALUE value) : Pointer<v8::Isolate>(value) {}

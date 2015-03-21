@@ -9,6 +9,7 @@ namespace rr {
 
       defineMethod("Enter", &Enter).
       defineMethod("Exit", &Exit).
+      defineMethod("Equals", &rr::Isolate::PointerEquals).
 
       store(&Class);
   }

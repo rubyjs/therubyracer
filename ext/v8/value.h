@@ -6,26 +6,27 @@ namespace rr {
   class Value : public Ref<v8::Value> {
   public:
     static void Init();
+
     static VALUE IsUndefined(VALUE self);
     static VALUE IsNull(VALUE self);
     static VALUE IsTrue(VALUE self);
     static VALUE IsFalse(VALUE self);
-    // static VALUE IsString(VALUE self);
+    static VALUE IsString(VALUE self);
     // static VALUE IsFunction(VALUE self);
     // static VALUE IsArray(VALUE self);
     static VALUE IsObject(VALUE self);
     static VALUE IsBoolean(VALUE self);
     // static VALUE IsNumber(VALUE self);
-    // static VALUE IsExternal(VALUE self);
-    // static VALUE IsInt32(VALUE self);
-    // static VALUE IsUint32(VALUE self);
+    static VALUE IsExternal(VALUE self);
+    static VALUE IsInt32(VALUE self);
+    static VALUE IsUint32(VALUE self);
     // static VALUE IsDate(VALUE self);
     // static VALUE IsBooleanObject(VALUE self);
     // static VALUE IsNumberObject(VALUE self);
     // static VALUE IsStringObject(VALUE self);
     // static VALUE IsNativeError(VALUE self);
     // static VALUE IsRegExp(VALUE self);
-    // static VALUE ToString(VALUE self);
+    static VALUE ToString(VALUE self);
     // static VALUE ToDetailString(VALUE self);
     // static VALUE ToObject(VALUE self);
     // static VALUE BooleanValue(VALUE self);
