@@ -3,6 +3,10 @@ require 'c_spec_helper'
 describe V8::C::String do
   requires_v8_context
 
+  it 'is a primitive' do
+    expect(V8::C::String.NewFromUtf8('test')).to be_a V8::C::Primitive
+  end
+
   it 'can create new strings' do
     expect(V8::C::String.NewFromUtf8('test')).to be
   end
