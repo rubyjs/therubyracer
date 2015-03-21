@@ -19,6 +19,7 @@
 
 #include "v8.h"
 #include "isolate.h"
+#include "locker.h"
 #include "handles.h"
 #include "context.h"
 

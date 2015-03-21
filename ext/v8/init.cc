@@ -17,7 +17,8 @@ extern "C" {
     Object::Init();
     Primitive::Init();
     String::Init();
-    // v8::Locker lock();
+    Locker::Init();
+
     // GC::Init();
     // Accessor::Init();
     // Invocation::Init();
@@ -34,7 +35,6 @@ extern "C" {
     // Message::Init();
     // TryCatch::Init();
     // Exception::Init();
-    // Locker::Init();
     // ResourceConstraints::Init();
     // HeapStatistics::Init();
   }
