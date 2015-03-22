@@ -49,7 +49,7 @@ namespace rr {
         return Qnil;
       }
 
-      return Data_Wrap_Struct(Class, 0, &Holder::enqueue, new Holder(handle));
+      return Data_Wrap_Struct(Class, 0, &Holder::destroy, new Holder(handle));
     }
 
     /*
@@ -105,8 +105,13 @@ namespace rr {
       v8::Persistent<T>* handle;
       bool disposed_p;
 
-      static void enqueue(Holder* holder) {
-        // TODO
+      static void destroy(Holder* holder) {
+        holder->dispose();
+
+        // TODO: This previously enqueued the holder to be disposed of
+        // in `AddGCPrologueCallback`. Now that `AddGCPrologueCallback` depends
+        // on an active Isolate (and must be registered for each one) it
+        // might be better to just dispose of the object on the spot.
         // GC::Finalize(holder);
       }
     };

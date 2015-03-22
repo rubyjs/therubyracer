@@ -19,11 +19,9 @@ extern "C" {
     String::Init();
     Locker::Init();
 
-    // GC::Init();
     // Accessor::Init();
     // Invocation::Init();
     // Signature::Init();
-    // Object::Init();
     // Array::Init();
     // Function::Init();
     // Date::Init();
