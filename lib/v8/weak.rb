@@ -39,7 +39,16 @@ module V8
         end
 
         def []=(key, value)
-          @values[key] = V8::Weak::Ref.new(value)
+          ref = V8::Weak::Ref.new(value)
+          ObjectSpace.define_finalizer(value, self.class.ensure_cleanup(@values, key, ref))
+
+          @values[key] = ref
+        end
+
+        def self.ensure_cleanup(values,key,ref)
+          proc {
+            values.delete(key) if values[key] == ref
+          }
         end
       end
     end
