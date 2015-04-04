@@ -13,8 +13,9 @@ namespace rr {
     static VALUE Enter(VALUE self);
     static VALUE Exit(VALUE self);
 
+    static VALUE Global(VALUE self);
+
     // TODO
-    // static VALUE Global(VALUE self);
     // static VALUE DetachGlobal(VALUE self);
     // static VALUE ReattachGlobal(VALUE self, VALUE global);
     // static VALUE GetEntered(VALUE self);

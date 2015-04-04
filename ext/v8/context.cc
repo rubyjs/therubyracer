@@ -10,6 +10,8 @@ namespace rr {
       defineMethod("Enter", &Enter).
       defineMethod("Exit", &Exit).
 
+      defineMethod("Global", &Global).
+
       store(&Class);
 
     // TODO
@@ -56,6 +58,13 @@ namespace rr {
     context->Exit();
 
     return Qnil;
+  }
+
+  VALUE Context::Global(VALUE self) {
+    Context context(self);
+    Locker lock(context.getIsolate());
+
+    return Object(context->GetIsolate(), context->Global());
   }
 
   // TODO

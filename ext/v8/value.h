@@ -12,7 +12,7 @@ namespace rr {
     static VALUE IsTrue(VALUE self);
     static VALUE IsFalse(VALUE self);
     static VALUE IsString(VALUE self);
-    // static VALUE IsFunction(VALUE self);
+    static VALUE IsFunction(VALUE self);
     // static VALUE IsArray(VALUE self);
     static VALUE IsObject(VALUE self);
     static VALUE IsBoolean(VALUE self);
@@ -46,6 +46,8 @@ namespace rr {
 
     static VALUE handleToRubyObject(v8::Isolate* isolate, v8::Handle<v8::Value> value);
     static v8::Handle<v8::Value> rubyObjectToHandle(v8::Isolate* isolate, VALUE value);
+
+    static std::vector< v8::Handle<v8::Value> > convertRubyArray(v8::Isolate* isolate, VALUE value);
 
     static VALUE Empty;
   };

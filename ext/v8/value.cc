@@ -15,7 +15,7 @@ namespace rr {
       defineMethod("IsTrue", &IsTrue).
       defineMethod("IsFalse", &IsFalse).
       defineMethod("IsString", &IsString).
-      // defineMethod("IsFunction", &IsFunction).
+      defineMethod("IsFunction", &IsFunction).
       // defineMethod("IsArray", &IsArray).
       defineMethod("IsObject", &IsObject).
       // defineMethod("IsBoolean", &IsBoolean).
@@ -81,6 +81,13 @@ namespace rr {
     Locker lock(value.getIsolate());
 
     return Bool(value->IsString());
+  }
+
+  VALUE Value::IsFunction(VALUE self) {
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsFunction());
   }
 
   VALUE Value::IsObject(VALUE self) {
@@ -190,6 +197,10 @@ namespace rr {
     //   return Date((v8::Handle<v8::Date>)v8::Date::Cast(*handle));
     // }
 
+    if (handle->IsFunction()) {
+      return Function(isolate, v8::Handle<v8::Function>::Cast(handle));
+    }
+
     if (handle->IsObject()) {
       return Object(isolate, handle->ToObject());
     }
@@ -237,6 +248,16 @@ namespace rr {
     }
 
     return v8::Undefined(isolate);
+  }
+
+  std::vector< v8::Handle<v8::Value> > Value::convertRubyArray(v8::Isolate* isolate, VALUE value) {
+    std::vector< v8::Handle<v8::Value> > vector(RARRAY_LENINT(value));
+
+    for (uint32_t i = 0; i < vector.size(); i++) {
+      vector[i] = Value::rubyObjectToHandle(isolate, rb_ary_entry(value, i));
+    }
+
+    return vector;
   }
 
 }

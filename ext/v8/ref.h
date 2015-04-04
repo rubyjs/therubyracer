@@ -138,6 +138,26 @@ namespace rr {
 
     v8::Isolate* isolate;
     v8::Handle<T> handle;
+
+  public:
+    template <class C>
+    class array {
+    public:
+      inline array(VALUE ary) : argv(ary), vector(RARRAY_LENINT(argv)) { }
+
+      inline operator v8::Handle<T>*() {
+        for (uint32_t i = 0; i < vector.size(); i++) {
+          vector[i] = C(rb_ary_entry(argv, i));
+        }
+
+        return &vector[0];
+      }
+
+    private:
+      VALUE argv;
+      std::vector< v8::Handle<T> > vector;
+    };
+
   };
 
   template <class T>

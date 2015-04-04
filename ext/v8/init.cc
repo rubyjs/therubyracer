@@ -17,16 +17,16 @@ extern "C" {
     Object::Init();
     Primitive::Init();
     String::Init();
+    Function::Init();
+    Script::Init();
 
     // Accessor::Init();
     // Invocation::Init();
     // Signature::Init();
     // Array::Init();
-    // Function::Init();
     // Date::Init();
     // Constants::Init();
     // External::Init();
-    // Script::Init();
     // Template::Init();
     // Stack::Init();
     // Message::Init();

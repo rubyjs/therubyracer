@@ -14,12 +14,12 @@ module V8ContextHelpers
     @isolate = V8::C::Isolate.New
 
     V8::C::HandleScope(@isolate) do
-      @cxt = V8::C::Context::New(@isolate)
+      @ctx = V8::C::Context::New(@isolate)
       begin
-        @cxt.Enter
+        @ctx.Enter
         yield
       ensure
-        @cxt.Exit
+        @ctx.Exit
       end
     end
   end
