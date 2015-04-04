@@ -19,11 +19,14 @@ namespace rr {
   }
 
   VALUE Context::New(int argc, VALUE argv[], VALUE self) {
-    VALUE isolate, extension_configuration, global_template, global_object;
-    rb_scan_args(argc, argv, "13", &isolate, &extension_configuration, &global_template, &global_object);
+    VALUE rb_isolate, extension_configuration, global_template, global_object;
+    rb_scan_args(argc, argv, "13", &rb_isolate, &extension_configuration, &global_template, &global_object);
+
+    Isolate isolate(rb_isolate);
+    Locker lock(isolate);
 
     return Context(v8::Context::New(
-      Isolate(isolate)
+      isolate
       // TODO
       // ,
       // ExtensionConfiguration(extension_configuration),

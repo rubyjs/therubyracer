@@ -14,6 +14,7 @@ namespace rr {
 
   VALUE String::NewFromUtf8(VALUE StringClass, VALUE rb_isolate, VALUE string) {
     Isolate isolate(rb_isolate);
+    Locker lock(isolate);
 
     v8::Local<v8::String> v8_string = v8::String::NewFromUtf8(isolate, RSTRING_PTR(string), v8::String::kNormalString, (int)RSTRING_LEN(string));
 
@@ -22,6 +23,7 @@ namespace rr {
 
   VALUE String::Utf8Value(VALUE self) {
     String string(self);
+    Locker lock(string.getIsolate());
 
     #ifdef HAVE_RUBY_ENCODING_H
     return rb_enc_str_new(*v8::String::Utf8Value(*string), string->Utf8Length(), rb_enc_find("utf-8"));
@@ -32,11 +34,14 @@ namespace rr {
 
   VALUE String::Concat(VALUE self, VALUE left, VALUE right) {
     String left_string(left);
+    Locker lock(left_string.getIsolate());
 
     return String(left_string.getIsolate(), v8::String::Concat(left_string, String(right)));
   }
 
   String::operator v8::Handle<v8::String>() const {
+    Locker lock(getIsolate());
+
     switch (TYPE(value)) {
     case T_STRING:
       return v8::String::NewFromUtf8(getIsolate(), RSTRING_PTR(value), v8::String::kNormalString, (int)RSTRING_LEN(value));

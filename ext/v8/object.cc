@@ -43,6 +43,8 @@ namespace rr {
   }
 
   Object::operator VALUE() {
+    Locker lock(getIsolate());
+
     if (handle.IsEmpty()) {
       return Qnil;
     }
@@ -58,7 +60,7 @@ namespace rr {
       value = downcast();
       backref = new Backref(value);
 
-      handle->SetHiddenValue(key, backref->toExternal());
+      handle->SetHiddenValue(key, backref->toExternal(getIsolate()));
     } else {
       v8::External* wrapper = v8::External::Cast(*external);
       backref = (Backref*)wrapper->Value();
@@ -74,6 +76,8 @@ namespace rr {
   }
 
   VALUE Object::downcast() {
+    Locker lock(getIsolate());
+
     // TODO: Enable this when the methods are implemented
     // if (handle->IsFunction()) {
     //   return Function((v8::Handle<v8::Function>) v8::Function::Cast(*handle));

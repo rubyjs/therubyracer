@@ -49,53 +49,87 @@ namespace rr {
   }
 
   VALUE Value::IsUndefined(VALUE self) {
-    return Bool(Value(self)->IsUndefined());
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsUndefined());
   }
 
   VALUE Value::IsNull(VALUE self) {
-    return Bool(Value(self)->IsNull());
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsNull());
   }
 
   VALUE Value::IsTrue(VALUE self) {
-    return Bool(Value(self)->IsTrue());
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsTrue());
   }
 
   VALUE Value::IsFalse(VALUE self) {
-    return Bool(Value(self)->IsFalse());
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsFalse());
   }
 
   VALUE Value::IsString(VALUE self) {
-    return Bool(Value(self)->IsString());
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsString());
   }
 
   VALUE Value::IsObject(VALUE self) {
-    return Bool(Value(self)->IsObject());
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsObject());
   }
 
   VALUE Value::IsExternal(VALUE self) {
-    return Bool(Value(self)->IsExternal());
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsExternal());
   }
 
   VALUE Value::IsInt32(VALUE self) {
-    return Bool(Value(self)->IsInt32());
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsInt32());
   }
 
   VALUE Value::IsUint32(VALUE self) {
-    return Bool(Value(self)->IsUint32());
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsUint32());
   }
 
   VALUE Value::ToString(VALUE self) {
     Value value(self);
+    Locker lock(value.getIsolate());
 
     return String(value.getIsolate(), value->ToString());
   }
 
   VALUE Value::Equals(VALUE self, VALUE other) {
-    return Bool(Value(self)->Equals(Value(other)));
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->Equals(Value(other)));
   }
 
   VALUE Value::StrictEquals(VALUE self, VALUE other) {
-    return Bool(Value(self)->StrictEquals(Value(other)));
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->StrictEquals(Value(other)));
   }
 
   VALUE Value::ToRubyObject(VALUE self) {
@@ -164,8 +198,6 @@ namespace rr {
   }
 
   v8::Handle<v8::Value> Value::rubyObjectToHandle(v8::Isolate* isolate, VALUE value) {
-    Locker lock(isolate);
-
     if (rb_equal(value, Empty)) {
       return v8::Handle<v8::Value>();
     }

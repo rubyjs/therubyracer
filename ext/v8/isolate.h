@@ -8,9 +8,6 @@ namespace rr {
     static void Init();
 
     static VALUE New(VALUE self);
-    static VALUE Enter(VALUE self);
-    static VALUE Exit(VALUE self);
-    static VALUE GetCurrent(VALUE self);
 
     // TODO: Add a Dispose method
 

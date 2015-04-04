@@ -31,9 +31,7 @@ namespace rr {
     return rb_funcall(storage, object, 0);
   }
 
-  v8::Handle<v8::External> Backref::toExternal() {
-    v8::Isolate* isolate = v8::Isolate::GetCurrent();
-
+  v8::Handle<v8::External> Backref::toExternal(v8::Isolate* isolate) {
     v8::Local<v8::External> wrapper = v8::External::New(isolate, this);
     v8::Persistent<v8::External>(isolate, wrapper).SetWeak(this, &release);
 

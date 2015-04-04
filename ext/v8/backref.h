@@ -14,7 +14,7 @@ namespace rr {
     VALUE get();
     VALUE set(VALUE value);
 
-    v8::Handle<v8::External> toExternal();
+    v8::Handle<v8::External> toExternal(v8::Isolate*);
 
     static void release(const v8::WeakCallbackData<v8::External, Backref>& data);
   private:
