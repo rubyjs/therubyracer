@@ -11,27 +11,17 @@ module V8ContextHelpers
   end
 
   def bootstrap_v8_context
-    cleanup_isolates
+    @isolate = V8::C::Isolate.New
 
-    isolate = V8::C::Isolate.New
-
-    V8::C::Locker(isolate) do
-      isolate.Enter
-      V8::C::HandleScope(isolate) do
-        @cxt = V8::C::Context::New(isolate)
-        begin
-          @cxt.Enter
-          yield
-        ensure
-          @cxt.Exit
-        end
+    V8::C::HandleScope(@isolate) do
+      @cxt = V8::C::Context::New(@isolate)
+      begin
+        @cxt.Enter
+        yield
+      ensure
+        @cxt.Exit
       end
-      isolate.Exit
     end
-  end
-
-  def cleanup_isolates
-    V8::C::Isolate.GetCurrent.Exit while V8::C::Isolate.GetCurrent
   end
 end
 

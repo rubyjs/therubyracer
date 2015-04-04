@@ -6,7 +6,7 @@ namespace rr {
   class Object : public Ref<v8::Object> {
   public:
     static void Init();
-    static VALUE New(VALUE self);
+    static VALUE New(VALUE self, VALUE isolate);
     static VALUE Set(VALUE self, VALUE key, VALUE value);
     // static VALUE ForceSet(VALUE self, VALUE key, VALUE value);
     static VALUE Get(VALUE self, VALUE key);
@@ -55,7 +55,7 @@ namespace rr {
     // static VALUE CallAsConstructor(VALUE self, VALUE argv);
 
     inline Object(VALUE value) : Ref<v8::Object>(value) {}
-    inline Object(v8::Handle<v8::Object> object) : Ref<v8::Object>(object) {}
+    inline Object(v8::Isolate* isolate, v8::Handle<v8::Object> object) : Ref<v8::Object>(isolate, object) {}
 
     virtual operator VALUE();
 

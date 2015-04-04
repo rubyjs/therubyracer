@@ -25,8 +25,13 @@ namespace rr {
   }
 
   VALUE Handles::SetupAndCall(Isolate isolate, int* state, VALUE block) {
+    Locker lock(isolate);
     v8::HandleScope handle_scope(isolate);
-    return rb_protect(&DoCall, block, state);
+
+    {
+      Unlocker unlock(isolate);
+      return rb_protect(&DoCall, block, state);
+    }
   }
 
   VALUE Handles::DoCall(VALUE block) {

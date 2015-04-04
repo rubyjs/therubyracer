@@ -15,11 +15,12 @@
 #include "equiv.h"
 #include "bool.h"
 #include "pointer.h"
+#include "isolate.h"
+
 #include "ref.h"
 
 #include "v8.h"
-#include "isolate.h"
-#include "locker.h"
+#include "locks.h"
 #include "handles.h"
 #include "context.h"
 

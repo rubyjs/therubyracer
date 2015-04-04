@@ -38,12 +38,20 @@ namespace rr {
   }
 
   VALUE Context::Enter(VALUE self) {
-    Context(self)->Enter();
+    Context context(self);
+    Locker lock(context.getIsolate());
+
+    context->Enter();
+
     return Qnil;
   }
 
   VALUE Context::Exit(VALUE self) {
-    Context(self)->Exit();
+    Context context(self);
+    Locker lock(context.getIsolate());
+
+    context->Exit();
+
     return Qnil;
   }
 

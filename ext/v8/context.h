@@ -31,7 +31,7 @@ namespace rr {
     // static VALUE IsCodeGenerationFromStringsAllowed(VALUE self);
 
     inline Context(VALUE value) : Ref<v8::Context>(value) {}
-    inline Context(v8::Handle<v8::Context> cxt) : Ref<v8::Context>(cxt) {}
+    inline Context(v8::Handle<v8::Context> ctx) : Ref<v8::Context>(ctx->GetIsolate(), ctx) {}
   };
 
 }

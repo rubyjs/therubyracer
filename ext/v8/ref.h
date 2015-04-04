@@ -33,9 +33,19 @@ namespace rr {
   public:
     Ref(VALUE value) {
       this->value = value;
+      Holder* holder = unwrapHolder();
+
+      if (holder) {
+        this->isolate = holder->isolate;
+        this->handle = v8::Local<T>::New(holder->isolate, *holder->handle);
+      } else {
+        this->isolate = NULL;
+        this->handle = v8::Local<T>();
+      }
     }
 
-    Ref(v8::Local<T> handle) {
+    Ref(v8::Isolate* isolate, v8::Local<T> handle) {
+      this->isolate = isolate;
       this->handle = handle;
     }
 
@@ -49,21 +59,18 @@ namespace rr {
         return Qnil;
       }
 
-      return Data_Wrap_Struct(Class, 0, &Holder::destroy, new Holder(handle));
+      return Data_Wrap_Struct(Class, 0, &Holder::destroy, new Holder(isolate, handle));
     }
 
     /*
     * Coerce a Ref into a v8::Local.
     */
     virtual operator v8::Handle<T>() const {
-      if (RTEST(this->value)) {
-        Holder* holder = NULL;
-        Data_Get_Struct(this->value, class Holder, holder);
+      return handle;
+    }
 
-        return v8::Local<T>::New(v8::Isolate::GetCurrent(), *holder->handle);
-      } else {
-        return v8::Local<T>();
-      }
+    v8::Isolate* getIsolate() const {
+      return isolate;
     }
 
     void dispose() {
@@ -84,9 +91,10 @@ namespace rr {
     class Holder {
       friend class Ref;
     public:
-      Holder(v8::Handle<T> handle) {
+      Holder(v8::Isolate* isolate, v8::Handle<T> handle) {
         this->disposed_p = false;
-        this->handle = new v8::Persistent<T>(v8::Isolate::GetCurrent(), handle);
+        this->isolate = isolate;
+        this->handle = new v8::Persistent<T>(isolate, handle);
       }
 
       virtual ~Holder() {
@@ -102,23 +110,34 @@ namespace rr {
       }
 
     protected:
+      v8::Isolate* isolate;
       v8::Persistent<T>* handle;
       bool disposed_p;
 
       static void destroy(Holder* holder) {
         holder->dispose();
 
-        // TODO: This previously enqueued the holder to be disposed of
-        // in `AddGCPrologueCallback`. Now that `AddGCPrologueCallback` depends
-        // on an active Isolate (and must be registered for each one) it
-        // might be better to just dispose of the object on the spot.
-        // GC::Finalize(holder);
+        // TODO: Use a nonblocking queue with `AddGCPrologueCallback`
       }
     };
 
-    VALUE value;
-    v8::Handle<T> handle;
     static VALUE Class;
+
+  protected:
+    Holder* unwrapHolder() const {
+      if (RTEST(this->value)) {
+        Holder* holder = NULL;
+        Data_Get_Struct(this->value, class Holder, holder);
+        return holder;
+      } else {
+        return NULL;
+      }
+    }
+
+    VALUE value;
+
+    v8::Isolate* isolate;
+    v8::Handle<T> handle;
   };
 
   template <class T>

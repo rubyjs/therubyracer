@@ -8,7 +8,7 @@ namespace rr {
     static void Init();
 
     inline Primitive(VALUE value) : Ref<v8::Primitive>(value) {}
-    inline Primitive(v8::Handle<v8::Primitive> primitive) : Ref<v8::Primitive>(primitive) {}
+    inline Primitive(v8::Isolate* isolate, v8::Handle<v8::Primitive> primitive) : Ref<v8::Primitive>(isolate, primitive) {}
   };
 
 }

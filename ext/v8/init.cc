@@ -17,7 +17,6 @@ extern "C" {
     Object::Init();
     Primitive::Init();
     String::Init();
-    Locker::Init();
 
     // Accessor::Init();
     // Invocation::Init();

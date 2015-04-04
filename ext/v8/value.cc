@@ -40,6 +40,9 @@ namespace rr {
       // defineMethod("Equals", &Equals).
       // defineMethod("StrictEquals", &StrictEquals).
 
+      defineMethod("ToRubyObject", &ToRubyObject).
+      defineSingletonMethod("FromRubyObject", &FromRubyObject).
+
       store(&Class);
 
       rb_gc_register_address(&Empty);
@@ -82,7 +85,9 @@ namespace rr {
   }
 
   VALUE Value::ToString(VALUE self) {
-    return String(Value(self)->ToString());
+    Value value(self);
+
+    return String(value.getIsolate(), value->ToString());
   }
 
   VALUE Value::Equals(VALUE self, VALUE other) {
@@ -93,7 +98,21 @@ namespace rr {
     return Bool(Value(self)->StrictEquals(Value(other)));
   }
 
-  Value::operator VALUE() {
+  VALUE Value::ToRubyObject(VALUE self) {
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return handleToRubyObject(value.getIsolate(), value);
+  }
+
+  VALUE Value::FromRubyObject(VALUE selfClass, VALUE rb_isolate, VALUE value) {
+    Isolate isolate(rb_isolate);
+    Locker lock(isolate);
+
+    return Value(isolate, rubyObjectToHandle(isolate, value));
+  }
+
+  VALUE Value::handleToRubyObject(v8::Isolate* isolate, v8::Handle<v8::Value> handle) {
     if (handle.IsEmpty() || handle->IsUndefined() || handle->IsNull()) {
       return Qnil;
     }
@@ -129,7 +148,7 @@ namespace rr {
     // }
 
     if (handle->IsString()) {
-      return String(handle->ToString());
+      return String(isolate, handle->ToString());
     }
 
     // TODO
@@ -138,18 +157,18 @@ namespace rr {
     // }
 
     if (handle->IsObject()) {
-      return Object(handle->ToObject());
+      return Object(isolate, handle->ToObject());
     }
 
-    return Ref<v8::Value>::operator VALUE();
+    return Value(isolate, handle);
   }
 
-  Value::operator v8::Handle<v8::Value>() const {
+  v8::Handle<v8::Value> Value::rubyObjectToHandle(v8::Isolate* isolate, VALUE value) {
+    Locker lock(isolate);
+
     if (rb_equal(value, Empty)) {
       return v8::Handle<v8::Value>();
     }
-
-    v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
     switch (TYPE(value)) {
     case T_FIXNUM:
@@ -165,7 +184,7 @@ namespace rr {
     case T_FALSE:
       return v8::False(isolate);
     case T_DATA:
-      return Ref<v8::Value>::operator v8::Handle<v8::Value>();
+      return Value(value);
     case T_OBJECT:
     case T_CLASS:
     case T_ICLASS:

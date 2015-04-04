@@ -12,10 +12,12 @@ namespace rr {
       store(&Class);
   }
 
-  VALUE String::NewFromUtf8(VALUE StringClass, VALUE string) {
-    v8::Local<v8::String> v8_string = v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), RSTRING_PTR(string), v8::String::kNormalString, (int)RSTRING_LEN(string));
+  VALUE String::NewFromUtf8(VALUE StringClass, VALUE rb_isolate, VALUE string) {
+    Isolate isolate(rb_isolate);
 
-    return String(v8_string);
+    v8::Local<v8::String> v8_string = v8::String::NewFromUtf8(isolate, RSTRING_PTR(string), v8::String::kNormalString, (int)RSTRING_LEN(string));
+
+    return String(isolate, v8_string);
   }
 
   VALUE String::Utf8Value(VALUE self) {
@@ -29,20 +31,20 @@ namespace rr {
   }
 
   VALUE String::Concat(VALUE self, VALUE left, VALUE right) {
-    return String(v8::String::Concat(String(left), String(right)));
+    String left_string(left);
+
+    return String(left_string.getIsolate(), v8::String::Concat(left_string, String(right)));
   }
 
   String::operator v8::Handle<v8::String>() const {
-    v8::Isolate* isolate = v8::Isolate::GetCurrent();
-
     switch (TYPE(value)) {
     case T_STRING:
-      return v8::String::NewFromUtf8(isolate, RSTRING_PTR(value), v8::String::kNormalString, (int)RSTRING_LEN(value));
+      return v8::String::NewFromUtf8(getIsolate(), RSTRING_PTR(value), v8::String::kNormalString, (int)RSTRING_LEN(value));
     case T_DATA:
       return Ref<v8::String>::operator v8::Handle<v8::String>();
     default:
       VALUE string = rb_funcall(value, rb_intern("to_s"), 0);
-      return v8::String::NewFromUtf8(isolate, RSTRING_PTR(string), v8::String::kNormalString, (int)RSTRING_LEN(string));
+      return v8::String::NewFromUtf8(getIsolate(), RSTRING_PTR(string), v8::String::kNormalString, (int)RSTRING_LEN(string));
     }
   }
 

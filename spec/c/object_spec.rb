@@ -4,13 +4,13 @@ describe V8::C::Object do
   requires_v8_context
 
   it 'can create a new object' do
-    expect(V8::C::Object.New).to be
+    expect(V8::C::Object.New(@isolate)).to be
   end
 
   it 'can store and retrieve a value' do
-    o = V8::C::Object.New
-    key = V8::C::String.NewFromUtf8('foo')
-    value = V8::C::String.NewFromUtf8('bar')
+    o = V8::C::Object.New(@isolate)
+    key = V8::C::String.NewFromUtf8(@isolate, 'foo')
+    value = V8::C::String.NewFromUtf8(@isolate, 'bar')
 
     o.Set(key, value)
     expect(o.Get(key).Utf8Value).to eq 'bar'
@@ -48,10 +48,11 @@ describe V8::C::Object do
   # end
 
   it 'always returns the same ruby object for the same V8 object' do
-    one = V8::C::Object.New
-    two = V8::C::Object.New
+    key = V8::C::String.NewFromUtf8(@isolate, 'two')
+    one = V8::C::Object.New(@isolate)
+    two = V8::C::Object.New(@isolate)
 
-    one.Set('two', two)
-    expect(one.Get('two')).to be two
+    one.Set(key, two)
+    expect(one.Get(key)).to be two
   end
 end

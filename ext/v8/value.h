@@ -35,14 +35,17 @@ namespace rr {
     // static VALUE Uint32Value(VALUE self);
     // static VALUE Int32Value(VALUE self);
 
+    static VALUE ToRubyObject(VALUE self);
+    static VALUE FromRubyObject(VALUE self, VALUE isolate, VALUE value);
+
     static VALUE Equals(VALUE self, VALUE other);
     static VALUE StrictEquals(VALUE self, VALUE other);
 
     inline Value(VALUE value) : Ref<v8::Value>(value) {}
-    inline Value(v8::Handle<v8::Value> value) : Ref<v8::Value>(value) {}
+    inline Value(v8::Isolate* isolate, v8::Handle<v8::Value> value) : Ref<v8::Value>(isolate, value) {}
 
-    virtual operator VALUE();
-    virtual operator v8::Handle<v8::Value>() const;
+    static VALUE handleToRubyObject(v8::Isolate* isolate, v8::Handle<v8::Value> value);
+    static v8::Handle<v8::Value> rubyObjectToHandle(v8::Isolate* isolate, VALUE value);
 
     static VALUE Empty;
   };

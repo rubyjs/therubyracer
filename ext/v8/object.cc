@@ -12,24 +12,33 @@ namespace rr {
       store(&Class);
   }
 
-  VALUE Object::New(VALUE self) {
-    return Object(v8::Object::New(v8::Isolate::GetCurrent()));
+  VALUE Object::New(VALUE self, VALUE rb_isolate) {
+    Isolate isolate(rb_isolate);
+    Locker lock(isolate);
+
+    return Object(isolate, v8::Object::New(isolate));
   }
 
   // TODO: Allow setting of property attributes
   VALUE Object::Set(VALUE self, VALUE key, VALUE value) {
+    Object object(self);
+    Locker lock(object.getIsolate());
+
     if (rb_obj_is_kind_of(key, rb_cNumeric)) {
-      return Bool(Object(self)->Set(UInt32(key), Value(value)));
+      return Bool(object->Set(UInt32(key), Value::rubyObjectToHandle(object.getIsolate(), value)));
     } else {
-      return Bool(Object(self)->Set(*Value(key), Value(value)));
+      return Bool(object->Set(*Value(key), Value::rubyObjectToHandle(object.getIsolate(), value)));
     }
   }
 
   VALUE Object::Get(VALUE self, VALUE key) {
+    Object object(self);
+    Locker lock(object.getIsolate());
+
     if (rb_obj_is_kind_of(key, rb_cNumeric)) {
-      return Value(Object(self)->Get(UInt32(key)));
+      return Value::handleToRubyObject(object.getIsolate(), object->Get(UInt32(key)));
     } else {
-      return Value(Object(self)->Get(*Value(key)));
+      return Value::handleToRubyObject(object.getIsolate(), object->Get(*Value(key)));
     }
   }
 
@@ -40,7 +49,7 @@ namespace rr {
 
     Backref* backref;
 
-    v8::Local<v8::String> key(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), "rr::Backref"));
+    v8::Local<v8::String> key(v8::String::NewFromUtf8(getIsolate(), "rr::Backref"));
     v8::Local<v8::Value> external = handle->GetHiddenValue(key);
 
     VALUE value;
