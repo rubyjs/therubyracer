@@ -37,8 +37,8 @@ namespace rr {
       // defineMethod("IntegerValue", &IntegerValue).
       // defineMethod("Uint32Value", &Uint32Value).
       // defineMethod("IntegerValue", &IntegerValue).
-      // defineMethod("Equals", &Equals).
-      // defineMethod("StrictEquals", &StrictEquals).
+      defineMethod("Equals", &Equals).
+      defineMethod("StrictEquals", &StrictEquals).
 
       defineMethod("ToRubyObject", &ToRubyObject).
       defineSingletonMethod("FromRubyObject", &FromRubyObject).

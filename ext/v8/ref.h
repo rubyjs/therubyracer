@@ -65,11 +65,11 @@ namespace rr {
     /*
     * Coerce a Ref into a v8::Local.
     */
-    virtual operator v8::Handle<T>() const {
+    inline operator v8::Handle<T>() const {
       return handle;
     }
 
-    v8::Isolate* getIsolate() const {
+    inline v8::Isolate* getIsolate() const {
       return isolate;
     }
 

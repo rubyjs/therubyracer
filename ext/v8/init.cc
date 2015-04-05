@@ -19,11 +19,11 @@ extern "C" {
     String::Init();
     Function::Init();
     Script::Init();
+    Array::Init();
 
     // Accessor::Init();
     // Invocation::Init();
     // Signature::Init();
-    // Array::Init();
     // Date::Init();
     // Constants::Init();
     // External::Init();

@@ -35,6 +35,7 @@ inline VALUE not_implemented(const char* message) {
 #include "backref.h"
 
 #include "object.h"
+#include "array.h"
 #include "primitive.h"
 // This one is named v8_string to avoid name collisions with C's string.h
 #include "rr_string.h"
