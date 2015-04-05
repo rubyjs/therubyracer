@@ -1,46 +1,53 @@
-require 'spec_helper'
+require 'c_spec_helper'
 
 describe V8::C::Function do
-  it "can be called" do
-    fn = run '(function() {return "foo"})'
-    fn.Call(@cxt.Global(), []).Utf8Value().should eql "foo"
+  requires_v8_context
+
+  it 'can be called' do
+    fn = run '(function() { return "foo" })'
+    expect(fn.Call(@ctx.Global, []).Utf8Value).to eq 'foo'
   end
 
-  it "can be called with arguments and context" do
+  it 'can be called with arguments and context' do
     fn = run '(function(one, two, three) {this.one = one; this.two = two; this.three = three})'
-    one = V8::C::Object::New()
-    two = V8::C::Object::New()
-    fn.Call(@cxt.Global(), [one, two, 3])
-    @cxt.Global().Get("one").should eql one
-    @cxt.Global().Get("two").should eql two
-    @cxt.Global().Get("three").should eql 3
+
+    one = V8::C::Object.New(@isolate)
+    two = V8::C::Object.New(@isolate)
+
+    fn.Call(@ctx.Global, [one, two, 3])
+
+    expect(@ctx.Global.Get(V8::C::String.NewFromUtf8(@isolate, 'one'))).to eq one
+    expect(@ctx.Global.Get(V8::C::String.NewFromUtf8(@isolate, 'two'))).to eq two
+    expect(@ctx.Global.Get(V8::C::String.NewFromUtf8(@isolate, 'three'))).to eq 3
   end
 
-  it "can be called as a constructor" do
+  it 'can be called as a constructor' do
     fn = run '(function() {this.foo = "foo"})'
-    fn.NewInstance().Get(V8::C::String::New('foo')).Utf8Value().should eql "foo"
+    expect(fn.NewInstance.Get(V8::C::String.NewFromUtf8(@isolate, 'foo')).Utf8Value).to eq 'foo'
   end
 
-  it "can be called as a constructor with arguments" do
-    fn = run '(function(foo) {this.foo = foo})'
-    object = fn.NewInstance([V8::C::String::New("bar")])
-    object.Get(V8::C::String::New('foo')).Utf8Value().should eql "bar"
-  end
+  # it 'can be called as a constructor with arguments' do
+  #   fn = run '(function(foo) {this.foo = foo})'
+  #   object = fn.NewInstance([V8::C::String.NewFromUtf8(@isolate, 'bar')])
 
-  it "doesn't kill the world if invoking it throws a javascript exception" do
-    V8::C::TryCatch() do
-      fn = run '(function() { throw new Error("boom!")})'
-      fn.Call(@cxt.Global(), [])
-      fn.NewInstance([])
-    end
-  end
+  #   expect(object.Get(V8::C::String.NewFromUtf8(@isolate, 'foo')).Utf8Value).to eq 'bar'
+  # end
 
+  # TODO
+  # it 'doesn\'t kill the world if invoking it throws a javascript exception' do
+  #   V8::C::TryCatch do
+  #     fn = run '(function() { throw new Error("boom!")})'
+  #     fn.Call(@ctx.Global(), [])
+  #     fn.NewInstance([])
+  #   end
+  # end
 
   def run(source)
-    source = V8::C::String::New(source.to_s)
-    filename = V8::C::String::New("<eval>")
-    script = V8::C::Script::New(source, filename)
-    result = script.Run()
-    result.kind_of?(V8::C::String) ? result.Utf8Value() : result
+    source = V8::C::String.NewFromUtf8(@isolate, source.to_s)
+    filename = V8::C::String.NewFromUtf8(@isolate, "<eval>")
+    script = V8::C::Script.Compile(source, filename)
+    result = script.Run(@ctx)
+
+    result.kind_of?(V8::C::String) ? result.Utf8Value : result
   end
 end

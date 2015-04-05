@@ -11,35 +11,31 @@ def rputs(msg)
   $stdout.flush
 end
 
-module ExplicitScoper;end
-module Autoscope
-  def instance_eval(*args, &block)
-    return super unless low_level_c_spec? && !explicitly_defines_scope?
+module V8ContextHelpers
+  module GroupMethods
+    def requires_v8_context
+      around(:each) do |example|
+        bootstrap_v8_context(&example)
+      end
+    end
+  end
+
+  def bootstrap_v8_context
     V8::C::Locker() do
       V8::C::HandleScope() do
         @cxt = V8::C::Context::New()
         begin
           @cxt.Enter()
-          super(*args, &block)
+          yield
         ensure
           @cxt.Exit()
         end
       end
     end
   end
-
-  def low_level_c_spec?
-    return false unless described_class
-    described_class.name =~ /^V8::C::/
-  end
-
-  def explicitly_defines_scope?
-    is_a?(ExplicitScoper)
-  end
 end
 
 RSpec.configure do |c|
-  c.before(:each) do
-    extend Autoscope
-  end
+  c.include V8ContextHelpers
+  c.extend V8ContextHelpers::GroupMethods
 end

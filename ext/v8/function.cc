@@ -1,8 +1,10 @@
 #include "rr.h"
 
 namespace rr {
+
   void Function::Init() {
     ClassBuilder("Function", Object::Class).
+
       defineMethod("NewInstance", &NewInstance).
       defineMethod("Call", &Call).
       defineMethod("SetName", &SetName).
@@ -12,47 +14,82 @@ namespace rr {
       defineMethod("GetScriptColumnNumber", &GetScriptColumnNumber).
       defineMethod("GetScriptId", &GetScriptId).
       defineMethod("GetScriptOrigin", &GetScriptOrigin).
+
       store(&Class);
   }
 
   VALUE Function::NewInstance(int argc, VALUE argv[], VALUE self) {
     VALUE args;
-    rb_scan_args(argc,argv,"01", &args);
+    rb_scan_args(argc, argv, "01", &args);
+
+    Function function(self);
+    v8::Isolate* isolate = function.getIsolate();
+    Locker lock(isolate);
+
     if (RTEST(args)) {
-      return Object(Function(self)->NewInstance(RARRAY_LENINT(args), Value::array<Value>(args)));
+      std::vector< v8::Handle<v8::Value> > vector(Value::convertRubyArray(isolate, args));
+      return Object(isolate, function->NewInstance(RARRAY_LENINT(args), &vector[0]));
     } else {
-      return Object(Function(self)->NewInstance());
+      return Object(isolate, function->NewInstance());
     }
   }
+
   VALUE Function::Call(VALUE self, VALUE receiver, VALUE argv) {
-    return Value(Function(self)->Call(Object(receiver), RARRAY_LENINT(argv), Value::array<Value>(argv)));
+    Function function(self);
+    v8::Isolate* isolate = function.getIsolate();
+    Locker lock(isolate);
+
+    std::vector< v8::Handle<v8::Value> > vector(Value::convertRubyArray(isolate, argv));
+
+    return Value::handleToRubyObject(isolate, function->Call(Value(receiver), RARRAY_LENINT(argv), &vector[0]));
   }
 
   VALUE Function::SetName(VALUE self, VALUE name) {
-    Void(Function(self)->SetName(String(name)));
+    Function function(self);
+    Locker lock(function.getIsolate());
+
+    function->SetName(String(name));
+
+    return Qnil;
   }
 
   VALUE Function::GetName(VALUE self) {
-    return Value(Function(self)->GetName());
+    Function function(self);
+    Locker lock(function.getIsolate());
+
+    return Value::handleToRubyObject(function.getIsolate(), function->GetName());
   }
 
   VALUE Function::GetInferredName(VALUE self) {
-    return Value(Function(self)->GetInferredName());
+    Function function(self);
+    Locker lock(function.getIsolate());
+
+    return Value::handleToRubyObject(function.getIsolate(), function->GetInferredName());
   }
 
   VALUE Function::GetScriptLineNumber(VALUE self) {
-    return INT2FIX(Function(self)->GetScriptLineNumber());
+    Function function(self);
+    Locker lock(function.getIsolate());
+
+    return INT2FIX(function->GetScriptLineNumber());
   }
 
   VALUE Function::GetScriptColumnNumber(VALUE self) {
-    return INT2FIX(Function(self)->GetScriptColumnNumber());
+    Function function(self);
+    Locker lock(function.getIsolate());
+
+    return INT2FIX(function->GetScriptColumnNumber());
   }
 
   VALUE Function::GetScriptId(VALUE self) {
-    return Value(Function(self)->GetScriptId());
+    Function function(self);
+    Locker lock(function.getIsolate());
+
+    return INT2FIX(function->ScriptId());
   }
 
   VALUE Function::GetScriptOrigin(VALUE self) {
     return not_implemented("GetScriptOrigin");
   }
+
 }

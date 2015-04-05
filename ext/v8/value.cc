@@ -2,219 +2,232 @@
 
 namespace rr {
 
-VALUE Value::Empty;
+  VALUE Value::Empty;
 
-void Value::Init() {
-  Empty = rb_eval_string("Object.new");
-  ClassBuilder("Value").
-    defineConst("Empty", Empty).
-    defineMethod("IsUndefined", &IsUndefined).
-    defineMethod("IsNull", &IsNull).
-    defineMethod("IsTrue", &IsTrue).
-    defineMethod("IsFalse", &IsFalse).
-    defineMethod("IsString", &IsString).
-    defineMethod("IsFunction", &IsFunction).
-    defineMethod("IsArray", &IsArray).
-    defineMethod("IsObject", &IsObject).
-    defineMethod("IsBoolean", &IsBoolean).
-    defineMethod("IsNumber", &IsNumber).
-    defineMethod("IsExternal", &IsExternal).
-    defineMethod("IsInt32", &IsInt32).
-    defineMethod("IsUint32", &IsUint32).
-    defineMethod("IsDate", &IsDate).
-    defineMethod("IsBooleanObject", &IsBooleanObject).
-    defineMethod("IsNumberObject", &IsNumberObject).
-    defineMethod("IsStringObject", &IsStringObject).
-    defineMethod("IsNativeError", &IsNativeError).
-    defineMethod("IsRegExp", &IsRegExp).
-    defineMethod("ToString", &ToString).
-    defineMethod("ToDetailString", &ToDetailString).
-    defineMethod("ToObject", &ToObject).
-    defineMethod("BooleanValue", &BooleanValue).
-    defineMethod("NumberValue", &NumberValue).
-    defineMethod("IntegerValue", &IntegerValue).
-    defineMethod("Uint32Value", &Uint32Value).
-    defineMethod("IntegerValue", &IntegerValue).
-    defineMethod("Equals", &Equals).
-    defineMethod("StrictEquals", &StrictEquals)
-    .store(&Class);
-    rb_gc_register_address(&Empty);
-}
+  void Value::Init() {
+    Empty = rb_eval_string("Object.new");
 
- VALUE Value::IsUndefined(VALUE self) {
-   return Bool(Value(self)->IsUndefined());
- }
- VALUE Value::IsNull(VALUE self) {
-   return Bool(Value(self)->IsNull());
- }
- VALUE Value::IsTrue(VALUE self) {
-   return Bool(Value(self)->IsTrue());
- }
- VALUE Value::IsFalse(VALUE self) {
-   return Bool(Value(self)->IsFalse());
- }
- VALUE Value::IsString(VALUE self) {
-   return Bool(Value(self)->IsString());
- }
- VALUE Value::IsFunction(VALUE self) {
-   return Bool(Value(self)->IsFunction());
- }
- VALUE Value::IsArray(VALUE self) {
-   return Bool(Value(self)->IsArray());
- }
- VALUE Value::IsObject(VALUE self) {
-   return Bool(Value(self)->IsObject());
- }
- VALUE Value::IsBoolean(VALUE self) {
-   return Bool(Value(self)->IsBoolean());
- }
- VALUE Value::IsNumber(VALUE self) {
-   return Bool(Value(self)->IsNumber());
- }
- VALUE Value::IsExternal(VALUE self) {
-   return Bool(Value(self)->IsExternal());
- }
- VALUE Value::IsInt32(VALUE self) {
-   return Bool(Value(self)->IsInt32());
- }
- VALUE Value::IsUint32(VALUE self) {
-   return Bool(Value(self)->IsUint32());
- }
- VALUE Value::IsDate(VALUE self) {
-   return Bool(Value(self)->IsDate());
- }
- VALUE Value::IsBooleanObject(VALUE self) {
-   return Bool(Value(self)->IsBooleanObject());
- }
- VALUE Value::IsNumberObject(VALUE self) {
-   return Bool(Value(self)->IsNumberObject());
- }
- VALUE Value::IsStringObject(VALUE self) {
-   return Bool(Value(self)->IsStringObject());
- }
- VALUE Value::IsNativeError(VALUE self) {
-   return Bool(Value(self)->IsNativeError());
- }
- VALUE Value::IsRegExp(VALUE self) {
-   return Bool(Value(self)->IsRegExp());
- }
+    ClassBuilder("Value").
+      defineConst("Empty", Empty).
 
- // VALUE Value::ToBoolean(VALUE self) {
- //   return Boolean(Value(self)->ToBoolean());
- // }
+      defineMethod("IsUndefined", &IsUndefined).
+      defineMethod("IsNull", &IsNull).
+      defineMethod("IsTrue", &IsTrue).
+      defineMethod("IsFalse", &IsFalse).
+      defineMethod("IsString", &IsString).
+      defineMethod("IsFunction", &IsFunction).
+      // defineMethod("IsArray", &IsArray).
+      defineMethod("IsObject", &IsObject).
+      // defineMethod("IsBoolean", &IsBoolean).
+      // defineMethod("IsNumber", &IsNumber).
+      defineMethod("IsExternal", &IsExternal).
+      defineMethod("IsInt32", &IsInt32).
+      defineMethod("IsUint32", &IsUint32).
+      // defineMethod("IsDate", &IsDate).
+      // defineMethod("IsBooleanObject", &IsBooleanObject).
+      // defineMethod("IsNumberObject", &IsNumberObject).
+      // defineMethod("IsStringObject", &IsStringObject).
+      // defineMethod("IsNativeError", &IsNativeError).
+      // defineMethod("IsRegExp", &IsRegExp).
+      defineMethod("ToString", &ToString).
+      // defineMethod("ToDetailString", &ToDetailString).
+      // defineMethod("ToObject", &ToObject).
+      // defineMethod("BooleanValue", &BooleanValue).
+      // defineMethod("NumberValue", &NumberValue).
+      // defineMethod("IntegerValue", &IntegerValue).
+      // defineMethod("Uint32Value", &Uint32Value).
+      // defineMethod("IntegerValue", &IntegerValue).
+      defineMethod("Equals", &Equals).
+      defineMethod("StrictEquals", &StrictEquals).
 
- // VALUE Value::ToNumber(VALUE self) {
- //   return Number(Value(self)->ToNumber());
- // }
- VALUE Value::ToString(VALUE self) {
-   return String(Value(self)->ToString());
- }
+      defineMethod("ToRubyObject", &ToRubyObject).
+      defineSingletonMethod("FromRubyObject", &FromRubyObject).
 
- VALUE Value::ToDetailString(VALUE self) {
-   return String(Value(self)->ToDetailString());
- }
+      store(&Class);
 
- VALUE Value::ToObject(VALUE self) {
-   return Object(Value(self)->ToObject());
- }
-
- // VALUE Value::ToInteger(VALUE self) {
- //   return Integer(Value(self)->ToInteger());
- // }
-
- // VALUE Value::ToUint32(VALUE self) {
- //   return Uint32(Value(self)->ToUint32());
- // }
-
- // VALUE Value::ToInt32(VALUE self) {
- //   return Int32(Value(self)->ToInt32());
- // }
-
-
-// VALUE Value::ToArrayIndex(VALUE self) {
-//   return Uint32(Value(self)->ToArrayIndex());
-// }
-
-VALUE Value::BooleanValue(VALUE self) {
-  return Bool(Value(self)->BooleanValue());
-}
-VALUE Value::NumberValue(VALUE self) {
-  return rb_float_new(Value(self)->NumberValue());
-}
-VALUE Value::IntegerValue(VALUE self) {
-  return INT2NUM(Value(self)->IntegerValue());
-}
-VALUE Value::Uint32Value(VALUE self) {
-  return UINT2NUM(Value(self)->Uint32Value());
-}
-VALUE Value::Int32Value(VALUE self) {
-  return INT2FIX(Value(self)->Int32Value());
-}
-
-VALUE Value::Equals(VALUE self, VALUE other) {
-  return Bool(Value(self)->Equals(Value(other)));
-}
-
-VALUE Value::StrictEquals(VALUE self, VALUE other) {
-  return Bool(Value(self)->StrictEquals(Value(other)));
-}
-
-Value::operator VALUE() {
-  if (handle.IsEmpty() || handle->IsUndefined() || handle->IsNull()) {
-    return Qnil;
+      rb_gc_register_address(&Empty);
   }
-  if (handle->IsTrue()) {
-    return Qtrue;
-  }
-  if (handle->IsFalse()) {
-    return Qfalse;
-  }
-  if (handle->IsExternal()) {
-    return External((v8::Handle<v8::External>)v8::External::Cast(*handle));
-  }
-  if (handle->IsUint32()) {
-    return UInt32(handle->Uint32Value());
-  }
-  if (handle->IsInt32()) {
-    return INT2FIX(handle->Int32Value());
-  }
-  if (handle->IsBoolean()) {
-    return handle->BooleanValue() ? Qtrue : Qfalse;
-  }
-  if (handle->IsNumber()) {
-    return rb_float_new(handle->NumberValue());
-  }
-  if (handle->IsString()) {
-    return String(handle->ToString());
-  }
-  if (handle->IsDate()) {
-    return Date((v8::Handle<v8::Date>)v8::Date::Cast(*handle));
-  }
-  if (handle->IsObject()) {
-    return Object(handle->ToObject());
-  }
-  return Ref<v8::Value>::operator VALUE();
-}
 
-Value::operator v8::Handle<v8::Value>() const {
-    if (rb_equal(value,Empty)) {
+  VALUE Value::IsUndefined(VALUE self) {
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsUndefined());
+  }
+
+  VALUE Value::IsNull(VALUE self) {
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsNull());
+  }
+
+  VALUE Value::IsTrue(VALUE self) {
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsTrue());
+  }
+
+  VALUE Value::IsFalse(VALUE self) {
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsFalse());
+  }
+
+  VALUE Value::IsString(VALUE self) {
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsString());
+  }
+
+  VALUE Value::IsFunction(VALUE self) {
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsFunction());
+  }
+
+  VALUE Value::IsObject(VALUE self) {
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsObject());
+  }
+
+  VALUE Value::IsExternal(VALUE self) {
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsExternal());
+  }
+
+  VALUE Value::IsInt32(VALUE self) {
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsInt32());
+  }
+
+  VALUE Value::IsUint32(VALUE self) {
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->IsUint32());
+  }
+
+  VALUE Value::ToString(VALUE self) {
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return String(value.getIsolate(), value->ToString());
+  }
+
+  VALUE Value::Equals(VALUE self, VALUE other) {
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->Equals(Value(other)));
+  }
+
+  VALUE Value::StrictEquals(VALUE self, VALUE other) {
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return Bool(value->StrictEquals(Value(other)));
+  }
+
+  VALUE Value::ToRubyObject(VALUE self) {
+    Value value(self);
+    Locker lock(value.getIsolate());
+
+    return handleToRubyObject(value.getIsolate(), value);
+  }
+
+  VALUE Value::FromRubyObject(VALUE selfClass, VALUE rb_isolate, VALUE value) {
+    Isolate isolate(rb_isolate);
+    Locker lock(isolate);
+
+    return Value(isolate, rubyObjectToHandle(isolate, value));
+  }
+
+  VALUE Value::handleToRubyObject(v8::Isolate* isolate, v8::Handle<v8::Value> handle) {
+    if (handle.IsEmpty() || handle->IsUndefined() || handle->IsNull()) {
+      return Qnil;
+    }
+
+    if (handle->IsTrue()) {
+      return Qtrue;
+    }
+
+    if (handle->IsFalse()) {
+      return Qfalse;
+    }
+
+    // TODO
+    // if (handle->IsExternal()) {
+    //   return External((v8::Handle<v8::External>)v8::External::Cast(*handle));
+    // }
+
+    if (handle->IsUint32()) {
+      return UInt32(handle->Uint32Value());
+    }
+
+    if (handle->IsInt32()) {
+      return INT2FIX(handle->Int32Value());
+    }
+
+    if (handle->IsBoolean()) {
+      return handle->BooleanValue() ? Qtrue : Qfalse;
+    }
+
+    // TODO
+    // if (handle->IsNumber()) {
+    //   return rb_float_new(handle->NumberValue());
+    // }
+
+    if (handle->IsString()) {
+      return String(isolate, handle->ToString());
+    }
+
+    // TODO
+    // if (handle->IsDate()) {
+    //   return Date((v8::Handle<v8::Date>)v8::Date::Cast(*handle));
+    // }
+
+    if (handle->IsFunction()) {
+      return Function(isolate, v8::Handle<v8::Function>::Cast(handle));
+    }
+
+    if (handle->IsObject()) {
+      return Object(isolate, handle->ToObject());
+    }
+
+    return Value(isolate, handle);
+  }
+
+  v8::Handle<v8::Value> Value::rubyObjectToHandle(v8::Isolate* isolate, VALUE value) {
+    if (rb_equal(value, Empty)) {
       return v8::Handle<v8::Value>();
     }
+
     switch (TYPE(value)) {
     case T_FIXNUM:
-      return v8::Integer::New(NUM2INT(value));
+      return v8::Integer::New(isolate, NUM2INT(value));
     case T_FLOAT:
-      return v8::Number::New(NUM2DBL(value));
+      return v8::Number::New(isolate, NUM2DBL(value));
     case T_STRING:
-      return v8::String::New(RSTRING_PTR(value), (int)RSTRING_LEN(value));
+      return v8::String::NewFromUtf8(isolate, RSTRING_PTR(value), v8::String::kNormalString, (int)RSTRING_LEN(value));
     case T_NIL:
-      return v8::Null();
+      return v8::Null(isolate);
     case T_TRUE:
-      return v8::True();
+      return v8::True(isolate);
     case T_FALSE:
-      return v8::False();
+      return v8::False(isolate);
     case T_DATA:
-      return Ref<v8::Value>::operator v8::Handle<v8::Value>();
+      return Value(value);
     case T_OBJECT:
     case T_CLASS:
     case T_ICLASS:
@@ -231,9 +244,20 @@ Value::operator v8::Handle<v8::Value>() const {
     case T_NODE:
     default:
       rb_warn("unknown conversion to V8 for: %s", RSTRING_PTR(rb_inspect(value)));
-      return v8::String::New("Undefined Conversion");
+      return v8::String::NewFromUtf8(isolate, "Undefined Conversion");
     }
 
-    return v8::Undefined();
-}
+    return v8::Undefined(isolate);
+  }
+
+  std::vector< v8::Handle<v8::Value> > Value::convertRubyArray(v8::Isolate* isolate, VALUE value) {
+    std::vector< v8::Handle<v8::Value> > vector(RARRAY_LENINT(value));
+
+    for (uint32_t i = 0; i < vector.size(); i++) {
+      vector[i] = Value::rubyObjectToHandle(isolate, rb_ary_entry(value, i));
+    }
+
+    return vector;
+  }
+
 }
