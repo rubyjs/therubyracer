@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.12.2 2015/04/06
+
+* fix memory leak where weak hash map entries were not being cleaned
+  up. Thanks to @SamSaffon
+
 ## 0.12.1 2014/02/03
 
 * add `timeout` option to `V8::Context` to forcibly abort long running scripts (thanks to @SamSaffron)
