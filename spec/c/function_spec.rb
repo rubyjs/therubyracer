@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe V8::C::Function do
+  requires_v8_context
+
   it "can be called" do
     fn = run '(function() {return "foo"})'
     fn.Call(@cxt.Global(), []).Utf8Value().should eql "foo"

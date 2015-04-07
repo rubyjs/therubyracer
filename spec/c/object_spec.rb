@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe V8::C::Object do
+  requires_v8_context
 
   it "can store and retrieve a value" do
     o = V8::C::Object::New()

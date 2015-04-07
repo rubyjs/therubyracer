@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe V8::C::Exception do
+  requires_v8_context
+
   it "can be thrown from Ruby" do
     t = V8::C::FunctionTemplate::New(method(:explode))
     @cxt.Global().Set("explode", t.GetFunction())
