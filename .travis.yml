@@ -5,7 +5,7 @@ rvm:
   - 1.9.3
   - 1.9.2
   - 1.8.7
-  - rbx-2.5.2
+#  - rbx-2.5.2
 notifications:
   recipients:
     - cowboyd@thefrontside.net
