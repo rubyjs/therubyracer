@@ -2,6 +2,7 @@
 
 [![Gem Version](https://badge.fury.io/rb/therubyracer.png)](http://badge.fury.io/rb/therubyracer)
 [![Build Status](https://travis-ci.org/cowboyd/therubyracer.png?branch=master)](https://travis-ci.org/cowboyd/therubyracer)
+[![Build status](https://ci.appveyor.com/api/projects/status/aqw06doke164dca7?svg=true)](https://ci.appveyor.com/project/cowboyd/therubyracer)
 [![Dependency Status](https://gemnasium.com/cowboyd/therubyracer.png)](https://gemnasium.com/cowboyd/therubyracer)
 
 
