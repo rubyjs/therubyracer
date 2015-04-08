@@ -24,11 +24,11 @@ describe V8::C::External do
       filename = V8::C::String::New("<eval>")
       script = V8::C::Script::New(source, filename)
       result = script.Run()
-      trycatch.HasCaught().should be_true
-      trycatch.CanContinue().should be_true
+      trycatch.HasCaught().should be_truthy
+      trycatch.CanContinue().should be_truthy
       exception = trycatch.Exception()
       exception.should_not be_nil
-      exception.IsNativeError().should be_true
+      exception.IsNativeError().should be_truthy
       trycatch.StackTrace().Utf8Value().should match /boom.*three.*two.*one/m
       message = trycatch.Message();
       message.should_not be_nil
@@ -44,9 +44,9 @@ describe V8::C::External do
       frame.GetColumn().should eql 15
       frame.GetScriptName().Utf8Value().should eql "<eval>"
       frame.GetScriptNameOrSourceURL().Utf8Value().should eql "<eval>"
-      frame.IsEval().should be_false
-      stack.GetFrame(4).IsEval().should be_true
-      frame.IsConstructor().should be_false
+      frame.IsEval().should be_falsey
+      stack.GetFrame(4).IsEval().should be_truthy
+      frame.IsConstructor().should be_falsey
     end
   end
 end

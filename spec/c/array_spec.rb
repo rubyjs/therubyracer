@@ -9,7 +9,7 @@ describe V8::C::Array do
     a.Length().should eql 0
     a.Set(0, o)
     a.Length().should eql 1
-    a.Get(0).Equals(o).should be_true
+    a.Get(0).Equals(o).should be_truthy
   end
 
   it "can be initialized with a length" do

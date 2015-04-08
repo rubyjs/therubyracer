@@ -17,7 +17,7 @@ describe V8::C::Script do
     name = V8::C::String::New("<spec>")
     origin = V8::C::ScriptOrigin.new(name)
     data = V8::C::ScriptData::PreCompile(source, source.length)
-    data.HasError().should be_false
+    data.HasError().should be_falsey
     script = V8::C::Script::New(V8::C::String::New(source), origin, data)
     script.Run().should eql 42
   end
@@ -25,6 +25,6 @@ describe V8::C::Script do
   it "can detect errors in the script data" do
     source = "^ = ;"
     data = V8::C::ScriptData::PreCompile(source, source.length)
-    data.HasError().should be_true
+    data.HasError().should be_truthy
   end
 end

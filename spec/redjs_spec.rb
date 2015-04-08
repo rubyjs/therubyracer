@@ -5,6 +5,6 @@ module RedJS
   Error = V8::Error
 end
 describe V8::Context do
-  pending "not ready for prime-time"
+  skip "not ready for prime-time"
   #it_behaves_like 'RedJS::Context'
 end
