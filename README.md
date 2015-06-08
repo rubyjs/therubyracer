@@ -1,5 +1,7 @@
 # therubyracer
 
+[![Join the chat at https://gitter.im/cowboyd/therubyracer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cowboyd/therubyracer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Gem Version](https://badge.fury.io/rb/therubyracer.png)](http://badge.fury.io/rb/therubyracer)
 [![Build Status](https://travis-ci.org/cowboyd/therubyracer.png?branch=master)](https://travis-ci.org/cowboyd/therubyracer)
 [![Build status](https://ci.appveyor.com/api/projects/status/aqw06doke164dca7?svg=true)](https://ci.appveyor.com/project/cowboyd/therubyracer)
