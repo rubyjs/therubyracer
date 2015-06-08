@@ -4,11 +4,11 @@
 [![Build Status](https://travis-ci.org/cowboyd/therubyracer.png?branch=master)](https://travis-ci.org/cowboyd/therubyracer)
 [![Build status](https://ci.appveyor.com/api/projects/status/aqw06doke164dca7?svg=true)](https://ci.appveyor.com/project/cowboyd/therubyracer)
 [![Dependency Status](https://gemnasium.com/cowboyd/therubyracer.png)](https://gemnasium.com/cowboyd/therubyracer)
+[![Join the chat at https://gitter.im/cowboyd/therubyracer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cowboyd/therubyracer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 
 * GitHub Project: [http://github.com/cowboyd/therubyracer](http://github.com/cowboyd/therubyracer)
 * Mailing List: [http://groups.google.com/group/therubyracer](http://groups.google.com/group/therubyracer)
-* IRC / Chat: [irc://irc.freenode.net/therubyracer](http://groups.google.com/group/therubyracer)
 * Documentation: [GitHub Wiki](https://github.com/cowboyd/therubyracer/wiki) and [RubyDoc](http://rubydoc.info/gems/therubyracer)
 
 ### DESCRIPTION
