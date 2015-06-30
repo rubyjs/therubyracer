@@ -1,3 +1,4 @@
+// -*- mode: c++ -*-
 #ifndef RR_CLASS_BUILDER
 #define RR_CLASS_BUILDER
 
