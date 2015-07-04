@@ -1,15 +1,18 @@
 require 'c_spec_helper'
 
 describe V8::C::Isolate do
+  let(:isolate) { V8::C::Isolate::New() }
+
   it 'can create a new isolate' do
-    expect(V8::C::Isolate.New).to be
+    expect(isolate).to be
   end
 
   it 'can be tested for equality' do
-    isolate_one = V8::C::Isolate.New
-    isolate_two = V8::C::Isolate.New
+    expect(isolate.Equals(isolate)).to eq true
+    expect(isolate.Equals(V8::C::Isolate::New())).to eq false
+  end
 
-    expect(isolate_one.Equals(isolate_one)).to eq true
-    expect(isolate_one.Equals(isolate_two)).to eq false
+  it "can be disposed of" do
+    isolate.Dispose()
   end
 end

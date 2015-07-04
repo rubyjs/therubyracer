@@ -1,34 +1,32 @@
+// -*- mode: c++ -*-
 #ifndef RR_ISOLATE
 #define RR_ISOLATE
 
 namespace rr {
-
+  /**
+   * V8::C::Isolate
+   *
+   * Represents a fully encapsulated V8 virtual machine. Allocated
+   * from Ruby by calling `V8::C::Isolate::New()`
+   *
+   * Note: You must call `Dispose()` on the isolate for its resources
+   * to be released.
+   */
   class Isolate : public Pointer<v8::Isolate> {
   public:
     static void Init();
 
     static VALUE New(VALUE self);
 
-    // TODO: Add a Dispose method
-
     inline Isolate(v8::Isolate* isolate) : Pointer<v8::Isolate>(isolate) {}
     inline Isolate(VALUE value) : Pointer<v8::Isolate>(value) {}
 
     inline operator VALUE() {
-      return Data_Wrap_Struct(Class, 0, &release, pointer);
+      return Data_Wrap_Struct(Class, 0, 0, pointer);
     }
 
-    static void release(v8::Isolate* isolate) {
-      // The isolates must be released with Dispose.
-      // Using the delete operator is not allowed.
-
-      // TODO: Do we want to dispose of the isolate when the object itself
-      // is garbage-collected?
-      // Can the isolate be used without it having a reference in ruby world?
-      // isolate->Dispose();
-    }
+    static VALUE Dispose(VALUE self);
   };
-
 }
 
 #endif

@@ -2,10 +2,14 @@ require 'mkmf'
 
 have_library('pthread')
 have_library('objc') if RUBY_PLATFORM =~ /darwin/
+
 $CPPFLAGS += " -Wall" unless $CPPFLAGS.split.include? "-Wall"
 $CPPFLAGS += " -g" unless $CPPFLAGS.split.include? "-g"
-$CPPFLAGS += " -rdynamic" unless $CPPFLAGS.split.include? "-rdynamic"
+$CPPFLAGS += " -rdynamic" unless $CPPFLAGS.split.include? "-rdynamic" unless RUBY_PLATFORM =~ /darwin/
 $CPPFLAGS += " -fPIC" unless $CPPFLAGS.split.include? "-rdynamic" or RUBY_PLATFORM =~ /darwin/
+$CPPFLAGS += " -std=c++11"
+
+$LDFLAGS += " -stdlib=libstdc++"
 
 CONFIG['LDSHARED'] = '$(CXX) -shared' unless RUBY_PLATFORM =~ /darwin/
 if CONFIG['warnflags']
@@ -16,7 +20,7 @@ if enable_config('debug')
   $CFLAGS += " -O0 -ggdb3"
 end
 
-LIBV8_COMPATIBILITY = '~> 3.31.0'
+LIBV8_COMPATIBILITY = '~> 4.5.95'
 
 begin
   require 'rubygems'

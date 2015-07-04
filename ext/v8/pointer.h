@@ -116,7 +116,7 @@ namespace rr {
      *
      *   Pointer<Greeter>(rubyValue)->sayHello();
      */
-    inline Pointer(VALUE v) : {
+    inline Pointer(VALUE v) {
       if (RTEST(v)) {
         this->unwrap(v);
       } else {
