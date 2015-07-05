@@ -19,7 +19,9 @@ namespace rr {
   }
 
   VALUE Isolate::Dispose(VALUE self) {
-    Isolate(self)->Dispose();
+    Isolate isolate(self);
+    delete isolate.data();
+    isolate->Dispose();
     return Qnil;
   }
 
