@@ -2,6 +2,10 @@
 #ifndef RR_ISOLATE
 #define RR_ISOLATE
 
+#include "vendor/concurrentqueue.h"
+
+using namespace moodycamel;
+
 namespace rr {
   /**
    * V8::C::Isolate
@@ -21,7 +25,7 @@ namespace rr {
    */
   class Isolate : public Pointer<v8::Isolate> {
   public:
-    class IsolateData;
+    struct IsolateData;
     static void Init();
 
     static VALUE New(VALUE self);
@@ -48,10 +52,14 @@ namespace rr {
       return (IsolateData*)pointer->GetData(0);
     }
 
+    inline void scheduleDelete(v8::Global<void>* cell) {
+      data()->queue.enqueue(cell);
+    }
+
     static VALUE Dispose(VALUE self);
 
-    class IsolateData {
-
+    struct IsolateData {
+      ConcurrentQueue<v8::Global<void>*> queue;
     };
   };
 }

@@ -6,10 +6,8 @@ namespace rr {
     ClassBuilder("Context").
       defineSingletonMethod("New", &New).
 
-      defineMethod("Dispose", &Dispose).
       defineMethod("Enter", &Enter).
       defineMethod("Exit", &Exit).
-
       defineMethod("Global", &Global).
 
       store(&Class);
@@ -35,11 +33,6 @@ namespace rr {
       // *ObjectTemplate(global_template),
       // *Object(global_object)
     ));
-  }
-
-  VALUE Context::Dispose(VALUE self) {
-    Context(self).dispose();
-    return Qnil;
   }
 
   VALUE Context::Enter(VALUE self) {
