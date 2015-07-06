@@ -170,7 +170,10 @@ namespace rr {
       ConcurrentQueue<v8::Persistent<void>*> v8_release_queue;
 
       /**
-       * Queue to hold
+       * Ruby objects that had been retained by this isolate, but that
+       * are eligible for release. Generally, an object ends up in a
+       * queue when the v8 object that had referenced it no longer
+       * needs it.
        */
       ConcurrentQueue<VALUE> rb_release_queue;
     };
