@@ -67,7 +67,6 @@ namespace rr {
     template <class T>
     inline void scheduleDelete(v8::Persistent<T>* cell) {
       data()->queue.enqueue((v8::Persistent<void>*)cell);
-      fprintf(stderr, "scheduleDelete()\n");
     }
 
     static VALUE Dispose(VALUE self);
