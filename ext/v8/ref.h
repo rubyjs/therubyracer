@@ -32,13 +32,14 @@ namespace rr {
   template <class T>
   class Ref {
   public:
+    struct Holder;
     Ref(VALUE value) {
       this->value = value;
       Holder* holder = unwrapHolder();
 
       if (holder) {
         this->isolate = holder->isolate;
-        this->handle = v8::Local<T>::New(holder->isolate, *holder->handle);
+        this->handle = v8::Local<T>::New(holder->isolate, *holder->cell);
       } else {
         this->isolate = NULL;
         this->handle = v8::Local<T>();
@@ -60,7 +61,7 @@ namespace rr {
         return Qnil;
       }
 
-      return Data_Wrap_Struct(Class, 0, &Holder::destroy, new Holder(isolate, handle));
+      return Data_Wrap_Struct(Class, 0, &destroy, new Holder(isolate, handle));
     }
 
     /*
@@ -74,10 +75,8 @@ namespace rr {
       return isolate;
     }
 
-    void dispose() {
-      Holder* holder = NULL;
-      Data_Get_Struct(this->value, class Holder, holder);
-      holder->dispose();
+    static void destroy(Holder* holder) {
+      delete holder;
     }
 
     /*
@@ -89,37 +88,16 @@ namespace rr {
     inline v8::Handle<T> operator->() const { return *this; }
     inline v8::Handle<T> operator*() const { return *this; }
 
-    class Holder {
-      friend class Ref;
-    public:
-      Holder(v8::Isolate* isolate, v8::Handle<T> handle) {
-        this->disposed_p = false;
-        this->isolate = isolate;
-        this->handle = new v8::Persistent<T>(isolate, handle);
-      }
+    struct Holder {
+      Holder(v8::Isolate* isolate, v8::Handle<T> handle) :
+        isolate(isolate), cell(new v8::Persistent<T>(isolate, handle)) {}
 
       virtual ~Holder() {
-        this->dispose();
+        Isolate(isolate).scheduleDelete<T>(cell);
       }
 
-      void dispose() {
-        if (!this->disposed_p) {
-          handle->Reset();
-          delete handle;
-          this->disposed_p = true;
-        }
-      }
-
-    protected:
       v8::Isolate* isolate;
-      v8::Persistent<T>* handle;
-      bool disposed_p;
-
-      static void destroy(Holder* holder) {
-        holder->dispose();
-
-        // TODO: Use a nonblocking queue with `AddGCPrologueCallback`
-      }
+      v8::Persistent<T>* cell;
     };
 
     static VALUE Class;
@@ -128,7 +106,7 @@ namespace rr {
     Holder* unwrapHolder() const {
       if (RTEST(this->value)) {
         Holder* holder = NULL;
-        Data_Get_Struct(this->value, class Holder, holder);
+        Data_Get_Struct(this->value, struct Holder, holder);
         return holder;
       } else {
         return NULL;
