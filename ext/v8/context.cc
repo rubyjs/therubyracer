@@ -24,7 +24,6 @@ namespace rr {
 
     Isolate isolate(rb_isolate);
     Locker lock(isolate);
-    v8::HandleScope handle_scope(isolate);
     return Context(v8::Context::New(
       isolate
       // TODO
