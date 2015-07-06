@@ -69,14 +69,14 @@ namespace rr {
     }
 
     inline void scheduleReleaseObject(VALUE object) {
-      data()->release_queue.enqueue(object);
+      data()->rb_release_queue.enqueue(object);
     }
 
     static void releaseAndMarkRetainedObjects(v8::Isolate* isolate_) {
       Isolate isolate(isolate_);
       IsolateData* data = isolate.data();
       VALUE object;
-      while (data->release_queue.try_dequeue(object)) {
+      while (data->rb_release_queue.try_dequeue(object)) {
         isolate.releaseObject(object);
       }
       rb_gc_mark(data->retained_objects);
@@ -144,7 +144,7 @@ namespace rr {
       /**
        * Queue to hold
        */
-      ConcurrentQueue<VALUE> release_queue;
+      ConcurrentQueue<VALUE> rb_release_queue;
     };
   };
 }
