@@ -21,7 +21,7 @@ namespace rr {
     create_params.array_buffer_allocator = &data->array_buffer_allocator;
     Isolate isolate(v8::Isolate::New(create_params));
     isolate->SetData(0, new IsolateData());
-    isolate->AddGCPrologueCallback(&clearDeadReferences);
+    isolate->AddGCPrologueCallback(&clearReferences);
     return isolate;
   }
 

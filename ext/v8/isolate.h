@@ -33,15 +33,6 @@ namespace rr {
     inline Isolate(v8::Isolate* isolate) : Pointer<v8::Isolate>(isolate) {}
     inline Isolate(VALUE value) : Pointer<v8::Isolate>(value) {}
 
-    static void clearDeadReferences(v8::Isolate* i, v8::GCType type, v8::GCCallbackFlags flags) {
-      Isolate isolate(i);
-      v8::Persistent<void>* cell;
-      while (isolate.data()->queue.try_dequeue(cell)) {
-        cell->Reset();
-        delete cell;
-      }
-    }
-
     /**
      * Converts the v8::Isolate into a Ruby Object, while setting up
      * its book keeping data. E.g.
@@ -68,6 +59,21 @@ namespace rr {
     inline void scheduleDelete(v8::Persistent<T>* cell) {
       data()->queue.enqueue((v8::Persistent<void>*)cell);
     }
+
+    /**
+     * An instance of v8::GCPrologueCallback, this will run in the v8
+     * GC thread, and clear out all the references that have been
+     * released from Ruby.
+     */
+    static void clearReferences(v8::Isolate* i, v8::GCType type, v8::GCCallbackFlags flags) {
+      Isolate isolate(i);
+      v8::Persistent<void>* cell;
+      while (isolate.data()->queue.try_dequeue(cell)) {
+        cell->Reset();
+        delete cell;
+      }
+    }
+
 
     static VALUE Dispose(VALUE self);
 
