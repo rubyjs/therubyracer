@@ -21,6 +21,14 @@ namespace rr {
       VALUE object;
     };
 
+    /**
+     * Implements a v8::WeakCallbackInfo<Container>::Callback with all
+     * of its idiosyncracies. It happens in two passes. In the first
+     * pass, you are required to only reset the weak reference. In the
+     * second pass, you can actually do your cleanup. In this case, we
+     * schedule the referenced Ruby object to be released in the next
+     * Ruby gc pass.
+     */
     static void release(const v8::WeakCallbackInfo<Container>& info) {
       Container* container(info.GetParameter());
       if (info.IsFirstPass()) {
