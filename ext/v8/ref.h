@@ -75,6 +75,10 @@ namespace rr {
       return isolate;
     }
 
+    inline operator v8::Isolate*() const {
+      return isolate;
+    }
+
     static void destroy(Holder* holder) {
       delete holder;
     }

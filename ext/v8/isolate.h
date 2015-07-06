@@ -38,8 +38,8 @@ namespace rr {
      * its book keeping data. E.g.
      * VALUE rubyObject = Isolate(v8::Isolate::New());
      */
-    inline operator VALUE() {
-      return Data_Wrap_Struct(Class, 0, 0, pointer);
+    virtual operator VALUE() {
+      return Data_Wrap_Struct(Class, &releaseAndMarkRetainedObjects, 0, pointer);
     }
 
     /**
@@ -58,6 +58,28 @@ namespace rr {
     template <class T>
     inline void scheduleDelete(v8::Persistent<T>* cell) {
       data()->queue.enqueue((v8::Persistent<void>*)cell);
+    }
+
+    inline void retainObject(VALUE object) {
+      rb_funcall(data()->retained_objects, rb_intern("add"), 1, object);
+    }
+
+    inline void releaseObject(VALUE object) {
+      rb_funcall(data()->retained_objects, rb_intern("remove"), 1, object);
+    }
+
+    inline void scheduleReleaseObject(VALUE object) {
+      data()->release_queue.enqueue(object);
+    }
+
+    static void releaseAndMarkRetainedObjects(v8::Isolate* isolate_) {
+      Isolate isolate(isolate_);
+      IsolateData* data = isolate.data();
+      VALUE object;
+      while (data->release_queue.try_dequeue(object)) {
+        isolate.releaseObject(object);
+      }
+      rb_gc_mark(data->retained_objects);
     }
 
     /**
@@ -97,6 +119,14 @@ namespace rr {
      * as the isolate.
      */
     struct IsolateData {
+
+      /**
+       * An instance of `V8::RetainedObjects` that contains all
+       * references held from from V8. As long as they are in this
+       * list, they won't be gc'd by Ruby.
+       */
+      VALUE retained_objects;
+
       /**
        * A custom ArrayBufferAllocator for this isolate. Why? because
        * if you don't, it will segfault when you try and create an
@@ -110,6 +140,11 @@ namespace rr {
        * can be released by the v8 garbarge collector later.
        */
       ConcurrentQueue<v8::Persistent<void>*> queue;
+
+      /**
+       * Queue to hold
+       */
+      ConcurrentQueue<VALUE> release_queue;
     };
   };
 }

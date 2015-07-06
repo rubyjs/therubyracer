@@ -20,6 +20,7 @@ extern "C" {
     Function::Init();
     Script::Init();
     Array::Init();
+    External::Init();
 
     // Accessor::Init();
     // Invocation::Init();
