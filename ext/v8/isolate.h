@@ -57,7 +57,7 @@ namespace rr {
      */
     template <class T>
     inline void scheduleDelete(v8::Persistent<T>* cell) {
-      data()->queue.enqueue((v8::Persistent<void>*)cell);
+      data()->v8_release_queue.enqueue((v8::Persistent<void>*)cell);
     }
 
     inline void retainObject(VALUE object) {
@@ -90,7 +90,7 @@ namespace rr {
     static void clearReferences(v8::Isolate* i, v8::GCType type, v8::GCCallbackFlags flags) {
       Isolate isolate(i);
       v8::Persistent<void>* cell;
-      while (isolate.data()->queue.try_dequeue(cell)) {
+      while (isolate.data()->v8_release_queue.try_dequeue(cell)) {
         cell->Reset();
         delete cell;
       }
@@ -139,7 +139,7 @@ namespace rr {
        * finished with an object it will be enqueued here so that it
        * can be released by the v8 garbarge collector later.
        */
-      ConcurrentQueue<v8::Persistent<void>*> queue;
+      ConcurrentQueue<v8::Persistent<void>*> v8_release_queue;
 
       /**
        * Queue to hold
