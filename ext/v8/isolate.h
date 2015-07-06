@@ -53,24 +53,52 @@ namespace rr {
 
     /**
      * Schedule a v8::Persistent reference to be be deleted with the next
-     * invocation of the V8 Garbarge Collector
+     * invocation of the V8 Garbarge Collector. It is safe to call
+     * this method from within the Ruby garbage collection thread or a place
+     * where you do not want to acquire any V8 locks.
      */
     template <class T>
-    inline void scheduleDelete(v8::Persistent<T>* cell) {
+    inline void scheduleReleaseObject(v8::Persistent<T>* cell) {
       data()->v8_release_queue.enqueue((v8::Persistent<void>*)cell);
     }
 
+    /**
+     * Schedule a Ruby object to be released with the next invocation
+     * of the Ruby garbage collector. This method is safe to call from places
+     * where you do not hold any Ruby locks (such as the V8 GC thread)
+     */
+    inline void scheduleReleaseObject(VALUE object) {
+      data()->rb_release_queue.enqueue(object);
+    }
+
+    /**
+     * Increase the reference count to this Ruby object by one. As
+     * long as there is more than 1 reference to this object, it will
+     * not be garbage collected, even if there are no references to
+     * from within Ruby code.
+     *
+     * Note: should be called from a place where Ruby locks are held.
+     */
     inline void retainObject(VALUE object) {
       rb_funcall(data()->retained_objects, rb_intern("add"), 1, object);
     }
 
+    /**
+     * Decrease the reference count to this Ruby object by one. If the
+     * count falls below zero, this object will no longer be marked my
+     * this Isolate and will be eligible for garbage collection.
+     *
+     * Note: should be called from a place where Ruby locks are held.
+     */
     inline void releaseObject(VALUE object) {
       rb_funcall(data()->retained_objects, rb_intern("remove"), 1, object);
     }
 
-    inline void scheduleReleaseObject(VALUE object) {
-      data()->rb_release_queue.enqueue(object);
-    }
+
+    /**
+     * The `gc_mark()` callback for this Isolate's
+     * Data_Wrap_Struct. It releases all pending Ruby objects.
+     */
 
     static void releaseAndMarkRetainedObjects(v8::Isolate* isolate_) {
       Isolate isolate(isolate_);
