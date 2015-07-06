@@ -8,11 +8,8 @@ namespace rr {
     static void Init();
 
     static VALUE New(int argc, VALUE argv[], VALUE self);
-    static VALUE Dispose(VALUE self);
-
     static VALUE Enter(VALUE self);
     static VALUE Exit(VALUE self);
-
     static VALUE Global(VALUE self);
 
     // TODO
