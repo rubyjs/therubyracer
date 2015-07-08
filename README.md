@@ -41,7 +41,7 @@ evaluate some simple JavaScript
 
 access values inside your JavaScript context from Ruby
 
-    cxt.eval 'var val = {num: 5, fun: function isTruthy(arg) { return !!arg }}'
+    cxt.eval 'var val = {num: 5, isTruthy: function (arg) { return !!arg }}'
     val = cxt[:val] #=> V8::Object
     cxt[:val] == cxt.scope.val #=> true
     val.num #=> 5
