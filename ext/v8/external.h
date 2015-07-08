@@ -3,7 +3,7 @@
 #define EXTERNAL_H
 
 namespace rr {
-  class External : Ref<v8::External> {
+  class External : public Ref<v8::External> {
   public:
 
     static void Init();
@@ -13,6 +13,8 @@ namespace rr {
     inline External(VALUE value) : Ref<v8::External>(value) {}
     inline External(v8::Isolate* isolate, v8::Handle<v8::External> handle) :
       Ref<v8::External>(isolate, handle) {}
+    inline External(v8::Isolate* isolate, v8::Handle<v8::Value> value) :
+      External(isolate, v8::Handle<v8::External>::Cast<v8::Value>(value)) {}
 
     struct Container {
       Container(VALUE v) : object(v) {}
