@@ -1,5 +1,8 @@
+// -*- mode: c++ -*-
 #ifndef RR_SCRIPT
 #define RR_SCRIPT
+
+#include "rr.h"
 
 namespace rr {
 
@@ -13,7 +16,5 @@ namespace rr {
     inline Script(VALUE value) : Ref<v8::Script>(value) {}
     inline Script(v8::Isolate* isolate, v8::Handle<v8::Script> script) : Ref<v8::Script>(isolate, script) {}
   };
-
 }
-
 #endif

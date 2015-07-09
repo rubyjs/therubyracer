@@ -12,9 +12,12 @@ namespace rr {
     static VALUE SetName(VALUE self, VALUE name);
     static VALUE GetName(VALUE self);
     static VALUE GetInferredName(VALUE self);
+    static VALUE GetDisplayName(VALUE self);
     static VALUE GetScriptLineNumber(VALUE self);
     static VALUE GetScriptColumnNumber(VALUE self);
-    static VALUE GetScriptId(VALUE self);
+    static VALUE IsBuiltin(VALUE self);
+    static VALUE ScriptId(VALUE self);
+    static VALUE GetBoundFunction(VALUE self);
     static VALUE GetScriptOrigin(VALUE self);
 
     inline Function(VALUE value) : Ref<v8::Function>(value) {}
