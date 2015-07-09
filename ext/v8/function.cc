@@ -12,7 +12,9 @@ namespace rr {
       defineMethod("GetInferredName", &GetInferredName).
       defineMethod("GetScriptLineNumber", &GetScriptLineNumber).
       defineMethod("GetScriptColumnNumber", &GetScriptColumnNumber).
-      defineMethod("GetScriptId", &GetScriptId).
+      defineMethod("IsBuiltin", &IsBuiltin).
+      defineMethod("ScriptId", &ScriptId).
+      defineMethod("GetBoundFunction", &GetBoundFunction).
       defineMethod("GetScriptOrigin", &GetScriptOrigin).
 
       store(&Class);
@@ -81,15 +83,32 @@ namespace rr {
     return INT2FIX(function->GetScriptColumnNumber());
   }
 
-  VALUE Function::GetScriptId(VALUE self) {
+  VALUE Function::IsBuiltin(VALUE self) {
+    Function function(self);
+    Locker lock(function);
+
+    return Bool(function->IsBuiltin());
+  }
+
+  VALUE Function::ScriptId(VALUE self) {
     Function function(self);
     Locker lock(function.getIsolate());
 
     return INT2FIX(function->ScriptId());
   }
 
+  VALUE Function::GetBoundFunction(VALUE self) {
+    Function function(self);
+    Locker lock(function);
+
+    return Value(function.getIsolate(), function->GetBoundFunction());
+  }
+
   VALUE Function::GetScriptOrigin(VALUE self) {
-    return not_implemented("GetScriptOrigin");
+    Function function(self);
+    Locker lock(function);
+
+    return ScriptOrigin(function, function->GetScriptOrigin());
   }
 
 }

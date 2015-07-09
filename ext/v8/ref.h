@@ -97,7 +97,7 @@ namespace rr {
         isolate(isolate), cell(new v8::Persistent<T>(isolate, handle)) {}
 
       virtual ~Holder() {
-        Isolate(isolate).scheduleDelete<T>(cell);
+        Isolate(isolate).scheduleReleaseObject<T>(cell);
       }
 
       v8::Isolate* isolate;

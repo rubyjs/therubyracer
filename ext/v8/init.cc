@@ -19,6 +19,7 @@ extern "C" {
     String::Init();
     Function::Init();
     Script::Init();
+    ScriptOrigin::Init();
     Array::Init();
     External::Init();
 

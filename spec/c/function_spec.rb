@@ -3,6 +3,14 @@ require 'c_spec_helper'
 describe V8::C::Function do
   requires_v8_context
 
+  it "has a script origin" do
+    fn = run '(function() { return "foo" })'
+    origin = fn.GetScriptOrigin()
+    expect(origin.ResourceName().ToString().Utf8Value()).to eql 'undefined'
+    expect(origin.ResourceLineOffset()).to eql 0
+    expect(origin.ResourceColumnOffset()).to eql 0
+  end
+
   it 'can be called' do
     fn = run '(function() { return "foo" })'
     expect(fn.Call(@ctx.Global, []).Utf8Value).to eq 'foo'
@@ -26,12 +34,12 @@ describe V8::C::Function do
     expect(fn.NewInstance.Get(V8::C::String.NewFromUtf8(@isolate, 'foo')).Utf8Value).to eq 'foo'
   end
 
-  # it 'can be called as a constructor with arguments' do
-  #   fn = run '(function(foo) {this.foo = foo})'
-  #   object = fn.NewInstance([V8::C::String.NewFromUtf8(@isolate, 'bar')])
+  it 'can be called as a constructor with arguments' do
+    fn = run '(function(foo) {this.foo = foo})'
+    object = fn.NewInstance([V8::C::String.NewFromUtf8(@isolate, 'bar')])
 
-  #   expect(object.Get(V8::C::String.NewFromUtf8(@isolate, 'foo')).Utf8Value).to eq 'bar'
-  # end
+    expect(object.Get(V8::C::String.NewFromUtf8(@isolate, 'foo')).Utf8Value).to eq 'bar'
+  end
 
   # TODO
   # it 'doesn\'t kill the world if invoking it throws a javascript exception' do

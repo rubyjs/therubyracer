@@ -1,7 +1,6 @@
 #include "rr.h"
 
 namespace rr {
-
   void Script::Init() {
     ClassBuilder("Script").
       defineSingletonMethod("Compile", &Compile).
@@ -13,11 +12,6 @@ namespace rr {
       store(&Class);
 
     // TODO
-    // ClassBuilder("ScriptOrigin").
-    //   defineSingletonMethod("new", &ScriptOrigin::initialize).
-    //   store(&ScriptOrigin::Class);
-
-    // TODO
     // ClassBuilder("ScriptData").
     //   defineSingletonMethod("PreCompile", &ScriptData::PreCompile).
     //   defineSingletonMethod("New", &ScriptData::New).
@@ -26,6 +20,7 @@ namespace rr {
     //   defineMethod("HasError", &ScriptData::HasError).
     //   store(&ScriptData::Class);
   }
+
 
   VALUE Script::Compile(int argc, VALUE argv[], VALUE self) {
     VALUE source, rb_context, origin;
@@ -44,5 +39,4 @@ namespace rr {
 
     return Value::handleToRubyObject(context->GetIsolate(), Script(self)->Run());
   }
-
 }

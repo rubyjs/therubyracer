@@ -166,10 +166,9 @@ namespace rr {
       return Qfalse;
     }
 
-    // TODO
-    // if (handle->IsExternal()) {
-    //   return External((v8::Handle<v8::External>)v8::External::Cast(*handle));
-    // }
+    if (handle->IsExternal()) {
+      return External(isolate, handle);
+    }
 
     if (handle->IsUint32()) {
       return UInt32(handle->Uint32Value());
