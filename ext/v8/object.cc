@@ -27,7 +27,7 @@ namespace rr {
     Locker lock(isolate);
 
     if (rb_obj_is_kind_of(key, rb_cNumeric)) {
-      return Bool::Maybe(object->Set(context, UInt32(key), Value::rubyObjectToHandle(isolate, value)));
+      return Bool::Maybe(object->Set(context, UInt32_t(key), Value::rubyObjectToHandle(isolate, value)));
     } else {
       return Bool::Maybe(object->Set(context, *Value(key), Value::rubyObjectToHandle(isolate, value)));
     }
@@ -40,7 +40,7 @@ namespace rr {
     Locker lock(isolate);
 
     if (rb_obj_is_kind_of(key, rb_cNumeric)) {
-      return Value::Maybe(isolate, object->Get(context, UInt32(key)));
+      return Value::Maybe(isolate, object->Get(context, UInt32_t(key)));
     } else {
       return Value::Maybe(isolate, object->Get(context, *Value(key)));
     }

@@ -27,14 +27,14 @@ namespace rr {
     Array array(self);
     Locker lock(array.getIsolate());
 
-    return UInt32(array->Length());
+    return Uint32_t(array->Length());
   }
 
   VALUE Array::CloneElementAt(VALUE self, VALUE index) {
     Array array(self);
     Locker lock(array.getIsolate());
 
-    return Object(array.getIsolate(), array->CloneElementAt(UInt32(index)));
+    return Object(array.getIsolate(), array->CloneElementAt(Uint32_t(index)));
   }
 
 }

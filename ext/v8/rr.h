@@ -37,6 +37,7 @@ inline VALUE not_implemented(const char* message) {
 #include "object.h"
 #include "array.h"
 #include "primitive.h"
+#include "number.h"
 #include "external.h"
 // This one is named v8_string to avoid name collisions with C's string.h
 #include "name.h"
