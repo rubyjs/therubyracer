@@ -25,7 +25,7 @@ namespace rr {
     Locker lock(object.getIsolate());
 
     if (rb_obj_is_kind_of(key, rb_cNumeric)) {
-      return Bool(object->Set(UInt32(key), Value::rubyObjectToHandle(object.getIsolate(), value)));
+      return Bool(object->Set(Uint32_t(key), Value::rubyObjectToHandle(object.getIsolate(), value)));
     } else {
       return Bool(object->Set(*Value(key), Value::rubyObjectToHandle(object.getIsolate(), value)));
     }
@@ -36,7 +36,7 @@ namespace rr {
     Locker lock(object.getIsolate());
 
     if (rb_obj_is_kind_of(key, rb_cNumeric)) {
-      return Value::handleToRubyObject(object.getIsolate(), object->Get(UInt32(key)));
+      return Value::handleToRubyObject(object.getIsolate(), object->Get(Uint32_t(key)));
     } else {
       return Value::handleToRubyObject(object.getIsolate(), object->Get(*Value(key)));
     }

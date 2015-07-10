@@ -1,7 +1,7 @@
 #include "rr.h"
 
 namespace rr {
-    VALUE ScriptOrigin::Class;
+  VALUE ScriptOrigin::Class;
   void ScriptOrigin::Init() {
     ClassBuilder("ScriptOrigin").
       defineSingletonMethod("new", &initialize).
