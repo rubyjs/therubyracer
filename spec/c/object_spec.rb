@@ -16,6 +16,16 @@ describe V8::C::Object do
     expect(o.Get(key).Utf8Value).to eq 'bar'
   end
 
+  it "checks for key presence" do
+    o = V8::C::Object::New(@isolate)
+    key = V8::C::String.NewFromUtf8(@isolate, 'foo')
+    value = V8::C::String.NewFromUtf8(@isolate, 'bar')
+
+    expect(o.Has(@context, key)).to eq false
+    o.Set(key, value)
+    expect(o.Has(@context, key)).to eq true
+  end
+
   # TODO: Enable this when the methods are implemented in the extension
   # it 'can retrieve all property names' do
   #   o = V8::C::Object.New
