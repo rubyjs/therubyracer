@@ -2,6 +2,10 @@
 #ifndef RR_UINT32
 #define RR_UINT32
 
+
+//TODO: remove this at some point. I don't see what this provides
+//above and beyond just using UINT2NUM and NUM2UINT.
+// --cowboyd Jul 9, 2015
 namespace rr {
 
   /**
