@@ -16,7 +16,9 @@ extern "C" {
     Value::Init();
     Object::Init();
     Primitive::Init();
+    Name::Init();
     String::Init();
+    Symbol::Init();
     Function::Init();
     Script::Init();
     ScriptOrigin::Init();
