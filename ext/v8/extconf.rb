@@ -1,4 +1,5 @@
 require 'mkmf'
+RbConfig::MAKEFILE_CONFIG['CXX'] = ENV['CXX'] if ENV['CXX']
 
 have_library('pthread')
 have_library('objc') if RUBY_PLATFORM =~ /darwin/
