@@ -6,9 +6,6 @@ rvm:
   - 1.9.2
   - 1.8.7
   - rbx-2.2.3
-env:
-  - CC=clang
-  - CXX=clang++
 matrix:
   allow_failures:
     - rvm: 1.9.3
@@ -27,7 +24,8 @@ compiler:
   - gcc
   - clang
 install:
-- if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+  - bundle install
 addons:
   apt:
     sources:
