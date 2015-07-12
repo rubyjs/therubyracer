@@ -18,6 +18,8 @@ notifications:
 before_install:
   - gem update --system 2.1.11
 script:
+  - g++ --version
+  - clang++ --version
   - bundle exec rake compile
   - bundle exec rspec spec/c
 sudo: false
