@@ -10,7 +10,6 @@ $CPPFLAGS += " -rdynamic" unless $CPPFLAGS.split.include? "-rdynamic" unless RUB
 $CPPFLAGS += " -fPIC" unless $CPPFLAGS.split.include? "-rdynamic" or RUBY_PLATFORM =~ /darwin/
 $CPPFLAGS += " -std=c++11"
 
-
 if cxx =~ /clang/
    $LDFLAGS += " -stdlib=libstdc++"
 end
