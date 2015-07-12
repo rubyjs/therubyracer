@@ -6,7 +6,7 @@ rvm:
   - 1.9.2
   - 1.8.7
   - rbx-2.2.3
-env: CXX=clang++
+env: CXX=g++-4.8
 matrix:
   allow_failures:
     - rvm: 1.9.3
@@ -19,7 +19,9 @@ before_install:
   - gem update --system 2.1.11
 script:
   - g++ --version
+  - g++-4.8 --version
   - clang++ --version
+  - ls /usr/bin/clang*
   - bundle exec rake compile
   - bundle exec rspec spec/c
 sudo: false
