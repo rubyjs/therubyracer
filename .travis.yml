@@ -6,9 +6,6 @@ rvm:
   - 1.9.2
   - 1.8.7
   - rbx-2.2.3
-env:
-  - CXX=g++-4.8
-  - CC=gcc-4.8
 matrix:
   allow_failures:
     - rvm: 1.9.3
@@ -20,9 +17,7 @@ notifications:
 before_install:
   - gem update --system 2.1.11
 script:
-  - $CXX --version
-  - $CC --version
-  - bundle exec rake compile
+  - CXX=g++-4.8 bundle exec rake compile
   - bundle exec rspec spec/c
 sudo: false
 addons:
