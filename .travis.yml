@@ -20,7 +20,7 @@ notifications:
 before_install:
   - gem update --system 2.1.11
 script:
-  - CXX=g++-4.8 bundle exec rake compile
+  - bundle exec rake compile
   - bundle exec rspec spec/c
 sudo: false
 addons:
