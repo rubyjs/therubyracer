@@ -20,8 +20,8 @@ notifications:
 before_install:
   - gem update --system 2.1.11
 script:
-  - $(CXX) --version
-  - $(CC) --version
+  - $CXX --version
+  - $CC --version
   - bundle exec rake compile
   - bundle exec rspec spec/c
 sudo: false
