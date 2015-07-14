@@ -8,6 +8,7 @@ namespace rr {
 
       defineMethod("Set", &Set).
       defineMethod("Get", &Get).
+      defineMethod("Has", &Has).
 
       store(&Class);
   }
@@ -39,6 +40,19 @@ namespace rr {
       return Value::handleToRubyObject(object.getIsolate(), object->Get(UInt32(key)));
     } else {
       return Value::handleToRubyObject(object.getIsolate(), object->Get(*Value(key)));
+    }
+  }
+
+  VALUE Object::Has(VALUE self, VALUE r_context, VALUE key) {
+    Object object(self);
+    Context context(r_context);
+    Locker lock(object.getIsolate());
+    v8::Maybe<bool> does_have(object->Has(context, *Value(key)));
+
+    if (does_have.IsNothing()) {
+      return Qnil;
+    } else {
+      return does_have.FromJust() ? Qtrue : Qfalse;
     }
   }
 

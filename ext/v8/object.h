@@ -11,7 +11,7 @@ namespace rr {
     // static VALUE ForceSet(VALUE self, VALUE key, VALUE value);
     static VALUE Get(VALUE self, VALUE key);
     // static VALUE GetPropertyAttributes(VALUE self, VALUE key);
-    // static VALUE Has(VALUE self, VALUE key);
+    static VALUE Has(VALUE self, VALUE context, VALUE key);
     // static VALUE Delete(VALUE self, VALUE key);
     // static VALUE ForceDelete(VALUE self, VALUE key);
     // static VALUE SetAccessor(int argc, VALUE* argv, VALUE self);
