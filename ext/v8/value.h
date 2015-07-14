@@ -51,7 +51,7 @@ namespace rr {
 
     static VALUE Empty;
 
-    typedef Ref<v8::Value>::Maybe<Value> Maybe;
+    typedef MaybeLocal<v8::Value, Value> Maybe;
   };
 
 }
