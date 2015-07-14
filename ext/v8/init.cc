@@ -25,6 +25,8 @@ extern "C" {
     Array::Init();
     External::Init();
 
+
+
     // Accessor::Init();
     // Invocation::Init();
     // Signature::Init();
@@ -38,5 +40,7 @@ extern "C" {
     // Exception::Init();
     // ResourceConstraints::Init();
     // HeapStatistics::Init();
+
+    MaybeInit::Init();
   }
 }

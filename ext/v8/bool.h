@@ -53,6 +53,12 @@ namespace rr {
     inline operator bool() {
       return RTEST(value);
     }
+
+    /**
+     * Use when you need to convert v8::Maybe<bool> into a VALUE. E.g.
+     *   return Bool::Maybe(object->ReturnsMaybeSomething());
+     */
+    typedef Maybe<bool, Bool> Maybe;
   };
 }
 

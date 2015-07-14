@@ -10,7 +10,7 @@ namespace rr {
       defineSingletonMethod("New", &New).
 
       defineMethod("Dispose", &Isolate::Dispose).
-      defineMethod("Equals", &rr::Isolate::PointerEquals).
+      defineMethod("ThrowException", &ThrowException).
 
       store(&Class);
   }
@@ -36,6 +36,13 @@ namespace rr {
     delete isolate.data();
     isolate->Dispose();
     return Qnil;
+  }
+
+  VALUE Isolate::ThrowException(VALUE self, VALUE exception) {
+    Isolate isolate(self);
+    Locker lock(isolate);
+
+    return Value::handleToRubyObject(isolate, isolate->ThrowException(Value(exception)));
   }
 
   template <>

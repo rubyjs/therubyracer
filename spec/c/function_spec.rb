@@ -6,7 +6,7 @@ describe V8::C::Function do
   it "has a script origin" do
     fn = run '(function() { return "foo" })'
     origin = fn.GetScriptOrigin()
-    expect(origin.ResourceName().ToString().Utf8Value()).to eql 'undefined'
+    expect(origin.ResourceName().ToString(@context).Utf8Value()).to eql 'undefined'
     expect(origin.ResourceLineOffset()).to eql 0
     expect(origin.ResourceColumnOffset()).to eql 0
   end
