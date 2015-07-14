@@ -1,6 +1,6 @@
 // -*- mode: c++ -*-
-#ifndef NUMBER_H
-#define NUMBER_H
+#ifndef RR_NUMBER_H
+#define RR_NUMBER_H
 
 namespace rr {
   class Number : public Ref<v8::Number> {
@@ -12,35 +12,27 @@ namespace rr {
     Number(VALUE self) :
       Ref<v8::Number>(self) {}
 
-    static void Init();
-  };
+    static VALUE New(VALUE self, VALUE r_isolate, VALUE value) {
+      Isolate isolate(r_isolate);
+      Locker lock(isolate);
 
-  class Integer : public Ref<v8::Integer> {
-  public:
-    Integer(v8::Isolate* isolate, int32_t value) :
-      Ref<v8::Integer>(isolate, v8::Integer::New(isolate, value)) {}
-    Integer(v8::Isolate* isolate, uint32_t value) :
-      Ref<v8::Integer>(isolate, v8::Integer::NewFromUnsigned(isolate, value)) {}
-    Integer(VALUE self) :
-      Ref<v8::Integer>(self) {}
-  };
+      return Number(isolate, NUM2DBL(value));
+    }
 
-  class Int32 : public Ref<v8::Int32> {
-  public:
-    Int32(VALUE self) :
-      Ref<v8::Int32>(self) {}
-    Int32(v8::Isolate* isolate, v8::Handle<v8::Value> value) :
-      Ref<v8::Int32>(isolate, value.As<v8::Int32>()) {}
-  };
+    static VALUE Value(VALUE self) {
+      Number number(self);
+      Locker lock(number);
 
-  class Uint32 : public Ref<v8::Uint32> {
-  public:
-    Uint32(VALUE self) :
-      Ref<v8::Uint32>(self) {}
-    Uint32(v8::Isolate* isolate, v8::Handle<v8::Value> value) :
-      Ref<v8::Uint32>(isolate, value.As<v8::Uint32>()) {}
+      return DBL2NUM(number->Value());
+    }
+    static void Init() {
+      ClassBuilder("Number", Primitive::Class).
+        defineSingletonMethod("New", &New).
+        defineMethod("Value", &Value).
+        store(&Class);
+    }
   };
 }
 
 
-#endif /* NUMBER_H */
+#endif /* RR_NUMBER_H */
