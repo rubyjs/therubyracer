@@ -26,7 +26,7 @@ namespace rr {
     // static VALUE IsStringObject(VALUE self);
     // static VALUE IsNativeError(VALUE self);
     // static VALUE IsRegExp(VALUE self);
-    static VALUE ToString(VALUE self);
+    static VALUE ToString(VALUE self, VALUE context);
     // static VALUE ToDetailString(VALUE self);
     // static VALUE ToObject(VALUE self);
     // static VALUE BooleanValue(VALUE self);
@@ -50,6 +50,8 @@ namespace rr {
     static std::vector< v8::Handle<v8::Value> > convertRubyArray(v8::Isolate* isolate, VALUE value);
 
     static VALUE Empty;
+
+    typedef MaybeLocal<v8::Value, Value> Maybe;
   };
 
 }

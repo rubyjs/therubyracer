@@ -44,6 +44,15 @@ namespace rr {
     VALUE value;
   };
 
+  /**
+   * Convert `int`s into `VALUE`. To unbox v8::Maybe<int>, use
+   * Int::Maybe().
+   */
+  class Int : public Equiv {
+    Int(int i) : Equiv(INT2FIX(i)) {}
+
+    class Maybe : rr::Maybe<int, Int> {};
+  };
 }
 
 #endif

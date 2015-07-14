@@ -118,11 +118,12 @@ namespace rr {
     return Bool(value->IsUint32());
   }
 
-  VALUE Value::ToString(VALUE self) {
+  VALUE Value::ToString(VALUE self, VALUE r_context) {
     Value value(self);
+    v8::Local<v8::Context> context((Context(r_context)));
     Locker lock(value.getIsolate());
 
-    return String(value.getIsolate(), value->ToString());
+    return String::Maybe(value.getIsolate(), value->ToString(context));
   }
 
   VALUE Value::Equals(VALUE self, VALUE other) {

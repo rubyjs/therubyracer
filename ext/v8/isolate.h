@@ -29,6 +29,8 @@ namespace rr {
     static void Init();
 
     static VALUE New(VALUE self);
+    static VALUE Dispose(VALUE self);
+    static VALUE ThrowException(VALUE self, VALUE r_exception);
 
     inline Isolate(v8::Isolate* isolate) : Pointer<v8::Isolate>(isolate) {}
     inline Isolate(VALUE value) : Pointer<v8::Isolate>(value) {}
@@ -123,9 +125,6 @@ namespace rr {
         delete cell;
       }
     }
-
-
-    static VALUE Dispose(VALUE self);
 
     /**
      * Recent versions of V8 will segfault unless you pass in an
