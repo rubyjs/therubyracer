@@ -5,10 +5,8 @@
 namespace rr {
   class Integer : public Ref<v8::Integer> {
   public:
-    Integer(v8::Isolate* isolate, int32_t value) :
-      Ref<v8::Integer>(isolate, v8::Integer::New(isolate, value)) {}
-    Integer(v8::Isolate* isolate, uint32_t value) :
-      Ref<v8::Integer>(isolate, v8::Integer::NewFromUnsigned(isolate, value)) {}
+    Integer(v8::Isolate* isolate, v8::Handle<v8::Integer> integer) :
+      Ref<v8::Integer>(isolate, integer) {}
     Integer(VALUE self) :
       Ref<v8::Integer>(self) {}
 

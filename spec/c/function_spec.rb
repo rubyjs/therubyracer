@@ -7,8 +7,8 @@ describe V8::C::Function do
     fn = run '(function() { return "foo" })'
     origin = fn.GetScriptOrigin()
     expect(origin.ResourceName().ToString().Utf8Value()).to eql 'undefined'
-    expect(origin.ResourceLineOffset()).to eql 0
-    expect(origin.ResourceColumnOffset()).to eql 0
+    expect(origin.ResourceLineOffset().Value()).to eql 0
+    expect(origin.ResourceColumnOffset().Value()).to eql 0
   end
 
   it 'can be called' do

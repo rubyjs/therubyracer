@@ -5,8 +5,6 @@
 namespace rr {
   class Number : public Ref<v8::Number> {
   public:
-    Number(v8::Isolate* isolate, double value) :
-      Ref<v8::Number>(isolate, v8::Number::New(isolate, value)) {}
     Number(v8::Isolate* isolate, v8::Handle<v8::Value> value) :
       Ref<v8::Number>(isolate, value.As<v8::Number>()) {}
     Number(VALUE self) :
@@ -16,7 +14,7 @@ namespace rr {
       Isolate isolate(r_isolate);
       Locker lock(isolate);
 
-      return Number(isolate, NUM2DBL(value));
+      return Number(isolate, v8::Number::New(isolate, NUM2DBL(value)));
     }
 
     static VALUE Value(VALUE self) {

@@ -45,7 +45,7 @@ namespace rr {
 
       store(&Class);
 
-      rb_gc_register_address(&Empty);
+    rb_gc_register_address(&Empty);
   }
 
   VALUE Value::IsUndefined(VALUE self) {
