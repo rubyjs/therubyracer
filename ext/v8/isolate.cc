@@ -10,7 +10,8 @@ namespace rr {
       defineSingletonMethod("New", &New).
 
       defineMethod("Dispose", &Isolate::Dispose).
-      defineMethod("Equals", &rr::Isolate::PointerEquals).
+      defineMethod("Equals", &Isolate::PointerEquals).
+      defineMethod("NumberOfHeapSpaces", &Isolate::NumberOfHeapSpaces).
 
       store(&Class);
   }
@@ -36,6 +37,12 @@ namespace rr {
     delete isolate.data();
     isolate->Dispose();
     return Qnil;
+  }
+
+  VALUE Isolate::NumberOfHeapSpaces(VALUE self) {
+    Isolate isolate(self);
+    size_t spaces = isolate->NumberOfHeapSpaces();
+    return SIZET2NUM(spaces);
   }
 
   template <>
