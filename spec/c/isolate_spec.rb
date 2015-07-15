@@ -7,11 +7,6 @@ describe V8::C::Isolate do
     expect(isolate).to be
   end
 
-  it 'can be tested for equality' do
-    expect(isolate.Equals(isolate)).to eq true
-    expect(isolate.Equals(V8::C::Isolate::New())).to eq false
-  end
-
   it "can be disposed of" do
     isolate.Dispose()
   end

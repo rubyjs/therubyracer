@@ -38,8 +38,8 @@ namespace rr {
       Holder* holder = unwrapHolder();
 
       if (holder) {
-        this->isolate = holder->isolate;
-        this->handle = v8::Local<T>::New(holder->isolate, *holder->cell);
+        this->isolate = holder->data->isolate;
+        this->handle = v8::Local<T>::New(holder->data->isolate, *holder->cell);
       } else {
         this->isolate = NULL;
         this->handle = v8::Local<T>();
@@ -94,13 +94,15 @@ namespace rr {
 
     struct Holder {
       Holder(v8::Isolate* isolate, v8::Handle<T> handle) :
-        isolate(isolate), cell(new v8::Persistent<T>(isolate, handle)) {}
-
-      virtual ~Holder() {
-        Isolate(isolate).scheduleReleaseObject<T>(cell);
+        data((Isolate::IsolateData*)isolate->GetData(0)), cell(new v8::Persistent<T>(isolate, handle)) {
+        Isolate(data).incrementTotalReferences();
       }
 
-      v8::Isolate* isolate;
+      virtual ~Holder() {
+        Isolate(data).scheduleReleaseObject<T>(cell);
+      }
+
+      Isolate::IsolateData* data;
       v8::Persistent<T>* cell;
     };
 
