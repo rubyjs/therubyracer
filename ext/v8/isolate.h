@@ -127,6 +127,8 @@ namespace rr {
 
     static VALUE Dispose(VALUE self);
 
+    static VALUE NumberOfHeapSpaces(VALUE self);
+
     /**
      * Recent versions of V8 will segfault unless you pass in an
      * ArrayBufferAllocator into the create params of an isolate. This

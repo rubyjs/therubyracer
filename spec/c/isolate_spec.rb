@@ -15,4 +15,8 @@ describe V8::C::Isolate do
   it "can be disposed of" do
     isolate.Dispose()
   end
+
+  it "has has heap spaces" do
+    expect(isolate.NumberOfHeapSpaces()).to be >= 1
+  end
 end
