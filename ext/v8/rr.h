@@ -47,6 +47,7 @@ inline VALUE not_implemented(const char* message) {
 #include "script.h"
 #include "script-origin.h"
 #include "function.h"
+#include "return-value.h"
 #include "function-callback.h"
 
 #endif

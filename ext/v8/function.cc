@@ -26,6 +26,8 @@ namespace rr {
     Isolate isolate(r_isolate);
     Locker lock(isolate);
 
+    // package up the function's callback data to have bot the code and the data
+    // parameter.
     v8::Local<v8::Value> data(FunctionCallbackInfo::wrapData(isolate, r_callback, r_data));
 
     int length = RTEST(r_length) ? NUM2INT(r_length) : 0;
