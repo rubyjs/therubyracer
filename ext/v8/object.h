@@ -34,7 +34,7 @@ namespace rr {
     // static VALUE HasNamedLookupInterceptor(VALUE self);
     // static VALUE HasIndexedLookupInterceptor(VALUE self);
     // static VALUE TurnOnAccessCheck(VALUE self);
-    // static VALUE GetIdentityHash(VALUE self);
+    static VALUE GetIdentityHash(VALUE self);
     // static VALUE SetHiddenValue(VALUE self, VALUE key, VALUE value);
     // static VALUE GetHiddenValue(VALUE self, VALUE key);
     // static VALUE DeleteHiddenValue(VALUE self, VALUE key);

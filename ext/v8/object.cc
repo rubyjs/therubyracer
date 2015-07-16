@@ -8,6 +8,7 @@ namespace rr {
 
       defineMethod("Set", &Set).
       defineMethod("Get", &Get).
+      defineMethod("GetIdentityHash", &GetIdentityHash).
 
       store(&Class);
   }
@@ -40,6 +41,13 @@ namespace rr {
     } else {
       return Value::handleToRubyObject(object.getIsolate(), object->Get(*Value(key)));
     }
+  }
+
+  VALUE Object::GetIdentityHash(VALUE self) {
+    Object object(self);
+    Locker lock(object.getIsolate());
+
+    return INT2FIX(object->GetIdentityHash());
   }
 
   Object::operator VALUE() {

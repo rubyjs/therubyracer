@@ -1,3 +1,4 @@
+// -*- mode: c++ -*-
 #ifndef RR_FUNCTION
 #define RR_FUNCTION
 
@@ -7,8 +8,9 @@ namespace rr {
   public:
     static void Init();
 
+    static VALUE New(int argc, VALUE argv[], VALUE self);
     static VALUE NewInstance(int argc, VALUE argv[], VALUE self);
-    static VALUE Call(VALUE self, VALUE receiver, VALUE argv);
+    static VALUE Call(VALUE self, VALUE receiver, VALUE arguments);
     static VALUE SetName(VALUE self, VALUE name);
     static VALUE GetName(VALUE self);
     static VALUE GetInferredName(VALUE self);
@@ -23,7 +25,6 @@ namespace rr {
     inline Function(VALUE value) : Ref<v8::Function>(value) {}
     inline Function(v8::Isolate* isolate, v8::Handle<v8::Function> function) : Ref<v8::Function>(isolate, function) {}
   };
-
 }
 
 #endif

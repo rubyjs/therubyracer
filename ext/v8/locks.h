@@ -1,3 +1,4 @@
+// -*- mode: c++ -*-
 #ifndef RR_LOCKER
 #define RR_LOCKER
 
