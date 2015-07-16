@@ -1,4 +1,4 @@
-cache: bundler
+#cache: bundler
 rvm:
   - 2.1.0
   - 2.0.0
@@ -6,9 +6,29 @@ rvm:
   - 1.9.2
   - 1.8.7
   - rbx-2.2.3
+matrix:
+  allow_failures:
+    - rvm: 1.9.3
+    - rvm: 1.9.2
+    - rvm: 1.8.7
+    - rvm: rbx-2.2.3
+env:
+  - CXX=g++-4.8
+  - CXX=clang++
 notifications:
   recipients:
     - cowboyd@thefrontside.net
 before_install:
   - gem update --system 2.1.11
-script: bundle exec rake compile spec
+script:
+  - bundle exec rake compile
+  - bundle exec rspec spec/c
+sudo: false
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-4.8
+    - g++-4.8
+    - clang

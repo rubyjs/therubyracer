@@ -1,4 +1,5 @@
 require 'mkmf'
+cxx = RbConfig::MAKEFILE_CONFIG['CXX'] = ENV['CXX'] if ENV['CXX']
 
 have_library('pthread')
 have_library('objc') if RUBY_PLATFORM =~ /darwin/
@@ -9,7 +10,9 @@ $CPPFLAGS += " -rdynamic" unless $CPPFLAGS.split.include? "-rdynamic" unless RUB
 $CPPFLAGS += " -fPIC" unless $CPPFLAGS.split.include? "-rdynamic" or RUBY_PLATFORM =~ /darwin/
 $CPPFLAGS += " -std=c++11"
 
-$LDFLAGS += " -stdlib=libstdc++"
+if cxx =~ /clang/
+   $LDFLAGS += " -stdlib=libstdc++"
+end
 
 CONFIG['LDSHARED'] = '$(CXX) -shared' unless RUBY_PLATFORM =~ /darwin/
 if CONFIG['warnflags']
