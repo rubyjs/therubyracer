@@ -86,8 +86,6 @@ namespace rr {
         defineMethod("GetIsolate", &GetIsolate).
         store(&Class);
     }
-
-    Container* container;
   };
 
   typedef Wrapper<v8::FunctionCallbackInfo<v8::Value>> FunctionCallbackInfoWrapper;
