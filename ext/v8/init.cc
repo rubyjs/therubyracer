@@ -9,6 +9,7 @@ using namespace rr;
 extern "C" {
   void Init_init() {
     V8::Init();
+    Enums::Init();
     Isolate::Init();
     Handles::Init();
     Context::Init();
@@ -26,13 +27,14 @@ extern "C" {
     Symbol::Init();
     Function::Init();
     FunctionCallbackInfo::Init();
+    PropertyCallbackInfo::Init();
+    PropertyCallbackInfoVoid::Init();
     ReturnValue::Init();
     Script::Init();
     ScriptOrigin::Init();
     Array::Init();
     External::Init();
 
-    // Accessor::Init();
     // Invocation::Init();
     // Signature::Init();
     // Date::Init();

@@ -17,6 +17,8 @@ inline VALUE not_implemented(const char* message) {
 }
 
 #include "class_builder.h"
+#include "enums.h"
+
 #include "maybe.h"
 #include "equiv.h"
 #include "bool.h"
@@ -34,25 +36,29 @@ inline VALUE not_implemented(const char* message) {
 
 #include "value.h"
 #include "boolean.h"
-#include "object.h"
-#include "array.h"
+
 #include "primitive.h"
 #include "undefined.h"
 #include "null.h"
 #include "number.h"
 #include "integer.h"
 
-
 #include "external.h"
-// This one is named v8_string to avoid name collisions with C's string.h
 #include "name.h"
+// This one is named v8_string to avoid name collisions with C's string.h
 #include "rr_string.h"
 #include "symbol.h"
 
+#include "function.h"
+
+#include "object.h"
+#include "return-value.h"
+#include "property-callback-void.h"
+#include "property-callback.h"
+#include "array.h"
+
 #include "script.h"
 #include "script-origin.h"
-#include "function.h"
-#include "return-value.h"
 #include "function-callback.h"
 
 #endif

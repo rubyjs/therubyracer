@@ -21,6 +21,85 @@ describe V8::C::Object do
     expect(maybe.FromJust().Utf8Value).to eq 'bar'
   end
 
+  it 'can determine if a key has been set' do
+    o = V8::C::Object.New(@isolate)
+    key = V8::C::String.NewFromUtf8(@isolate, 'foo')
+
+    o.Set(@ctx, key, key)
+
+    maybe = o.Has(@ctx, key)
+    expect(maybe.IsJust()).to be true
+    expect(maybe.FromJust()).to eq true
+  end
+
+  it 'can delete keys' do
+    o = V8::C::Object.New(@isolate)
+    key = V8::C::String.NewFromUtf8(@isolate, 'foo')
+
+    o.Set(@ctx, key, key)
+
+    maybe = o.Delete(@ctx, key)
+    expect(maybe.IsJust()).to be true
+    expect(maybe.FromJust()).to eq true
+
+    maybe = o.Has(@ctx, key)
+    expect(maybe.IsJust()).to be true
+    expect(maybe.FromJust()).to eq false
+  end
+
+  describe '#SetAccessor' do
+    it 'can set getters' do
+      o = V8::C::Object.New(@isolate)
+      key = V8::C::String.NewFromUtf8(@isolate, 'foo')
+
+      data = V8::C::String.NewFromUtf8(@isolate, 'data')
+      get_value = V8::C::String.NewFromUtf8(@isolate, 'bar')
+
+      get_name = nil
+      get_data = nil
+
+      getter = proc do |name, info|
+        get_name = name
+        get_data = info.Data
+
+        info.GetReturnValue.Set(get_value)
+      end
+
+      o.SetAccessor(@ctx, key, getter, nil, data)
+
+      maybe = o.Get(@ctx, key)
+      expect(maybe.IsJust).to be true
+      expect(maybe.FromJust.StrictEquals(get_value)).to be true
+
+      expect(get_name.Equals(key)).to be true
+      expect(get_data.StrictEquals(data)).to be true
+    end
+
+    it 'can set setters' do
+      o = V8::C::Object.New(@isolate)
+      key = V8::C::String.NewFromUtf8(@isolate, 'foo')
+      data = V8::C::String.NewFromUtf8(@isolate, 'data')
+
+      set_value = nil
+      set_data = nil
+
+      setter = proc do |name, value, info|
+        set_data = info.Data
+
+        set_value = value
+      end
+
+      o.SetAccessor(@ctx, key, proc { }, setter, data)
+
+      maybe = o.Set(@ctx, key, data)
+      expect(maybe.IsJust).to be true
+      expect(maybe.FromJust).to be true
+
+      expect(set_data.StrictEquals(data)).to be true
+      expect(set_value.StrictEquals(data)).to be true
+    end
+  end
+
   # TODO: Enable this when the methods are implemented in the extension
   # it 'can retrieve all property names' do
   #   o = V8::C::Object.New

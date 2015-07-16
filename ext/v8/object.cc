@@ -1,7 +1,6 @@
 #include "rr.h"
 
 namespace rr {
-
   void Object::Init() {
     ClassBuilder("Object", Value::Class).
       defineSingletonMethod("New", &New).
@@ -9,6 +8,9 @@ namespace rr {
       defineMethod("Set", &Set).
       defineMethod("Get", &Get).
       defineMethod("GetIdentityHash", &GetIdentityHash).
+      defineMethod("Has", &Has).
+      defineMethod("Delete", &Delete).
+      defineMethod("SetAccessor", &SetAccessor).
 
       store(&Class);
   }
@@ -49,9 +51,51 @@ namespace rr {
 
   VALUE Object::GetIdentityHash(VALUE self) {
     Object object(self);
-    Locker lock(object.getIsolate());
+    Locker lock(object);
 
     return INT2FIX(object->GetIdentityHash());
+  }
+
+  VALUE Object::Has(VALUE self, VALUE r_context, VALUE key) {
+    Object object(self);
+    Locker lock(object);
+
+    if (rb_obj_is_kind_of(key, rb_cNumeric)) {
+      return Bool::Maybe(object->Has(Context(r_context), Uint32_t(key)));
+    } else {
+      return Bool::Maybe(object->Has(Context(r_context), *Value(key)));
+    }
+  }
+
+  VALUE Object::Delete(VALUE self, VALUE r_context, VALUE key) {
+    Object object(self);
+    Locker lock(object);
+
+    if (rb_obj_is_kind_of(key, rb_cNumeric)) {
+      return Bool::Maybe(object->Delete(Context(r_context), Uint32_t(key)));
+    } else {
+      return Bool::Maybe(object->Delete(Context(r_context), *Value(key)));
+    }
+  }
+
+  VALUE Object::SetAccessor(int argc, VALUE* argv, VALUE self) {
+    VALUE r_context, name, getter, setter, data, settings, attribute;
+    rb_scan_args(argc, argv, "52", &r_context, &name, &getter, &setter, &data, &settings, &attribute);
+
+    Object object(self);
+    Context context(r_context);
+    Isolate isolate(object.getIsolate());
+    Locker lock(isolate);
+
+    return Bool::Maybe(object->SetAccessor(
+      context,
+      Name(name),
+      &PropertyCallbackInfo::invokeGetter,
+      RTEST(setter) ? &PropertyCallbackInfoVoid::invokeSetter : 0,
+      v8::MaybeLocal<v8::Value>(PropertyCallbackInfo::wrapData(isolate, getter, setter, data)),
+      RTEST(settings) ? Enums::fromRubyValue<v8::AccessControl>(settings) : v8::DEFAULT,
+      RTEST(attribute) ? Enums::fromRubyValue<v8::PropertyAttribute>(attribute) : v8::None
+    ));
   }
 
   Object::operator VALUE() {
@@ -89,4 +133,5 @@ namespace rr {
 
     return Ref<v8::Object>::operator VALUE();
   }
+
 }
