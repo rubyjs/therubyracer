@@ -18,6 +18,17 @@ namespace rr {
       return this->container->content[i];
     }
 
+    /**
+     * Package up the callback data for this function so that it can
+     * invoke a Ruby callable.
+     *
+     * Each `v8::Function` can have one `v8::Value` associated with it
+     * that is passed to its `v8::FunctionCallback`. To support this
+     * same API from ruby, we take the `Value` passed into the
+     * Function constructor *and* the callback and store them *both*
+     * in a single `v8::Object` which we use for the C++ level
+     * callback data.
+     */
     static v8::Local<v8::Value> wrapData(v8::Isolate* isolate, VALUE r_callback, VALUE r_data) {
       v8::Local<v8::Object> holder = v8::Object::New(isolate);
       v8::Local<v8::String> callback_key = v8::String::NewFromUtf8(isolate, "rr::callback");
@@ -27,6 +38,14 @@ namespace rr {
       return holder;
     }
 
+    /**
+     * Call the Ruby code associated with this callback.
+     *
+     * Unpack the Ruby code, and the callback data from the C++
+     * callback data, and then invoke that code.
+     *
+     * Note: This function implements the `v8::FunctionCallback` API.
+     */
     static void invoke(const v8::FunctionCallbackInfo<v8::Value>& info) {
       v8::Isolate* isolate = info.GetIsolate();
       v8::Local<v8::Object> holder = v8::Local<v8::Object>::Cast<v8::Value>(info.Data());
