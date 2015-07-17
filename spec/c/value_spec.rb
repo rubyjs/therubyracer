@@ -19,7 +19,7 @@ describe V8::C::Value do
     object = V8::C::Object.New(@isolate)
     key = V8::C::String.NewFromUtf8(@isolate, 'key')
 
-    expect(object.Get(key)).to eq nil
+    expect(object.Get(@ctx, key).FromJust()).to eq nil
   end
 
   it 'converts FixNums' do
@@ -33,7 +33,7 @@ describe V8::C::Value do
 
   it 'converts objects' do
     object = V8::C::Object.New(@isolate)
-    object.Set(V8::C::String.NewFromUtf8(@isolate, 'test'), 1)
+    object.Set(@ctx, V8::C::String.NewFromUtf8(@isolate, 'test'), 1)
 
     expect(convert(object)).to eq object
   end

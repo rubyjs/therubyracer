@@ -13,6 +13,7 @@ extern "C" {
     Handles::Init();
     Context::Init();
     Backref::Init();
+    Maybe::Init();
     Value::Init();
     Object::Init();
     Primitive::Init();

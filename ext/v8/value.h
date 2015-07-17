@@ -1,3 +1,4 @@
+// -*- mode: c++ -*-
 #ifndef RR_VALUE
 #define RR_VALUE
 
@@ -5,6 +6,23 @@ namespace rr {
 
   class Value : public Ref<v8::Value> {
   public:
+    /**
+     * A conversion class for down-thunking a MaybeLocal<v8::Value>
+     * and returning it to Ruby as a `V8::C::Maybe`. If there is a
+     * value present, then run it through the value conversion to get
+     * the most specific subclass of Value:
+     *
+     *   return Value::Maybe(object->Get(cxt, key));
+     */
+    class Maybe : public rr::Maybe {
+    public:
+      Maybe(v8::Isolate* isolate, v8::MaybeLocal<v8::Value> maybe) {
+        if (!maybe.IsEmpty()) {
+          just(Value::handleToRubyObject(isolate, maybe.ToLocalChecked()));
+        }
+      }
+    };
+
     static void Init();
 
     static VALUE IsUndefined(VALUE self);

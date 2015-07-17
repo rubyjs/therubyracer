@@ -1,4 +1,5 @@
 require 'v8/weak'
+require 'v8/c/maybe'
 require 'v8/init'
 
 module V8ContextHelpers

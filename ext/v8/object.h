@@ -7,9 +7,9 @@ namespace rr {
   public:
     static void Init();
     static VALUE New(VALUE self, VALUE isolate);
-    static VALUE Set(VALUE self, VALUE key, VALUE value);
+    static VALUE Set(VALUE self, VALUE context, VALUE key, VALUE value);
     // static VALUE ForceSet(VALUE self, VALUE key, VALUE value);
-    static VALUE Get(VALUE self, VALUE key);
+    static VALUE Get(VALUE self, VALUE context, VALUE key);
     // static VALUE GetPropertyAttributes(VALUE self, VALUE key);
     // static VALUE Has(VALUE self, VALUE key);
     // static VALUE Delete(VALUE self, VALUE key);

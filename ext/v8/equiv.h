@@ -40,6 +40,27 @@ namespace rr {
      */
     inline operator VALUE() { return value; }
 
+
+    /**
+     * A Maybe class for primitive conversions. Specify the primitive
+     * type and the covversion type, and it will be wrapped in a
+     * Maybe. E.g.
+     *
+     *   v8::Maybe<bool> maybe = methodReturningMaybeBool();
+     *   return Equiv::Maybe<bool, Bool>(maybe);
+     *
+     * will yield a V8::C::Maybe wrapping the underlying maybe value.
+     */
+    template <class T, class S>
+    class Maybe : public rr::Maybe {
+    public:
+      Maybe(v8::Maybe<T> maybe) {
+        if (maybe.IsJust()) {
+          just(S(maybe.FromJust()));
+        }
+      }
+    };
+
   protected:
     VALUE value;
   };
