@@ -22,6 +22,8 @@ module V8ContextHelpers
         @ctx.Exit
       end
     end
+  ensure
+    @isolate.Dispose()
   end
 end
 

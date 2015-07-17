@@ -23,15 +23,60 @@ namespace rr {
    * Note: You must call `Dispose()` on the isolate for its resources
    * to be released, otherwise, it will be leaked.
    */
-  class Isolate : public Pointer<v8::Isolate> {
+  class Isolate  {
   public:
     struct IsolateData;
+    static VALUE Class;
     static void Init();
 
     static VALUE New(VALUE self);
 
-    inline Isolate(v8::Isolate* isolate) : Pointer<v8::Isolate>(isolate) {}
-    inline Isolate(VALUE value) : Pointer<v8::Isolate>(value) {}
+    inline Isolate(IsolateData* data_) : data(data_) {}
+    inline Isolate(v8::Isolate* isolate) :
+      data((IsolateData*)isolate->GetData(0)) {}
+    inline Isolate(VALUE value) {
+      Data_Get_Struct(value, struct IsolateData, data);
+    }
+
+    /**
+     * Called, when Ruby no longer has any more references to this
+     * instance of `V8::C::Isolate`. However, this does not
+     * necessarily mean that we can delete the isolate data because there
+     * could be outstanding objects... things like a V8::C::String
+     * that are part of this isolate that have yet to be garbage
+     * collected. The last object in the isolate, including the
+     * isolate itself is responsible for deleting the isolate data.
+     *
+     */
+    static void destroy(IsolateData* data) {
+      Isolate isolate(data);
+      isolate.decrementTotalReferences();
+    }
+
+    /**
+     * Every time we take out a reference to a V8 object, call this
+     * method.
+     */
+    inline void incrementTotalReferences() {
+      char counter(0);
+      data->total_ruby_references_queue.enqueue(counter);
+    }
+
+    /**
+     * Every time a Ruby reference to a V8 object is garbage
+     * collected, call this method. If this is the last object
+     * associated with this isolate, then the isolate data can, and
+     * will, be safely deleted.
+     */
+    inline bool decrementTotalReferences() {
+      char counter(0);
+      if (data->total_ruby_references_queue.try_dequeue(counter)) {
+        return true;
+      } else {
+        delete data;
+        return false;
+      }
+    }
 
     /**
      * Converts the v8::Isolate into a Ruby Object, while setting up
@@ -39,17 +84,25 @@ namespace rr {
      * VALUE rubyObject = Isolate(v8::Isolate::New());
      */
     virtual operator VALUE() {
-      return Data_Wrap_Struct(Class, &releaseAndMarkRetainedObjects, 0, pointer);
+      return Data_Wrap_Struct(Class, &releaseAndMarkRetainedObjects, &destroy, data);
     }
 
     /**
-     * Access the book-keeping data. e.g.
+     * Convert this into a v8::Isolate* for those areas of the API
+     * that call for it: E.g.
      *
-     *   Isolate(self).data();
+     *   v8::Context::New(Isolate(self));
      */
-    inline IsolateData* data() {
-      return (IsolateData*)pointer->GetData(0);
-    }
+    inline operator v8::Isolate*() { return data->isolate; }
+
+    /**
+     * Dereference the underlying v8::Isolate so that we can call methods
+     * on it. E.g.
+     *
+     *   Isolate(self)->IsDead();
+     */
+
+    inline v8::Isolate* operator ->() { return data->isolate; }
 
     /**
      * Schedule a v8::Persistent reference to be be deleted with the next
@@ -59,7 +112,9 @@ namespace rr {
      */
     template <class T>
     inline void scheduleReleaseObject(v8::Persistent<T>* cell) {
-      data()->v8_release_queue.enqueue((v8::Persistent<void>*)cell);
+      if (this->decrementTotalReferences()) {
+        data->v8_release_queue.enqueue((v8::Persistent<void>*)cell);
+      }
     }
 
     /**
@@ -68,7 +123,7 @@ namespace rr {
      * where you do not hold any Ruby locks (such as the V8 GC thread)
      */
     inline void scheduleReleaseObject(VALUE object) {
-      data()->rb_release_queue.enqueue(object);
+      data->rb_release_queue.enqueue(object);
     }
 
     /**
@@ -80,7 +135,7 @@ namespace rr {
      * Note: should be called from a place where Ruby locks are held.
      */
     inline void retainObject(VALUE object) {
-      rb_funcall(data()->retained_objects, rb_intern("add"), 1, object);
+      rb_funcall(data->retained_objects, rb_intern("add"), 1, object);
     }
 
     /**
@@ -91,18 +146,15 @@ namespace rr {
      * Note: should be called from a place where Ruby locks are held.
      */
     inline void releaseObject(VALUE object) {
-      rb_funcall(data()->retained_objects, rb_intern("remove"), 1, object);
+      rb_funcall(data->retained_objects, rb_intern("remove"), 1, object);
     }
-
 
     /**
      * The `gc_mark()` callback for this Isolate's
      * Data_Wrap_Struct. It releases all pending Ruby objects.
      */
-
-    static void releaseAndMarkRetainedObjects(v8::Isolate* isolate_) {
-      Isolate isolate(isolate_);
-      IsolateData* data = isolate.data();
+    static void releaseAndMarkRetainedObjects(IsolateData* data) {
+      Isolate isolate(data);
       VALUE object;
       while (data->rb_release_queue.try_dequeue(object)) {
         isolate.releaseObject(object);
@@ -118,7 +170,7 @@ namespace rr {
     static void clearReferences(v8::Isolate* i, v8::GCType type, v8::GCCallbackFlags flags) {
       Isolate isolate(i);
       v8::Persistent<void>* cell;
-      while (isolate.data()->v8_release_queue.try_dequeue(cell)) {
+      while (isolate.data->v8_release_queue.try_dequeue(cell)) {
         cell->Reset();
         delete cell;
       }
@@ -149,6 +201,11 @@ namespace rr {
     struct IsolateData {
 
       /**
+       * The actual Isolate
+       */
+      v8::Isolate* isolate;
+
+      /**
        * An instance of `V8::RetainedObjects` that contains all
        * references held from from V8. As long as they are in this
        * list, they won't be gc'd by Ruby.
@@ -157,7 +214,7 @@ namespace rr {
 
       /**
        * A custom ArrayBufferAllocator for this isolate. Why? because
-       * if you don't, it will segfault when you try and create an
+       * if you don't, it will segfault when you try and create a
        * Context. That's why.
        */
       ArrayBufferAllocator array_buffer_allocator;
@@ -176,7 +233,21 @@ namespace rr {
        * needs it.
        */
       ConcurrentQueue<VALUE> rb_release_queue;
+
+      /**
+       * Contains a number of tokens representing all of the live Ruby
+       * references that are currently active in this Isolate. Every
+       * time a Ruby reference to a V8 object is added, an item is
+       * added to this queue. Every time a ruby reference is garbage
+       * collected, an item is pulled out of the queue. Whenever this
+       * queue reaches 0, then it is time to delete the isolate data
+       * since there are no more object associated with it.
+       */
+      ConcurrentQueue<int> total_ruby_references_queue;
+
     };
+
+    IsolateData* data;
   };
 }
 
