@@ -47,4 +47,7 @@ inline VALUE not_implemented(const char* message) {
 #include "script-origin.h"
 #include "function.h"
 
+#include "template.h"
+#include "object-template.h"
+
 #endif

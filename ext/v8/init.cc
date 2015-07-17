@@ -24,6 +24,8 @@ extern "C" {
     ScriptOrigin::Init();
     Array::Init();
     External::Init();
+    Template::Init();
+    ObjectTemplate::Init();
 
     // Accessor::Init();
     // Invocation::Init();
