@@ -22,6 +22,7 @@ inline VALUE not_implemented(const char* message) {
 #include "bool.h"
 #include "uint32_t.h"
 #include "pointer.h"
+#include "wrapper.h"
 #include "isolate.h"
 
 #include "ref.h"
@@ -50,5 +51,7 @@ inline VALUE not_implemented(const char* message) {
 #include "script.h"
 #include "script-origin.h"
 #include "function.h"
+#include "return-value.h"
+#include "function-callback.h"
 
 #endif

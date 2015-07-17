@@ -41,6 +41,44 @@ describe V8::C::Function do
     expect(object.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'foo')).FromJust().Utf8Value).to eq 'bar'
   end
 
+  describe "with a callback" do
+
+    class FunctionCallback
+      attr_reader :length, :callee, :this, :is_construct_call, :data
+      def initialize(isolate)
+        @isolate = isolate
+      end
+      def call(info)
+        @length = info.Length()
+        @callee = info.Callee()
+        @this = info.This()
+        @is_construct_call = info.IsConstructCall()
+        @data = info.Data()
+
+        ohai = V8::C::String::NewFromUtf8(@isolate, "ohai ")
+        arg = info[0].ToString()
+        result = V8::C::String::Concat(ohai, arg)
+        info.GetReturnValue().Set(result)
+      end
+    end
+
+    let(:callback) { FunctionCallback.new @isolate}
+    let(:fn) { V8::C::Function::New(@isolate, callback)}
+
+    before do
+      expect(fn.Call(@ctx.Global(), ["world"]).Utf8Value()).to eql "ohai world"
+    end
+
+
+    it "has all of the function callback info available" do
+      expect(callback.length).to eql 1
+      expect(callback.callee.GetIdentityHash()).to eql fn.GetIdentityHash()
+      expect(callback.this.GetIdentityHash()).to eql @ctx.Global().GetIdentityHash()
+      expect(callback.is_construct_call).to be false
+    end
+  end
+
+
   # TODO
   # it 'doesn\'t kill the world if invoking it throws a javascript exception' do
   #   V8::C::TryCatch do

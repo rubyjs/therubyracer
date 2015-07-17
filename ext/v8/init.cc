@@ -23,6 +23,8 @@ extern "C" {
     String::Init();
     Symbol::Init();
     Function::Init();
+    FunctionCallbackInfo::Init();
+    ReturnValue::Init();
     Script::Init();
     ScriptOrigin::Init();
     Array::Init();
