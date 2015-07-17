@@ -4,33 +4,6 @@
 
 
 namespace rr {
-
-  class Uint32 : public Ref<v8::Uint32> {
-  public:
-    Uint32(VALUE self) :
-      Ref<v8::Uint32>(self) {}
-    Uint32(v8::Isolate* isolate, v8::Handle<v8::Value> value) :
-      Ref<v8::Uint32>(isolate, value.As<v8::Uint32>()) {}
-
-    static VALUE Value(VALUE self) {
-      Uint32 uint32(self);
-      Locker lock(uint32);
-
-      return UINT2NUM(uint32->Value());
-    }
-
-    static inline void Init() {
-      ClassBuilder("Uint32", Integer::Class).
-        defineMethod("Value", &Value).
-        store(&Class);
-    }
-  };
-
-
-//TODO: remove this at some point. I don't see what this provides
-//above and beyond just using UINT2NUM and NUM2UINT.
-// --cowboyd Jul 9, 2015
-
   /**
    * Converts between Ruby `Number` and the C/C++ `uint32_t`.
    *

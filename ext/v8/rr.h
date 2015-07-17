@@ -20,6 +20,7 @@ inline VALUE not_implemented(const char* message) {
 #include "maybe.h"
 #include "equiv.h"
 #include "bool.h"
+#include "uint32_t.h"
 #include "pointer.h"
 #include "isolate.h"
 
@@ -38,8 +39,6 @@ inline VALUE not_implemented(const char* message) {
 #include "primitive.h"
 #include "number.h"
 #include "integer.h"
-#include "int32.h"
-#include "uint32.h"
 
 
 #include "external.h"
