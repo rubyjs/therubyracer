@@ -12,8 +12,13 @@ describe V8::C::Object do
     key = V8::C::String.NewFromUtf8(@isolate, 'foo')
     value = V8::C::String.NewFromUtf8(@isolate, 'bar')
 
-    o.Set(key, value)
-    expect(o.Get(key).Utf8Value).to eq 'bar'
+    maybe = o.Set(@ctx, key, value)
+    expect(maybe.IsJust()).to be true
+    expect(maybe.FromJust()).to be true
+
+    maybe = o.Get(@ctx, key)
+    expect(maybe.IsJust()).to be true
+    expect(maybe.FromJust().Utf8Value).to eq 'bar'
   end
 
   # TODO: Enable this when the methods are implemented in the extension
@@ -52,7 +57,7 @@ describe V8::C::Object do
     one = V8::C::Object.New(@isolate)
     two = V8::C::Object.New(@isolate)
 
-    one.Set(key, two)
-    expect(one.Get(key)).to be two
+    one.Set(@ctx, key, two)
+    expect(one.Get(@ctx, key).FromJust()).to be two
   end
 end

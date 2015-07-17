@@ -17,7 +17,7 @@ inline VALUE not_implemented(const char* message) {
 }
 
 #include "class_builder.h"
-
+#include "maybe.h"
 #include "equiv.h"
 #include "bool.h"
 #include "pointer.h"

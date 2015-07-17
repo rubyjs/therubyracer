@@ -24,21 +24,21 @@ describe V8::C::Function do
 
     fn.Call(@ctx.Global, [one, two, 3])
 
-    expect(@ctx.Global.Get(V8::C::String.NewFromUtf8(@isolate, 'one'))).to eq one
-    expect(@ctx.Global.Get(V8::C::String.NewFromUtf8(@isolate, 'two'))).to eq two
-    expect(@ctx.Global.Get(V8::C::String.NewFromUtf8(@isolate, 'three'))).to eq 3
+    expect(@ctx.Global.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'one')).FromJust()).to eq one
+    expect(@ctx.Global.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'two')).FromJust()).to eq two
+    expect(@ctx.Global.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'three')).FromJust()).to eq 3
   end
 
   it 'can be called as a constructor' do
     fn = run '(function() {this.foo = "foo"})'
-    expect(fn.NewInstance.Get(V8::C::String.NewFromUtf8(@isolate, 'foo')).Utf8Value).to eq 'foo'
+    expect(fn.NewInstance.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'foo')).FromJust().Utf8Value).to eq 'foo'
   end
 
   it 'can be called as a constructor with arguments' do
     fn = run '(function(foo) {this.foo = foo})'
     object = fn.NewInstance([V8::C::String.NewFromUtf8(@isolate, 'bar')])
 
-    expect(object.Get(V8::C::String.NewFromUtf8(@isolate, 'foo')).Utf8Value).to eq 'bar'
+    expect(object.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'foo')).FromJust().Utf8Value).to eq 'bar'
   end
 
   # TODO
