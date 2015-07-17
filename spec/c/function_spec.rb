@@ -26,7 +26,7 @@ describe V8::C::Function do
 
     expect(@ctx.Global.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'one')).FromJust()).to eq one
     expect(@ctx.Global.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'two')).FromJust()).to eq two
-    expect(@ctx.Global.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'three')).FromJust()).to eq 3
+    expect(@ctx.Global.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'three')).FromJust().Value()).to eq 3
   end
 
   it 'can be called as a constructor' do
