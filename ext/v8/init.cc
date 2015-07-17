@@ -17,6 +17,8 @@ extern "C" {
     Value::Init();
     Object::Init();
     Primitive::Init();
+    Number::Init();
+    Integer::Init();
     Name::Init();
     String::Init();
     Symbol::Init();

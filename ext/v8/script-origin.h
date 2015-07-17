@@ -35,11 +35,7 @@ namespace rr {
       VALUE is_opaque; //option
 
     };
-    struct Integer : public Equiv {
-      Integer(v8::Handle<v8::Integer> value) :
-        Equiv(INT2FIX(value->IntegerValue())) {
-      }
-    };
+
   public:
     static void Init();
 
@@ -52,10 +48,10 @@ namespace rr {
     ScriptOrigin(v8::Isolate* isolate, v8::ScriptOrigin origin) :
       ScriptOrigin(new Container(
                      Value(isolate, origin.ResourceName()),
-                     Integer(origin.ResourceLineOffset()),
-                     Integer(origin.ResourceColumnOffset()),
+                     Integer(isolate, origin.ResourceLineOffset()),
+                     Integer(isolate, origin.ResourceColumnOffset()),
                      Bool(origin.Options().IsSharedCrossOrigin()),
-                     Integer(origin.ScriptID()),
+                     Integer(isolate, origin.ScriptID()),
                      Bool(origin.Options().IsEmbedderDebugScript()),
                      Value(isolate, origin.SourceMapUrl()),
                      Bool(origin.Options().IsOpaque()))) {

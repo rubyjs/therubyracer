@@ -23,7 +23,7 @@ describe V8::C::Value do
   end
 
   it 'converts FixNums' do
-    expect(convert(42)).to eq 42
+    expect(convert(42).Value()).to eq 42
   end
 
   it 'converts booleans' do
