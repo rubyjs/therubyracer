@@ -8,6 +8,7 @@ namespace rr {
 
       defineMethod("Set", &Set).
       defineMethod("Get", &Get).
+      defineMethod("GetIdentityHash", &GetIdentityHash).
 
       store(&Class);
   }
@@ -20,26 +21,37 @@ namespace rr {
   }
 
   // TODO: Allow setting of property attributes
-  VALUE Object::Set(VALUE self, VALUE key, VALUE value) {
+  VALUE Object::Set(VALUE self, VALUE r_context, VALUE key, VALUE value) {
     Object object(self);
-    Locker lock(object.getIsolate());
+    Context context(r_context);
+    Isolate isolate(object.getIsolate());
+    Locker lock(isolate);
 
     if (rb_obj_is_kind_of(key, rb_cNumeric)) {
-      return Bool(object->Set(UInt32(key), Value::rubyObjectToHandle(object.getIsolate(), value)));
+      return Bool::Maybe(object->Set(context, Uint32_t(key), Value::rubyObjectToHandle(isolate, value)));
     } else {
-      return Bool(object->Set(*Value(key), Value::rubyObjectToHandle(object.getIsolate(), value)));
+      return Bool::Maybe(object->Set(context, *Value(key), Value::rubyObjectToHandle(isolate, value)));
     }
   }
 
-  VALUE Object::Get(VALUE self, VALUE key) {
+  VALUE Object::Get(VALUE self, VALUE r_context, VALUE key) {
+    Object object(self);
+    Context context(r_context);
+    Isolate isolate(object.getIsolate());
+    Locker lock(isolate);
+
+    if (rb_obj_is_kind_of(key, rb_cNumeric)) {
+      return Value::Maybe(isolate, object->Get(context, Uint32_t(key)));
+    } else {
+      return Value::Maybe(isolate, object->Get(context, *Value(key)));
+    }
+  }
+
+  VALUE Object::GetIdentityHash(VALUE self) {
     Object object(self);
     Locker lock(object.getIsolate());
 
-    if (rb_obj_is_kind_of(key, rb_cNumeric)) {
-      return Value::handleToRubyObject(object.getIsolate(), object->Get(UInt32(key)));
-    } else {
-      return Value::handleToRubyObject(object.getIsolate(), object->Get(*Value(key)));
-    }
+    return INT2FIX(object->GetIdentityHash());
   }
 
   Object::operator VALUE() {

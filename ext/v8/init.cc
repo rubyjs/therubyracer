@@ -13,13 +13,18 @@ extern "C" {
     Handles::Init();
     Context::Init();
     Backref::Init();
+    Maybe::Init();
     Value::Init();
     Object::Init();
     Primitive::Init();
+    Number::Init();
+    Integer::Init();
     Name::Init();
     String::Init();
     Symbol::Init();
     Function::Init();
+    FunctionCallbackInfo::Init();
+    ReturnValue::Init();
     Script::Init();
     ScriptOrigin::Init();
     Array::Init();

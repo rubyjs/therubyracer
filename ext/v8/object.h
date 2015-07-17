@@ -7,9 +7,9 @@ namespace rr {
   public:
     static void Init();
     static VALUE New(VALUE self, VALUE isolate);
-    static VALUE Set(VALUE self, VALUE key, VALUE value);
+    static VALUE Set(VALUE self, VALUE context, VALUE key, VALUE value);
     // static VALUE ForceSet(VALUE self, VALUE key, VALUE value);
-    static VALUE Get(VALUE self, VALUE key);
+    static VALUE Get(VALUE self, VALUE context, VALUE key);
     // static VALUE GetPropertyAttributes(VALUE self, VALUE key);
     // static VALUE Has(VALUE self, VALUE key);
     // static VALUE Delete(VALUE self, VALUE key);
@@ -34,7 +34,7 @@ namespace rr {
     // static VALUE HasNamedLookupInterceptor(VALUE self);
     // static VALUE HasIndexedLookupInterceptor(VALUE self);
     // static VALUE TurnOnAccessCheck(VALUE self);
-    // static VALUE GetIdentityHash(VALUE self);
+    static VALUE GetIdentityHash(VALUE self);
     // static VALUE SetHiddenValue(VALUE self, VALUE key, VALUE value);
     // static VALUE GetHiddenValue(VALUE self, VALUE key);
     // static VALUE DeleteHiddenValue(VALUE self, VALUE key);

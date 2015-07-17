@@ -16,6 +16,33 @@ namespace rr {
     inline External(v8::Isolate* isolate, v8::Handle<v8::Value> value) :
       External(isolate, v8::Handle<v8::External>::Cast<v8::Value>(value)) {}
 
+    static inline v8::Local<v8::External> wrap(Isolate isolate, VALUE object) {
+      // as long as this external is alive within JavaScript, it should not be
+      // garbage collected by Ruby.
+      isolate.retainObject(object);
+
+      // create the external.
+      Container* container = new Container(object);
+      v8::Local<v8::External> external(v8::External::New(isolate, (void*)container));
+
+      // next, we create a weak reference to this external so that we can be
+      // notified when V8 is done with it. At that point, we can let Ruby know
+      // that this external is done with it.
+      v8::Global<v8::External>* global(new v8::Global<v8::External>(isolate, external));
+      global->SetWeak<Container>(container, &release, v8::WeakCallbackType::kParameter);
+      container->global = global;
+
+      return External(isolate, external);
+    }
+    static inline VALUE unwrap(v8::Local<v8::External> external) {
+      Container* container = (Container*)external->Value();
+      return container->object;
+    };
+
+    static inline VALUE unwrap(v8::Local<v8::Value> external) {
+      return unwrap(v8::Local<v8::External>::Cast<v8::Value>(external));
+    }
+
     struct Container {
       Container(VALUE v) : object(v) {}
 

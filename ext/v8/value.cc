@@ -45,7 +45,7 @@ namespace rr {
 
       store(&Class);
 
-      rb_gc_register_address(&Empty);
+    rb_gc_register_address(&Empty);
   }
 
   VALUE Value::IsUndefined(VALUE self) {
@@ -171,11 +171,15 @@ namespace rr {
     }
 
     if (handle->IsUint32()) {
-      return UInt32(handle->Uint32Value());
+      return Uint32(isolate, handle);
     }
 
     if (handle->IsInt32()) {
-      return INT2FIX(handle->Int32Value());
+      return Int32(isolate, handle);
+    }
+
+    if (handle->IsNumber()) {
+      return Number(isolate, handle);
     }
 
     if (handle->IsBoolean()) {
@@ -183,9 +187,6 @@ namespace rr {
     }
 
     // TODO
-    // if (handle->IsNumber()) {
-    //   return rb_float_new(handle->NumberValue());
-    // }
 
     if (handle->IsString()) {
       return String(isolate, handle->ToString());

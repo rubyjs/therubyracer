@@ -24,6 +24,14 @@ namespace rr {
   class Bool : public Equiv {
   public:
     /**
+     * Use to convert methods that return Maybe<bool> to a Ruby
+     * VALUE, Such as `Maybe<bool> v8::Object::Get()`:
+     *
+     *   return Bool::Maybe(object->Get(context, key));
+     */
+    typedef Equiv::Maybe<bool, Bool> Maybe;
+
+    /**
      * Construct a Bool from a Ruby VALUE
      */
     Bool(VALUE val) : Equiv(val) {}

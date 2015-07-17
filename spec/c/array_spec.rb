@@ -9,10 +9,10 @@ describe V8::C::Array do
 
     expect(a.Length).to eq 0
 
-    a.Set(0, o)
+    a.Set(@ctx, 0, o)
     expect(a.Length).to eq 1
 
-    expect(a.Get(0).Equals(o)).to eq true
+    expect(a.Get(@ctx, 0).FromJust().Equals(o)).to eq true
   end
 
   it 'can be initialized with a length' do

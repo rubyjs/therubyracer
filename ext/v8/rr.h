@@ -17,10 +17,12 @@ inline VALUE not_implemented(const char* message) {
 }
 
 #include "class_builder.h"
-
+#include "maybe.h"
 #include "equiv.h"
 #include "bool.h"
+#include "uint32_t.h"
 #include "pointer.h"
+#include "wrapper.h"
 #include "isolate.h"
 
 #include "ref.h"
@@ -30,13 +32,16 @@ inline VALUE not_implemented(const char* message) {
 #include "handles.h"
 #include "context.h"
 
-#include "uint32.h"
 #include "value.h"
 #include "backref.h"
 
 #include "object.h"
 #include "array.h"
 #include "primitive.h"
+#include "number.h"
+#include "integer.h"
+
+
 #include "external.h"
 // This one is named v8_string to avoid name collisions with C's string.h
 #include "name.h"
@@ -46,6 +51,8 @@ inline VALUE not_implemented(const char* message) {
 #include "script.h"
 #include "script-origin.h"
 #include "function.h"
+#include "return-value.h"
+#include "function-callback.h"
 
 #include "template.h"
 #include "object-template.h"

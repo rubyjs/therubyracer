@@ -4,7 +4,7 @@ namespace rr {
 
   void Function::Init() {
     ClassBuilder("Function", Object::Class).
-
+      defineSingletonMethod("New", &New).
       defineMethod("NewInstance", &NewInstance).
       defineMethod("Call", &Call).
       defineMethod("SetName", &SetName).
@@ -18,6 +18,23 @@ namespace rr {
       defineMethod("GetScriptOrigin", &GetScriptOrigin).
 
       store(&Class);
+  }
+
+  VALUE Function::New(int argc, VALUE argv[], VALUE self) {
+    VALUE r_isolate, r_callback, r_data, r_length;
+    rb_scan_args(argc, argv, "22", &r_isolate, &r_callback, &r_data, &r_length);
+    Isolate isolate(r_isolate);
+    Locker lock(isolate);
+
+    // package up the function's callback data to have bot the code and the data
+    // parameter.
+    v8::Local<v8::Value> data(FunctionCallbackInfo::wrapData(isolate, r_callback, r_data));
+
+    int length = RTEST(r_length) ? NUM2INT(r_length) : 0;
+
+    v8::FunctionCallback callback = &FunctionCallbackInfo::invoke;
+
+    return Function(isolate, v8::Function::New(isolate,  callback, data, length));
   }
 
   VALUE Function::NewInstance(int argc, VALUE argv[], VALUE self) {
