@@ -8,6 +8,8 @@ using namespace rr;
 
 extern "C" {
   void Init_init() {
+    rb_eval_string("require 'v8/c'");
+
     V8::Init();
     Isolate::Init();
     Handles::Init();

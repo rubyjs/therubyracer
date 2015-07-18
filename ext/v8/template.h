@@ -17,7 +17,7 @@ namespace rr {
       VALUE name, value, r_attributes;
       rb_scan_args(argc, argv, "21", &name, &value, &r_attributes);
       v8::PropertyAttribute attributes(v8::PropertyAttribute::None);
-      if (RTEST(attributes)) {
+      if (RTEST(r_attributes)) {
         attributes = (v8::PropertyAttribute)NUM2INT(r_attributes);
       }
       v8::Local<v8::Value> val = Value(value);
