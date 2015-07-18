@@ -24,8 +24,8 @@ describe V8::C::Function do
 
     fn.Call(@ctx.Global, [one, two, 3])
 
-    expect(@ctx.Global.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'one')).FromJust()).to eq one
-    expect(@ctx.Global.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'two')).FromJust()).to eq two
+    expect(@ctx.Global.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'one')).FromJust().StrictEquals(one)).to be true
+    expect(@ctx.Global.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'two')).FromJust().StrictEquals(two)).to be true
     expect(@ctx.Global.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'three')).FromJust().Value()).to eq 3
   end
 
