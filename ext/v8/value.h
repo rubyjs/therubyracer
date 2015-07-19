@@ -66,8 +66,6 @@ namespace rr {
     static v8::Handle<v8::Value> rubyObjectToHandle(v8::Isolate* isolate, VALUE value);
 
     static std::vector< v8::Handle<v8::Value> > convertRubyArray(v8::Isolate* isolate, VALUE value);
-
-    static VALUE Empty;
   };
 
 }

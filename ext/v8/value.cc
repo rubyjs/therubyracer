@@ -2,14 +2,8 @@
 
 namespace rr {
 
-  VALUE Value::Empty;
-
   void Value::Init() {
-    Empty = rb_eval_string("Object.new");
-
     ClassBuilder("Value").
-      defineConst("Empty", Empty).
-
       defineMethod("IsUndefined", &IsUndefined).
       defineMethod("IsNull", &IsNull).
       defineMethod("IsTrue", &IsTrue).
@@ -44,8 +38,6 @@ namespace rr {
       defineSingletonMethod("FromRubyObject", &FromRubyObject).
 
       store(&Class);
-
-    rb_gc_register_address(&Empty);
   }
 
   VALUE Value::IsUndefined(VALUE self) {
@@ -209,10 +201,6 @@ namespace rr {
   }
 
   v8::Handle<v8::Value> Value::rubyObjectToHandle(v8::Isolate* isolate, VALUE value) {
-    if (rb_equal(value, Empty)) {
-      return v8::Handle<v8::Value>();
-    }
-
     switch (TYPE(value)) {
     case T_FIXNUM:
       return v8::Integer::New(isolate, NUM2INT(value));
