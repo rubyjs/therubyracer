@@ -33,6 +33,7 @@ extern "C" {
     External::Init();
     Template::Init();
     ObjectTemplate::Init();
+    FunctionTemplate::Init();
 
     // Accessor::Init();
     // Invocation::Init();

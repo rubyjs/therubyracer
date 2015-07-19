@@ -55,6 +55,7 @@ inline VALUE not_implemented(const char* message) {
 #include "function-callback.h"
 
 #include "template.h"
+#include "function-template.h"
 #include "object-template.h"
 
 #endif

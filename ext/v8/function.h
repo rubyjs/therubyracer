@@ -24,6 +24,7 @@ namespace rr {
 
     inline Function(VALUE value) : Ref<v8::Function>(value) {}
     inline Function(v8::Isolate* isolate, v8::Handle<v8::Function> function) : Ref<v8::Function>(isolate, function) {}
+    typedef MaybeLocal<Function, v8::Function> Maybe;
   };
 }
 

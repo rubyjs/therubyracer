@@ -10,6 +10,7 @@ namespace rr {
     inline static void Init() {
       ClassBuilder("Template").
         defineMethod("Set", &Set).
+        defineMethod("SetAccessorProperty", &SetAccessorProperty).
         store(&Class);
     }
 
@@ -22,6 +23,13 @@ namespace rr {
       }
       v8::Local<v8::Value> val = Value(value);
       Template(self)->Set(Name(name), val, attributes);
+      return Qnil;
+    }
+
+    static VALUE SetAccessorProperty(int argc, VALUE argv[], VALUE self) {
+      VALUE r_name, r_getter, setter, attributes, access;
+      rb_scan_args(argc, argv, "14", &r_name, &r_getter, &setter, &attributes, &access);
+      Template(self)->SetAccessorProperty(Name(r_name));
       return Qnil;
     }
   };
