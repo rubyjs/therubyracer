@@ -9,7 +9,7 @@ using namespace rr;
 extern "C" {
   void Init_init() {
     V8::Init();
-    Enums::Init();
+    DefineEnums();
     Isolate::Init();
     Handles::Init();
     Context::Init();

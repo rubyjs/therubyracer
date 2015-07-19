@@ -93,8 +93,8 @@ namespace rr {
       &PropertyCallbackInfo::invokeGetter,
       RTEST(setter) ? &PropertyCallbackInfoVoid::invokeSetter : 0,
       v8::MaybeLocal<v8::Value>(PropertyCallbackInfo::wrapData(isolate, getter, setter, data)),
-      RTEST(settings) ? Enums::fromRubyValue<v8::AccessControl>(settings) : v8::DEFAULT,
-      RTEST(attribute) ? Enums::fromRubyValue<v8::PropertyAttribute>(attribute) : v8::None
+      Enum<v8::AccessControl>(settings, v8::DEFAULT),
+      Enum<v8::PropertyAttribute>(attribute, v8::None)
     ));
   }
 

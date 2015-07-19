@@ -17,7 +17,7 @@ inline VALUE not_implemented(const char* message) {
 }
 
 #include "class_builder.h"
-#include "enums.h"
+#include "enum.h"
 
 #include "maybe.h"
 #include "equiv.h"
