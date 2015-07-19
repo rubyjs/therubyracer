@@ -80,7 +80,7 @@ namespace rr {
 
   VALUE Object::SetAccessor(int argc, VALUE* argv, VALUE self) {
     VALUE r_context, name, getter, setter, data, settings, attribute;
-    rb_scan_args(argc, argv, "52", &r_context, &name, &getter, &setter, &data, &settings, &attribute);
+    rb_scan_args(argc, argv, "34", &r_context, &name, &getter, &setter, &data, &settings, &attribute);
 
     Object object(self);
     Context context(r_context);
