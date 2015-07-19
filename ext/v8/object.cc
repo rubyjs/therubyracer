@@ -55,46 +55,14 @@ namespace rr {
   }
 
   Object::operator VALUE() {
-    Locker lock(getIsolate());
+    Isolate isolate(getIsolate());
+    Locker lock(isolate);
 
-    if (handle.IsEmpty()) {
-      return Qnil;
+    if (handle->IsFunction()) {
+      return Function(isolate, handle.As<v8::Function>());
     }
-
-    Backref* backref;
-
-    v8::Local<v8::String> key(v8::String::NewFromUtf8(getIsolate(), "rr::Backref"));
-    v8::Local<v8::Value> external = handle->GetHiddenValue(key);
-
-    VALUE value;
-
-    if (external.IsEmpty()) {
-      value = downcast();
-      backref = new Backref(value);
-
-      handle->SetHiddenValue(key, backref->toExternal(getIsolate()));
-    } else {
-      v8::External* wrapper = v8::External::Cast(*external);
-      backref = (Backref*)wrapper->Value();
-      value = backref->get();
-
-      if (!RTEST(value)) {
-        value = downcast();
-        backref->set(value);
-      }
-    }
-
-    return value;
-  }
-
-  VALUE Object::downcast() {
-    Locker lock(getIsolate());
 
     // TODO: Enable this when the methods are implemented
-    // if (handle->IsFunction()) {
-    //   return Function((v8::Handle<v8::Function>) v8::Function::Cast(*handle));
-    // }
-    //
     // if (handle->IsArray()) {
     //   return Array((v8::Handle<v8::Array>)v8::Array::Cast(*handle));
     // }

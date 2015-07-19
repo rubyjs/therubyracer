@@ -12,7 +12,6 @@ extern "C" {
     Isolate::Init();
     Handles::Init();
     Context::Init();
-    Backref::Init();
     Maybe::Init();
     Value::Init();
     Object::Init();
@@ -35,7 +34,6 @@ extern "C" {
     // Signature::Init();
     // Date::Init();
     // Constants::Init();
-    // External::Init();
     // Template::Init();
     // Stack::Init();
     // Message::Init();
