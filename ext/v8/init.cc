@@ -34,6 +34,7 @@ extern "C" {
     Template::Init();
     ObjectTemplate::Init();
     FunctionTemplate::Init();
+    Signature::Init();
 
     // Accessor::Init();
     // Invocation::Init();

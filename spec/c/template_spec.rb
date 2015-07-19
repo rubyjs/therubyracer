@@ -30,19 +30,4 @@ describe V8::C::Template do
       end
     end
   end
-
-  describe "SetAccessorProperty()" do
-    describe "with the bare minimum" do
-      before do
-        template.SetAccessorProperty(key)
-        @object = template.NewInstance(@ctx).FromJust()
-        @object.Set(@ctx, key, value)
-      end
-      it "cannot be shared across contexts" do
-        ctx2 = V8::C::Context::New(@isolate)
-        expect(@object.Get(@ctx, key).FromJust().Value).to be 23
-        expect(@object.Get(ctx2, key).FromJust()).to be_nil
-      end
-    end
-  end
 end

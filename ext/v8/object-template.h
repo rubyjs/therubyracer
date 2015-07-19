@@ -31,7 +31,6 @@ namespace rr {
       v8::MaybeLocal<v8::Object> object(t->NewInstance());
       return Object::Maybe(isolate, ObjectTemplate(self)->NewInstance(context));
     }
-
   };
 }
 
