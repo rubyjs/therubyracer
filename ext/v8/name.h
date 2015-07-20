@@ -9,6 +9,8 @@ namespace rr {
     static VALUE GetIdentityHash(VALUE self);
 
     Name(VALUE self) : Ref<v8::Name>(self) {}
+    Name(v8::Isolate* isolate, v8::Local<v8::Name> name) :
+      Ref<v8::Name>(isolate, name) {}
   };
 }
 

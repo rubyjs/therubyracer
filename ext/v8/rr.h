@@ -33,9 +33,12 @@ inline VALUE not_implemented(const char* message) {
 #include "context.h"
 
 #include "value.h"
+#include "boolean.h"
 #include "object.h"
 #include "array.h"
 #include "primitive.h"
+#include "undefined.h"
+#include "null.h"
 #include "number.h"
 #include "integer.h"
 

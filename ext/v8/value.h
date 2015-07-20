@@ -18,7 +18,7 @@ namespace rr {
     public:
       Maybe(v8::Isolate* isolate, v8::MaybeLocal<v8::Value> maybe) {
         if (!maybe.IsEmpty()) {
-          just(Value::handleToRubyObject(isolate, maybe.ToLocalChecked()));
+          just(Value(isolate, maybe.ToLocalChecked()));
         }
       }
     };
@@ -34,7 +34,7 @@ namespace rr {
     // static VALUE IsArray(VALUE self);
     static VALUE IsObject(VALUE self);
     static VALUE IsBoolean(VALUE self);
-    // static VALUE IsNumber(VALUE self);
+    static VALUE IsNumber(VALUE self);
     static VALUE IsExternal(VALUE self);
     static VALUE IsInt32(VALUE self);
     static VALUE IsUint32(VALUE self);
@@ -47,7 +47,7 @@ namespace rr {
     static VALUE ToString(VALUE self);
     // static VALUE ToDetailString(VALUE self);
     // static VALUE ToObject(VALUE self);
-    // static VALUE BooleanValue(VALUE self);
+    static VALUE BooleanValue(VALUE self, VALUE context);
     // static VALUE NumberValue(VALUE self);
     // static VALUE IntegerValue(VALUE self);
     // static VALUE Uint32Value(VALUE self);
@@ -62,7 +62,7 @@ namespace rr {
     inline Value(VALUE value) : Ref<v8::Value>(value) {}
     inline Value(v8::Isolate* isolate, v8::Handle<v8::Value> value) : Ref<v8::Value>(isolate, value) {}
 
-    static VALUE handleToRubyObject(v8::Isolate* isolate, v8::Handle<v8::Value> value);
+    operator VALUE();
     static v8::Handle<v8::Value> rubyObjectToHandle(v8::Isolate* isolate, VALUE value);
 
     static std::vector< v8::Handle<v8::Value> > convertRubyArray(v8::Isolate* isolate, VALUE value);

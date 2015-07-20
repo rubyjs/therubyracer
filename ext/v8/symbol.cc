@@ -69,6 +69,6 @@ namespace rr {
     Isolate isolate(symbol.getIsolate());
     Locker lock(isolate);
 
-    return Value::handleToRubyObject(isolate, symbol->Name());
+    return Value(isolate, symbol->Name());
   }
 }
