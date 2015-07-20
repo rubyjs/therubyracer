@@ -27,7 +27,7 @@ extern "C" {
     Symbol::Init();
     Function::Init();
     FunctionCallbackInfo::Init();
-    PropertyCallbackInfo::Init();
+    PropertyCallbackInfoValue::Init();
     PropertyCallbackInfoVoid::Init();
     ReturnValue::Init();
     Script::Init();

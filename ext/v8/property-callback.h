@@ -4,15 +4,14 @@
 
 namespace rr {
 
-  typedef Wrapper<v8::PropertyCallbackInfo<v8::Value>> PropertyCallbackInfoWrapper;
-
-  class PropertyCallbackInfo : public PropertyCallbackInfoWrapper {
+  template <class T>
+  class PropertyCallbackInfo : public Wrapper<v8::PropertyCallbackInfo<T>> {
   public:
 
-    inline PropertyCallbackInfo(v8::PropertyCallbackInfo<v8::Value> info) :
-      PropertyCallbackInfoWrapper(info) {}
+    inline PropertyCallbackInfo(v8::PropertyCallbackInfo<T> info) :
+      Wrapper<v8::PropertyCallbackInfo<T>>(info) {}
 
-    inline PropertyCallbackInfo(VALUE self) : PropertyCallbackInfoWrapper(self) {}
+    inline PropertyCallbackInfo(VALUE self) : Wrapper<v8::PropertyCallbackInfo<T>>(self) {}
 
     /**
      * Package up the callback data for this object so that it can
@@ -38,6 +37,38 @@ namespace rr {
       return holder;
     }
 
+    static VALUE This(VALUE self) {
+      PropertyCallbackInfo<T> info(self);
+      Locker lock(info->GetIsolate());
+      return Object(info->GetIsolate(), info->This());
+    }
+
+    static VALUE Data(VALUE self) {
+      PropertyCallbackInfo<T> info(self);
+      Isolate isolate(info->GetIsolate());
+      Locker lock(isolate);
+
+      v8::Local<v8::Object> holder = v8::Local<v8::Object>::Cast<v8::Value>(info->Data());
+      v8::Local<v8::String> data_key = v8::String::NewFromUtf8(isolate, "rr::data");
+      v8::Local<v8::Value> data(holder->GetHiddenValue(data_key));
+
+      return Value::handleToRubyObject(info->GetIsolate(), data);
+    }
+
+    static VALUE GetIsolate(VALUE self) {
+      PropertyCallbackInfo<T> info(self);
+      return Isolate(info->GetIsolate());
+    }
+  };
+
+  class PropertyCallbackInfoValue : public PropertyCallbackInfo<v8::Value> {
+  public:
+
+    inline PropertyCallbackInfoValue(v8::PropertyCallbackInfo<v8::Value> info) :
+      PropertyCallbackInfo<v8::Value>(info) {}
+
+    inline PropertyCallbackInfoValue(VALUE self) : PropertyCallbackInfo<v8::Value>(self) {}
+
     /**
      * Call the Ruby code associated with this callback.
      *
@@ -46,7 +77,7 @@ namespace rr {
      *
      * Note: This function implements the `v8::AccessorNameGetterCallback` API.
      */
-    static void invokeGetter(v8::Local<v8::Name> property, const v8::PropertyCallbackInfo<v8::Value>& info) {
+    static void invoke(v8::Local<v8::Name> property, const v8::PropertyCallbackInfo<v8::Value>& info) {
       v8::Isolate* isolate = info.GetIsolate();
       v8::Local<v8::Object> holder = v8::Local<v8::Object>::Cast<v8::Value>(info.Data());
       v8::Local<v8::String> callback_key = v8::String::NewFromUtf8(isolate, "rr::getter");
@@ -64,37 +95,14 @@ namespace rr {
       rb_funcall(code, rb_intern("call"), 2, rb_property, (VALUE)PropertyCallbackInfo(info));
     }
 
-    static VALUE This(VALUE self) {
-      PropertyCallbackInfo info(self);
-      Locker lock(info->GetIsolate());
-      return Object(info->GetIsolate(), info->This());
-    }
-
-    static VALUE Data(VALUE self) {
-      PropertyCallbackInfo info(self);
-      Isolate isolate(info->GetIsolate());
-      Locker lock(isolate);
-
-      v8::Local<v8::Object> holder = v8::Local<v8::Object>::Cast<v8::Value>(info->Data());
-      v8::Local<v8::String> data_key = v8::String::NewFromUtf8(isolate, "rr::data");
-      v8::Local<v8::Value> data(holder->GetHiddenValue(data_key));
-
-      return Value::handleToRubyObject(info->GetIsolate(), data);
-    }
-
-    static VALUE GetIsolate(VALUE self) {
-      PropertyCallbackInfo info(self);
-      return Isolate(info->GetIsolate());
-    }
-
     static VALUE GetReturnValue(VALUE self) {
-      PropertyCallbackInfo info(self);
+      PropertyCallbackInfoValue info(self);
       Locker lock(info->GetIsolate());
       return ReturnValue(info->GetReturnValue());
     }
 
     static inline void Init() {
-      ClassBuilder("PropertyCallbackInfo").
+      ClassBuilder("PropertyCallbackInfoValue").
         defineMethod("This", &This).
         defineMethod("Data", &Data).
         defineMethod("GetIsolate", &GetIsolate).
@@ -102,6 +110,56 @@ namespace rr {
         store(&Class);
     }
   };
+
+  class PropertyCallbackInfoVoid : public PropertyCallbackInfo<void> {
+  public:
+
+    inline PropertyCallbackInfoVoid(v8::PropertyCallbackInfo<void> info) :
+      PropertyCallbackInfo<void>(info) {}
+
+    inline PropertyCallbackInfoVoid(VALUE self) : PropertyCallbackInfo<void>(self) {}
+
+    /**
+     * Call the Ruby code associated with this callback.
+     *
+     * Unpack the Ruby code, and the callback data from the C++
+     * callback data, and then invoke that code.
+     *
+     * Note: This function implements the `v8::AccessorNameSetterCallback` API.
+     */
+    static void invoke(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info) {
+      v8::Isolate* isolate = info.GetIsolate();
+
+      v8::Local<v8::Object> holder = v8::Local<v8::Object>::Cast<v8::Value>(info.Data());
+      v8::Local<v8::String> callback_key = v8::String::NewFromUtf8(isolate, "rr::setter");
+
+      VALUE code(External::unwrap(holder->GetHiddenValue(callback_key)));
+
+      VALUE rb_property;
+      if (property->IsSymbol()) {
+        rb_property = Symbol(isolate, v8::Local<v8::Symbol>::Cast(property));
+      } else {
+        rb_property = String(isolate, property->ToString());
+      }
+
+      Unlocker unlock(info.GetIsolate());
+      rb_funcall(
+        code, rb_intern("call"), 3,
+        rb_property,
+        (VALUE)Value::handleToRubyObject(isolate, value),
+        (VALUE)PropertyCallbackInfoVoid(info)
+      );
+    }
+
+    static inline void Init() {
+      ClassBuilder("PropertyCallbackInfoVoid").
+        defineMethod("This", &This).
+        defineMethod("Data", &Data).
+        defineMethod("GetIsolate", &GetIsolate).
+        store(&Class);
+    }
+  };
+
 }
 
 #endif /* RR_PROPERTY_CALLBACK_H */
