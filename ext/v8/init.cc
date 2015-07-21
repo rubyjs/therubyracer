@@ -7,6 +7,7 @@ extern "C" {
 using namespace rr;
 
 VALUE PropertyCallbackInfo::Class;
+VALUE ReturnValue::Class;
 
 extern "C" {
   void Init_init() {

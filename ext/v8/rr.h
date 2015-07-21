@@ -53,7 +53,7 @@ inline VALUE not_implemented(const char* message) {
 
 #include "object.h"
 #include "return-value.h"
-#include "property-callback.h"
+#include "property-callback-info.h"
 #include "array.h"
 
 #include "script.h"

@@ -102,7 +102,7 @@ namespace rr {
       static VALUE GetReturnValue(VALUE self) {
         Value info(self);
         Locker lock(info->GetIsolate());
-        return ReturnValue(info->GetReturnValue());
+        return ReturnValue::Value(info->GetReturnValue());
       }
 
       static inline void Init() {
@@ -156,12 +156,18 @@ namespace rr {
         );
       }
 
+      static VALUE GetReturnValue(VALUE self) {
+        Value info(self);
+        Locker lock(info->GetIsolate());
+        return ReturnValue::Void(info->GetReturnValue());
+      }
+
       static inline void Init() {
         ClassBuilder("Void", PropertyCallbackInfo::Class, PropertyCallbackInfo::Class).
           defineMethod("This", &This).
           defineMethod("Data", &Data).
           defineMethod("GetIsolate", &GetIsolate).
-          // defineMethod("GetReturnValue", &GetReturnValue).
+          defineMethod("GetReturnValue", &GetReturnValue).
           store(&Class);
       }
 

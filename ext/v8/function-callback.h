@@ -102,7 +102,7 @@ namespace rr {
     static VALUE GetReturnValue(VALUE self) {
       FunctionCallbackInfo info(self);
       Locker lock(info->GetIsolate());
-      return ReturnValue(info->GetReturnValue());
+      return ReturnValue::Value(info->GetReturnValue());
     }
 
     static inline void Init() {
