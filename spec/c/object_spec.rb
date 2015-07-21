@@ -51,13 +51,4 @@ describe V8::C::Object do
   #   o.Set(property, V8::C::String::New('Bro! '))
   #   o.Get(property).Utf8Value().should eql 'Bro! I am Legend'
   # end
-
-  it 'always returns the same ruby object for the same V8 object' do
-    key = V8::C::String.NewFromUtf8(@isolate, 'two')
-    one = V8::C::Object.New(@isolate)
-    two = V8::C::Object.New(@isolate)
-
-    one.Set(@ctx, key, two)
-    expect(one.Get(@ctx, key).FromJust()).to be two
-  end
 end

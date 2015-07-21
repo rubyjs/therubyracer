@@ -56,12 +56,10 @@ namespace rr {
 
     inline Object(VALUE value) : Ref<v8::Object>(value) {}
     inline Object(v8::Isolate* isolate, v8::Handle<v8::Object> object) : Ref<v8::Object>(isolate, object) {}
+
     typedef MaybeLocal<Object, v8::Object> Maybe;
 
-    virtual operator VALUE();
-
-  protected:
-    VALUE downcast();
+    operator VALUE();
   };
 
 }

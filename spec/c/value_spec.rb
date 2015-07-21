@@ -35,6 +35,6 @@ describe V8::C::Value do
     object = V8::C::Object.New(@isolate)
     object.Set(@ctx, V8::C::String.NewFromUtf8(@isolate, 'test'), 1)
 
-    expect(convert(object)).to eq object
+    expect(convert(object).StrictEquals(object)).to be true
   end
 end
