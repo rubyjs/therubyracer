@@ -7,10 +7,12 @@ namespace rr {
   class ClassBuilder {
   public:
     static VALUE defineClass(const char *name, VALUE superclass = rb_cObject);
+    static VALUE defineClassUnder(const char *name, VALUE module, VALUE superclass = rb_cObject);
     static VALUE defineModule(const char *name);
 
     ClassBuilder() {};
     ClassBuilder(const char* name, VALUE superclass = rb_cObject);
+    ClassBuilder(const char* name, VALUE module, VALUE superclass);
     ClassBuilder(const char* name, const char* supername);
 
     ClassBuilder& defineConst(const char* name, VALUE value);

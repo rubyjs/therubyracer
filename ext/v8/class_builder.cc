@@ -11,6 +11,12 @@ namespace rr {
     return klass;
   }
 
+  VALUE ClassBuilder::defineClassUnder(const char* name, VALUE module, VALUE superclass) {
+    VALUE klass = rb_define_class_under(module, name, superclass);
+    rb_funcall(klass, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+    return klass;
+  }
+
   VALUE ClassBuilder::defineModule(const char *name) {
     VALUE V8 = rb_define_module("V8");
     VALUE V8_C = rb_define_module_under(V8, "C");
@@ -19,6 +25,10 @@ namespace rr {
 
   ClassBuilder::ClassBuilder(const char* name, VALUE superclass) {
     this->value = ClassBuilder::defineClass(name, superclass);
+  }
+
+  ClassBuilder::ClassBuilder(const char* name, VALUE module, VALUE superclass) {
+    this->value = ClassBuilder::defineClassUnder(name, module, superclass);
   }
 
   ClassBuilder::ClassBuilder(const char* name, const char* supername) {

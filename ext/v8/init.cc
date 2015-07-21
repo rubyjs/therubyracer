@@ -6,6 +6,8 @@ extern "C" {
 
 using namespace rr;
 
+VALUE PropertyCallbackInfo::Class;
+
 extern "C" {
   void Init_init() {
     V8::Init();
@@ -27,8 +29,7 @@ extern "C" {
     Symbol::Init();
     Function::Init();
     FunctionCallbackInfo::Init();
-    PropertyCallbackInfoValue::Init();
-    PropertyCallbackInfoVoid::Init();
+    PropertyCallbackInfo::Init();
     ReturnValue::Init();
     Script::Init();
     ScriptOrigin::Init();
