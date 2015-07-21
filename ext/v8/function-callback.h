@@ -27,7 +27,7 @@ namespace rr {
     static VALUE at(VALUE self, VALUE i) {
       FunctionCallbackInfo info(self);
       Locker lock(info->GetIsolate());
-      return Value::handleToRubyObject(info->GetIsolate(), info[NUM2INT(i)]);
+      return Value(info->GetIsolate(), info[NUM2INT(i)]);
     }
 
     static VALUE Callee(VALUE self) {
@@ -56,7 +56,8 @@ namespace rr {
       v8::Local<v8::Object> holder = v8::Local<v8::Object>::Cast<v8::Value>(info->Data());
       v8::Local<v8::String> data_key = v8::String::NewFromUtf8(isolate, "rr::data");
       v8::Local<v8::Value> data(holder->GetHiddenValue(data_key));
-      return Value::handleToRubyObject(isolate, data);
+
+      return Value(info->GetIsolate(), data);
     }
 
     static VALUE GetIsolate(VALUE self) {

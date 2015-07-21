@@ -58,7 +58,7 @@ namespace rr {
 
     std::vector< v8::Handle<v8::Value> > vector(Value::convertRubyArray(isolate, argv));
 
-    return Value::handleToRubyObject(isolate, function->Call(Value(receiver), RARRAY_LENINT(argv), &vector[0]));
+    return Value(isolate, function->Call(Value(receiver), RARRAY_LENINT(argv), &vector[0]));
   }
 
   VALUE Function::SetName(VALUE self, VALUE name) {
@@ -74,14 +74,14 @@ namespace rr {
     Function function(self);
     Locker lock(function.getIsolate());
 
-    return Value::handleToRubyObject(function.getIsolate(), function->GetName());
+    return Value(function.getIsolate(), function->GetName());
   }
 
   VALUE Function::GetInferredName(VALUE self) {
     Function function(self);
     Locker lock(function.getIsolate());
 
-    return Value::handleToRubyObject(function.getIsolate(), function->GetInferredName());
+    return Value(function.getIsolate(), function->GetInferredName());
   }
 
   VALUE Function::GetScriptLineNumber(VALUE self) {

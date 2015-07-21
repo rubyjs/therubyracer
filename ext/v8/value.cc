@@ -2,24 +2,18 @@
 
 namespace rr {
 
-  VALUE Value::Empty;
-
   void Value::Init() {
-    Empty = rb_eval_string("Object.new");
-
     ClassBuilder("Value").
-      defineConst("Empty", Empty).
-
       defineMethod("IsUndefined", &IsUndefined).
       defineMethod("IsNull", &IsNull).
       defineMethod("IsTrue", &IsTrue).
       defineMethod("IsFalse", &IsFalse).
+      defineMethod("IsBoolean", &IsBoolean).
       defineMethod("IsString", &IsString).
       defineMethod("IsFunction", &IsFunction).
       // defineMethod("IsArray", &IsArray).
       defineMethod("IsObject", &IsObject).
-      // defineMethod("IsBoolean", &IsBoolean).
-      // defineMethod("IsNumber", &IsNumber).
+      defineMethod("IsNumber", &IsNumber).
       defineMethod("IsExternal", &IsExternal).
       defineMethod("IsInt32", &IsInt32).
       defineMethod("IsUint32", &IsUint32).
@@ -32,7 +26,7 @@ namespace rr {
       defineMethod("ToString", &ToString).
       // defineMethod("ToDetailString", &ToDetailString).
       // defineMethod("ToObject", &ToObject).
-      // defineMethod("BooleanValue", &BooleanValue).
+      defineMethod("BooleanValue", &BooleanValue).
       // defineMethod("NumberValue", &NumberValue).
       // defineMethod("IntegerValue", &IntegerValue).
       // defineMethod("Uint32Value", &Uint32Value).
@@ -40,12 +34,7 @@ namespace rr {
       defineMethod("Equals", &Equals).
       defineMethod("StrictEquals", &StrictEquals).
 
-      defineMethod("ToRubyObject", &ToRubyObject).
-      defineSingletonMethod("FromRubyObject", &FromRubyObject).
-
       store(&Class);
-
-    rb_gc_register_address(&Empty);
   }
 
   VALUE Value::IsUndefined(VALUE self) {
@@ -76,6 +65,13 @@ namespace rr {
     return Bool(value->IsFalse());
   }
 
+  VALUE Value::IsBoolean(VALUE self) {
+    Value value(self);
+    Locker lock(value);
+
+    return Bool(value->IsBoolean());
+  }
+
   VALUE Value::IsString(VALUE self) {
     Value value(self);
     Locker lock(value.getIsolate());
@@ -104,6 +100,12 @@ namespace rr {
     return Bool(value->IsExternal());
   }
 
+  VALUE Value::IsNumber(VALUE self) {
+    Value value(self);
+    Locker lock(value);
+    return Bool(value->IsNumber());
+  }
+
   VALUE Value::IsInt32(VALUE self) {
     Value value(self);
     Locker lock(value.getIsolate());
@@ -125,6 +127,13 @@ namespace rr {
     return String(value.getIsolate(), value->ToString());
   }
 
+  VALUE Value::BooleanValue(VALUE self, VALUE r_context) {
+    Value value(self);
+    Locker lock(value);
+
+    return Bool::Maybe(value->BooleanValue(Context(r_context)));
+  }
+
   VALUE Value::Equals(VALUE self, VALUE other) {
     Value value(self);
     Locker lock(value.getIsolate());
@@ -139,31 +148,21 @@ namespace rr {
     return Bool(value->StrictEquals(Value(other)));
   }
 
-  VALUE Value::ToRubyObject(VALUE self) {
-    Value value(self);
-    Locker lock(value.getIsolate());
-
-    return handleToRubyObject(value.getIsolate(), value);
-  }
-
-  VALUE Value::FromRubyObject(VALUE selfClass, VALUE rb_isolate, VALUE value) {
-    Isolate isolate(rb_isolate);
-    Locker lock(isolate);
-
-    return Value(isolate, rubyObjectToHandle(isolate, value));
-  }
-
-  VALUE Value::handleToRubyObject(v8::Isolate* isolate, v8::Handle<v8::Value> handle) {
-    if (handle.IsEmpty() || handle->IsUndefined() || handle->IsNull()) {
+  Value::operator VALUE() {
+    if (handle.IsEmpty()) {
       return Qnil;
     }
 
-    if (handle->IsTrue()) {
-      return Qtrue;
+    if (handle->IsUndefined()) {
+      return Undefined(isolate, handle);
     }
 
-    if (handle->IsFalse()) {
-      return Qfalse;
+    if (handle->IsNull()) {
+      return Null(isolate, handle);
+    }
+
+    if (handle->IsBoolean()) {
+      return Boolean(isolate, handle.As<v8::Boolean>());
     }
 
     if (handle->IsExternal()) {
@@ -182,14 +181,16 @@ namespace rr {
       return Number(isolate, handle);
     }
 
-    if (handle->IsBoolean()) {
-      return handle->BooleanValue() ? Qtrue : Qfalse;
+    if (handle->IsString()) {
+      return String(isolate, handle.As<v8::String>());
     }
 
-    // TODO
+    if (handle->IsSymbol()) {
+      return Symbol(isolate, handle.As<v8::Symbol>());
+    }
 
-    if (handle->IsString()) {
-      return String(isolate, handle->ToString());
+    if (handle->IsName()) {
+      return Name(isolate, handle.As<v8::Name>());
     }
 
     // TODO
@@ -204,15 +205,10 @@ namespace rr {
     if (handle->IsObject()) {
       return Object(isolate, handle->ToObject());
     }
-
-    return Value(isolate, handle);
+    return Ref<v8::Value>::operator VALUE();
   }
 
   v8::Handle<v8::Value> Value::rubyObjectToHandle(v8::Isolate* isolate, VALUE value) {
-    if (rb_equal(value, Empty)) {
-      return v8::Handle<v8::Value>();
-    }
-
     switch (TYPE(value)) {
     case T_FIXNUM:
       return v8::Integer::New(isolate, NUM2INT(value));
