@@ -90,9 +90,9 @@ namespace rr {
     return Bool::Maybe(object->SetAccessor(
       context,
       Name(name),
-      &PropertyCallbackInfo::Value::invoke,
-      RTEST(setter) ? &PropertyCallbackInfo::Void::invoke : 0,
-      v8::MaybeLocal<v8::Value>(PropertyCallbackInfo::Base<v8::Value>::wrapData(isolate, getter, setter, data)),
+      &PropertyCallback::invokeGetter,
+      RTEST(setter) ? &PropertyCallback::invokeSetter : 0,
+      v8::MaybeLocal<v8::Value>(PropertyCallback::wrapData(isolate, getter, setter, data)),
       Enum<v8::AccessControl>(settings, v8::DEFAULT),
       Enum<v8::PropertyAttribute>(attribute, v8::None)
     ));
