@@ -67,7 +67,7 @@ namespace rr {
     static VALUE at(VALUE self, VALUE i) {
       FunctionCallbackInfo info(self);
       Locker lock(info->GetIsolate());
-      return Value::handleToRubyObject(info->GetIsolate(), info[NUM2INT(i)]);
+      return Value(info->GetIsolate(), info[NUM2INT(i)]);
     }
 
     static VALUE Callee(VALUE self) {
@@ -91,7 +91,7 @@ namespace rr {
     static VALUE Data(VALUE self) {
       FunctionCallbackInfo info(self);
       Locker lock(info->GetIsolate());
-      return Value::handleToRubyObject(info->GetIsolate(), info.data);
+      return Value(info->GetIsolate(), info.data);
     }
 
     static VALUE GetIsolate(VALUE self) {

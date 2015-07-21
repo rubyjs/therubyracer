@@ -37,6 +37,6 @@ namespace rr {
     Context context(rb_context);
     Locker lock(context->GetIsolate());
 
-    return Value::handleToRubyObject(context->GetIsolate(), Script(self)->Run());
+    return Value(context->GetIsolate(), Script(self)->Run());
   }
 }
