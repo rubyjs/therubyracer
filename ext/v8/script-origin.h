@@ -57,6 +57,18 @@ namespace rr {
                      Bool(origin.Options().IsOpaque()))) {
     }
 
+    inline operator v8::ScriptOrigin() {
+      return v8::ScriptOrigin(
+        Value(container->name),
+        Integer(container->line_offset),
+        Integer(container->column_offset),
+        Boolean(container->is_shared_cross_origin),
+        Integer(container->script_id),
+        Boolean(container->is_embedder_debug_script),
+        Value(container->source_map_url),
+        Boolean(container->is_opaque));
+    }
+
     static void mark(Container* container) {
       rb_gc_mark(container->name);
       rb_gc_mark(container->line_offset);

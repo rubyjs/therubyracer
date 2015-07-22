@@ -15,6 +15,7 @@ namespace rr {
 
     inline Script(VALUE value) : Ref<v8::Script>(value) {}
     inline Script(v8::Isolate* isolate, v8::Handle<v8::Script> script) : Ref<v8::Script>(isolate, script) {}
+    typedef MaybeLocal<Script, v8::Script> Maybe;
   };
 }
 #endif

@@ -23,20 +23,28 @@ namespace rr {
 
 
   VALUE Script::Compile(int argc, VALUE argv[], VALUE self) {
-    VALUE source, rb_context, origin;
-    rb_scan_args(argc, argv, "21", &source, &rb_context, &origin);
+    VALUE r_source, r_context, r_origin;
+    rb_scan_args(argc, argv, "21", &r_context, &r_source, &r_origin);
 
-    Context context(rb_context);
-    Locker lock(context.getIsolate());
+    Context context(r_context);
+    Isolate isolate(context.getIsolate());
+    Locker lock(isolate);
 
-    // TODO: ScriptOrigin
-    return Script(context.getIsolate(), v8::Script::Compile(String(source)));
+
+    if (RTEST(r_origin)) {
+      v8::ScriptOrigin origin = ScriptOrigin(r_origin);
+      v8::MaybeLocal<v8::Script> script = v8::Script::Compile(context, String(r_source), &origin);
+      return Script::Maybe(isolate, script);
+    }
+    else {
+      return Script::Maybe(isolate, v8::Script::Compile(context, String(r_source)));
+    }
   }
 
   VALUE Script::Run(VALUE self, VALUE rb_context) {
     Context context(rb_context);
-    Locker lock(context->GetIsolate());
+    Locker lock(context);
 
-    return Value(context->GetIsolate(), Script(self)->Run());
+    return Value::Maybe(context, Script(self)->Run(context));
   }
 }

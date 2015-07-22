@@ -66,6 +66,16 @@ namespace rr {
     // the underlying value.
     VALUE object;
   };
+
+  template <class T, class V>
+  class MaybeLocal : public Maybe {
+  public:
+    MaybeLocal(v8::Isolate* isolate, v8::MaybeLocal<V> maybe) {
+      if (!maybe.IsEmpty()) {
+        just(T(isolate, maybe.ToLocalChecked()));
+      }
+    }
+  };
 }
 
 #endif /* RR_MAYBE_H */
