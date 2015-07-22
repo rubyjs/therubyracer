@@ -7,82 +7,81 @@ namespace rr {
   class ReturnValue {
   public:
 
-    template <class T>
-    class Base : public Wrapper<v8::ReturnValue<T>> {
+    template <class V8Type, class RRType>
+    class Base : public Wrapper<v8::ReturnValue<V8Type>> {
     public:
 
-      Base(v8::ReturnValue<T> value) : Wrapper<v8::ReturnValue<T>>(value) {}
-      Base(VALUE self) : Wrapper<v8::ReturnValue<T>>(self) {}
-
-      static VALUE GetIsolate(VALUE self) {
-        Base<T> ret(self);
-        return Isolate(ret->GetIsolate());
-      }
-
-    };
-
-    class Value : public Base<v8::Value> {
-    public:
-
-      Value(v8::ReturnValue<v8::Value> value) : Base(value) {}
-      Value(VALUE self) : Base(self) {}
+      Base(v8::ReturnValue<V8Type> value) : Wrapper<v8::ReturnValue<V8Type>>(value) {}
+      Base(VALUE self) : Wrapper<v8::ReturnValue<V8Type>>(self) {}
 
       static VALUE Set(VALUE self, VALUE handle) {
-        Value ret(self);
+        Base<V8Type, RRType> ret(self);
         Locker lock(ret->GetIsolate());
-        v8::Local<v8::Value> value((rr::Value(handle)));
+        v8::Local<V8Type> value((RRType(handle)));
         ret->Set(value);
         return Qnil;
       }
 
       static VALUE Set_bool(VALUE self, VALUE value) {
-        Value ret(self);
+        Base<V8Type, RRType> ret(self);
         Locker lock(ret->GetIsolate());
         ret->Set((bool)Bool(value));
         return Qnil;
       }
 
       static VALUE Set_double(VALUE self, VALUE value) {
-        Value ret(self);
+        Base<V8Type, RRType> ret(self);
         Locker lock(ret->GetIsolate());
         ret->Set(NUM2DBL(value));
         return Qnil;
       }
 
       static VALUE Set_int32_t(VALUE self, VALUE i) {
-        Value ret(self);
+        Base<V8Type, RRType> ret(self);
         Locker lock(ret->GetIsolate());
         ret->Set(NUM2INT(i));
         return Qnil;
       }
 
       static VALUE Set_uint32_t(VALUE self, VALUE i) {
-        Value ret(self);
+        Base<V8Type, RRType> ret(self);
         Locker lock(ret->GetIsolate());
         ret->Set(NUM2UINT(i));
         return Qnil;
       }
 
       static VALUE SetNull(VALUE self) {
-        Value ret(self);
+        Base<V8Type, RRType> ret(self);
         Locker lock(ret->GetIsolate());
         ret->SetNull();
         return Qnil;
       }
 
       static VALUE SetUndefined(VALUE self) {
-        Value ret(self);
+        Base<V8Type, RRType> ret(self);
         Locker lock(ret->GetIsolate());
         ret->SetUndefined();
         return Qnil;
       }
 
       static VALUE SetEmptyString(VALUE self) {
-        Value ret(self);
+        Base<V8Type, RRType> ret(self);
         Locker lock(ret->GetIsolate());
         ret->SetEmptyString();
         return Qnil;
       }
+
+      static VALUE GetIsolate(VALUE self) {
+        Base<V8Type, RRType> ret(self);
+        return Isolate(ret->GetIsolate());
+      }
+
+    };
+
+    class Value : public Base<v8::Value, rr::Value> {
+    public:
+      Value(v8::ReturnValue<v8::Value> value) : Base<v8::Value, rr::Value>(value) {}
+      Value(VALUE self) : Base<v8::Value, rr::Value>(self) {}
 
       static inline void Init() {
         ClassBuilder("Value", ReturnValue::Class, ReturnValue::Class).
@@ -100,11 +99,11 @@ namespace rr {
 
     };
 
-    class Void : public Base<void> {
+    class Void : public Base<void, rr::Value> {
     public:
 
-      Void(v8::ReturnValue<void> value) : Base(value) {}
-      Void(VALUE self) : Base(self) {}
+      Void(v8::ReturnValue<void> value) : Base<void, rr::Value>(value) {}
+      Void(VALUE self) : Base<void, rr::Value>(self) {}
 
       static inline void Init() {
         ClassBuilder("Void", ReturnValue::Class, ReturnValue::Class).
