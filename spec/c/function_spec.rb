@@ -90,10 +90,9 @@ describe V8::C::Function do
 
   def run(source)
     source = V8::C::String.NewFromUtf8(@isolate, source.to_s)
-    filename = V8::C::String.NewFromUtf8(@isolate, "<eval>")
-    script = V8::C::Script.Compile(source, filename)
-    result = script.Run(@ctx)
-
-    result.kind_of?(V8::C::String) ? result.Utf8Value : result
+    script = V8::C::Script.Compile(@ctx, source)
+    result = script.FromJust().Run(@ctx)
+    checked = result.FromJust()
+    checked.kind_of?(V8::C::String) ? checked.Utf8Value : checked
   end
 end
