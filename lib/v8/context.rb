@@ -26,7 +26,7 @@ module V8
   #     cxt.eval('num') # => 5
   #   end
   class Context
-    include V8::Error::Try
+    # include V8::Error::Try
 
     # @!attribute [r] conversion
     #   @return [V8::Conversion] conversion behavior for this context
@@ -43,6 +43,10 @@ module V8
     # @!attribute [r] timeout
     #   @return [Number] maximum execution time in milliseconds for scripts executed in this context
     attr_reader :timeout
+
+    # @!attribute [r] isolate
+    #   @return [V8::Isolate]
+    attr_reader :isolate
 
     # Creates a new context.
     #
@@ -62,20 +66,24 @@ module V8
     #  * :with scope serves as the global scope of the new context
     # @yield [V8::Context] the newly created context
     def initialize(options = {})
-      @conversion = Conversion.new
-      @access = Access.new
-      @timeout = options[:timeout]
-      if global = options[:with]
-        Context.new.enter do
-          global_template = global.class.to_template.InstanceTemplate()
-          @native = V8::C::Context::New(nil, global_template)
-        end
-        enter {link global, @native.Global()}
-      else
-        V8::C::Locker() do
-          @native = V8::C::Context::New()
-        end
+      @isolate = options[:isolate] || V8::Isolate.new
+      V8::C::HandleScope(@isolate.native) do
+        @native = V8::C::Context::New(@isolate.native)
       end
+      @conversion = Conversion.new
+      # @access = Access.new
+      # @timeout = options[:timeout]
+      # if global = options[:with]
+      #   Context.new.enter do
+      #     global_template = global.class.to_template.InstanceTemplate()
+      #     @native = V8::C::Context::New(nil, global_template)
+      #   end
+      #   enter {link global, @native.Global()}
+      # else
+      #   V8::C::Locker() do
+      #     @native = V8::C::Context::New()
+      #   end
+      # end
       yield self if block_given?
     end
 
@@ -92,12 +100,11 @@ module V8
         source = source.read
       end
       enter do
-        script = try { V8::C::Script::New(source.to_s, filename.to_s) }
-        if @timeout
-          to_ruby try {script.RunWithTimeout(@timeout)}
-        else
-          to_ruby try {script.Run()}
-        end
+        src = V8::C::String::NewFromUtf8(@isolate.native, source.to_s)
+        filename = V8::C::String::NewFromUtf8(@isolate.native, filename.to_s)
+        origin = V8::C::ScriptOrigin.new(filename);
+        script = V8::C::Script::Compile(@native, src, origin).FromJust()
+        to_ruby script.Run(@native).FromJust()
       end
     end
 
@@ -107,7 +114,7 @@ module V8
     # @return [Object] value the value at `key`
     def [](key)
       enter do
-        to_ruby(@native.Global().Get(to_v8(key)))
+        to_ruby(@native.Global().Get(@cnative, to_v8(key)).FromJust())
       end
     end
 
@@ -117,24 +124,9 @@ module V8
     # @param [Object] value the value to bind
     def []=(key, value)
       enter do
-        @native.Global().Set(to_v8(key), to_v8(value))
+        @native.Global().Set(@native, to_v8(key), to_v8(value))
       end
       return value
-    end
-
-    # Destroy this context and release any internal references it may
-    # contain to embedded Ruby objects.
-    #
-    # A disposed context may never again be used for anything, and all
-    # objects created with it will become unusable.
-    def dispose
-      return unless @native
-      @native.Dispose()
-      @native = nil
-      V8::C::V8::ContextDisposedNotification()
-      def self.enter
-        fail "cannot enter a context which has already been disposed"
-      end
     end
 
     # Returns this context's global object. This will be a `V8::Object`
@@ -165,7 +157,7 @@ module V8
     # @return [V8::C::Object] to pass to V8
     # @see V8::Conversion for customizing and extending this mechanism
     def to_v8(ruby_object)
-      @conversion.to_v8(ruby_object)
+      @conversion.to_v8(self, ruby_object)
     end
 
     # Marks a Ruby object and a v8 C++ Object as being the same. In other
@@ -241,14 +233,12 @@ module V8
     def lock_scope_and_enter
       current = Context.current
       Context.current = self
-      V8::C::Locker() do
-        V8::C::HandleScope() do
-          begin
-            @native.Enter()
-            yield if block_given?
-          ensure
-            @native.Exit()
-          end
+      V8::C::HandleScope(@isolate.native) do
+        begin
+          @native.Enter()
+          yield if block_given?
+        ensure
+          @native.Exit()
         end
       end
     ensure
