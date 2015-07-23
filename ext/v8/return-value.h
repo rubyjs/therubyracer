@@ -15,7 +15,7 @@ namespace rr {
       Base(VALUE self) : Wrapper<v8::ReturnValue<V8Type>>(self) {}
 
       static VALUE Set(VALUE self, VALUE handle) {
-        Base<V8Type, RRType> ret(self);
+        Base ret(self);
         Locker lock(ret->GetIsolate());
         v8::Local<V8Type> value((RRType(handle)));
         ret->Set(value);
@@ -23,59 +23,58 @@ namespace rr {
       }
 
       static VALUE Set_bool(VALUE self, VALUE value) {
-        Base<V8Type, RRType> ret(self);
+        Base ret(self);
         Locker lock(ret->GetIsolate());
         ret->Set((bool)Bool(value));
         return Qnil;
       }
 
       static VALUE Set_double(VALUE self, VALUE value) {
-        Base<V8Type, RRType> ret(self);
+        Base ret(self);
         Locker lock(ret->GetIsolate());
         ret->Set(NUM2DBL(value));
         return Qnil;
       }
 
       static VALUE Set_int32_t(VALUE self, VALUE i) {
-        Base<V8Type, RRType> ret(self);
+        Base ret(self);
         Locker lock(ret->GetIsolate());
         ret->Set(NUM2INT(i));
         return Qnil;
       }
 
       static VALUE Set_uint32_t(VALUE self, VALUE i) {
-        Base<V8Type, RRType> ret(self);
+        Base ret(self);
         Locker lock(ret->GetIsolate());
         ret->Set(NUM2UINT(i));
         return Qnil;
       }
 
       static VALUE SetNull(VALUE self) {
-        Base<V8Type, RRType> ret(self);
+        Base ret(self);
         Locker lock(ret->GetIsolate());
         ret->SetNull();
         return Qnil;
       }
 
       static VALUE SetUndefined(VALUE self) {
-        Base<V8Type, RRType> ret(self);
+        Base ret(self);
         Locker lock(ret->GetIsolate());
         ret->SetUndefined();
         return Qnil;
       }
 
       static VALUE SetEmptyString(VALUE self) {
-        Base<V8Type, RRType> ret(self);
+        Base ret(self);
         Locker lock(ret->GetIsolate());
         ret->SetEmptyString();
         return Qnil;
       }
 
       static VALUE GetIsolate(VALUE self) {
-        Base<V8Type, RRType> ret(self);
+        Base ret(self);
         return Isolate(ret->GetIsolate());
       }
-
     };
 
     class Value : public Base<v8::Value, rr::Value> {
@@ -96,7 +95,6 @@ namespace rr {
           defineMethod("GetIsolate", &GetIsolate).
           store(&Class);
       }
-
     };
 
     class Void : public Base<void, rr::Value> {
@@ -110,7 +108,6 @@ namespace rr {
           defineMethod("GetIsolate", &GetIsolate).
           store(&Class);
       }
-
     };
 
     static VALUE Class;
@@ -122,7 +119,6 @@ namespace rr {
       Value::Init();
       Void::Init();
     }
-
   };
 }
 #endif /* RR_RETURN_VALUE_H */
