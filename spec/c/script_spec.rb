@@ -3,14 +3,17 @@ require 'c_spec_helper'
 describe V8::C::Script do
   requires_v8_context
 
-  # TODO
-  # it 'can run a script and return a polymorphic result' do
-  #   source = V8::C::String::New("(new Array())")
-  #   script = V8::C::Script::New(source)
-  #
-  #   result = script.Run()
-  #   expect(result).to be_an V8::C::Array
-  # end
+  it 'can run a script and return a polymorphic result' do
+    source = V8::C::String::NewFromUtf8(@isolate, "(new Array())")
+    name = V8::C::String::NewFromUtf8(@isolate, "a/file.js")
+    origin = V8::C::ScriptOrigin.new(name)
+    script = V8::C::Script::Compile(@ctx, source, origin)
+    expect(script.IsJust()).to be true
+
+    result = script.FromJust().Run(@ctx)
+    expect(result.IsJust()).to be true
+    expect(result.FromJust()).to be_an V8::C::Array
+  end
 
   # TODO
   # it 'can accept precompiled script data' do

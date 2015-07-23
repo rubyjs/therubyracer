@@ -106,10 +106,11 @@ namespace rr {
       return Function(isolate, handle.As<v8::Function>());
     }
 
+    if (handle->IsArray()) {
+      return Array(isolate, handle.As<v8::Array>());
+    }
+
     // TODO: Enable this when the methods are implemented
-    // if (handle->IsArray()) {
-    //   return Array((v8::Handle<v8::Array>)v8::Array::Cast(*handle));
-    // }
     //
     // if (handle->IsDate()) {
     //   // return Date(handle);
