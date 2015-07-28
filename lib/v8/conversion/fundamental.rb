@@ -4,8 +4,8 @@ class V8::Conversion
       v8_object.to_ruby
     end
 
-    def to_v8(ruby_object)
-      ruby_object.to_v8
+    def to_v8(context, ruby_object)
+      ruby_object.to_v8 context
     end
   end
 end

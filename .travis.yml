@@ -23,6 +23,7 @@ before_install:
 script:
   - bundle exec rake compile
   - bundle exec rspec spec/c
+  - bundle exec rspec spec/v8/context_spec.rb
 sudo: false
 addons:
   apt:
