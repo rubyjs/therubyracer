@@ -71,18 +71,18 @@ describe "V8::Context" do
     #   end
     # end
 
-    # xit "can pass objects back to ruby" do
-    #   @cxt.eval("({foo: 'bar', baz: 'bang', '5': 5, embedded: {badda: 'bing'}})").tap do |object|
-    #     object.should_not be_nil
-    #     object['foo'].should == 'bar'
-    #     object['baz'].should == 'bang'
-    #     object['5'].should == 5
-    #     object['embedded'].tap do |embedded|
-    #       embedded.should_not be_nil
-    #       embedded['badda'].should == 'bing'
-    #     end
-    #   end
-    # end
+    it "can pass objects back to ruby" do
+      @cxt.eval("({foo: 'bar', baz: 'bang', '5': 5, embedded: {badda: 'bing'}})").tap do |object|
+        object.should_not be_nil
+        object['foo'].should == 'bar'
+        object['baz'].should == 'bang'
+        object['5'].should == 5
+        object['embedded'].tap do |embedded|
+          embedded.should_not be_nil
+          embedded['badda'].should == 'bing'
+        end
+      end
+    end
 
     # xit "can pass int properties to ruby", :compat => '0.2.1'  do
     #   @cxt.eval("({ 4: '4', 5: 5, '6': true })").tap do |object|

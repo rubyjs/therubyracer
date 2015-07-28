@@ -6,12 +6,12 @@ class V8::Object
   def initialize(native = nil)
     @context = V8::Context.current or fail "tried to initialize a #{self.class} without being in an entered V8::Context"
     @native = block_given? ? yield : native || V8::C::Object::New()
-    @context.link self, @native
+    #@context.link self, @native
   end
 
   def [](key)
     @context.enter do
-      @context.to_ruby @native.Get(@context.to_v8(key))
+      @context.to_ruby @native.Get(@context.native, @context.to_v8(key)).FromJust()
     end
   end
 
