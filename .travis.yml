@@ -24,6 +24,7 @@ script:
   - bundle exec rake compile
   - bundle exec rspec spec/c
   - bundle exec rspec spec/v8/context_spec.rb
+  - bundle exec rspec spec/mem
 sudo: false
 addons:
   apt:
