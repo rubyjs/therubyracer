@@ -11,7 +11,7 @@ namespace rr {
     ClassBuilder("Isolate").
       defineSingletonMethod("New", &New).
 
-      defineMethod("Dispose", &Isolate::Dispose).
+      defineMethod("IdleNotificationDeadline", &IdleNotificationDeadline).
 
       store(&Class);
   }
@@ -26,7 +26,6 @@ namespace rr {
     create_params.array_buffer_allocator = &data->array_buffer_allocator;
     v8::Isolate* isolate = v8::Isolate::New(create_params);
 
-
     isolate->SetData(0, data);
     isolate->AddGCPrologueCallback(&clearReferences);
 
@@ -34,9 +33,10 @@ namespace rr {
     return Isolate(isolate);
   }
 
-  VALUE Isolate::Dispose(VALUE self) {
+
+  VALUE Isolate::IdleNotificationDeadline(VALUE self, VALUE deadline_in_seconds) {
     Isolate isolate(self);
-    isolate->Dispose();
-    return Qnil;
+    Locker lock(isolate);
+    return Bool(isolate->IdleNotificationDeadline(NUM2DBL(deadline_in_seconds)));
   }
 }

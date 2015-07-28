@@ -50,6 +50,7 @@ namespace rr {
      */
     static void destroy(IsolateData* data) {
       Isolate isolate(data);
+      isolate->Dispose();
       isolate.decrementTotalReferences();
     }
 
@@ -159,7 +160,15 @@ namespace rr {
       while (data->rb_release_queue.try_dequeue(object)) {
         isolate.releaseObject(object);
       }
-      rb_gc_mark(data->retained_objects);
+      //TODO: This should not be necessary since sometimes the
+      //instance of V8::RetainedObjects appears to magically be of
+      //type T_NONE instead of T_OBJECT. Later, it will be T_OBJECT,
+      //but if called while T_NONE, it will cause rb_gc_mark to dump
+      //core.
+      //See https://bugs.ruby-lang.org/issues/10803
+      if (TYPE(data->retained_objects) != T_NONE) {
+        rb_gc_mark(data->retained_objects);
+      }
     }
 
     /**
@@ -177,7 +186,7 @@ namespace rr {
     }
 
 
-    static VALUE Dispose(VALUE self);
+    static VALUE IdleNotificationDeadline(VALUE self, VALUE deadline_in_seconds);
 
     /**
      * Recent versions of V8 will segfault unless you pass in an

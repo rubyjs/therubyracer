@@ -6,8 +6,4 @@ describe V8::C::Isolate do
   it 'can create a new isolate' do
     expect(isolate).to be
   end
-
-  it "can be disposed of" do
-    isolate.Dispose()
-  end
 end
