@@ -84,15 +84,15 @@ describe "V8::Context" do
       end
     end
 
-    # xit "can pass int properties to ruby", :compat => '0.2.1'  do
-    #   @cxt.eval("({ 4: '4', 5: 5, '6': true })").tap do |object|
-    #     object[ 4 ].should == '4'
-    #     object['4'].should == '4'
-    #     object[ 5 ].should == 5
-    #     object['5'].should == 5
-    #     object['6'].should == true
-    #   end
-    # end
+    it "can pass int properties to ruby", :compat => '0.2.1'  do
+      @cxt.eval("({ 4: '4', 5: 5, '6': true })").tap do |object|
+        object[ 4 ].should == '4'
+        object['4'].should == '4'
+        object[ 5 ].should == 5
+        object['5'].should == 5
+        object['6'].should == true
+      end
+    end
 
     # xit "unwraps ruby objects returned by embedded ruby code to maintain referential integrity" do
     #   Object.new.tap do |o|

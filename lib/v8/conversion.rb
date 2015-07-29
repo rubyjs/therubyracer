@@ -45,6 +45,12 @@ class String
   end
 end
 
+class Fixnum
+  def to_v8(context)
+    V8::C::Integer::New(context.isolate.native, self)
+  end
+end
+
 # for type in [TrueClass, FalseClass, NilClass, Float] do
 #   type.class_eval do
 #     include V8::Conversion::Primitive
