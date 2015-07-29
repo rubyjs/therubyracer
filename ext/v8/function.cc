@@ -26,15 +26,13 @@ namespace rr {
     Isolate isolate(r_isolate);
     Locker lock(isolate);
 
-    // package up the function's callback data to have bot the code and the data
+    // package up the function's callback data to have both the code and the data
     // parameter.
-    v8::Local<v8::Value> data(FunctionCallbackInfo::wrapData(isolate, r_callback, r_data));
+    FunctionCallback callback(isolate, r_callback, r_data);
 
     int length = RTEST(r_length) ? NUM2INT(r_length) : 0;
 
-    v8::FunctionCallback callback = &FunctionCallbackInfo::invoke;
-
-    return Function(isolate, v8::Function::New(isolate,  callback, data, length));
+    return Function(isolate, v8::Function::New(isolate,  callback, callback, length));
   }
 
   VALUE Function::NewInstance(int argc, VALUE argv[], VALUE self) {

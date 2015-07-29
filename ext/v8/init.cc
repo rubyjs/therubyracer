@@ -11,6 +11,8 @@ VALUE ReturnValue::Class;
 
 extern "C" {
   void Init_init() {
+    rb_eval_string("require 'v8/c'");
+
     V8::Init();
     DefineEnums();
     Isolate::Init();
@@ -36,6 +38,10 @@ extern "C" {
     ScriptOrigin::Init();
     Array::Init();
     External::Init();
+    Template::Init();
+    ObjectTemplate::Init();
+    FunctionTemplate::Init();
+    Signature::Init();
 
     // Invocation::Init();
     // Signature::Init();
