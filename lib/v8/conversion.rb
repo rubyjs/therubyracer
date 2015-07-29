@@ -31,6 +31,12 @@ module V8::C
       IsTrue()
     end
   end
+
+  class Object
+    def to_ruby
+      ::V8::Object.new self
+    end
+  end
 end
 
 class String
