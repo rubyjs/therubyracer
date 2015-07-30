@@ -1,7 +1,6 @@
 class V8::Object
   include Enumerable
   attr_reader :native
-  alias_method :to_v8, :native
 
   def initialize(native = nil)
     @context = V8::Context.current or fail "tried to initialize a #{self.class} without being in an entered V8::Context"
@@ -11,7 +10,7 @@ class V8::Object
 
   def [](key)
     @context.enter do
-      @context.to_ruby @native.Get(@context.native, @context.to_v8(key)).FromJust()
+      @context.to_ruby @native.Get(@context.native, @context.to_v8(key.to_s)).FromJust()
     end
   end
 
@@ -50,6 +49,10 @@ class V8::Object
     @context.enter do
       @context.to_ruby @native.ToString()
     end
+  end
+
+  def to_v8(context)
+    native
   end
 
   def respond_to?(method)

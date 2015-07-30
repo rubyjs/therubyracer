@@ -37,6 +37,18 @@ module V8::C
       ::V8::Object.new self
     end
   end
+
+  class Date
+    def to_ruby
+      ::V8::Date.new self
+    end
+  end
+
+  class Function
+    def to_ruby
+      ::V8::Function.new self
+    end
+  end
 end
 
 class String
@@ -48,6 +60,13 @@ end
 class Fixnum
   def to_v8(context)
     V8::C::Integer::New(context.isolate.native, self)
+  end
+end
+
+class Symbol
+  def to_v8(context)
+    isolate = context.isolate.native
+    V8::C::Symbol::For(context.isolate.native, V8::C::String::NewFromUtf8(isolate, to_s))
   end
 end
 

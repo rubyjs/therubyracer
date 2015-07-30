@@ -52,6 +52,7 @@ inline VALUE not_implemented(const char* message) {
 #include "function.h"
 
 #include "object.h"
+#include "date.h"
 #include "return-value.h"
 #include "property-callback.h"
 #include "property-callback-info.h"

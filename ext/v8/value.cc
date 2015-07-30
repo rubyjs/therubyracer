@@ -193,11 +193,6 @@ namespace rr {
       return Name(isolate, handle.As<v8::Name>());
     }
 
-    // TODO
-    // if (handle->IsDate()) {
-    //   return Date((v8::Handle<v8::Date>)v8::Date::Cast(*handle));
-    // }
-
     if (handle->IsFunction()) {
       return Function(isolate, v8::Handle<v8::Function>::Cast(handle));
     }

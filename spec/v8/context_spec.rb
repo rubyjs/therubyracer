@@ -59,17 +59,16 @@ describe "V8::Context" do
       @cxt['nativeUtf8'].should == "Σὲ γνωρίζω ἀπὸ τὴν κόψη"
     end
 
-    # xit "translates JavaScript dates properly into ruby Time objects" do
-    #   now = Time.now
-    #   @cxt.eval('new Date()').tap do |time|
-    #     time.should be_kind_of(Time)
-    #     time.year.should == now.year
-    #     time.day.should == now.day
-    #     time.month.should == now.month
-    #     time.min.should == now.min
-    #     time.sec.should == now.sec
-    #   end
-    # end
+    it "translates JavaScript dates objects" do
+      now = Time.now
+      @cxt.eval('new Date()').tap do |time|
+        expect(time.getDate().to_i).to eql now.day
+        expect(time.getFullYear().to_i).to eql now.year
+        expect(time.getMonth().to_i).to eql now.month - 1
+        expect(time.getMinutes().to_i).to eql now.min
+        expect(time.getSeconds().to_i).to eql now.sec
+      end
+    end
 
     it "can pass objects back to ruby" do
       @cxt.eval("({foo: 'bar', baz: 'bang', '5': 5, embedded: {badda: 'bing'}})").tap do |object|
