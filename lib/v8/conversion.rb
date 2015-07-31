@@ -1,23 +1,85 @@
+##
+# An extensible conversion mechanism for converting objects to and
+# from their V8 representations.
+#
+# The Ruby Racer has two levels of representation for JavaScript
+# objects: the low-level C++ objects which are just thin wrappers
+# native counterparts. These are the objects in the `V8::C::*`
+# namespace. It also has high-level Ruby objects which can
+# either be instances of `V8::Object`, `V8::Date`, or just plain Ruby
+# objects that have representations in the JavaScript runtime.
+#
+# The conversion object held by the context captures this transition
+# from one object type to the other. It is implemented as a "middleware"
+# stack where at the base is the `Fundamental` conversion which does
+# basic conversion and identity mapping.
+#
+# In order to "extend" or override the conversion mechanism, you can
+# extend this object to add behaviors. For example, the following
+# extension will add a `__fromRuby__` property to every ruby object
+# that is embedded into this context.
+#
+#   module TagRubyObjects
+#     def to_v8(context, ruby_object)
+#       super.tap do |v8_object|
+#         v8_object.Set(V8::C::String::NewFromUtf8("__fromRuby__"), V8::C::Boolean::New(true))
+#       end
+#     end
+#   end
+#   context.conversion.extend TagRubyObjects
+#
+# @see V8::Conversion::Fundamental for the basic conversion operation.
 class V8::Conversion
   include Fundamental
-  # include Identity
 
+
+  ##
+  # Convert a low-level instance of `V8::C::Value` or one of its
+  # subclasses into a Ruby object.
+  #
+  # The `Fundamental` conversion will call `v8_object.to_ruby`, but
+  # any number of middlewares can be inserted between then.
+  #
+  # @param [V8::C::Value] the object to convert
+  # @return [Object] the corresponding Ruby value
   def to_ruby(v8_object)
     super v8_object
   end
 
+  ##
+  # Convert a Ruby Object into a low-level `V8::C::Value` or one of
+  # its subclasses. Note here that things like `V8::Object` are
+  # considered Ruby objects and *not* V8 objects. So, for example, the
+  # fundamental conversion for `V8::Object` will return a
+  # `V8::C::Object`
+  #
+  # The `Fundamental` conversion will call
+  # `ruby_object.to_v8(context)` optionally storing the result in an
+  # identity map in the case where the result is a `V8::C::Object`
+  #
+  # @param [V8::Context] the Ruby context in the conversion happens
+  # @param [Object] Ruby object to convert
+  # @return [V8::C::Value] the v8 representation
   def to_v8(context, ruby_object)
     super context, ruby_object
   end
 end
 
+
+##
+# The folowing represent the default conversions from instances of
+# `V8::C::Value` into their Ruby counterparts.
 module V8::C
   class String
-    alias_method :to_ruby, :Utf8Value
+    def to_ruby
+      self.Utf8Value()
+    end
   end
 
   class Number
-    alias_method :to_ruby, :Value
+    def to_ruby
+      self.Value()
+    end
   end
 
   class Undefined
@@ -51,6 +113,9 @@ module V8::C
   end
 end
 
+##
+# The following are the default conversions from Ruby objects into
+# low-level C++ objects.
 class String
   def to_v8(context)
     V8::C::String::NewFromUtf8(context.isolate.native, self)
@@ -69,25 +134,3 @@ class Symbol
     V8::C::Symbol::For(context.isolate.native, V8::C::String::NewFromUtf8(isolate, to_s))
   end
 end
-
-# for type in [TrueClass, FalseClass, NilClass, Float] do
-#   type.class_eval do
-#     include V8::Conversion::Primitive
-#   end
-# end
-
-# for type in [Class, Object, Array, Hash, String, Symbol, Time, Proc, Method, Fixnum] do
-#   type.class_eval do
-#     include V8::Conversion.const_get(type.name)
-#   end
-# end
-
-# class UnboundMethod
-#   include V8::Conversion::Method
-# end
-
-# for type in [:Object, :String, :Date] do
-#   V8::C::const_get(type).class_eval do
-#     include V8::Conversion::const_get("Native#{type}")
-#   end
-# end
