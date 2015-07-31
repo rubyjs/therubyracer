@@ -100,12 +100,12 @@ describe "V8::Context" do
     #   end
     # end
 
-    # xit "always returns the same ruby object for a single javascript object" do
-    #   obj = @cxt.eval('obj = {}')
-    #   obj.should be(@cxt['obj'])
-    #   @cxt.eval('obj').should be(@cxt['obj'])
-    #   @cxt['obj'].should be(@cxt['obj'])
-    # end
+    it "always returns the same ruby object for a single javascript object" do
+      obj = @cxt.eval('obj = {}')
+      obj.should be(@cxt['obj'])
+      @cxt.eval('obj').should be(@cxt['obj'])
+      @cxt['obj'].should be(@cxt['obj'])
+    end
 
     # xit "converts arrays to javascript" do
     #   @cxt['a'] = [1,2,4]

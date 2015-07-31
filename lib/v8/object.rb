@@ -4,8 +4,7 @@ class V8::Object
 
   def initialize(native = nil)
     @context = V8::Context.current or fail "tried to initialize a #{self.class} without being in an entered V8::Context"
-    @native = block_given? ? yield : native || V8::C::Object::New()
-    #@context.link self, @native
+    @native = native || V8::C::Object::New(@context.isolate.native)
   end
 
   def [](key)
