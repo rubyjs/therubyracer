@@ -21,6 +21,7 @@ extern "C" {
     Maybe::Init();
     Value::Init();
     Object::Init();
+    Date::Init();
     Primitive::Init();
     Null::Init();
     Undefined::Init();

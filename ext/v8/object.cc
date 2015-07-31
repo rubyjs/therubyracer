@@ -105,16 +105,15 @@ namespace rr {
     if (handle->IsFunction()) {
       return Function(isolate, handle.As<v8::Function>());
     }
-
     if (handle->IsArray()) {
       return Array(isolate, handle.As<v8::Array>());
+    }
+    if (handle->IsDate()) {
+      return Date(isolate, handle.As<v8::Date>());
     }
 
     // TODO: Enable this when the methods are implemented
     //
-    // if (handle->IsDate()) {
-    //   // return Date(handle);
-    // }
     //
     // if (handle->IsBooleanObject()) {
     //   // return BooleanObject(handle);
