@@ -654,45 +654,45 @@ describe "V8::Context" do
 
 #   end
 
-#   describe "Calling JavaScript Code From Within Ruby", :compat => '0.1.0' do
+   describe "Calling JavaScript Code From Within Ruby", :compat => '0.1.0' do
 
-#     before(:each) do
-#       @cxt = V8::Context.new
-#     end
+    before(:each) do
+      @cxt = V8::Context.new
+    end
 
-#     xit "allows you to capture a reference to a javascript function and call it" do
-#       f = @cxt.eval('(function add(lhs, rhs) {return lhs + rhs})')
-#       f.call(1,2).should == 3
-#     end
+    it "allows you to capture a reference to a javascript function and call it" do
+      f = @cxt.eval('(function add(lhs, rhs) {return lhs + rhs})')
+      expect(f.call 1,2).to eql 3
+    end
 
-#     xit "can path the 'this' object into a function as context with methodcall()" do
-#       obj = @cxt.eval('({num: 5})')
-#       times = @cxt.eval('(function times(num) {return this.num * num})')
-#       times.methodcall(obj, 5).should == 25
-#     end
+    it "can path the 'this' object into a function as context with methodcall()" do
+      obj = @cxt.eval('({num: 5})')
+      times = @cxt.eval('(function times(num) {return this.num * num})')
+      expect(times.methodcall obj, 5).to eql 25
+    end
 
-#     xit "unwraps objects that are backed by javascript objects to pass their native equivalents" do
-#       @cxt.eval('obj = {foo: "bar"}')
-#       f = @cxt.eval('(function() {return this == obj})')
-#       f.methodcall(@cxt['obj']).should be(true)
-#     end
+    it "unwraps objects that are backed by javascript objects to pass their native equivalents" do
+      @cxt.eval('obj = {foo: "bar"}')
+      f = @cxt.eval('(function() {return this == obj})')
+      expect(f.methodcall @cxt['obj']).to be true
+    end
 
-#     xit "can invoke a javacript constructor and return the new object reflected into ruby" do
-#       wrapper = @cxt.eval('(function Wrapper(value) {this.value = value})')
-#       wrapper.new(5)['value'].should == 5
-#     end
+    it "can invoke a javacript constructor and return the new object reflected into ruby" do
+      wrapper = @cxt.eval('(function Wrapper(value) {this.value = value})')
+      wrapper.new(5)['value'].should == 5
+    end
 
-#     xit "can call a javascript method directly from a ruby object" do
-#       obj = @cxt.eval('Object').new
-#       obj.should respond_to(:toString)
-#       obj.toString().should == '[object Object]'
-#     end
+    it "can call a javascript method directly from a ruby object" do
+      obj = @cxt.eval('Object').new
+      expect(obj).to respond_to(:toString)
+      expect(obj.toString()).to eql '[object Object]'
+    end
 
-#     xit "can access properties defined on a javascript object through ruby" do
-#       obj = @cxt.eval('({ str: "bar", num: 5 })')
-#       obj.str.should == "bar"
-#       obj.num.should == 5
-#     end
+    it "can access properties defined on a javascript object through ruby" do
+      obj = @cxt.eval('({ str: "bar", num: 5 })')
+      expect(obj.str).to eql "bar"
+      expect(obj.num).to eql 5
+    end
 
 #     xit "can set properties on the javascript object via ruby setter methods" do
 #       obj = @cxt.eval('({ str: "bar", num: 5 })')
@@ -706,13 +706,11 @@ describe "V8::Context" do
 #       obj.array.to_a.should == [1,2,3]
 #     end
 
-#     xit "is an error to try and pass parameters to a property" do
-#       obj = @cxt.eval('({num: 1})')
-#       lambda {
-#         obj.num(5)
-#       }.should raise_error(ArgumentError)
-#     end
-#   end
+    it "is an error to try and pass parameters to a property" do
+      obj = @cxt.eval('({num: 1})')
+      expect { obj.num(5) }.to raise_error(ArgumentError)
+    end
+   end
 
 #   describe "Setting up the Host Environment", :compat => '0.1.0' do
 

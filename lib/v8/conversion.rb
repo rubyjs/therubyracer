@@ -111,6 +111,12 @@ module V8::C
       ::V8::Function.new self
     end
   end
+
+  class Value
+    def to_v8(context)
+      self
+    end
+  end
 end
 
 ##
