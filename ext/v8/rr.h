@@ -62,4 +62,9 @@ inline VALUE not_implemented(const char* message) {
 #include "script-origin.h"
 #include "function-callback.h"
 
+#include "template.h"
+#include "signature.h"
+#include "function-template.h"
+#include "object-template.h"
+
 #endif

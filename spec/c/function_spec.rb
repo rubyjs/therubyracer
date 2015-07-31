@@ -62,8 +62,9 @@ describe V8::C::Function do
       end
     end
 
+    let(:data) { V8::C::Object::New(@isolate) }
     let(:callback) { FunctionCallback.new @isolate}
-    let(:fn) { V8::C::Function::New(@isolate, callback)}
+    let(:fn) { V8::C::Function::New(@isolate, callback, data)}
 
     before do
       expect(fn.Call(@ctx.Global(), ["world"]).Utf8Value()).to eql "ohai world"
@@ -75,6 +76,8 @@ describe V8::C::Function do
       expect(callback.callee.GetIdentityHash()).to eql fn.GetIdentityHash()
       expect(callback.this.GetIdentityHash()).to eql @ctx.Global().GetIdentityHash()
       expect(callback.is_construct_call).to be false
+      expect(callback.data).not_to be_nil
+      expect(callback.data.StrictEquals(data)).to be true
     end
   end
 
