@@ -22,7 +22,7 @@ class V8::Function < V8::Object
 
   def new(*args)
     @context.enter do
-      @context.to_ruby try {native.NewInstance(args.map {|a| @context.to_v8 a})}
+      @context.to_ruby native.NewInstance(args.map {|a| @context.to_v8 a})
     end
   end
 end
