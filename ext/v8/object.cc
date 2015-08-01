@@ -13,6 +13,7 @@ namespace rr {
       defineMethod("SetAccessor", &SetAccessor).
       defineMethod("CreateDataProperty", &CreateDataProperty).
       defineMethod("DefineOwnProperty", &DefineOwnProperty).
+      defineMethod("GetPropertyAttributes", &GetPropertyAttributes).
 
       store(&Class);
   }
@@ -123,6 +124,16 @@ namespace rr {
       *Name(key),
       Value(value),
       Enum<v8::PropertyAttribute>(attribute, v8::None)
+    ));
+  }
+
+  VALUE Object::GetPropertyAttributes(VALUE self, VALUE r_context, VALUE key) {
+    Object object(self);
+    Locker lock(object);
+
+    return Enum<v8::PropertyAttribute>::Maybe(object->GetPropertyAttributes(
+      Context(r_context),
+      *Name(key)
     ));
   }
 

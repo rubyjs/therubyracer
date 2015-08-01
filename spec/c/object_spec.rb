@@ -103,6 +103,17 @@ describe V8::C::Object do
     end
   end
 
+  describe '#GetPropertyAttributes' do
+    it 'can get the set attributes' do
+      o = V8::C::Object.New(@isolate)
+      key = V8::C::String.NewFromUtf8(@isolate, 'foo')
+      data = V8::C::String.NewFromUtf8(@isolate, 'data')
+
+      expect(o.DefineOwnProperty(@ctx, key, data, V8::C::PropertyAttribute::DontEnum)).to be_successful
+      expect(o.GetPropertyAttributes(@ctx, key)).to eq_just V8::C::PropertyAttribute::DontEnum
+    end
+  end
+
   # TODO: Enable this when the methods are implemented in the extension
   # it 'can retrieve all property names' do
   #   o = V8::C::Object.New
