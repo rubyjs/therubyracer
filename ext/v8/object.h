@@ -18,6 +18,7 @@ namespace rr {
     static VALUE CreateDataProperty(VALUE self, VALUE r_context, VALUE key, VALUE value);
     static VALUE DefineOwnProperty(int argc, VALUE* argv, VALUE self);
     static VALUE GetPropertyAttributes(VALUE self, VALUE r_context, VALUE key);
+    static VALUE GetOwnPropertyDescriptor(VALUE self, VALUE r_context, VALUE key);
 
     inline Object(VALUE value) : Ref<v8::Object>(value) {}
     inline Object(v8::Isolate* isolate, v8::Handle<v8::Object> object) : Ref<v8::Object>(isolate, object) {}

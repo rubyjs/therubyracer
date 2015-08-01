@@ -63,8 +63,8 @@ describe V8::C::Function do
     end
 
     let(:data) { V8::C::Object::New(@isolate) }
-    let(:callback) { FunctionCallback.new @isolate}
-    let(:fn) { V8::C::Function::New(@isolate, callback, data)}
+    let(:callback) { FunctionCallback.new @isolate }
+    let(:fn) { V8::C::Function::New(@isolate, callback, data) }
 
     before do
       expect(fn.Call(@ctx.Global(), ["world"]).Utf8Value()).to eql "ohai world"

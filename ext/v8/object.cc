@@ -14,6 +14,7 @@ namespace rr {
       defineMethod("CreateDataProperty", &CreateDataProperty).
       defineMethod("DefineOwnProperty", &DefineOwnProperty).
       defineMethod("GetPropertyAttributes", &GetPropertyAttributes).
+      defineMethod("GetOwnPropertyDescriptor", &GetOwnPropertyDescriptor).
 
       store(&Class);
   }
@@ -134,6 +135,16 @@ namespace rr {
     return Enum<v8::PropertyAttribute>::Maybe(object->GetPropertyAttributes(
       Context(r_context),
       *Name(key)
+    ));
+  }
+
+  VALUE Object::GetOwnPropertyDescriptor(VALUE self, VALUE r_context, VALUE key) {
+    Object object(self);
+    Locker lock(object);
+
+    return Value::Maybe(object.getIsolate(), object->GetOwnPropertyDescriptor(
+      Context(r_context),
+      *rr::String(key)
     ));
   }
 

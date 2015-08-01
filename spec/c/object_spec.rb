@@ -114,6 +114,83 @@ describe V8::C::Object do
     end
   end
 
+  describe '#GetOwnPropertyDescriptor' do
+    it 'can read the descriptor of a data property' do
+      o = V8::C::Object.New(@isolate)
+      key = V8::C::String.NewFromUtf8(@isolate, 'foo')
+      data = V8::C::String.NewFromUtf8(@isolate, 'data')
+
+      expect(o.DefineOwnProperty(@ctx, key, data, V8::C::PropertyAttribute::DontEnum)).to be_successful
+
+      maybe = o.GetOwnPropertyDescriptor(@ctx, key)
+      expect(maybe).to be_successful
+
+      descriptor = maybe.FromJust
+      value = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'value'))
+      writable = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'writable'))
+      get = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'get'))
+      set = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'set'))
+      configurable = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'configurable'))
+      enumerable = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'enumerable'))
+
+      expect(value).to strict_eq data
+
+      expect(writable).to be_successful
+      expect(writable.FromJust.Value).to be true
+
+      expect(get).to be_successful
+      expect(get.FromJust).to be_a V8::C::Undefined
+
+      expect(set).to be_successful
+      expect(set.FromJust).to be_a V8::C::Undefined
+
+      expect(configurable).to be_successful
+      expect(configurable.FromJust.Value).to be true
+
+      expect(enumerable).to be_successful
+      expect(enumerable.FromJust.Value).to be false
+    end
+
+    # it 'can read the descriptor of an accessor property' do
+    #   o = V8::C::Object.New(@isolate)
+    #   key = V8::C::String.NewFromUtf8(@isolate, 'foo')
+    #   data = V8::C::String.NewFromUtf8(@isolate, 'data')
+    #
+    #   getter = V8::C::Function.New @isolate, proc { }, V8::C::Object::New(@isolate)
+    #   setter = V8::C::Function.New @isolate, proc { }, V8::C::Object::New(@isolate)
+    #
+    #   expect(o.SetAccessorProperty(@ctx, key, getter, setter)).to be_successful
+    #
+    #   maybe = o.GetOwnPropertyDescriptor(@ctx, key)
+    #   expect(maybe).to be_successful
+    #
+    #   descriptor = maybe.FromJust
+    #   value = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'value'))
+    #   writable = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'writable'))
+    #   get = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'get'))
+    #   set = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'set'))
+    #   configurable = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'configurable'))
+    #   enumerable = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'enumerable'))
+    #
+    #   expect(value).to be_successful
+    #
+    #   expect(writable).to be_successful
+    #   expect(writable.FromJust.Value).to be true
+    #
+    #   expect(get).to be_successful
+    #   expect(get.FromJust).to be_a V8::C::Undefined
+    #
+    #   expect(set).to be_successful
+    #   expect(set.FromJust).to be_a V8::C::Undefined
+    #
+    #   expect(configurable).to be_successful
+    #   expect(configurable.FromJust.Value).to be true
+    #
+    #   expect(enumerable).to be_successful
+    #   expect(enumerable.FromJust.Value).to be true
+    # end
+  end
+
   # TODO: Enable this when the methods are implemented in the extension
   # it 'can retrieve all property names' do
   #   o = V8::C::Object.New
