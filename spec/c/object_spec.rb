@@ -81,6 +81,33 @@ describe V8::C::Object do
     end
   end
 
+  describe '#SetAccessorProperty' do
+    it 'can set getters' do
+      o = V8::C::Object.New(@isolate)
+      key = V8::C::String.NewFromUtf8(@isolate, 'foo')
+
+      get_value = V8::C::String.NewFromUtf8(@isolate, 'bar')
+      getter = V8::C::Function.New(@isolate, proc { |info| info.GetReturnValue.Set(get_value) })
+
+      o.SetAccessorProperty(@ctx, key, getter)
+      expect(o.Get(@ctx, key)).to strict_eq get_value
+    end
+
+    it 'can set setters' do
+      o = V8::C::Object.New(@isolate)
+      key = V8::C::String.NewFromUtf8(@isolate, 'foo')
+
+      set_value = nil
+
+      getter = V8::C::Function.New(@isolate, proc { })
+      setter = V8::C::Function.New(@isolate, proc { |info| set_value = info[0] })
+
+      o.SetAccessorProperty(@ctx, key, getter, setter)
+      expect(o.Set(@ctx, key, key)).to be_successful
+      expect(set_value).to strict_eq key
+    end
+  end
+
   describe '#CreateDataProperty' do
     it 'can set the property' do
       o = V8::C::Object.New(@isolate)
@@ -151,44 +178,40 @@ describe V8::C::Object do
       expect(enumerable.FromJust.Value).to be false
     end
 
-    # it 'can read the descriptor of an accessor property' do
-    #   o = V8::C::Object.New(@isolate)
-    #   key = V8::C::String.NewFromUtf8(@isolate, 'foo')
-    #   data = V8::C::String.NewFromUtf8(@isolate, 'data')
-    #
-    #   getter = V8::C::Function.New @isolate, proc { }, V8::C::Object::New(@isolate)
-    #   setter = V8::C::Function.New @isolate, proc { }, V8::C::Object::New(@isolate)
-    #
-    #   expect(o.SetAccessorProperty(@ctx, key, getter, setter)).to be_successful
-    #
-    #   maybe = o.GetOwnPropertyDescriptor(@ctx, key)
-    #   expect(maybe).to be_successful
-    #
-    #   descriptor = maybe.FromJust
-    #   value = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'value'))
-    #   writable = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'writable'))
-    #   get = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'get'))
-    #   set = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'set'))
-    #   configurable = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'configurable'))
-    #   enumerable = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'enumerable'))
-    #
-    #   expect(value).to be_successful
-    #
-    #   expect(writable).to be_successful
-    #   expect(writable.FromJust.Value).to be true
-    #
-    #   expect(get).to be_successful
-    #   expect(get.FromJust).to be_a V8::C::Undefined
-    #
-    #   expect(set).to be_successful
-    #   expect(set.FromJust).to be_a V8::C::Undefined
-    #
-    #   expect(configurable).to be_successful
-    #   expect(configurable.FromJust.Value).to be true
-    #
-    #   expect(enumerable).to be_successful
-    #   expect(enumerable.FromJust.Value).to be true
-    # end
+    it 'can read the descriptor of an accessor property' do
+      o = V8::C::Object.New(@isolate)
+      key = V8::C::String.NewFromUtf8(@isolate, 'foo')
+      data = V8::C::String.NewFromUtf8(@isolate, 'data')
+
+      getter = V8::C::Function.New @isolate, proc { }, V8::C::Object::New(@isolate)
+      setter = V8::C::Function.New @isolate, proc { }, V8::C::Object::New(@isolate)
+
+      o.SetAccessorProperty(@ctx, key, getter, setter)
+
+      maybe = o.GetOwnPropertyDescriptor(@ctx, key)
+      expect(maybe).to be_successful
+
+      descriptor = maybe.FromJust
+      value = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'value'))
+      writable = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'writable'))
+      get = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'get'))
+      set = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'set'))
+      configurable = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'configurable'))
+      enumerable = descriptor.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'enumerable'))
+
+      expect(value).to be_successful
+      expect(value.FromJust).to be_a V8::C::Undefined
+      expect(writable).to be_successful
+
+      expect(get).to strict_eq getter
+      expect(set).to strict_eq setter
+
+      expect(configurable).to be_successful
+      expect(configurable.FromJust.Value).to be true
+
+      expect(enumerable).to be_successful
+      expect(enumerable.FromJust.Value).to be true
+    end
   end
 
   # TODO: Enable this when the methods are implemented in the extension

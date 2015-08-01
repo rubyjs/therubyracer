@@ -13,7 +13,9 @@ namespace rr {
     static VALUE GetIdentityHash(VALUE self);
     static VALUE Has(VALUE self, VALUE r_context, VALUE key);
     static VALUE Delete(VALUE self, VALUE r_context, VALUE key);
+
     static VALUE SetAccessor(int argc, VALUE* argv, VALUE self);
+    static VALUE SetAccessorProperty(int argc, VALUE* argv, VALUE self);
 
     static VALUE CreateDataProperty(VALUE self, VALUE r_context, VALUE key, VALUE value);
     static VALUE DefineOwnProperty(int argc, VALUE* argv, VALUE self);

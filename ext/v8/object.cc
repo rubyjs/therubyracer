@@ -11,6 +11,7 @@ namespace rr {
       defineMethod("Has", &Has).
       defineMethod("Delete", &Delete).
       defineMethod("SetAccessor", &SetAccessor).
+      defineMethod("SetAccessorProperty", &SetAccessorProperty).
       defineMethod("CreateDataProperty", &CreateDataProperty).
       defineMethod("DefineOwnProperty", &DefineOwnProperty).
       defineMethod("GetPropertyAttributes", &GetPropertyAttributes).
@@ -100,6 +101,24 @@ namespace rr {
       Enum<v8::AccessControl>(settings, v8::DEFAULT),
       Enum<v8::PropertyAttribute>(attribute, v8::None)
     ));
+  }
+
+  VALUE Object::SetAccessorProperty(int argc, VALUE* argv, VALUE self) {
+    VALUE r_context, name, getter, setter, attribute, settings;
+    rb_scan_args(argc, argv, "33", &r_context, &name, &getter, &setter, &attribute, &settings);
+
+    Object object(self);
+    Locker lock(object);
+
+    object->SetAccessorProperty(
+      Name(name),
+      *Function(getter),
+      RTEST(setter) ? *Function(setter) : v8::Local<v8::Function>(),
+      Enum<v8::PropertyAttribute>(attribute, v8::None),
+      Enum<v8::AccessControl>(settings, v8::DEFAULT)
+    );
+
+    return Qnil;
   }
 
   VALUE Object::CreateDataProperty(VALUE self, VALUE r_context, VALUE key, VALUE value) {
