@@ -24,8 +24,8 @@ describe V8::C::Function do
 
     fn.Call(@ctx.Global, [one, two, 3])
 
-    expect(@ctx.Global.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'one')).FromJust().StrictEquals(one)).to be true
-    expect(@ctx.Global.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'two')).FromJust().StrictEquals(two)).to be true
+    expect(@ctx.Global.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'one'))).to strict_eq one
+    expect(@ctx.Global.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'two'))).to strict_eq two
     expect(@ctx.Global.Get(@ctx, V8::C::String.NewFromUtf8(@isolate, 'three')).FromJust().Value()).to eq 3
   end
 
@@ -77,7 +77,7 @@ describe V8::C::Function do
       expect(callback.this.GetIdentityHash()).to eql @ctx.Global().GetIdentityHash()
       expect(callback.is_construct_call).to be false
       expect(callback.data).not_to be_nil
-      expect(callback.data.StrictEquals(data)).to be true
+      expect(callback.data).to strict_eq data
     end
   end
 

@@ -12,39 +12,25 @@ describe V8::C::Object do
     key = V8::C::String.NewFromUtf8(@isolate, 'foo')
     value = V8::C::String.NewFromUtf8(@isolate, 'bar')
 
-    maybe = o.Set(@ctx, key, value)
-    expect(maybe.IsJust()).to be true
-    expect(maybe.FromJust()).to be true
-
-    maybe = o.Get(@ctx, key)
-    expect(maybe.IsJust()).to be true
-    expect(maybe.FromJust().Utf8Value).to eq 'bar'
+    expect(o.Set(@ctx, key, value)).to be_successful
+    expect(o.Get(@ctx, key)).to strict_eq value
   end
 
   it 'can determine if a key has been set' do
     o = V8::C::Object.New(@isolate)
     key = V8::C::String.NewFromUtf8(@isolate, 'foo')
 
-    o.Set(@ctx, key, key)
-
-    maybe = o.Has(@ctx, key)
-    expect(maybe.IsJust()).to be true
-    expect(maybe.FromJust()).to eq true
+    expect(o.Set(@ctx, key, key)).to be_successful
+    expect(o.Has(@ctx, key)).to be_successful
   end
 
   it 'can delete keys' do
     o = V8::C::Object.New(@isolate)
     key = V8::C::String.NewFromUtf8(@isolate, 'foo')
 
-    o.Set(@ctx, key, key)
-
-    maybe = o.Delete(@ctx, key)
-    expect(maybe.IsJust()).to be true
-    expect(maybe.FromJust()).to eq true
-
-    maybe = o.Has(@ctx, key)
-    expect(maybe.IsJust()).to be true
-    expect(maybe.FromJust()).to eq false
+    expect(o.Set(@ctx, key, key)).to be_successful
+    expect(o.Delete(@ctx, key)).to be_successful
+    expect(o.Has(@ctx, key)).to eq_just false
   end
 
   describe '#SetAccessor' do
@@ -65,14 +51,11 @@ describe V8::C::Object do
         info.GetReturnValue.Set(get_value)
       end
 
-      o.SetAccessor(@ctx, key, getter, nil, data)
+      expect(o.SetAccessor(@ctx, key, getter, nil, data)).to be_successful
+      expect(o.Get(@ctx, key)).to strict_eq get_value
 
-      maybe = o.Get(@ctx, key)
-      expect(maybe.IsJust).to be true
-      expect(maybe.FromJust.StrictEquals(get_value)).to be true
-
-      expect(get_name.Equals(key)).to be true
-      expect(get_data.StrictEquals(data)).to be true
+      expect(get_name).to v8_eq key
+      expect(get_data).to strict_eq data
     end
 
     it 'can set setters' do
@@ -89,14 +72,12 @@ describe V8::C::Object do
         set_value = value
       end
 
-      o.SetAccessor(@ctx, key, proc { }, setter, data)
+      expect(o.SetAccessor(@ctx, key, proc { }, setter, data)).to be_successful
 
-      maybe = o.Set(@ctx, key, data)
-      expect(maybe.IsJust).to be true
-      expect(maybe.FromJust).to be true
+      expect(o.Set(@ctx, key, data)).to be_successful
 
-      expect(set_data.StrictEquals(data)).to be true
-      expect(set_value.StrictEquals(data)).to be true
+      expect(set_data).to strict_eq data
+      expect(set_value).to strict_eq data
     end
   end
 
