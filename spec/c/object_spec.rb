@@ -81,6 +81,17 @@ describe V8::C::Object do
     end
   end
 
+  describe '#CreateDataProperty' do
+    it 'can set the property' do
+      o = V8::C::Object.New(@isolate)
+      key = V8::C::String.NewFromUtf8(@isolate, 'foo')
+      data = V8::C::String.NewFromUtf8(@isolate, 'data')
+
+      expect(o.CreateDataProperty(@ctx, key, data)).to be_successful
+      expect(o.Get(@ctx, key)).to be_successful
+    end
+  end
+
   # TODO: Enable this when the methods are implemented in the extension
   # it 'can retrieve all property names' do
   #   o = V8::C::Object.New

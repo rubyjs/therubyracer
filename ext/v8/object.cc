@@ -11,6 +11,7 @@ namespace rr {
       defineMethod("Has", &Has).
       defineMethod("Delete", &Delete).
       defineMethod("SetAccessor", &SetAccessor).
+      defineMethod("CreateDataProperty", &CreateDataProperty).
 
       store(&Class);
   }
@@ -96,6 +97,17 @@ namespace rr {
       Enum<v8::AccessControl>(settings, v8::DEFAULT),
       Enum<v8::PropertyAttribute>(attribute, v8::None)
     ));
+  }
+
+  VALUE Object::CreateDataProperty(VALUE self, VALUE r_context, VALUE key, VALUE value) {
+    Object object(self);
+    Locker lock(object);
+
+    if (rb_obj_is_kind_of(key, rb_cNumeric)) {
+      return Bool::Maybe(object->CreateDataProperty(Context(r_context), Uint32_t(key), Value(value)));
+    } else {
+      return Bool::Maybe(object->CreateDataProperty(Context(r_context), *Name(key), Value(value)));
+    }
   }
 
   Object::operator VALUE() {
