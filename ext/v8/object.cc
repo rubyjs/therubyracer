@@ -12,6 +12,7 @@ namespace rr {
       defineMethod("Delete", &Delete).
       defineMethod("SetAccessor", &SetAccessor).
       defineMethod("CreateDataProperty", &CreateDataProperty).
+      defineMethod("DefineOwnProperty", &DefineOwnProperty).
 
       store(&Class);
   }
@@ -108,6 +109,21 @@ namespace rr {
     } else {
       return Bool::Maybe(object->CreateDataProperty(Context(r_context), *Name(key), Value(value)));
     }
+  }
+
+  VALUE Object::DefineOwnProperty(int argc, VALUE* argv, VALUE self) {
+    VALUE r_context, key, value, attribute;
+    rb_scan_args(argc, argv, "31", &r_context, &key, &value, &attribute);
+
+    Object object(self);
+    Locker lock(object);
+
+    return Bool::Maybe(object->DefineOwnProperty(
+      Context(r_context),
+      *Name(key),
+      Value(value),
+      Enum<v8::PropertyAttribute>(attribute, v8::None)
+    ));
   }
 
   Object::operator VALUE() {
