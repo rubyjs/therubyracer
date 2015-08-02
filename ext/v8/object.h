@@ -23,6 +23,8 @@ namespace rr {
     static VALUE GetOwnPropertyDescriptor(VALUE self, VALUE r_context, VALUE key);
     static VALUE GetPropertyNames(VALUE self, VALUE r_context);
     static VALUE GetOwnPropertyNames(VALUE self, VALUE r_context);
+    static VALUE GetPrototype(VALUE self);
+    static VALUE SetPrototype(VALUE self, VALUE r_context, VALUE prototype);
 
     inline Object(VALUE value) : Ref<v8::Object>(value) {}
     inline Object(v8::Isolate* isolate, v8::Handle<v8::Object> object) : Ref<v8::Object>(isolate, object) {}

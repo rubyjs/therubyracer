@@ -18,6 +18,8 @@ namespace rr {
       defineMethod("GetOwnPropertyDescriptor", &GetOwnPropertyDescriptor).
       defineMethod("GetPropertyNames", &GetPropertyNames).
       defineMethod("GetOwnPropertyNames", &GetOwnPropertyNames).
+      defineMethod("GetPrototype", &GetPrototype).
+      defineMethod("SetPrototype", &SetPrototype).
 
       store(&Class);
   }
@@ -181,6 +183,23 @@ namespace rr {
     Locker lock(object);
 
     return Array::Maybe(object.getIsolate(), object->GetOwnPropertyNames(Context(r_context)));
+  }
+
+  VALUE Object::GetPrototype(VALUE self) {
+    Object object(self);
+    Locker lock(object);
+
+    return Value(object.getIsolate(), object->GetPrototype());
+  }
+
+  VALUE Object::SetPrototype(VALUE self, VALUE r_context, VALUE prototype) {
+    Object object(self);
+    Locker lock(object);
+
+    return Bool::Maybe(object->SetPrototype(
+      Context(r_context),
+      *Value(prototype)
+    ));
   }
 
   Object::operator VALUE() {

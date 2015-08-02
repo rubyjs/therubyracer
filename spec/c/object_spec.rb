@@ -250,34 +250,36 @@ describe V8::C::Object do
     end
   end
 
-  # TODO: Enable this when the methods are implemented in the extension
-  # it 'can retrieve all property names' do
-  #   o = V8::C::Object.New
-  #   o.Set(V8::C::String.New('foo'), V8::C::String.New('bar'))
-  #   o.Set(V8::C::String.New('baz'), V8::C::String.New('bang'))
-  #
-  #   names = o.GetPropertyNames()
-  #   names.Length().should eql 2
-  #   names.Get(0).Utf8Value().should eql 'foo'
-  #   names.Get(1).Utf8Value().should eql 'baz'
-  # end
-  #
-  # it 'can set an accessor from ruby' do
-  #   o = V8::C::Object.New
-  #   property = V8::C::String.New('statement')
-  #   callback_data = V8::C::String.New('I am Legend')
-  #   left = V8::C::String.New('Yo! ')
-  #   getter = proc do |name, info|
-  #     info.This().StrictEquals(o).should be_true
-  #     info.Holder().StrictEquals(o).should be_true
-  #     V8::C::String::Concat(left, info.Data())
-  #   end
-  #   setter = proc do |name, value, info|
-  #     left = value
-  #   end
-  #   o.SetAccessor(property, getter, setter, callback_data)
-  #   o.Get(property).Utf8Value().should eql 'Yo! I am Legend'
-  #   o.Set(property, V8::C::String::New('Bro! '))
-  #   o.Get(property).Utf8Value().should eql 'Bro! I am Legend'
-  # end
+  context 'with prototypes' do
+    let(:o) { V8::C::Object.New(@isolate) }
+    let(:prototype) { V8::C::Object.New(@isolate) }
+    let(:prototype_key) { V8::C::String.NewFromUtf8(@isolate, 'foo') }
+    let(:o_key) { V8::C::String.NewFromUtf8(@isolate, 'bar') }
+
+    before do
+      expect(prototype.Set(@ctx, prototype_key, prototype_key)).to be_successful
+      expect(o.Set(@ctx, o_key, o_key)).to be_successful
+
+      expect(o.SetPrototype(@ctx, prototype)).to be_successful
+    end
+
+    it 'can set the object prototype' do
+      expect(o.Get(@ctx, prototype_key)).to strict_eq prototype_key
+    end
+
+    it 'can enumerate only own properties' do
+      names = o.GetOwnPropertyNames(@ctx)
+
+      expect(names).to be_successful
+      expect(names.FromJust.Get(@ctx, 0)).to v8_eq o_key
+    end
+
+    it 'can enumerate all properties' do
+      names = o.GetPropertyNames(@ctx)
+
+      expect(names).to be_successful
+      expect(names.FromJust.Get(@ctx, 0)).to v8_eq o_key
+      expect(names.FromJust.Get(@ctx, 1)).to v8_eq prototype_key
+    end
+  end
 end
