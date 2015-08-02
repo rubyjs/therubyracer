@@ -16,6 +16,8 @@ namespace rr {
       defineMethod("DefineOwnProperty", &DefineOwnProperty).
       defineMethod("GetPropertyAttributes", &GetPropertyAttributes).
       defineMethod("GetOwnPropertyDescriptor", &GetOwnPropertyDescriptor).
+      defineMethod("GetPropertyNames", &GetPropertyNames).
+      defineMethod("GetOwnPropertyNames", &GetOwnPropertyNames).
 
       store(&Class);
   }
@@ -165,6 +167,20 @@ namespace rr {
       Context(r_context),
       *rr::String(key)
     ));
+  }
+
+  VALUE Object::GetPropertyNames(VALUE self, VALUE r_context) {
+    Object object(self);
+    Locker lock(object);
+
+    return Array::Maybe(object.getIsolate(), object->GetPropertyNames(Context(r_context)));
+  }
+
+  VALUE Object::GetOwnPropertyNames(VALUE self, VALUE r_context) {
+    Object object(self);
+    Locker lock(object);
+
+    return Array::Maybe(object.getIsolate(), object->GetOwnPropertyNames(Context(r_context)));
   }
 
   Object::operator VALUE() {

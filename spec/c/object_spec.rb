@@ -214,6 +214,42 @@ describe V8::C::Object do
     end
   end
 
+  describe '#GetPropertyNames' do
+    it 'can get array of attribute names' do
+      o = V8::C::Object.New(@isolate)
+      key_one = V8::C::String.NewFromUtf8(@isolate, 'foo 1')
+      key_two = V8::C::String.NewFromUtf8(@isolate, 'foo 2')
+      data = V8::C::String.NewFromUtf8(@isolate, 'data')
+
+      expect(o.DefineOwnProperty(@ctx, key_one, data)).to be_successful
+      expect(o.DefineOwnProperty(@ctx, key_two, data)).to be_successful
+
+      names = o.GetPropertyNames(@ctx)
+      expect(names).to be_successful
+
+      expect(names.FromJust.Get(@ctx, 0)).to v8_eq key_one
+      expect(names.FromJust.Get(@ctx, 1)).to v8_eq key_two
+    end
+  end
+
+  describe '#GetOwnPropertyNames' do
+    it 'can get array of attribute names' do
+      o = V8::C::Object.New(@isolate)
+      key_one = V8::C::String.NewFromUtf8(@isolate, 'foo 1')
+      key_two = V8::C::String.NewFromUtf8(@isolate, 'foo 2')
+      data = V8::C::String.NewFromUtf8(@isolate, 'data')
+
+      expect(o.DefineOwnProperty(@ctx, key_one, data)).to be_successful
+      expect(o.DefineOwnProperty(@ctx, key_two, data)).to be_successful
+
+      names = o.GetOwnPropertyNames(@ctx)
+      expect(names).to be_successful
+
+      expect(names.FromJust.Get(@ctx, 0)).to v8_eq key_one
+      expect(names.FromJust.Get(@ctx, 1)).to v8_eq key_two
+    end
+  end
+
   # TODO: Enable this when the methods are implemented in the extension
   # it 'can retrieve all property names' do
   #   o = V8::C::Object.New
