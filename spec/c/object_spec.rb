@@ -272,6 +272,14 @@ describe V8::C::Object do
 
       expect(names).to be_successful
       expect(names.FromJust.Get(@ctx, 0)).to v8_eq o_key
+
+      has_own = o.HasOwnProperty(@ctx, o_key)
+      expect(has_own.IsJust).to be true
+      expect(has_own.FromJust).to be true
+
+      has_own = o.HasOwnProperty(@ctx, prototype_key)
+      expect(has_own.IsJust).to be true
+      expect(has_own.FromJust).to be false
     end
 
     it 'can enumerate all properties' do
@@ -294,12 +302,138 @@ describe V8::C::Object do
 
     it 'can return a string representation of simple objects' do
       a = V8::C::Array.New(@isolate)
-      a.Set(@ctx, 0, 2)
-      a.Set(@ctx, 1, 3)
 
       str = a.ObjectProtoToString(@ctx)
       expect(str).to be_successful
       expect(str.FromJust.Utf8Value).to eq '[object Array]'
+    end
+  end
+
+  describe '#GetConstructorName' do
+    it 'can return the constructor name of an array' do
+      a = V8::C::Array.New(@isolate)
+
+      expect(a.GetConstructorName().Utf8Value).to eq 'Array'
+    end
+  end
+
+  context 'with internal fields' do
+    let(:o) do
+      template = V8::C::ObjectTemplate.New(@isolate)
+      template.SetInternalFieldCount(2)
+
+      template.NewInstance(@ctx).FromJust
+    end
+
+    let(:value_one) { V8::C::String.NewFromUtf8(@isolate, 'value 1') }
+    let(:value_two) { V8::C::String.NewFromUtf8(@isolate, 'value 2') }
+
+    before do
+      o.SetInternalField(0, value_one)
+      o.SetInternalField(1, value_two)
+    end
+
+    it 'can get and set internal fields' do
+      expect(o.GetInternalField(0)).to strict_eq value_one
+      expect(o.GetInternalField(1)).to strict_eq value_two
+    end
+
+    it 'can get the internal field count' do
+      expect(o.InternalFieldCount).to eq 2
+    end
+  end
+
+  context 'with hidden values' do
+    let(:o) { V8::C::Object.New @isolate }
+
+    let(:key_one) { V8::C::String.NewFromUtf8(@isolate, 'key 1') }
+    let(:key_two) { V8::C::String.NewFromUtf8(@isolate, 'key 2') }
+    let(:value_one) { V8::C::String.NewFromUtf8(@isolate, 'value 1') }
+    let(:value_two) { V8::C::String.NewFromUtf8(@isolate, 'value 2') }
+
+    before do
+      o.SetHiddenValue(key_one, value_one)
+      o.SetHiddenValue(key_two, value_two)
+    end
+
+    it 'can get and set hidden values' do
+      expect(o.GetHiddenValue(key_one)).to strict_eq value_one
+      expect(o.GetHiddenValue(key_two)).to strict_eq value_two
+    end
+
+    it 'can delete hidden values' do
+      expect(o.DeleteHiddenValue(key_one)).to be true
+      expect(o.GetHiddenValue(key_one)).to be nil
+    end
+  end
+
+  describe '#Clone' do
+    let(:o) { V8::C::Object.New @isolate }
+
+    let(:key) { V8::C::String.NewFromUtf8(@isolate, 'key') }
+    let(:value) { V8::C::String.NewFromUtf8(@isolate, 'value') }
+
+    before do
+      o.Set(@ctx, key, value)
+    end
+
+    it 'can clone an object' do
+      clone = o.Clone
+
+      expect(clone).to_not strict_eq o
+
+      expect(clone.Get(@ctx, key)).to strict_eq value
+    end
+  end
+
+  describe '#CreationContext' do
+    it 'returns a context' do
+      o = V8::C::Object.New @isolate
+      expect(o.CreationContext).to be_a V8::C::Context
+    end
+  end
+
+  describe '#IsCallable' do
+    it 'returns false for plain objects' do
+      o = V8::C::Object.New @isolate
+      expect(o.IsCallable).to be false
+    end
+
+    it 'returns true for functions' do
+      fn = V8::C::Function.New @isolate, proc { }, V8::C::Object::New(@isolate)
+      expect(fn.IsCallable).to be true
+    end
+  end
+
+  describe 'callable objects' do
+    let(:value) { V8::C::String.NewFromUtf8(@isolate, 'value') }
+    let(:one) { V8::C::String.NewFromUtf8(@isolate, 'one') }
+    let(:two) { V8::C::String.NewFromUtf8(@isolate, 'two') }
+
+    let(:fn) do
+      source = '(function(one, two) {this.one = one; this.two = two; return this;})'
+      source = V8::C::String.NewFromUtf8(@isolate, source.to_s)
+      script = V8::C::Script.Compile(@ctx, source)
+      result = script.FromJust.Run(@ctx)
+
+      result.FromJust
+    end
+
+    it 'can be called as functions' do
+      object = V8::C::Object::New(@isolate)
+      result = fn.CallAsFunction(@ctx, object, [one, two]).FromJust
+
+      expect(result).to strict_eq object
+      expect(object.Get(@ctx, one)).to strict_eq one
+      expect(object.Get(@ctx, two)).to strict_eq two
+    end
+
+    it 'can be called as constructors' do
+      result = fn.CallAsConstructor(@ctx, [one, two]).FromJust
+
+      expect(result).to be_a V8::C::Object
+      expect(result.Get(@ctx, one)).to strict_eq one
+      expect(result.Get(@ctx, two)).to strict_eq two
     end
   end
 end

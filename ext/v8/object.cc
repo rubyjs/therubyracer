@@ -21,6 +21,28 @@ namespace rr {
       defineMethod("GetPrototype", &GetPrototype).
       defineMethod("SetPrototype", &SetPrototype).
       defineMethod("ObjectProtoToString", &ObjectProtoToString).
+      defineMethod("GetConstructorName", &GetConstructorName).
+      defineMethod("InternalFieldCount", &InternalFieldCount).
+      defineMethod("GetInternalField", &GetInternalField).
+      defineMethod("SetInternalField", &SetInternalField).
+      defineMethod("HasOwnProperty", &HasOwnProperty).
+      defineMethod("HasRealNamedProperty", &HasRealNamedProperty).
+      defineMethod("HasRealIndexedProperty", &HasRealIndexedProperty).
+      defineMethod("HasRealNamedCallbackProperty", &HasRealNamedCallbackProperty).
+      defineMethod("GetRealNamedPropertyInPrototypeChain", &GetRealNamedPropertyInPrototypeChain).
+      defineMethod("GetRealNamedProperty", &GetRealNamedProperty).
+      defineMethod("GetRealNamedPropertyAttributes", &GetRealNamedPropertyAttributes).
+      defineMethod("GetRealNamedPropertyAttributesInPrototypeChain", &GetRealNamedPropertyAttributesInPrototypeChain).
+      defineMethod("HasNamedLookupInterceptor", &HasNamedLookupInterceptor).
+      defineMethod("HasIndexedLookupInterceptor", &HasIndexedLookupInterceptor).
+      defineMethod("SetHiddenValue", &SetHiddenValue).
+      defineMethod("GetHiddenValue", &GetHiddenValue).
+      defineMethod("DeleteHiddenValue", &DeleteHiddenValue).
+      defineMethod("Clone", &Clone).
+      defineMethod("CreationContext", &CreationContext).
+      defineMethod("IsCallable", &IsCallable).
+      defineMethod("CallAsFunction", &CallAsFunction).
+      defineMethod("CallAsConstructor", &CallAsConstructor).
 
       store(&Class);
   }
@@ -208,6 +230,192 @@ namespace rr {
     Locker lock(object);
 
     return String::Maybe(object.getIsolate(), object->ObjectProtoToString(Context(r_context)));
+  }
+
+  VALUE Object::GetConstructorName(VALUE self) {
+    Object object(self);
+    Locker lock(object);
+
+    return String(object.getIsolate(), object->GetConstructorName());
+  }
+
+  VALUE Object::InternalFieldCount(VALUE self) {
+    Object object(self);
+    Locker lock(object);
+
+    return INT2FIX(object->InternalFieldCount());
+  }
+
+  VALUE Object::GetInternalField(VALUE self, VALUE index) {
+    Object object(self);
+    Locker lock(object);
+
+    return Value(object.getIsolate(), object->GetInternalField(NUM2INT(index)));
+  }
+
+  VALUE Object::SetInternalField(VALUE self, VALUE index, VALUE value) {
+    Object object(self);
+    Locker lock(object);
+
+    object->SetInternalField(NUM2INT(index), *Value(value));
+
+    return Qnil;
+  }
+
+  VALUE Object::HasOwnProperty(VALUE self, VALUE r_context, VALUE key) {
+    Object object(self);
+    Locker lock(object);
+
+    return Bool::Maybe(object->HasOwnProperty(Context(r_context), *Name(key)));
+  }
+
+  VALUE Object::HasRealNamedProperty(VALUE self, VALUE r_context, VALUE key) {
+    Object object(self);
+    Locker lock(object);
+
+    return Bool::Maybe(object->HasRealNamedProperty(Context(r_context), *Name(key)));
+  }
+
+  VALUE Object::HasRealIndexedProperty(VALUE self, VALUE r_context, VALUE index) {
+    Object object(self);
+    Locker lock(object);
+
+    return Bool::Maybe(object->HasRealIndexedProperty(Context(r_context), NUM2INT(index)));
+  }
+
+  VALUE Object::HasRealNamedCallbackProperty(VALUE self, VALUE r_context, VALUE key) {
+    Object object(self);
+    Locker lock(object);
+
+    return Bool::Maybe(object->HasRealNamedCallbackProperty(Context(r_context), *Name(key)));
+  }
+
+  VALUE Object::GetRealNamedPropertyInPrototypeChain(VALUE self, VALUE r_context, VALUE key) {
+    Object object(self);
+    Locker lock(object);
+
+    return Value::Maybe(object.getIsolate(), object->GetRealNamedPropertyInPrototypeChain(
+      Context(r_context),
+      *Name(key)
+    ));
+  }
+
+  VALUE Object::GetRealNamedProperty(VALUE self, VALUE r_context, VALUE key) {
+    Object object(self);
+    Locker lock(object);
+
+    return Value::Maybe(object.getIsolate(), object->GetRealNamedProperty(
+      Context(r_context),
+      *Name(key)
+    ));
+  }
+
+  VALUE Object::GetRealNamedPropertyAttributes(VALUE self, VALUE r_context, VALUE key) {
+    Object object(self);
+    Locker lock(object);
+
+    return Enum<v8::PropertyAttribute>::Maybe(object->GetRealNamedPropertyAttributes(
+      Context(r_context),
+      *Name(key)
+    ));
+  }
+
+  VALUE Object::GetRealNamedPropertyAttributesInPrototypeChain(VALUE self, VALUE r_context, VALUE key) {
+    Object object(self);
+    Locker lock(object);
+
+    return Enum<v8::PropertyAttribute>::Maybe(object->GetRealNamedPropertyAttributesInPrototypeChain(
+      Context(r_context),
+      *Name(key)
+    ));
+  }
+
+  VALUE Object::HasNamedLookupInterceptor(VALUE self) {
+    Object object(self);
+    Locker lock(object);
+
+    return Bool(object->HasNamedLookupInterceptor());
+  }
+
+  VALUE Object::HasIndexedLookupInterceptor(VALUE self) {
+    Object object(self);
+    Locker lock(object);
+
+    return Bool(object->HasIndexedLookupInterceptor());
+  }
+
+  VALUE Object::SetHiddenValue(VALUE self, VALUE key, VALUE value) {
+    Object object(self);
+    Locker lock(object);
+
+    return Bool(object->SetHiddenValue(String(key), Value(value)));
+  }
+
+  VALUE Object::GetHiddenValue(VALUE self, VALUE key) {
+    Object object(self);
+    Locker lock(object);
+
+    return Value(object.getIsolate(), object->GetHiddenValue(String(key)));
+  }
+
+  VALUE Object::DeleteHiddenValue(VALUE self, VALUE key) {
+    Object object(self);
+    Locker lock(object);
+
+    return Bool(object->DeleteHiddenValue(String(key)));
+  }
+
+  VALUE Object::Clone(VALUE self) {
+    Object object(self);
+    Locker lock(object);
+
+    return Object(object.getIsolate(), object->Clone());
+  }
+
+  VALUE Object::CreationContext(VALUE self) {
+    Object object(self);
+    Locker lock(object);
+
+    return Context(object->CreationContext());
+  }
+
+  VALUE Object::IsCallable(VALUE self) {
+    Object object(self);
+    Locker lock(object);
+
+    return Bool(object->IsCallable());
+  }
+
+  VALUE Object::CallAsFunction(int argc, VALUE* argv, VALUE self) {
+    VALUE r_context, recv, r_argv;
+    rb_scan_args(argc, argv, "30", &r_context, &recv, &r_argv);
+
+    Object object(self);
+    v8::Isolate* isolate = object.getIsolate();
+    Locker lock(isolate);
+
+    std::vector< v8::Handle<v8::Value> > vector(Value::convertRubyArray(isolate, r_argv));
+
+    return Value::Maybe(isolate, object->CallAsFunction(
+      Context(r_context),
+      Value(recv),
+      RARRAY_LENINT(r_argv),
+      &vector[0]
+    ));
+  }
+
+  VALUE Object::CallAsConstructor(VALUE self, VALUE r_context, VALUE argv) {
+    Object object(self);
+    v8::Isolate* isolate = object.getIsolate();
+    Locker lock(isolate);
+
+    std::vector< v8::Handle<v8::Value> > vector(Value::convertRubyArray(isolate, argv));
+
+    return Value::Maybe(isolate, object->CallAsConstructor(
+      Context(r_context),
+      RARRAY_LENINT(argv),
+      &vector[0]
+    ));
   }
 
   Object::operator VALUE() {
