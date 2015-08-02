@@ -282,4 +282,24 @@ describe V8::C::Object do
       expect(names.FromJust.Get(@ctx, 1)).to v8_eq prototype_key
     end
   end
+
+  describe '#ObjectProtoToString' do
+    it 'can return a string representation of simple objects' do
+      o = V8::C::Object.New(@isolate)
+      str = o.ObjectProtoToString(@ctx)
+
+      expect(str).to be_successful
+      expect(str.FromJust.Utf8Value).to eq '[object Object]'
+    end
+
+    it 'can return a string representation of simple objects' do
+      a = V8::C::Array.New(@isolate)
+      a.Set(@ctx, 0, 2)
+      a.Set(@ctx, 1, 3)
+
+      str = a.ObjectProtoToString(@ctx)
+      expect(str).to be_successful
+      expect(str.FromJust.Utf8Value).to eq '[object Array]'
+    end
+  end
 end

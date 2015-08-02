@@ -20,6 +20,7 @@ namespace rr {
       defineMethod("GetOwnPropertyNames", &GetOwnPropertyNames).
       defineMethod("GetPrototype", &GetPrototype).
       defineMethod("SetPrototype", &SetPrototype).
+      defineMethod("ObjectProtoToString", &ObjectProtoToString).
 
       store(&Class);
   }
@@ -200,6 +201,13 @@ namespace rr {
       Context(r_context),
       *Value(prototype)
     ));
+  }
+
+  VALUE Object::ObjectProtoToString(VALUE self, VALUE r_context) {
+    Object object(self);
+    Locker lock(object);
+
+    return String::Maybe(object.getIsolate(), object->ObjectProtoToString(Context(r_context)));
   }
 
   Object::operator VALUE() {

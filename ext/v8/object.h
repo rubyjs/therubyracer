@@ -26,6 +26,8 @@ namespace rr {
     static VALUE GetPrototype(VALUE self);
     static VALUE SetPrototype(VALUE self, VALUE r_context, VALUE prototype);
 
+    static VALUE ObjectProtoToString(VALUE self, VALUE r_context);
+
     inline Object(VALUE value) : Ref<v8::Object>(value) {}
     inline Object(v8::Isolate* isolate, v8::Handle<v8::Object> object) : Ref<v8::Object>(isolate, object) {}
 
