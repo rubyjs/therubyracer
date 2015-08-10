@@ -16,6 +16,15 @@ namespace rr {
     operator T() {
       return RTEST(value) ? (T)NUM2INT(value) : defaultValue;
     }
+
+    class Maybe : public rr::Maybe {
+    public:
+      Maybe(v8::Maybe<T> maybe) {
+        if (maybe.IsJust()) {
+          just(INT2FIX((int)maybe.FromJust()));
+        }
+      }
+    };
   };
 
   inline void DefineEnums() {

@@ -15,6 +15,8 @@ namespace rr {
     inline String(v8::Isolate* isolate, v8::Handle<v8::String> string) : Ref<v8::String>(isolate, string) {}
 
     virtual operator v8::Handle<v8::String>() const;
+
+    typedef MaybeLocal<rr::String, v8::String> Maybe;
   };
 
 }

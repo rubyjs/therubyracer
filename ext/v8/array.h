@@ -13,6 +13,8 @@ namespace rr {
 
     inline Array(v8::Isolate* isolate, v8::Handle<v8::Array> array) : Ref<v8::Array>(isolate, array) {}
     inline Array(VALUE value) : Ref<v8::Array>(value) {}
+
+    typedef MaybeLocal<Array, v8::Array> Maybe;
   };
 
 }

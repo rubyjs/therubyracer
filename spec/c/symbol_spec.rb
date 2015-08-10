@@ -35,7 +35,7 @@ describe V8::C::Symbol do
     end
 
     it "returns different symbols for different registries" do
-      expect(global.StrictEquals(api)).to be false
+      expect(global).to_not strict_eq api
     end
   end
 
