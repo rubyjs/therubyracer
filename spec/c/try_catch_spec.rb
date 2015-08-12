@@ -60,11 +60,19 @@ describe V8::C::TryCatch do
     end
   end
 
+  it "sees JavaScript exceptions thrown from Ruby" do
+    V8::C::TryCatch(@isolate) do |trycatch|
+      message = V8::C::String::NewFromUtf8(@isolate, "boom!")
+      @isolate.ThrowException(V8::C::Exception::Error(message))
+      expect(trycatch.HasCaught).to be_truthy
+    end
+  end
+
   it "won't die on a ruby exception" do
     expect {
       V8::C::TryCatch(@isolate) do |trycatch|
         fail "boom!"
       end
-    }.to raise_error
+    }.to raise_error RuntimeError, "boom!"
   end
 end

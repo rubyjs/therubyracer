@@ -72,6 +72,7 @@ inline VALUE not_implemented(const char* message) {
 #include "stack-frame.h"
 #include "stack-trace.h"
 #include "message.h"
+#include "exception.h"
 #include "try-catch.h"
 
 #endif

@@ -46,12 +46,12 @@ extern "C" {
     StackFrame::Init();
     StackTrace::Init();
     Message::Init();
+    Exception::Init();
     TryCatch::Init();
 
     // Invocation::Init();
     // Constants::Init();
     // Template::Init();
-    // Exception::Init();
     // ResourceConstraints::Init();
     // HeapStatistics::Init();
   }
