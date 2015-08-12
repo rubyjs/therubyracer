@@ -140,3 +140,28 @@ class Symbol
     V8::C::Symbol::For(context.isolate.native, V8::C::String::NewFromUtf8(isolate, to_s))
   end
 end
+
+class Object
+  def to_v8(context)
+    V8::C::Object::New(context.isolate.native)
+  end
+end
+
+class Proc
+  def to_v8(context)
+    isolate = context.isolate.native
+    callback = lambda do |info|
+      args = []
+      arity = info.Length()
+      if self.arity > -1
+        arity = self.arity
+      end
+      arity.times do |i|
+        args << context.to_ruby(info[i])
+      end
+      result = context.to_v8 self.call(*args)
+      info.GetReturnValue().Set(result)
+    end
+    V8::C::Function::New(isolate, callback)
+  end
+end

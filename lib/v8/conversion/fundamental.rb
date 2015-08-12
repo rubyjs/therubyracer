@@ -43,7 +43,18 @@ class V8::Conversion
     # First it checks to see if there is an entry in the id map for
     # this object. Otherwise, it will run the default conversion.
     def to_v8(context, ruby_object)
-      rb_idmap[ruby_object.object_id] || ruby_object.to_v8(context)
+      if v8_object = rb_idmap[ruby_object.object_id]
+        v8_object
+      else
+        v8_object = ruby_object.to_v8(context)
+        if v8_object.kind_of? V8::C::Object
+          v8_object.tap do
+            equate ruby_object, v8_object
+          end
+        else
+          v8_object
+        end
+      end
     end
 
     ##

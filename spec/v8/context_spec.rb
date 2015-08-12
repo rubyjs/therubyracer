@@ -93,12 +93,12 @@ describe "V8::Context" do
       end
     end
 
-    # xit "unwraps ruby objects returned by embedded ruby code to maintain referential integrity" do
-    #   Object.new.tap do |o|
-    #     @cxt['get'] = lambda {o}
-    #     @cxt.eval('get()').should be(o)
-    #   end
-    # end
+    it "unwraps ruby objects returned by embedded ruby code to maintain referential integrity" do
+      Object.new.tap do |o|
+        @cxt['get'] = lambda {o}
+        @cxt.eval('get()').should be(o)
+      end
+    end
 
     it "always returns the same ruby object for a single javascript object" do
       obj = @cxt.eval('obj = {}')
@@ -133,25 +133,25 @@ describe "V8::Context" do
     # end
   end
 
-#   describe "Calling Ruby Code From Within Javascript", :compat => '0.1.0' do
+  describe "Calling Ruby Code From Within Javascript" do
 
-#     before(:each) do
+     before(:each) do
 #       @class = Class.new
 #       @instance = @class.new
-#       @cxt = V8::Context.new
+       @cxt = V8::Context.new
 #       @cxt['o'] = @instance
-#     end
+     end
 
-#     xit "can embed a closure into a context and call it" do
-#       @cxt["say"] = lambda { |*args| args[-2] * args[-1] }
-#       @cxt.eval("say('Hello', 2)").should == "HelloHello"
-#     end
+    it "can embed a closure into a context and call it" do
+      @cxt["say"] = lambda { |*args| args[-2] * args[-1] }
+      @cxt.eval("say('Hello', 2)").should == "HelloHello"
+    end
 
-#     xit "recognizes the same closure embedded into the same context as the same function object" do
-#       @cxt['say'] = @cxt['declare'] = lambda { |*args| args }
-#       @cxt.eval('say == declare').should be(true)
-#       @cxt.eval('say === declare').should be(true)
-#     end
+    it "recognizes the same closure embedded into the same context as the same function object" do
+      @cxt['say'] = @cxt['declare'] = lambda { |*args| args }
+      @cxt.eval('say == declare').should be(true)
+      @cxt.eval('say === declare').should be(true)
+    end
 
 #     xit "translates ruby Array to Javascript Array" do
 #       class_eval do
@@ -275,17 +275,17 @@ describe "V8::Context" do
 #       @cxt.eval('typeof(RObject)').should == 'function'
 #     end
 
-#     xit "truncates lambda arguments passed in to match the arity of the function", :compat => '0.4.2' do
-#       @cxt['testing'] = lambda { |arg| arg }
-#       lambda {
-#         @cxt.eval('testing(1,2,3)')
-#       }.should_not raise_error
+    it "truncates lambda arguments passed in to match the arity of the function", :compat => '0.4.2' do
+      @cxt['testing'] = lambda { |arg| arg }
+      lambda {
+        @cxt.eval('testing(1,2,3)')
+      }.should_not raise_error
 
-#       @cxt['testing'] = lambda { }
-#       lambda {
-#         @cxt.eval('testing(1,2,3)')
-#       }.should_not raise_error
-#     end
+      @cxt['testing'] = lambda { }
+      lambda {
+        @cxt.eval('testing(1,2,3)')
+      }.should_not raise_error
+    end
 
 #     xit "truncates method arguments passed in to match the arity of the function", :compat => '0.4.3' do
 #       @instance.instance_eval do
@@ -652,7 +652,7 @@ describe "V8::Context" do
 #       @class.class_eval &body
 #     end
 
-#   end
+  end
 
    describe "Calling JavaScript Code From Within Ruby", :compat => '0.1.0' do
 
