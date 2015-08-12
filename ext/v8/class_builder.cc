@@ -41,6 +41,14 @@ namespace rr {
     return *this;
   }
 
+  ClassBuilder& ClassBuilder::defineConstMethod(const char* name, VALUE value) {
+    VALUE symbol = rb_funcall(rb_str_cat2(rb_str_new2("@"), name), rb_intern("to_sym"), 0);
+    VALUE singleton_class = rb_funcall(this->value, rb_intern("singleton_class"), 0);
+    rb_ivar_set(this->value, SYM2ID(symbol), value);
+    rb_funcall(singleton_class, rb_intern("attr_reader"), 1, ID2SYM(rb_intern(name)));
+    return *this;
+  }
+
   ClassBuilder& ClassBuilder::defineMethod(const char* name, VALUE (*impl)(int, VALUE*, VALUE)) {
     rb_define_method(this->value, name, (VALUE (*)(...))impl, -1);
     return *this;

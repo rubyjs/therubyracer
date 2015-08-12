@@ -27,7 +27,7 @@ namespace rr {
     // static VALUE IsBooleanObject(VALUE self);
     // static VALUE IsNumberObject(VALUE self);
     // static VALUE IsStringObject(VALUE self);
-    // static VALUE IsNativeError(VALUE self);
+    static VALUE IsNativeError(VALUE self);
     // static VALUE IsRegExp(VALUE self);
     static VALUE ToString(VALUE self);
     // static VALUE ToDetailString(VALUE self);

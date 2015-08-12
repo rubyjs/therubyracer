@@ -16,6 +16,7 @@ namespace rr {
     ClassBuilder(const char* name, const char* supername);
 
     ClassBuilder& defineConst(const char* name, VALUE value);
+    ClassBuilder& defineConstMethod(const char* name, VALUE value);
 
     ClassBuilder& defineMethod(const char* name, VALUE (*impl)(int, VALUE*, VALUE));
     ClassBuilder& defineMethod(const char* name, VALUE (*impl)(VALUE));

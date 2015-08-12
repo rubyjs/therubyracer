@@ -23,6 +23,7 @@ inline VALUE not_implemented(const char* message) {
 
 #include "equiv.h"
 #include "bool.h"
+#include "int.h"
 #include "uint32_t.h"
 #include "pointer.h"
 #include "wrapper.h"
@@ -67,5 +68,10 @@ inline VALUE not_implemented(const char* message) {
 #include "signature.h"
 #include "function-template.h"
 #include "object-template.h"
+
+#include "stack-frame.h"
+#include "stack-trace.h"
+#include "message.h"
+#include "try-catch.h"
 
 #endif

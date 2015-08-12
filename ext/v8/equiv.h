@@ -23,6 +23,10 @@ namespace rr {
    * Internally, `Equiv`s are always stored as a Ruby `VALUE`, and so
    * part of the job of the subclass is to have an appropriate
    * constructor that converts the C/C++ type to a `VALUE`
+   *
+   * It is handy to have a class to do the conversions instead of
+   * preprocessor macros like `NUM2INT`, et al. because classes can be
+   * easily used in C++ templates.
    */
   class Equiv {
   public:

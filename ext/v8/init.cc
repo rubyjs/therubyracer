@@ -43,15 +43,14 @@ extern "C" {
     ObjectTemplate::Init();
     FunctionTemplate::Init();
     Signature::Init();
+    StackFrame::Init();
+    StackTrace::Init();
+    Message::Init();
+    TryCatch::Init();
 
     // Invocation::Init();
-    // Signature::Init();
-    // Date::Init();
     // Constants::Init();
     // Template::Init();
-    // Stack::Init();
-    // Message::Init();
-    // TryCatch::Init();
     // Exception::Init();
     // ResourceConstraints::Init();
     // HeapStatistics::Init();

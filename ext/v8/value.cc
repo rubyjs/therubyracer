@@ -21,7 +21,7 @@ namespace rr {
       // defineMethod("IsBooleanObject", &IsBooleanObject).
       // defineMethod("IsNumberObject", &IsNumberObject).
       // defineMethod("IsStringObject", &IsStringObject).
-      // defineMethod("IsNativeError", &IsNativeError).
+      defineMethod("IsNativeError", &IsNativeError).
       // defineMethod("IsRegExp", &IsRegExp).
       defineMethod("ToString", &ToString).
       // defineMethod("ToDetailString", &ToDetailString).
@@ -118,6 +118,13 @@ namespace rr {
     Locker lock(value.getIsolate());
 
     return Bool(value->IsUint32());
+  }
+
+  VALUE Value::IsNativeError(VALUE self) {
+    Value value(self);
+    Locker lock(value);
+
+    return Bool(value->IsNativeError());
   }
 
   VALUE Value::ToString(VALUE self) {
