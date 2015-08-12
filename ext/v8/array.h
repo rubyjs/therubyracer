@@ -9,7 +9,7 @@ namespace rr {
 
     static VALUE New(int argc, VALUE argv[], VALUE self);
     static VALUE Length(VALUE self);
-    static VALUE CloneElementAt(VALUE self, VALUE index);
+    static VALUE CloneElementAt(VALUE self, VALUE context, VALUE index);
 
     inline Array(v8::Isolate* isolate, v8::Handle<v8::Array> array) : Ref<v8::Array>(isolate, array) {}
     inline Array(VALUE value) : Ref<v8::Array>(value) {}

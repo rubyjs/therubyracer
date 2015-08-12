@@ -654,7 +654,7 @@ describe "V8::Context" do
 
 #   end
 
-   describe "Calling JavaScript Code From Within Ruby", :compat => '0.1.0' do
+   describe "Calling JavaScript Code From Within Ruby"  do
 
     before(:each) do
       @cxt = V8::Context.new

@@ -25,16 +25,16 @@ namespace rr {
 
   VALUE Array::Length(VALUE self) {
     Array array(self);
-    Locker lock(array.getIsolate());
+    Locker lock(array);
 
     return Uint32_t(array->Length());
   }
 
-  VALUE Array::CloneElementAt(VALUE self, VALUE index) {
+  VALUE Array::CloneElementAt(VALUE self, VALUE context, VALUE index) {
     Array array(self);
-    Locker lock(array.getIsolate());
+    Locker lock(array);
 
-    return Object(array.getIsolate(), array->CloneElementAt(Uint32_t(index)));
+    return Object::Maybe(array.getIsolate(), array->CloneElementAt(Context(context), Uint32_t(index)));
   }
 
 }
