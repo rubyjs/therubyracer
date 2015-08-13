@@ -1,6 +1,5 @@
 // -*- mode: c++ -*-
 #include "rr.h"
-#include "isolate.h"
 
 namespace rr {
 
@@ -10,7 +9,8 @@ namespace rr {
     rb_eval_string("require 'v8/retained_objects'");
     ClassBuilder("Isolate").
       defineSingletonMethod("New", &New).
-
+      defineMethod("ThrowException", &ThrowException).
+      defineMethod("SetCaptureStackTraceForUncaughtExceptions", &SetCaptureStackTraceForUncaughtExceptions).
       defineMethod("IdleNotificationDeadline", &IdleNotificationDeadline).
 
       store(&Class);
@@ -31,6 +31,23 @@ namespace rr {
 
     data->isolate = isolate;
     return Isolate(isolate);
+  }
+
+  VALUE Isolate::ThrowException(VALUE self, VALUE error) {
+    Isolate isolate(self);
+    Locker lock(isolate);
+    return Value(isolate, isolate->ThrowException(Value(error)));
+  }
+
+  VALUE Isolate::SetCaptureStackTraceForUncaughtExceptions(VALUE self, VALUE capture, VALUE stack_limit, VALUE options) {
+    Isolate isolate(self);
+    Locker lock(isolate);
+
+    isolate->SetCaptureStackTraceForUncaughtExceptions(
+      Bool(capture),
+      RTEST(stack_limit) ? NUM2INT(stack_limit) : 10,
+      Enum<v8::StackTrace::StackTraceOptions>(options, v8::StackTrace::kOverview));
+    return Qnil;
   }
 
 
