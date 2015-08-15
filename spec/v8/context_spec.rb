@@ -141,6 +141,10 @@ describe "V8::Context" do
        @cxt = V8::Context.new
 #       @cxt['o'] = @instance
      end
+    it "can embed nil into a context" do
+      @cxt['nil'] = nil
+      expect(@cxt['nil']).to be_nil
+    end
 
     it "can embed a closure into a context and call it" do
       @cxt["say"] = lambda { |*args| args[-2] * args[-1] }
