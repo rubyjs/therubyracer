@@ -97,6 +97,48 @@ namespace rr {
       }
     };
 
+    class Integer : public Base<v8::Integer, rr::Integer> {
+    public:
+      Integer(v8::ReturnValue<v8::Integer> value) : Base<v8::Integer, rr::Integer>(value) {}
+      Integer(VALUE self) : Base<v8::Integer, rr::Integer>(self) {}
+
+      static inline void Init() {
+        ClassBuilder("Integer", ReturnValue::Class, ReturnValue::Class).
+          defineMethod("Set", &Set).
+          defineMethod("Set_int32_t", &Set_int32_t).
+          defineMethod("Set_uint32_t", &Set_uint32_t).
+          defineMethod("GetIsolate", &GetIsolate).
+          store(&Class);
+      }
+    };
+
+    class Array : public Base<v8::Array, rr::Array> {
+    public:
+      Array(v8::ReturnValue<v8::Array> value) : Base<v8::Array, rr::Array>(value) {}
+      Array(VALUE self) : Base<v8::Array, rr::Array>(self) {}
+
+      static inline void Init() {
+        ClassBuilder("Array", ReturnValue::Class, ReturnValue::Class).
+          defineMethod("Set", &Set).
+          defineMethod("GetIsolate", &GetIsolate).
+          store(&Class);
+      }
+    };
+
+    class Boolean : public Base<v8::Boolean, rr::Boolean> {
+    public:
+      Boolean(v8::ReturnValue<v8::Boolean> value) : Base<v8::Boolean, rr::Boolean>(value) {}
+      Boolean(VALUE self) : Base<v8::Boolean, rr::Boolean>(self) {}
+
+      static inline void Init() {
+        ClassBuilder("Boolean", ReturnValue::Class, ReturnValue::Class).
+          defineMethod("Set", &Set).
+          defineMethod("Set_bool", &Set_bool).
+          defineMethod("GetIsolate", &GetIsolate).
+          store(&Class);
+      }
+    };
+
     class Void : public Base<void, rr::Value> {
     public:
 
@@ -117,6 +159,9 @@ namespace rr {
         store(&Class);
 
       Value::Init();
+      Integer::Init();
+      Array::Init();
+      Boolean::Init();
       Void::Init();
     }
   };

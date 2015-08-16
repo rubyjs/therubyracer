@@ -11,6 +11,7 @@ namespace rr {
       ClassBuilder("Template").
         defineMethod("Set", &Set).
         defineMethod("SetAccessorProperty", &SetAccessorProperty).
+        // TODO: SetNativeDataProperty
         store(&Class);
     }
 
