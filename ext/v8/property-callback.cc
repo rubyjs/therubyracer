@@ -18,17 +18,17 @@ namespace rr {
 
     if (RTEST(r_query)) {
       v8::Local<v8::String> query_key = v8::String::NewFromUtf8(isolate, "rr::query");
-      holder->SetHiddenValue(query_key, rr::Value(r_query));
+      holder->SetHiddenValue(query_key, External::wrap(isolate, r_query));
     }
 
     if (RTEST(r_deleter)) {
       v8::Local<v8::String> deleter_key = v8::String::NewFromUtf8(isolate, "rr::deleter");
-      holder->SetHiddenValue(deleter_key, rr::Value(r_deleter));
+      holder->SetHiddenValue(deleter_key, External::wrap(isolate, r_deleter));
     }
 
     if (RTEST(r_enumerator)) {
       v8::Local<v8::String> enumerator_key = v8::String::NewFromUtf8(isolate, "rr::enumerator");
-      holder->SetHiddenValue(enumerator_key, rr::Value(r_enumerator));
+      holder->SetHiddenValue(enumerator_key, External::wrap(isolate, r_enumerator));
     }
 
     return holder;
