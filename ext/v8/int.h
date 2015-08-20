@@ -45,7 +45,7 @@ namespace rr {
      * Coerce the Ruby `VALUE` into an `int`.
      */
     inline operator int() {
-      return RTEST(value) ? NUM2UINT(value) : 0;
+      return RTEST(value) ? NUM2INT(value) : 0;
     }
   };
 
