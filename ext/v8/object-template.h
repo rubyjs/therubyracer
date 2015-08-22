@@ -67,11 +67,13 @@ namespace rr {
       Isolate isolate(t.getIsolate());
       Locker lock(isolate);
 
+      PropertyCallback callback(isolate, r_getter, r_setter, r_data);
+
       t->SetAccessor(
         *Name(r_name),
-        &PropertyCallback::invokeGetter,
-        RTEST(r_setter) ? &PropertyCallback::invokeSetter : 0,
-        PropertyCallback::wrapData(isolate, r_getter, r_setter, r_data),
+        callback,
+        callback,
+        callback,
         Enum<v8::AccessControl>(r_settings, v8::DEFAULT),
         Enum<v8::PropertyAttribute>(r_attribute, v8::None),
         AccessorSignature(r_signature)
@@ -91,14 +93,9 @@ namespace rr {
       Isolate isolate(t.getIsolate());
       Locker lock(isolate);
 
-      t->SetNamedPropertyHandler(
-        &PropertyCallback::invokeNamedPropertyGetter,
-        RTEST(r_setter) ? &PropertyCallback::invokeNamedPropertySetter : 0,
-        RTEST(r_query) ? &PropertyCallback::invokeNamedPropertyQuery : 0,
-        RTEST(r_deleter) ? &PropertyCallback::invokeNamedPropertyDeleter : 0,
-        RTEST(r_enumerator) ? &PropertyCallback::invokeNamedPropertyEnumerator : 0,
-        PropertyCallback::wrapData(isolate, r_getter, r_setter, r_query, r_deleter, r_enumerator, r_data)
-      );
+      PropertyCallback callback(isolate, r_getter, r_setter, r_query, r_deleter, r_enumerator, r_data);
+
+      t->SetNamedPropertyHandler(callback, callback, callback, callback, callback, callback);
 
       return Qnil;
     }
@@ -114,14 +111,9 @@ namespace rr {
       Isolate isolate(t.getIsolate());
       Locker lock(isolate);
 
-      t->SetIndexedPropertyHandler(
-        &PropertyCallback::invokeIndexedPropertyGetter,
-        RTEST(r_setter) ? &PropertyCallback::invokeIndexedPropertySetter : 0,
-        RTEST(r_query) ? &PropertyCallback::invokeIndexedPropertyQuery : 0,
-        RTEST(r_deleter) ? &PropertyCallback::invokeIndexedPropertyDeleter : 0,
-        RTEST(r_enumerator) ? &PropertyCallback::invokeIndexedPropertyEnumerator : 0,
-        PropertyCallback::wrapData(isolate, r_getter, r_setter, r_query, r_deleter, r_enumerator, r_data)
-      );
+      PropertyCallback callback(isolate, r_getter, r_setter, r_query, r_deleter, r_enumerator, r_data);
+
+      t->SetIndexedPropertyHandler(callback, callback, callback, callback, callback, callback);
 
       return Qnil;
     }

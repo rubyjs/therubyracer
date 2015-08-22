@@ -2,9 +2,7 @@
 
 namespace rr {
 
-  v8::Local<v8::Value> PropertyCallback::wrapData(v8::Isolate* isolate, VALUE r_getter, VALUE r_setter,
-                                                  VALUE r_query, VALUE r_deleter, VALUE r_enumerator,
-                                                  VALUE r_data) {
+  PropertyCallback::operator v8::Local<v8::Value>() {
     v8::Local<v8::Object> holder = v8::Object::New(isolate);
 
     v8::Local<v8::String> getter_key = v8::String::NewFromUtf8(isolate, "rr::getter");
@@ -32,10 +30,6 @@ namespace rr {
     }
 
     return holder;
-  }
-
-  v8::Local<v8::Value> PropertyCallback::wrapData(v8::Isolate* isolate, VALUE r_getter, VALUE r_setter, VALUE r_data) {
-    return wrapData(isolate, r_getter, r_setter, Qnil, Qnil, Qnil, r_data);
   }
 
   VALUE PropertyCallback::unwrapData(v8::Isolate* isolate, v8::Local<v8::Value> value) {
@@ -166,7 +160,7 @@ namespace rr {
     rb_funcall(code, rb_intern("call"), 2, rb_property, (VALUE)PropertyCallbackInfo::Boolean(info));
   }
 
-  void PropertyCallback::invokeNamedPropertyEnumerator(const v8::PropertyCallbackInfo<v8::Array>& info) {
+  void PropertyCallback::invokePropertyEnumerator(const v8::PropertyCallbackInfo<v8::Array>& info) {
     v8::Isolate* isolate = info.GetIsolate();
 
     VALUE code(unwrapEnumerator(isolate, info.Data()));
@@ -214,15 +208,6 @@ namespace rr {
 
     Unlocker unlock(info.GetIsolate());
     rb_funcall(code, rb_intern("call"), 2, UINT2NUM(index), (VALUE)PropertyCallbackInfo::Boolean(info));
-  }
-
-  void PropertyCallback::invokeIndexedPropertyEnumerator(const v8::PropertyCallbackInfo<v8::Array>& info) {
-    v8::Isolate* isolate = info.GetIsolate();
-
-    VALUE code(unwrapEnumerator(isolate, info.Data()));
-
-    Unlocker unlock(info.GetIsolate());
-    rb_funcall(code, rb_intern("call"), 1, (VALUE)PropertyCallbackInfo::Array(info));
   }
 
 }

@@ -119,12 +119,14 @@ namespace rr {
     Isolate isolate(object.getIsolate());
     Locker lock(isolate);
 
+    PropertyCallback callback(isolate, getter, setter, data);
+
     return Bool::Maybe(object->SetAccessor(
       context,
       Name(name),
-      &PropertyCallback::invokeGetter,
-      RTEST(setter) ? &PropertyCallback::invokeSetter : 0,
-      v8::MaybeLocal<v8::Value>(PropertyCallback::wrapData(isolate, getter, setter, data)),
+      callback,
+      callback,
+      callback,
       Enum<v8::AccessControl>(settings, v8::DEFAULT),
       Enum<v8::PropertyAttribute>(attribute, v8::None)
     ));

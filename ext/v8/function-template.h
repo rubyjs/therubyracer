@@ -37,9 +37,8 @@ namespace rr {
 
       FunctionCallback callback(isolate, r_callback, r_data);
       Signature signature(r_signature);
-      int length(Int(r_length));
 
-      return FunctionTemplate(isolate, v8::FunctionTemplate::New(isolate, callback, callback, v8::Local<v8::Signature>(), length));
+      return FunctionTemplate(isolate, v8::FunctionTemplate::New(isolate, callback, callback, v8::Local<v8::Signature>(), Int(r_length)));
     }
 
     static VALUE GetFunction(VALUE self, VALUE context) {
