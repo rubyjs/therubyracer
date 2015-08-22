@@ -37,7 +37,7 @@ namespace rr {
 
       FunctionCallback callback(isolate, r_callback, r_data);
       Signature signature(r_signature);
-      int length(RTEST(r_length) ? NUM2INT(r_length) : 0);
+      int length(Int(r_length));
 
       return FunctionTemplate(isolate, v8::FunctionTemplate::New(isolate, callback, callback, v8::Local<v8::Signature>(), length));
     }
@@ -66,7 +66,7 @@ namespace rr {
       Isolate isolate(t.getIsolate());
       Locker lock(isolate);
 
-      t->SetLength(RTEST(r_length) ? NUM2INT(r_length) : 0);
+      t->SetLength(Int(r_length));
 
       return Qnil;
     }
