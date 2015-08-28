@@ -30,8 +30,11 @@ namespace rr {
     static void Init();
 
     static VALUE New(VALUE self);
-    static VALUE SetCaptureStackTraceForUncaughtExceptions(VALUE self, VALUE capture, VALUE stack_limit, VALUE options);
+    static VALUE TerminateExecution(VALUE self);
+    static VALUE IsExecutionTerminating(VALUE self);
+    static VALUE CancelTerminateExecution(VALUE self);
     static VALUE ThrowException(VALUE self, VALUE error);
+    static VALUE SetCaptureStackTraceForUncaughtExceptions(VALUE self, VALUE capture, VALUE stack_limit, VALUE options);
 
     inline Isolate(IsolateData* data_) : data(data_) {}
     inline Isolate(v8::Isolate* isolate) :

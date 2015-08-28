@@ -9,6 +9,9 @@ namespace rr {
     rb_eval_string("require 'v8/retained_objects'");
     ClassBuilder("Isolate").
       defineSingletonMethod("New", &New).
+      defineMethod("TerminateExecution", &TerminateExecution).
+      defineMethod("IsExecutionTerminating", &IsExecutionTerminating).
+      defineMethod("CancelTerminateExecution", &CancelTerminateExecution).
       defineMethod("ThrowException", &ThrowException).
       defineMethod("SetCaptureStackTraceForUncaughtExceptions", &SetCaptureStackTraceForUncaughtExceptions).
       defineMethod("IdleNotificationDeadline", &IdleNotificationDeadline).
@@ -31,6 +34,19 @@ namespace rr {
 
     data->isolate = isolate;
     return Isolate(isolate);
+  }
+
+  VALUE Isolate::TerminateExecution(VALUE self) {
+    Isolate(self)->TerminateExecution();
+    return Qnil;
+  };
+
+  VALUE Isolate::IsExecutionTerminating(VALUE self) {
+    return Bool(Isolate(self)->IsExecutionTerminating());
+  }
+  VALUE Isolate::CancelTerminateExecution(VALUE self) {
+    Isolate(self)->CancelTerminateExecution();
+    return Qnil;
   }
 
   VALUE Isolate::ThrowException(VALUE self, VALUE error) {
