@@ -8,7 +8,7 @@ describe V8::C::Handle do
       @context = V8::C::Context::New(@isolate)
       @context.Enter()
       GC.stress = true
-      2.times { v8_c_handle_spec_define_finalized_object(@isolate, self)}
+      10.times { v8_c_handle_spec_define_finalized_object(@isolate, self)}
       @context.Exit()
     end
     @isolate.RequestGarbageCollectionForTesting()
