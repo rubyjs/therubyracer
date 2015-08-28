@@ -119,6 +119,12 @@ module V8::C
   end
 end
 
+class NilClass
+  def to_v8(context)
+    V8::C::Null(context.isolate.native)
+  end
+end
+
 ##
 # The following are the default conversions from Ruby objects into
 # low-level C++ objects.
