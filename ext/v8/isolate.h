@@ -30,10 +30,13 @@ namespace rr {
     static void Init();
 
     static VALUE New(VALUE self);
-    static VALUE SetCaptureStackTraceForUncaughtExceptions(VALUE self, VALUE capture, VALUE stack_limit, VALUE options);
+    static VALUE TerminateExecution(VALUE self);
+    static VALUE IsExecutionTerminating(VALUE self);
+    static VALUE CancelTerminateExecution(VALUE self);
     static VALUE ThrowException(VALUE self, VALUE error);
     static VALUE IdleNotificationDeadline(VALUE self, VALUE deadline_in_seconds);
     static VALUE RequestGarbageCollectionForTesting(VALUE self);
+    static VALUE SetCaptureStackTraceForUncaughtExceptions(VALUE self, VALUE capture, VALUE stack_limit, VALUE options);
     static VALUE __EachV8Finalizer__(VALUE self);
 
     inline Isolate(IsolateData* data_) : data(data_) {}
