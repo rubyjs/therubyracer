@@ -3,7 +3,7 @@
 namespace rr {
 
   void Value::Init() {
-    ClassBuilder("Value").
+    ClassBuilder("Value", Handle::Class).
       defineMethod("IsUndefined", &IsUndefined).
       defineMethod("IsNull", &IsNull).
       defineMethod("IsTrue", &IsTrue).

@@ -16,6 +16,7 @@ extern "C" {
     V8::Init();
     DefineEnums();
     Isolate::Init();
+    Handle::Init();
     Handles::Init();
     Context::Init();
     Maybe::Init();

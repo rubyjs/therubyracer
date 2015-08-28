@@ -30,9 +30,9 @@ inline VALUE not_implemented(const char* message) {
 #include "isolate.h"
 
 #include "ref.h"
-
 #include "v8.h"
 #include "locks.h"
+#include "handle.h"
 #include "handles.h"
 #include "context.h"
 

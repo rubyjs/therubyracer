@@ -5,7 +5,7 @@ namespace rr {
 
     static void Init();
     // static VALUE IdleNotification(int argc, VALUE argv[], VALUE self);
-    // static VALUE SetFlagsFromString(VALUE self, VALUE string);
+    static VALUE SetFlagsFromString(VALUE self, VALUE string);
     // static VALUE SetFlagsFromCommandLine(VALUE self, VALUE args, VALUE remove_flags);
     // static VALUE AdjustAmountOfExternalAllocatedMemory(VALUE self, VALUE change_in_bytes);
     // static VALUE PauseProfiler(VALUE self);

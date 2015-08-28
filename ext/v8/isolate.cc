@@ -12,7 +12,8 @@ namespace rr {
       defineMethod("ThrowException", &ThrowException).
       defineMethod("SetCaptureStackTraceForUncaughtExceptions", &SetCaptureStackTraceForUncaughtExceptions).
       defineMethod("IdleNotificationDeadline", &IdleNotificationDeadline).
-
+      defineMethod("RequestGarbageCollectionForTesting", &RequestGarbageCollectionForTesting).
+      defineMethod("__EachV8Finalizer__", &__EachV8Finalizer__).
       store(&Class);
   }
 
@@ -27,7 +28,7 @@ namespace rr {
     v8::Isolate* isolate = v8::Isolate::New(create_params);
 
     isolate->SetData(0, data);
-    isolate->AddGCPrologueCallback(&clearReferences);
+    isolate->AddGCPrologueCallback(&clearReferences, v8::kGCTypeAll);
 
     data->isolate = isolate;
     return Isolate(isolate);
@@ -50,10 +51,31 @@ namespace rr {
     return Qnil;
   }
 
-
   VALUE Isolate::IdleNotificationDeadline(VALUE self, VALUE deadline_in_seconds) {
     Isolate isolate(self);
     Locker lock(isolate);
     return Bool(isolate->IdleNotificationDeadline(NUM2DBL(deadline_in_seconds)));
+  }
+
+  VALUE Isolate::RequestGarbageCollectionForTesting(VALUE self) {
+    Isolate isolate(self);
+    Locker lock(isolate);
+    isolate->RequestGarbageCollectionForTesting(v8::Isolate::kFullGarbageCollection);
+    return Qnil;
+  }
+  VALUE Isolate::__EachV8Finalizer__(VALUE self) {
+    if (!rb_block_given_p()) {
+      rb_raise(rb_eArgError, "Expected block");
+      return Qnil;
+    }
+    int state(0);
+    {
+      Isolate isolate(self);
+      isolate.eachV8Finalizer(&state);
+    }
+    if (state != 0) {
+      rb_jump_tag(state);
+    }
+    return Qnil;
   }
 }
