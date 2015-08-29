@@ -124,8 +124,8 @@ namespace rr {
     return Bool::Maybe(object->SetAccessor(
       context,
       Name(name),
-      callback,
-      callback,
+      callback.getter(),
+      callback.setter(),
       callback,
       Enum<v8::AccessControl>(settings, v8::DEFAULT),
       Enum<v8::PropertyAttribute>(attribute, v8::None)

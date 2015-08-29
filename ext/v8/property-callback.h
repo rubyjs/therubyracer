@@ -76,7 +76,7 @@ namespace rr {
      */
     static void invokeGetter(v8::Local<v8::Name> property, const v8::PropertyCallbackInfo<v8::Value>& info);
 
-    inline operator v8::AccessorNameGetterCallback() {
+    inline v8::AccessorNameGetterCallback getter() {
       if (RTEST(r_getter)) {
         return &PropertyCallback::invokeGetter;
       } else {
@@ -94,7 +94,7 @@ namespace rr {
      */
     static void invokeSetter(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info);
 
-    inline operator v8::AccessorNameSetterCallback() {
+    inline v8::AccessorNameSetterCallback setter() {
       if (RTEST(r_setter)) {
         return &PropertyCallback::invokeSetter;
       } else {
@@ -112,7 +112,7 @@ namespace rr {
      */
     static void invokeNamedPropertyGetter(v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value>& info);
 
-    inline operator v8::NamedPropertyGetterCallback() {
+    inline v8::NamedPropertyGetterCallback propertyGetter() {
       if (RTEST(r_getter)) {
         return &PropertyCallback::invokeNamedPropertyGetter;
       } else {
@@ -130,7 +130,7 @@ namespace rr {
      */
     static void invokeNamedPropertySetter(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<v8::Value>& info);
 
-    inline operator v8::NamedPropertySetterCallback() {
+    inline v8::NamedPropertySetterCallback propertySetter() {
       if (RTEST(r_setter)) {
         return &PropertyCallback::invokeNamedPropertySetter;
       } else {
@@ -148,7 +148,7 @@ namespace rr {
      */
     static void invokeNamedPropertyQuery(v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Integer>& info);
 
-    inline operator v8::NamedPropertyQueryCallback() {
+    inline v8::NamedPropertyQueryCallback propertyQuery() {
       if (RTEST(r_query)) {
         return &PropertyCallback::invokeNamedPropertyQuery;
       } else {
@@ -166,7 +166,7 @@ namespace rr {
      */
     static void invokeNamedPropertyDeleter(v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Boolean>& info);
 
-    inline operator v8::NamedPropertyDeleterCallback() {
+    inline v8::NamedPropertyDeleterCallback propertyDeleter() {
       if (RTEST(r_deleter)) {
         return &PropertyCallback::invokeNamedPropertyDeleter;
       } else {
@@ -189,7 +189,7 @@ namespace rr {
      * This handles both `v8::NamedPropertyEnumeratorCallback` and `v8::IndexedPropertyEnumeratorCallback`
      * since they are the same type.
      */
-    inline operator v8::NamedPropertyEnumeratorCallback() {
+    inline v8::NamedPropertyEnumeratorCallback enumerator() {
       if (RTEST(r_enumerator)) {
         return &PropertyCallback::invokePropertyEnumerator;
       } else {
@@ -207,7 +207,7 @@ namespace rr {
      */
     static void invokeIndexedPropertyGetter(uint32_t index, const v8::PropertyCallbackInfo<v8::Value>& info);
 
-    inline operator v8::IndexedPropertyGetterCallback() {
+    inline v8::IndexedPropertyGetterCallback indexedGetter() {
       if (RTEST(r_getter)) {
         return &PropertyCallback::invokeIndexedPropertyGetter;
       } else {
@@ -225,7 +225,7 @@ namespace rr {
      */
     static void invokeIndexedPropertySetter(uint32_t index, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<v8::Value>& info);
 
-    inline operator v8::IndexedPropertySetterCallback() {
+    inline v8::IndexedPropertySetterCallback indexedSetter() {
       if (RTEST(r_setter)) {
         return &PropertyCallback::invokeIndexedPropertySetter;
       } else {
@@ -243,7 +243,7 @@ namespace rr {
      */
     static void invokeIndexedPropertyQuery(uint32_t index, const v8::PropertyCallbackInfo<v8::Integer>& info);
 
-    inline operator v8::IndexedPropertyQueryCallback() {
+    inline v8::IndexedPropertyQueryCallback indexedQuery() {
       if (RTEST(r_query)) {
         return &PropertyCallback::invokeIndexedPropertyQuery;
       } else {
@@ -261,7 +261,7 @@ namespace rr {
      */
     static void invokeIndexedPropertyDeleter(uint32_t index, const v8::PropertyCallbackInfo<v8::Boolean>& info);
 
-    inline operator v8::IndexedPropertyDeleterCallback() {
+    inline v8::IndexedPropertyDeleterCallback indexedDeleter() {
       if (RTEST(r_deleter)) {
         return &PropertyCallback::invokeIndexedPropertyDeleter;
       } else {

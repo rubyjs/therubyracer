@@ -71,8 +71,8 @@ namespace rr {
 
       t->SetAccessor(
         *Name(r_name),
-        callback,
-        callback,
+        callback.getter(),
+        callback.setter(),
         callback,
         Enum<v8::AccessControl>(r_settings, v8::DEFAULT),
         Enum<v8::PropertyAttribute>(r_attribute, v8::None),
@@ -95,7 +95,14 @@ namespace rr {
 
       PropertyCallback callback(isolate, r_getter, r_setter, r_query, r_deleter, r_enumerator, r_data);
 
-      t->SetNamedPropertyHandler(callback, callback, callback, callback, callback, callback);
+      t->SetNamedPropertyHandler(
+        callback.propertyGetter(),
+        callback.propertySetter(),
+        callback.propertyQuery(),
+        callback.propertyDeleter(),
+        callback.enumerator(),
+        callback
+      );
 
       return Qnil;
     }
@@ -113,7 +120,14 @@ namespace rr {
 
       PropertyCallback callback(isolate, r_getter, r_setter, r_query, r_deleter, r_enumerator, r_data);
 
-      t->SetIndexedPropertyHandler(callback, callback, callback, callback, callback, callback);
+      t->SetIndexedPropertyHandler(
+        callback.indexedGetter(),
+        callback.indexedSetter(),
+        callback.indexedQuery(),
+        callback.indexedDeleter(),
+        callback.enumerator(),
+        callback
+      );
 
       return Qnil;
     }
