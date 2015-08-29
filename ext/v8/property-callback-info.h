@@ -62,6 +62,81 @@ namespace rr {
 
     };
 
+    class Integer : public Base<v8::Integer> {
+    public:
+
+      inline Integer(v8::PropertyCallbackInfo<v8::Integer> info) :
+        Base<v8::Integer>(info) {}
+
+      inline Integer(VALUE self) : Base<v8::Integer>(self) {}
+
+      static VALUE GetReturnValue(VALUE self) {
+        Integer info(self);
+        Locker lock(info->GetIsolate());
+        return ReturnValue::Integer(info->GetReturnValue());
+      }
+
+      static inline void Init() {
+        ClassBuilder("Integer", PropertyCallbackInfo::Class, PropertyCallbackInfo::Class).
+          defineMethod("This", &This).
+          defineMethod("Data", &Data).
+          defineMethod("GetIsolate", &GetIsolate).
+          defineMethod("GetReturnValue", &GetReturnValue).
+          store(&Class);
+      }
+
+    };
+
+    class Array : public Base<v8::Array> {
+    public:
+
+      inline Array(v8::PropertyCallbackInfo<v8::Array> info) :
+        Base<v8::Array>(info) {}
+
+      inline Array(VALUE self) : Base<v8::Array>(self) {}
+
+      static VALUE GetReturnValue(VALUE self) {
+        Array info(self);
+        Locker lock(info->GetIsolate());
+        return ReturnValue::Array(info->GetReturnValue());
+      }
+
+      static inline void Init() {
+        ClassBuilder("Array", PropertyCallbackInfo::Class, PropertyCallbackInfo::Class).
+          defineMethod("This", &This).
+          defineMethod("Data", &Data).
+          defineMethod("GetIsolate", &GetIsolate).
+          defineMethod("GetReturnValue", &GetReturnValue).
+          store(&Class);
+      }
+
+    };
+
+    class Boolean : public Base<v8::Boolean> {
+    public:
+
+      inline Boolean(v8::PropertyCallbackInfo<v8::Boolean> info) :
+        Base<v8::Boolean>(info) {}
+
+      inline Boolean(VALUE self) : Base<v8::Boolean>(self) {}
+
+      static VALUE GetReturnValue(VALUE self) {
+        Boolean info(self);
+        Locker lock(info->GetIsolate());
+        return ReturnValue::Boolean(info->GetReturnValue());
+      }
+
+      static inline void Init() {
+        ClassBuilder("Boolean", PropertyCallbackInfo::Class, PropertyCallbackInfo::Class).
+          defineMethod("This", &This).
+          defineMethod("Data", &Data).
+          defineMethod("GetIsolate", &GetIsolate).
+          defineMethod("GetReturnValue", &GetReturnValue).
+          store(&Class);
+      }
+
+    };
+
     class Void : public Base<void> {
     public:
 
@@ -94,6 +169,9 @@ namespace rr {
         store(&Class);
 
       Value::Init();
+      Integer::Init();
+      Array::Init();
+      Boolean::Init();
       Void::Init();
     }
 
