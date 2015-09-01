@@ -8,67 +8,110 @@ namespace rr {
   public:
     struct Finalizer;
     inline Handle(VALUE value) : Ref<void>(value) {}
-    inline Handle(v8::Isolate* isolate, v8::Local<void> data)
-      : Ref<void>(isolate, data) {}
 
     static inline void Init() {
       ClassBuilder("Handle").
-        defineMethod("__DefineFinalizer__", &__DefineFinalizer__).
+        defineSingletonMethod("New", &New).
+        defineMethod("IsEmpty", &IsEmpty).
+        defineMethod("SetWeak", &SetWeak).
+        defineMethod("ClearWeak", &ClearWeak).
         store(&Class);
-    }
-    static VALUE __DefineFinalizer__(VALUE self, VALUE code) {
-      Handle handle(self);
-      v8::Isolate* isolate(handle);
-      new Finalizer(isolate, handle, code);
-      return Qnil;
     }
 
     /**
-     * Finalizer is responsible for capturing a piece of Ruby code and
-     * pushing it onto a queue once the V8 object points to is garbage
-     * collected. It is passed a handle and a Ruby object at which
-     * point it allocates a new storage cell that it holds
-     * weakly. Once the object referenced by its storage cell is
-     * garbage collected, the Finalizer enqueues the Ruby code so that
-     * it can be run later from Ruby.
+     * Creates a New Handle to this object of the same class. If you
+     * have a V8::C::Object, then V8::C::Handle::New(object) will also
+     * be a V8::C::Object and represent a completely new handle to the
+     * object that will also prevent the object from being garbage
+     * collected by v8 (provided it has not be Reset())
+     */
+    static VALUE New(VALUE self, VALUE other) {
+      if (!rb_funcall(other, rb_intern("kind_of?"), 1, Handle::Class)) {
+        rb_raise(rb_eArgError, "not a V8::C::Handle");
+        return Qnil;
+      } else {
+        VALUE cls = rb_class_of(other);
+        Ref<void> ref(other);
+        v8::Isolate* isolate(ref);
+        v8::Local<void> handle(ref);
+        return Data_Wrap_Struct(cls, 0, &destroy, new Holder(isolate, handle));
+      }
+    }
+
+    /**
+     * Calls v8::Handle::SetWeak, but the API is slightly different
+     * than the C++. The only parameter is a callable object that will
+     * be enqueued when value referenced by this handle is garbage
+     * collected. This code will not be called immediately. Instead,
+     * each callable must be iterated through from within Ruby code
+     * using the Isolate#__EachV8Finalizer__ method. Which will
+     * dequeue all finalizers that have not been yet run and yield
+     * them to the passed block. The sequence is roughly this:
+     *
+     * 1. value becomes finalizable
+     * 2. the v8 native finalizer runs.
+     * 3. Ruby callable is enqueued and will be seen by the next
+     *    invocation of __EachV8Finalizer__
+     */
+    static VALUE SetWeak(VALUE self, VALUE callback) {
+      Handle handle(self);
+      Isolate isolate((v8::Isolate*)handle);
+
+      // make sure this callback is not garbage collected
+      isolate.retainObject(callback);
+
+      Holder* holder(handle.unwrapHolder());
+      Finalizer* finalizer = new Finalizer(holder->cell, callback);
+
+      // mark weak and install the callback
+      holder->cell->SetWeak<Finalizer>(finalizer, &finalize, v8::WeakCallbackType::kParameter);
+      return Qnil;
+    }
+
+    static VALUE ClearWeak(VALUE self) {
+      Handle handle(self);
+      Locker lock(handle);
+
+      Holder* holder(handle.unwrapHolder());
+
+      Finalizer* finalizer = holder->cell->ClearWeak<Finalizer>();
+      delete finalizer;
+      return Qnil;
+    }
+
+    static VALUE IsEmpty(VALUE self) {
+      Handle handle(self);
+      Locker lock(handle);
+
+      Holder* holder(handle.unwrapHolder());
+      return Bool(holder->cell->IsEmpty());
+    }
+
+    static void finalize(const v8::WeakCallbackInfo<Finalizer>& info) {
+      Isolate isolate(info.GetIsolate());
+      Finalizer* finalizer = info.GetParameter();
+
+      // clear the storage cell. This is required by the V8 API.
+      finalizer->cell->Reset();
+
+      // notify that this finalizer is ready to run.
+      isolate.v8FinalizerReady(finalizer->callback);
+      delete finalizer;
+    }
+
+    /**
+     * A simple data structure to hold the objects necessary for
+     * finalization.
      */
     struct Finalizer {
-      Finalizer(Isolate isolate, v8::Local<void> handle, VALUE code) :
-        cell(new v8::Global<void>(isolate, handle)), callback(code) {
-
-        // make sure that this code does not get GC'd by Ruby.
-        isolate.retainObject(code);
-
-        // install the callback
-        cell->SetWeak<Finalizer>(this, &finalize, v8::WeakCallbackType::kParameter);
-      }
-
-      /**
-       * When this finalizer container is destroyed, also clear out
-       * the V8 storage cell and delete it.
-       */
-      inline ~Finalizer() {
-        cell->Reset();
-        delete cell;
-      }
-
-      /**
-       * This implements a V8 GC WeakCallback, which will be invoked
-       * whenever the given object is garbage collected. It's job is to
-       * notify the Ruby isolate that the Ruby finalizer is ready to be
-       * run, as well as to clean up the
-       */
-      static void finalize(const v8::WeakCallbackInfo<Finalizer>& info) {
-        Isolate isolate(info.GetIsolate());
-        Finalizer* finalizer(info.GetParameter());
-        isolate.v8FinalizerReady(finalizer->callback);
-        delete finalizer;
+      Finalizer(v8::Persistent<void>* cell_, VALUE code) :
+        cell(cell_), callback(code) {
       }
 
       /**
        * The storage cell that is held weakly.
        */
-      v8::Global<void>* cell;
+      v8::Persistent<void>* cell;
 
       /**
        * The Ruby callable representing this finalizer.
