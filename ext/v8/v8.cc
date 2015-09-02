@@ -13,7 +13,7 @@ namespace rr {
 
     ClassBuilder("V8").
       // defineSingletonMethod("IdleNotification", &IdleNotification).
-      // defineSingletonMethod("SetFlagsFromString", &SetFlagsFromString).
+      defineSingletonMethod("SetFlagsFromString", &SetFlagsFromString).
       // defineSingletonMethod("SetFlagsFromCommandLine", &SetFlagsFromCommandLine).
       // defineSingletonMethod("PauseProfiler", &PauseProfiler).
       // defineSingletonMethod("ResumeProfiler", &ResumeProfiler).
@@ -28,6 +28,11 @@ namespace rr {
       // defineSingletonMethod("SetCaptureStackTraceForUncaughtExceptions", &SetCaptureStackTraceForUncaughtExceptions).
       // defineSingletonMethod("GetHeapStatistics", &GetHeapStatistics).
       defineSingletonMethod("GetVersion", &GetVersion);
+  }
+
+  VALUE V8::SetFlagsFromString(VALUE self, VALUE string) {
+    v8::V8::SetFlagsFromString(RSTRING_PTR(string), RSTRING_LEN(string));
+    return Qnil;
   }
 
   VALUE V8::Dispose(VALUE self) {

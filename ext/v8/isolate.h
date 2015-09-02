@@ -34,7 +34,10 @@ namespace rr {
     static VALUE IsExecutionTerminating(VALUE self);
     static VALUE CancelTerminateExecution(VALUE self);
     static VALUE ThrowException(VALUE self, VALUE error);
+    static VALUE IdleNotificationDeadline(VALUE self, VALUE deadline_in_seconds);
+    static VALUE RequestGarbageCollectionForTesting(VALUE self);
     static VALUE SetCaptureStackTraceForUncaughtExceptions(VALUE self, VALUE capture, VALUE stack_limit, VALUE options);
+    static VALUE __EachV8Finalizer__(VALUE self);
 
     inline Isolate(IsolateData* data_) : data(data_) {}
     inline Isolate(v8::Isolate* isolate) :
@@ -156,6 +159,45 @@ namespace rr {
     }
 
     /**
+     * Indicate that a finalizer that had been associated with a given
+     * V8 object is now ready to run because that V8 object has now
+     * been garbage collected.
+     *
+     * This can be called from anywhere and does not need to hold
+     * either Ruby or V8 locks. It is designed though to be called
+     * from the V8 GC callback that determines that the object is no
+     * more.
+     */
+    inline void v8FinalizerReady(VALUE code) {
+      data->v8_finalizer_queue.enqueue(code);
+    }
+
+    /**
+     * Iterates through all of the V8 finalizers that have been marked
+     * as ready and yields them. They wil be dequeued after this
+     * point, and so will never be seen again.
+     */
+    inline void eachV8Finalizer(int* state) {
+      VALUE finalizer;
+      while (data->v8_finalizer_queue.try_dequeue(finalizer)) {
+        rb_protect(&yieldOneV8Finalizer, finalizer, state);
+        // we no longer need to retain this object from garbage
+        // collection.
+        releaseObject(finalizer);
+        if (*state != 0) {
+          break;
+        }
+      }
+    }
+    /**
+     * Yield a single value. This is wrapped in a function, so that
+     * any exceptions that happen don't blow out the stack.
+     */
+    static VALUE yieldOneV8Finalizer(VALUE finalizer) {
+      return rb_yield(finalizer);
+    }
+
+    /**
      * The `gc_mark()` callback for this Isolate's
      * Data_Wrap_Struct. It releases all pending Ruby objects.
      */
@@ -189,9 +231,6 @@ namespace rr {
         delete cell;
       }
     }
-
-
-    static VALUE IdleNotificationDeadline(VALUE self, VALUE deadline_in_seconds);
 
     /**
      * Recent versions of V8 will segfault unless you pass in an
@@ -247,6 +286,19 @@ namespace rr {
        * needs it.
        */
       ConcurrentQueue<VALUE> rb_release_queue;
+
+      /**
+       * Sometimes it is useful to get a callback into Ruby whenever a
+       * JavaScript object is garbage collected by V8. This is done by
+       * calling v8_object._DefineFinalizer(some_proc). However, we
+       * cannot actually run this Ruby code inside the V8 garbage
+       * collector. It's not safe! It might end up allocating V8
+       * objects, or doing all kinds of who knows what! Instead, the
+       * ruby finalizer gets pushed onto this queue where it can be
+       * invoked later from ruby code with a call to
+       * isolate.__RunV8Finalizers__!
+       */
+      ConcurrentQueue<VALUE> v8_finalizer_queue;
 
       /**
        * Contains a number of tokens representing all of the live Ruby
