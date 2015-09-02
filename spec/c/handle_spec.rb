@@ -12,7 +12,7 @@ describe V8::C::Handle do
         @context.Enter()
         @object = V8::C::Object::New(@isolate)
         @results = {}
-        @object.SetWeak(v8_c_handle_spec_did_finalize(@results))
+        @object.SetWeak(proc { @did_finalize = true})
         @context.Exit()
       end
       @isolate.RequestGarbageCollectionForTesting()
@@ -23,7 +23,7 @@ describe V8::C::Handle do
     end
 
     it "runs registered V8 finalizer procs when a v8 object is garbage collected" do
-      expect(@results[:did_finalize]).to be_truthy
+      expect(@did_finalize).to be_truthy
     end
   end
 
@@ -48,7 +48,7 @@ describe V8::C::Handle do
       before do
         V8::C::HandleScope(@isolate) do
           @results = {}
-          @object.SetWeak(v8_c_handle_spec_did_finalize(@results))
+          @object.SetWeak(proc { @did_finalize = true})
         end
         @isolate.RequestGarbageCollectionForTesting()
         @isolate.__EachV8Finalizer__(&:call)
@@ -56,20 +56,20 @@ describe V8::C::Handle do
       it "does not gc the v8 object" do
         V8::C::HandleScope(@isolate) do
           expect(@object.IsEmpty()).to_not be_truthy
-          expect(@results[:did_finalize]).to_not be_truthy
+          expect(@did_finalize).to_not be_truthy
         end
       end
 
       describe ". Then making the second handle weak" do
         before do
           V8::C::HandleScope(@isolate) do
-            @other.SetWeak(v8_c_handle_spec_did_finalize(@results))
+            @other.SetWeak(proc { @did_finalize = true })
           end
           @isolate.RequestGarbageCollectionForTesting()
           @isolate.__EachV8Finalizer__(&:call)
         end
         it "garbage collects the v8 object" do
-          expect(@results[:did_finalize]).to be_truthy
+          expect(@did_finalize).to be_truthy
         end
         it "indicates that both object handles are now empty" do
           V8::C::HandleScope(@isolate) do
@@ -79,11 +79,5 @@ describe V8::C::Handle do
         end
       end
     end
-  end
-
-  def v8_c_handle_spec_did_finalize(results)
-    proc {
-      results[:did_finalize] = true
-    }
   end
 end
