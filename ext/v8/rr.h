@@ -306,6 +306,7 @@ public:
   static void Init();
   static VALUE New(int argc, VALUE argv[], VALUE self);
   static VALUE Dispose(VALUE self);
+  static VALUE Clone(VALUE self, VALUE new_context);
   static VALUE Enter(VALUE self);
   static VALUE Exit(VALUE self);
   static VALUE Global(VALUE self);
