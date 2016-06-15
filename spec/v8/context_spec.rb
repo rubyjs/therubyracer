@@ -48,6 +48,33 @@ describe V8::Context do
       cxt["x"].should == 3
     end
 
+    it 'duplicates functions' do
+      cxt = V8::Context.new
+
+      cxt.eval('var val = {num: 5, isTruthy: function (arg) { return !!arg }}')
+
+      cloned_cxt = cxt.deep_clone
+
+      cloned_cxt["val"].isTruthy(1).should be(true)
+    end
+
+    it "keeps closures' contexts" do
+      js = <<-js
+        function wrapper(x) { return function() { return x; } };
+        var f = wrapper(42);
+      js
+
+      cxt = V8::Context.new
+
+      cxt.eval(js)
+
+      cloned_cxt = cxt.deep_clone
+
+      cloned_cxt.eval('x = f();')
+
+      cloned_cxt["x"].should == 42
+    end
+
     it 'works on empty contexts' do
       cxt = V8::Context.new
 
