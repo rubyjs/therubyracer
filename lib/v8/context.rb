@@ -64,7 +64,7 @@ module V8
     def initialize(options = {})
       @conversion = Conversion.new
       @access = Access.new
-      @timeout = options[:timeout]
+      @timeout = options[:timeout] || 3000
       if global = options[:with]
         Context.new.enter do
           global_template = global.class.to_template.InstanceTemplate()
