@@ -55,12 +55,20 @@ module V8
 
     module Cell
       def weakcell(name, &block)
-        unless storage = instance_variable_get("@#{name}")
-          storage = instance_variable_set("@#{name}", Storage.new)
-        end
-        storage.access(&block)
+        ivar = "@#{name}"
+
+        if instance_variable_defined?(ivar) && instance_variable_get(ivar)
+           instance_variable_get(ivar)
+        else
+          instance_variable_set(ivar, Storage.new)
+        end.access(&block)
       end
+
       class Storage
+        def initialize
+          @ref = nil
+        end
+
         def access(&block)
           if @ref
             @ref.object || populate(block)

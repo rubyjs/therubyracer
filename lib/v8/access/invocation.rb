@@ -13,7 +13,7 @@ class V8::Access
     module Proc
       include Aritize
       def methodcall(this, args)
-        call *aritize([this].concat(args))
+        call(*aritize([this].concat(args)))
       end
       ::Proc.send :include, self
     end
@@ -24,11 +24,11 @@ class V8::Access
         context = V8::Context.current
         access = context.access
         if this.equal? self.receiver
-          call *aritize(args)
+          call(*aritize(args))
         elsif this.class <= self.receiver.class
           access.methodcall(unbind, this, args)
         elsif this.equal? context.scope
-          call *aritize(args)
+          call(*aritize(args))
         else
           fail TypeError, "cannot invoke #{self} on #{this}"
         end

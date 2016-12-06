@@ -40,7 +40,6 @@ module V8
 
     def backtrace(*modifiers)
       return unless super()
-      trace_framework = modifiers.include?(:framework)
       trace_ruby = modifiers.length == 0 || modifiers.include?(:ruby)
       trace_javascript = modifiers.length == 0 || modifiers.include?(:javascript)
       bilingual_backtrace(trace_ruby, trace_javascript).tap do |trace|
@@ -61,17 +60,17 @@ module V8
     end
 
     def bilingual_backtrace(trace_ruby = true, trace_javascript = true)
-      backtrace = causes.reduce(:backtrace => [], :ruby => -1, :javascript => -1) { |accumulator, cause|
+      causes.reduce(:backtrace => [], :ruby => -1, :javascript => -1) { |accumulator, cause|
         accumulator.tap do
           if trace_ruby
             backtrace_selector = cause.respond_to?(:standard_error_backtrace) ? :standard_error_backtrace : :backtrace
             ruby_frames = cause.send(backtrace_selector)[0..accumulator[:ruby]]
-            accumulator[:backtrace].unshift *ruby_frames
+            accumulator[:backtrace].unshift(*ruby_frames)
             accumulator[:ruby] -= ruby_frames.length
           end
           if trace_javascript && cause.respond_to?(:javascript_backtrace)
             javascript_frames = cause.javascript_backtrace.to_a[0..accumulator[:javascript]].map(&:to_s)
-            accumulator[:backtrace].unshift *javascript_frames
+            accumulator[:backtrace].unshift(*javascript_frames)
             accumulator[:javascript] -= javascript_frames.length
           end
         end
