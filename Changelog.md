@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+* Support for unified Integer class in Ruby 2.4+ (thanks to @koic)
+
 ## 0.12.2 2015/04/06
 
 * fix memory leak where weak hash map entries were not being cleaned
