@@ -1,5 +1,5 @@
 class V8::Conversion
-  module Fixnum
+  module Integer
     def to_ruby
       self
     end
