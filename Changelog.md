@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.3 2017/01/05
 
 * Support for unified Integer class in Ruby 2.4+ (thanks to @koic)
 
