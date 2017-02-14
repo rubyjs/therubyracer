@@ -192,6 +192,39 @@ installation options.
     bundle install
     rake compile
 
+### JavaScript Debugging
+
+To start up the [V8 Debugger Agent](http://code.google.com/p/v8/wiki/AddDebuggerSupport), 
+call `V8::C::Debug::EnableAgent()` after instantiating a V8 Context.
+
+```ruby
+cxt = V8::Context.new
+V8::C::Debug::EnableAgent("myApp", 9222, false)
+```
+
+The last boolean parameter is `wait_for_connection`: whether V8 should pause on a first statement allowing remote debugger to connect before anything interesting happened.
+
+Then, for a quick test, telnet to localhost port 9222 after the app has initialized. 
+
+```
+$ telnet localhost 9222
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+Type: connect
+V8-Version: 3.16.14
+Protocol-Version: 1
+Embedding-Host: myApp
+Content-Length: 0
+
+```
+
+When scripts are executed, you should see some JSON output scrolling by.  Read about the 
+[V8 Debugger Protocol here](http://code.google.com/p/v8/wiki/DebuggerProtocol).  You can
+also attempt to install the [Eclipse Plugin](http://code.google.com/p/chromedevtools/wiki/DebuggerTutorial).  
+(Instead of choosing the WebKit Protocol option in the instructions, choose **Standalone V8 VM**)
+Your mileage may vary, Eclipse is a little buggy.
+
 ### Sponsored by
 
 <a href="http://thefrontside.net">![The Frontside](http://github.com/cowboyd/therubyracer/raw/master/thefrontside.png)</a>

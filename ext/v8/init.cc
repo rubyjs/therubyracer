@@ -35,5 +35,6 @@ extern "C" {
     ResourceConstraints::Init();
     HeapStatistics::Init();
     Backref::Init();
+    Debug::Init();
   }
 }

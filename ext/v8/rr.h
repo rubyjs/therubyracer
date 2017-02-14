@@ -814,6 +814,12 @@ public:
   static VALUE doUnlockCall(VALUE code);
 };
 
+class Debug {
+public:
+  static void Init();
+  static VALUE EnableAgent(VALUE self, VALUE application_name, VALUE port, VALUE wait_for_connection = Qfalse);
+};
+
 class HeapStatistics : public Pointer<v8::HeapStatistics> {
 public:
   static void Init();
