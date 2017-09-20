@@ -52,7 +52,7 @@ class V8::Object
     end
   end
 
-  def respond_to?(method)
+  def respond_to?(method, include_all=false)
     super or self[method] != nil
   end
 
