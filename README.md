@@ -194,7 +194,7 @@ installation options.
 
 ### Sponsored by
 
-<a href="http://thefrontside.net">![The Frontside](http://github.com/cowboyd/therubyracer/raw/master/thefrontside.png)</a>
+<a href="https://frontside.io">![The Frontside](/thefrontside.png)</a>
 
 ### LICENSE:
 
