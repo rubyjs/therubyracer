@@ -223,7 +223,7 @@ public:
       if(vector.size() > 0){
         return &vector[0];
       } else {
-        return null;
+        return NULL;
       }
     }
   private:
