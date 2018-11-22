@@ -220,7 +220,11 @@ public:
       for (uint32_t i = 0; i < vector.size(); i++) {
         vector[i] = C(rb_ary_entry(argv, i));
       }
-      return &vector[0];
+      if(vector.size() > 0){
+        return &vector[0];
+      } else {
+        return NULL;
+      }
     }
   private:
     VALUE argv;
