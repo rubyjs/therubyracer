@@ -10,6 +10,32 @@ describe "Timeouts" do
     ctx.eval("x=2;")
     ctx["x"].should == 2
   end
+
+  it "allows changing the timeout on an existing context" do
+    ctx = V8::Context.new(:timeout => 200)
+
+    js = <<-js
+      // sleep for 50 ms
+      var now = new Date().getTime();
+      while(new Date().getTime() < now + 50) {}
+
+      if(typeof x === 'undefined') {
+        x = 1;
+      } else {
+        x = 2;
+      }
+    js
+
+    ctx.eval(js)
+    ctx["x"].should == 1
+
+    ctx.timeout = 10
+    lambda {ctx.eval(js)}.should(raise_error)
+
+    ctx.timeout = 200
+    ctx.eval(js)
+    ctx["x"].should == 2
+  end
 end
 
 describe "using v8 from multiple threads", :threads => true do

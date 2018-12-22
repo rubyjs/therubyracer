@@ -42,7 +42,7 @@ module V8
 
     # @!attribute [r] timeout
     #   @return [Number] maximum execution time in milliseconds for scripts executed in this context
-    attr_reader :timeout
+    attr_accessor :timeout
 
     # Creates a new context.
     #
