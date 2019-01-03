@@ -10,6 +10,7 @@ void Context::Init() {
     defineSingletonMethod("GetCalling", &GetCalling).
     defineSingletonMethod("InContext", &InContext).
     defineMethod("Dispose", &Dispose).
+    defineMethod("Clone", &Clone).
     defineMethod("Global", &Global).
     defineMethod("DetachGlobal", &Global).
     defineMethod("ReattachGlobal", &ReattachGlobal).
@@ -31,6 +32,53 @@ void Context::Init() {
 
 VALUE Context::Dispose(VALUE self) {
   Void(Context(self).dispose())
+}
+
+VALUE Context::Clone(VALUE self, VALUE new_rr_context) {
+  // acquire the lock
+  v8::Locker locker;
+  v8::HandleScope handle_scope;
+
+  // unwrap V8 contexts
+  v8::Context* original_context = *((v8::Handle<v8::Context>) Context(self));
+  v8::Context* new_context = *((v8::Handle<v8::Context>) Context(new_rr_context));
+
+  // get the original global context
+  v8::Local<v8::Value> key, value;
+
+  original_context->Enter();
+
+  v8::Local<v8::Object> original_global(original_context->Global());
+  v8::Local<v8::Array> property_names = original_global->GetPropertyNames();
+  uint32_t i, length = property_names->Length();
+  std::vector< v8::Local<v8::Value> > values;
+
+  for (i = 0; i < length; i++) {
+    key = property_names->Get(i);
+    value = original_global->Get(key);
+    values.push_back(value);
+  }
+
+  original_context->Exit();
+
+  // and copy everything to the new context
+  new_context->Enter();
+
+  v8::Local<v8::Object> new_global(new_context->Global());
+  std::vector< v8::Local<v8::Value> >::iterator it;
+
+  for (i = 0, it = values.begin(); i < length; i++, it++) {
+    key = property_names->Get(i);
+    value = *it;
+    new_global->Set(key, value);
+  }
+
+  new_context->Exit();
+
+  // unlock
+  v8::Unlocker unlocker;
+
+  return Qnil;
 }
 
 VALUE Context::Global(VALUE self) {
