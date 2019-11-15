@@ -2,10 +2,11 @@ require 'mkmf'
 
 have_library('pthread')
 have_library('objc') if RUBY_PLATFORM =~ /darwin/
+have_library('winmm') if RUBY_PLATFORM =~ /mingw/
 $CPPFLAGS += " -Wall" unless $CPPFLAGS.split.include? "-Wall"
 $CPPFLAGS += " -g" unless $CPPFLAGS.split.include? "-g"
-$CPPFLAGS += " -rdynamic" unless $CPPFLAGS.split.include? "-rdynamic"
-$CPPFLAGS += " -fPIC" unless $CPPFLAGS.split.include? "-rdynamic" or RUBY_PLATFORM =~ /darwin/
+$CPPFLAGS += " -rdynamic" unless $CPPFLAGS.split.include? "-rdynamic" or RUBY_PLATFORM =~ /mingw/
+$CPPFLAGS += " -fPIC" unless $CPPFLAGS.split.include? "-rdynamic" or RUBY_PLATFORM =~ /darwin|mingw/
 
 CONFIG['LDSHARED'] = '$(CXX) -shared' unless RUBY_PLATFORM =~ /darwin/
 if CONFIG['warnflags']
