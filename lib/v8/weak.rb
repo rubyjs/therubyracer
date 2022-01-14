@@ -39,10 +39,15 @@ module V8
         end
 
         def []=(key, value)
-          ref = V8::Weak::Ref.new(value)
-          ObjectSpace.define_finalizer(value, self.class.ensure_cleanup(@values, key, ref))
+          if value.frozen?
+            # Such as BigDecimal - Can't store in Weak::Ref
+            @values[key] = value.dup
+          else
+            ref = V8::Weak::Ref.new(value)
+            ObjectSpace.define_finalizer(value, self.class.ensure_cleanup(@values, key, ref))
 
-          @values[key] = ref
+            @values[key] = ref
+          end
         end
 
         def self.ensure_cleanup(values,key,ref)
