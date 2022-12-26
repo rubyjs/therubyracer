@@ -1,3 +1,5 @@
+⚠️ Unmaintained, consider using [`mini_racer`](https://github.com/rubyjs/mini_racer) <sup><a href="https://github.com/rubyjs/therubyracer/issues/462">see issue</a></sup> ⚠️
+
 # therubyracer
 
 [![Gem Version](https://badge.fury.io/rb/therubyracer.png)](http://badge.fury.io/rb/therubyracer)

@@ -16,6 +16,8 @@ Gem::Specification.new do |gem|
   gem.version       = V8::VERSION
   gem.license       = 'MIT'
 
+  gem.post_install_message = "Unmaintened gem. Please consider using `mini_racer` instead."
+
   gem.add_dependency 'ref'
   gem.add_dependency 'libv8', '~> 3.16.14.15'
 end
