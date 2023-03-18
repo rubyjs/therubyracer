@@ -62,9 +62,12 @@ module V8
     #  * :with scope serves as the global scope of the new context
     # @yield [V8::Context] the newly created context
     def initialize(options = {})
+      @options = options
+
       @conversion = Conversion.new
       @access = Access.new
       @timeout = options[:timeout]
+
       if global = options[:with]
         Context.new.enter do
           global_template = global.class.to_template.InstanceTemplate()
@@ -134,6 +137,14 @@ module V8
       V8::C::V8::ContextDisposedNotification()
       def self.enter
         fail "cannot enter a context which has already been disposed"
+      end
+    end
+
+    def deep_clone
+      fail ArgumentError, 'cannot clone an empty context' unless @native
+
+      self.class.new(@options).tap do |new_context|
+        native.Clone(new_context.native)
       end
     end
 
