@@ -30,64 +30,83 @@ Embed the V8 JavaScript interpreter into Ruby.
 
 then in your Ruby code
 
-    require 'v8'
+```ruby
+require 'v8'
+```
 
 or if using bundler (as with Rails), add the following to your Gemfile
 
-    gem "therubyracer"
+```ruby
+gem "therubyracer"
+```
 
 evaluate some simple JavaScript
 
-    cxt = V8::Context.new
-    cxt.eval('7 * 6') #=> 42
+```ruby
+cxt = V8::Context.new
+cxt.eval('7 * 6') #=> 42
+```
 
 access values inside your JavaScript context from Ruby
 
-    cxt.eval 'var val = {num: 5, isTruthy: function (arg) { return !!arg }}'
-    val = cxt[:val] #=> V8::Object
-    cxt[:val] == cxt.scope.val #=> true
-    val.num #=> 5
-    val.isTruthy(1) #=> true
+```ruby
+cxt.eval 'var val = {num: 5, isTruthy: function (arg) { return !!arg }}'
+val = cxt[:val] #=> V8::Object
+cxt[:val] == cxt.scope.val #=> true
+val.num #=> 5
+val.isTruthy(1) #=> true
+```
 
 this includes references to JavaScript functions
 
-    truthy = val[:isTruthy] #=> V8::Function
-    truthy.call(' ') #=> true
-    truthy.call(0) #=> false
-
+```ruby
+truthy = val[:isTruthy] #=> V8::Function
+truthy.call(' ') #=> true
+truthy.call(0) #=> false
+```
 
 embed values into the scope of your context
 
-    cxt['foo'] = "bar"
-    cxt.eval('foo') # => "bar"
+```ruby
+cxt['foo'] = "bar"
+cxt.eval('foo') # => "bar"
+```
 
 embed Ruby code into your scope and call it from JavaScript
 
-    cxt["say"] = lambda {|this, word, times| word * times}
-    cxt.eval("say('Hello', 3)") #=> HelloHelloHello
+```ruby
+cxt["say"] = lambda {|this, word, times| word * times}
+cxt.eval("say('Hello', 3)") #=> HelloHelloHello
+```
 
 embed a Ruby object into your scope and access its properties/methods
 from JavaScript
 
-    class MyMath
-      def plus(lhs, rhs)
-        lhs + rhs
-      end
-    end
+```ruby
+class MyMath
+  def plus(lhs, rhs)
+    lhs + rhs
+  end
+end
 
-    cxt['math'] = MyMath.new
-    cxt.eval("math.plus(20,22)") #=> 42
+cxt['math'] = MyMath.new
+cxt.eval("math.plus(20,22)") #=> 42
+```
 
 make a Ruby object *be* your global JavaScript scope.
 
-    math = MyMath.new
-    V8::Context.new(:with => math) do |cxt|
-      cxt.eval("plus(20,22)") #=> 42
-    end
+```ruby
+math = MyMath.new
+V8::Context.new(:with => math) do |cxt|
+  cxt.eval("plus(20,22)") #=> 42
+end
+```
 
 you can do the same thing with Object#eval_js
 
-    math.eval_js("plus(20,22)")
+```ruby
+math.eval_js("plus(20,22)")
+```
 
 ### Different ways of loading JavaScript source
 
@@ -96,13 +115,17 @@ as files.
 
 evaluate bytes read from any File/IO object:
 
-    File.open("mysource.js") do |file|
-      cxt.eval(file, "mysource.js")
-    end
+```ruby
+File.open("mysource.js") do |file|
+  cxt.eval(file, "mysource.js")
+end
+```
 
 or load it by filename
 
-    cxt.load("mysource.js")
+```ruby
+cxt.load("mysource.js")
+```
 
 ### Safe by default, dangerous by demand
 
@@ -116,32 +139,34 @@ For Ruby objects that you explicitly embed into JavaScript, by default
 only the _public_ methods _below_ `Object` are exposed by default.
 E.g.
 
-    class A
-      def a
-        "a"
-      end
+```ruby
+class A
+  def a
+    "a"
+  end
 
-      def to_s
-        super
-      end
-    end
+  def to_s
+    super
+  end
+end
 
-    class B < A
-      def b
-        "b"
-      end
-    end
+class B < A
+  def b
+    "b"
+  end
+end
 
 
-    V8::Context.new do |cxt|
-      cxt['a'] = A.new
-      cxt['b'] = B.new
-      cxt.eval("a.a") # => 'a'
-      cxt.eval("b.b") # => 'b'
-      cxt.eval("b.a") # => 'a'
-      cxt.eval("b.to_s") # => #<B:0x101776be8> (because A explicitly defined it)
-      cxt.eval("b.object_id") #=> undefined, object_id is on Object
-    end
+V8::Context.new do |cxt|
+  cxt['a'] = A.new
+  cxt['b'] = B.new
+  cxt.eval("a.a") # => 'a'
+  cxt.eval("b.b") # => 'b'
+  cxt.eval("b.a") # => 'a'
+  cxt.eval("b.to_s") # => #<B:0x101776be8> (because A explicitly defined it)
+  cxt.eval("b.object_id") #=> undefined, object_id is on Object
+end
+```
 
 If needed, you can override the [Ruby Access][access] to allow whatever
 behavior you'd like.
