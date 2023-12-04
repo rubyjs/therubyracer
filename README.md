@@ -1,5 +1,3 @@
-⚠️ Unmaintained, consider using [`mini_racer`](https://github.com/rubyjs/mini_racer) <sup><a href="https://github.com/rubyjs/therubyracer/issues/462">see issue</a></sup> ⚠️
-
 # therubyracer
 
 [![Gem Version](https://badge.fury.io/rb/therubyracer.png)](http://badge.fury.io/rb/therubyracer)
@@ -12,6 +10,21 @@
 * GitHub Project: [http://github.com/cowboyd/therubyracer](http://github.com/cowboyd/therubyracer)
 * Mailing List: [http://groups.google.com/group/therubyracer](http://groups.google.com/group/therubyracer)
 * Documentation: [GitHub Wiki](https://github.com/cowboyd/therubyracer/wiki) and [RubyDoc](http://rubydoc.info/gems/therubyracer)
+
+### Status: UNMAINTAINED
+
+This project is [UNMAINTAINED](https://github.com/rubyjs/therubyracer/issues/462).
+
+Why?
+
+- The binding to libv8 that therubyracer implements is quite tight, making updating libv8 a huge amount of work. [mini_racer](https://github.com/rubyjs/mini_racer) has a thinner interface for that reason.
+- So many issues come from depot tools and the bespoke v8 toolchain, which only support what Google Chrome needs to support. [libv8-node](https://github.com/rubyjs/libv8-node) has been created to tackle those issues, leveraging the good work of Node.js people, and mini_racer uses that.
+
+If you use a mini_racer that depends on libv8, please move to a more recent version.
+
+If you use therubyracer and are thus stuck with v8 3.16, please move to mini_racer. If one of your dependencies uses therubyracer, please reach out to them so that they upgrade to mini_racer.
+
+If there are needs coming from either libv8 or therubyracer that you feel are unmet by mini_racer + libv8-node, please open issues on their respective repositories.
 
 ### DESCRIPTION
 
