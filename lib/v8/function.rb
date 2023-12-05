@@ -10,7 +10,11 @@ class V8::Function < V8::Object
   def methodcall(this, *args)
     @context.enter do
       this ||= @context.native.Global()
-      @context.to_ruby try {native.Call(@context.to_v8(this), args.map {|a| @context.to_v8 a})}
+      if @context.timeout
+        @context.to_ruby try {native.CallWithTimeout(@context.to_v8(this), args.map {|a| @context.to_v8 a}, @context.timeout)}
+      else
+        @context.to_ruby try {native.Call(@context.to_v8(this), args.map {|a| @context.to_v8 a})}
+      end
     end
   end
 

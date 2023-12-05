@@ -72,19 +72,6 @@ VALUE Script::Run(VALUE self) {
   return Value(Script(self)->Run());
 }
 
-typedef struct {
-    v8::Isolate *isolate;
-    long timeout;
-} timeout_data;
-
-void* breaker(void *d) {
-  timeout_data* data = (timeout_data*)d;
-  usleep(data->timeout*1000);
-  pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
-  v8::V8::TerminateExecution(data->isolate);
-  return NULL;
-}
-
 VALUE Script::RunWithTimeout(VALUE self, VALUE timeout) {
   pthread_t breaker_thread;
   timeout_data data;

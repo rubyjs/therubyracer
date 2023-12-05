@@ -189,6 +189,14 @@ cxt = V8::Context.new timeout: 700
 cxt.eval "while (true);" #= exception after 700ms!
 ```
 
+The timeout set per context is also taken into account on function calls:
+
+```ruby
+cxt = V8::Context.new timeout: 700
+ctx.eval("var dos = function() { while(true){} };")
+ctx['dos'].call #= exception after 700ms!
+```
+
 ### PREREQUISITES
 
 The Ruby Racer requires the V8 Javascript engine, but it offloads the
