@@ -1,5 +1,4 @@
 cache: bundler
-sudo: false
 rvm:
   - 2.5.0
   - 2.4.3
