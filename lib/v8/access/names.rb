@@ -46,8 +46,7 @@ class V8::Access
 
     def accessible_names(obj, special_methods = false)
       obj.public_methods(false).map {|m| m.to_s}.to_set.tap do |methods|
-        ancestors = obj.class.ancestors.dup
-        while ancestor = ancestors.shift
+        obj.class.ancestors.each do |ancestor|
           break if ancestor == ::Object
           methods.merge(ancestor.public_instance_methods(false).map {|m| m.to_s})
         end
